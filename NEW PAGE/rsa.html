@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA - Reflexive Symmetrical Architecture | Adiyat Coto</title>
+    <meta name="description" content="Explore the Reflexive Symmetrical Architecture framework - a unified theory of price-time analysis built on recursive binary division principles.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+        }
+
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --border-light: #475569;
+            --accent-color: #22d3ee;
+            --accent-hover: #06b6d4;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .structure-btn {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .structure-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .dark .structure-btn.active {
+             box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+        }
+        .structure-btn.active h4 {
+            color: var(--accent-color);
+        }
+        
+        .accordion-content {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        
+        .accordion-content.hidden {
+            max-height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            opacity: 0;
+        }
+        
+        .accordion-content:not(.hidden) {
+            max-height: none;
+            opacity: 1;
+        }
+        
+        .accordion-btn:hover {
+            background-color: var(--bg-secondary);
+        }
+    </style>
+    <script>
+        // Theme functionality
+        function initTheme() {
+            const theme = localStorage.getItem('rsa-theme') || 'dark';
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        }
+        
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'light' : 'dark';
+            document.documentElement.classList.toggle('dark', newTheme === 'dark');
+            localStorage.setItem('rsa-theme', newTheme);
+        }
+        
+        // Initialize theme before page load
+        initTheme();
+    </script>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-black/30 backdrop-blur-lg sticky top-0 z-50 border-b border-[var(--border-color)]">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-[var(--accent-color)] to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                        AC
+                    </div>
+                    <span class="font-semibold text-[var(--text-primary)]">Adiyat Coto</span>
+                </a>
+                <div class="hidden md:block text-[var(--text-secondary)]">/</div>
+                <h1 class="hidden md:block text-xl font-semibold text-[var(--accent-color)]">
+                    RSA Framework
+                </h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#introduction" class="nav-link font-medium pb-1" data-lang-key="navIntro">Introduction</a>
+                <a href="#theory" class="nav-link font-medium pb-1" data-lang-key="navTheory">The Theory</a>
+                <a href="#model" class="nav-link font-medium pb-1" data-lang-key="navModel">The Model</a>
+                <a href="#synthesis" class="nav-link font-medium pb-1" data-lang-key="navSynthesis">The Synthesis</a>
+                <a href="#framework" class="nav-link font-medium pb-1" data-lang-key="navFramework">The Framework</a>
+                <a href="#tools" class="nav-link font-medium pb-1" data-lang-key="navTools">Tools</a>
+                <a href="#whitepaper" class="nav-link font-medium pb-1" data-lang-key="navWhitepaper">Whitepaper</a>
+                <div id="lang-switcher" class="flex items-center border border-[var(--border-color)] rounded-full p-0.5">
+                    <button class="lang-btn text-xs font-semibold px-3 py-1 rounded-full" data-lang="en">EN</button>
+                    <button class="lang-btn text-xs font-semibold px-3 py-1 rounded-full" data-lang="id">ID</button>
+                </div>
+                <button onclick="toggleTheme()" class="theme-btn p-2 rounded-full hover:scale-110 transition-all">
+                    <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="md:hidden flex items-center">
+                <div id="lang-switcher-mobile" class="flex items-center border border-[var(--border-color)] rounded-full p-0.5 mr-2">
+                    <button class="lang-btn text-xs font-semibold px-2 py-0.5 rounded-full" data-lang="en">EN</button>
+                    <button class="lang-btn text-xs font-semibold px-2 py-0.5 rounded-full" data-lang="id">ID</button>
+                </div>
+                <button onclick="toggleTheme()" class="theme-btn p-2 rounded-full mr-2">
+                    <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+                <select id="mobile-nav" class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-md px-3 py-2 text-[var(--text-primary)]">
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="py-24 md:py-40 text-center relative overflow-hidden">
+             <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+            <div class="container mx-auto px-6 relative">
+                <h2 class="text-4xl md:text-6xl font-bold leading-tight uppercase" data-lang-key="heroTitle">Reflexive Symmetrical Architecture</h2>
+                <p class="mt-4 text-lg md:text-xl text-[var(--text-secondary)] max-w-3xl mx-auto" data-lang-key="heroSubtitle">A unified theory of price-time, built on the first principle of recursive binary division.</p>
+                <h3 class="mt-8 text-xl text-[var(--accent-color)]" data-lang-key="heroAuthor">By Adiyat Coto</h3>
+            </div>
+        </section>
+        
+        <!-- Introduction Section -->
+        <section id="introduction" class="py-16 md:py-24">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="introTitle">An Introduction to RSA</h3>
+                </div>
+                <div id="intro-content-container" data-lang-key="introContent" class="max-w-4xl mx-auto text-lg space-y-8 text-left leading-relaxed text-[var(--text-secondary)]">
+                     <!-- Intro content injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- The Theory Section -->
+        <section id="theory" class="py-16 md:py-24 bg-[var(--card-bg)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="theoryTitle">The Theory</h3>
+                    <div data-lang-key="theoryIntro">
+                        <p class="mt-4 text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">This section details the core components of the RSA framework. Explore each concept to understand the mechanics behind the model.</p>
+                    </div>
+                </div>
+                <div class="max-w-4xl mx-auto">
+                    <div id="accordion-container" class="space-y-4">
+                        <!-- Accordion Items will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Model Section -->
+        <section id="model" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="modelTitle">The RRA Model</h3>
+                    <p class="mt-2 text-[var(--text-secondary)]" data-lang-key="modelSubtitle">Interact with the core spatial model. Input market data to dynamically calculate and visualize the RRA levels.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+                    <!-- Input Form -->
+                    <div class="lg:col-span-1 bg-[var(--card-bg)] p-6 rounded-lg border border-[var(--border-color)]">
+                        <h4 class="text-xl font-semibold mb-4" data-lang-key="modelInputTitle">Input Variables</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="prev_high" class="block text-sm font-medium text-[var(--text-secondary)]" data-lang-key="inputPrevHigh">Previous High (Hp)</label>
+                                <input type="number" id="prev_high" value="1.0780" step="0.0001" class="number-input mt-1 block w-full rounded-md border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--text-primary)] shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 p-2">
+                            </div>
+                            <div>
+                                <label for="prev_low" class="block text-sm font-medium text-[var(--text-secondary)]" data-lang-key="inputPrevLow">Previous Low (Lp)</label>
+                                <input type="number" id="prev_low" value="1.0700" step="0.0001" class="number-input mt-1 block w-full rounded-md border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--text-primary)] shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 p-2">
+                            </div>
+                            <div>
+                                <label for="curr_high" class="block text-sm font-medium text-[var(--text-secondary)]" data-lang-key="inputCurrHigh">Current High (Hc)</label>
+                                <input type="number" id="curr_high" value="1.0750" step="0.0001" class="number-input mt-1 block w-full rounded-md border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--text-primary)] shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 p-2">
+                            </div>
+                            <div>
+                                <label for="curr_low" class="block text-sm font-medium text-[var(--text-secondary)]" data-lang-key="inputCurrLow">Current Low (Lc)</label>
+                                <input type="number" id="curr_low" value="1.0710" step="0.0001" class="number-input mt-1 block w-full rounded-md border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--text-primary)] shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 p-2">
+                            </div>
+                        </div>
+                        <div class="mt-6 border-t pt-4 border-[var(--border-color)]">
+                             <h4 class="text-lg font-semibold mb-2" data-lang-key="modelCalcTitle">Core Calculations</h4>
+                             <div class="text-sm space-y-2 text-[var(--text-secondary)]">
+                                <p><strong data-lang-key="calcVu">Volatility Unit (Vu):</strong> <span id="vu_output">0.0080</span></p>
+                                <p><strong data-lang-key="calcQv">25% Quantum (qv):</strong> <span id="qv_output">0.0020</span></p>
+                             </div>
+                        </div>
+                    </div>
+                    <!-- Chart & Output -->
+                    <div class="lg:col-span-2 bg-[var(--card-bg)] p-6 rounded-lg border border-[var(--border-color)]">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2">
+                                <h4 class="text-xl font-semibold mb-4 text-center" data-lang-key="vizTitle">RRA Visualization</h4>
+                                <div class="chart-container">
+                                    <canvas id="rraChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="md:col-span-1">
+                                <h4 class="text-xl font-semibold mb-4 text-center" data-lang-key="levelsTitle">Calculated Levels</h4>
+                                <div id="levels-output" class="space-y-3 text-sm overflow-auto max-h-[450px] pr-2">
+                                    <!-- Levels will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Synthesis Section -->
+        <section id="synthesis" class="py-16 md:py-24 bg-[var(--card-bg)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="synthesisTitle">The Synthesis: Price-Time Relativity</h3>
+                    <p class="mt-2 text-[var(--text-secondary)]" data-lang-key="synthesisSubtitle">Understand how the spatial (RRA) and temporal (Chronos Cycles) dimensions merge to form predictive setups.</p>
+                </div>
+                <div id="synthesis-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <!-- Synthesis cards will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- The Framework Section -->
+        <section id="framework" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="frameworkTitle">The Time Framework</h3>
+                    <p class="mt-2 text-[var(--text-secondary)]" data-lang-key="frameworkSubtitle">Visualize the nested fractal structure of the Chronos Cycles hierarchy.</p>
+                </div>
+                <div id="framework-pyramid" class="max-w-3xl mx-auto flex flex-col items-center space-y-1">
+                     <!-- Interactive Pyramid injected by JS -->
+                </div>
+                <div id="framework-description" class="max-w-3xl mx-auto mt-8 p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)] min-h-[100px]">
+                     <!-- Description injected by JS -->
+                </div>
+            </div>
+        </section>
+        
+         <!-- Tools & Resources Section -->
+        <section id="tools" class="py-16 md:py-24 bg-[var(--card-bg)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold" data-lang-key="toolsTitle">Tools & Resources</h3>
+                    <p class="mt-2 text-[var(--text-secondary)]" data-lang-key="toolsSubtitle">Practical tools and further reading to apply the RSA framework.</p>
+                </div>
+                <div id="resources-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                     <!-- Tool Cards will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Download Whitepaper Section -->
+        <section id="whitepaper" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl font-bold" data-lang-key="downloadTitle">Download the Whitepaper</h3>
+                <p class="mt-4 text-lg text-[var(--text-secondary)] max-w-2xl mx-auto" data-lang-key="downloadDesc">Access the complete RSA framework documentation with detailed explanations, mathematical formulations, and practical applications.</p>
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="assets/RSA_Whitepaper.pdf" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center px-8 py-4 bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-white rounded-full font-semibold transition-all duration-300 hover:scale-105">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span data-lang-key="downloadBtn">Download PDF</span>
+                    </a>
+                    <a href="index.html" 
+                       class="inline-flex items-center px-8 py-4 border-2 border-[var(--accent-color)] text-[var(--accent-color)] hover:bg-[var(--accent-color)] hover:text-white rounded-full font-semibold transition-all duration-300 hover:scale-105">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span data-lang-key="backBtn">Back to Portfolio</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[var(--card-bg)] border-t border-[var(--border-color)] text-[var(--text-secondary)]">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Adiyat Coto. All rights reserved.</p>
+            <p class="text-sm mt-2" data-lang-key="footerText">An interactive interpretation of the "Reflexive Symmetrical Architecture" whitepaper.</p>
+        </div>
+    </footer>
+
+    <script>
+        const langData = {
+            en: {
+                navIntro: "Introduction",
+                navTheory: "The Theory",
+                navModel: "The Model",
+                navSynthesis: "The Synthesis",
+                navFramework: "Framework",
+                navTools: "Tools",
+                navWhitepaper: "Whitepaper",
+                heroTitle: "Reflexive Symmetrical Architecture",
+                heroSubtitle: "A unified theory of price-time, built on the first principle of recursive binary division.",
+                heroAuthor: "By Adiyat Coto",
+                introTitle: "An Introduction to RSA",
+                introContent: `<div class="space-y-4">
+                    <p><strong>What is RSA?</strong> RSA, or Reflexive Symmetrical Architecture, is a complete framework for market analysis. It unifies the study of price (space) and session structure (time) into a single, cohesive theory.</p>
+                    <p><strong>Philosophical Background:</strong> The framework rejects static tools and views the market as a living, dynamic system. Its core philosophy is the "Axiom of Binary Division" — the idea that all market structures emerge from a simple, recursive division by two, reflecting a natural balance between opposing forces.</p>
+                    <p><strong>Core Components:</strong>
+                        <ul class="list-disc list-inside ml-4 mt-2">
+                            <li><strong>RRA (Reflex Range Architecture):</strong> The spatial component. It maps *how far* price can potentially move by projecting symmetrical levels from the previous session's volatility.</li>
+                            <li><strong>Chronos Cycles:</strong> The temporal component. It maps the *narrative flow* of a trading session by dividing it into four predictable phases, suggesting *when* certain behaviors are likely to occur.</li>
+                        </ul>
+                    </p>
+                    <p><strong>What makes it unique?</strong> RSA's uniqueness lies in its dynamic, forward-looking nature. It uses only the most recent session's data (T-1) to project possibilities, making it highly adaptive to current market conditions, unlike lagging indicators that rely on extensive historical data.</p>
+                </div>`,
+                theoryTitle: "The Theory",
+                theoryIntro: "This section details the core components of the RSA framework. Explore each concept to understand the mechanics behind the model.",
+                modelTitle: "The RRA Model",
+                modelSubtitle: "Interact with the core spatial model. Input market data to dynamically calculate and visualize the RRA levels.",
+                modelInputTitle: "Input Variables",
+                inputPrevHigh: "Previous High (Hp)",
+                inputPrevLow: "Previous Low (Lp)",
+                inputCurrHigh: "Current High (Hc)",
+                inputCurrLow: "Current Low (Lc)",
+                modelCalcTitle: "Core Calculations",
+                calcVu: "Volatility Unit (Vu):",
+                calcQv: "25% Quantum (qv):",
+                vizTitle: "RRA Visualization",
+                levelsTitle: "Calculated Levels",
+                synthesisTitle: "The Synthesis: Price-Time Relativity",
+                synthesisSubtitle: "Understand how the spatial (RRA) and temporal (Chronos Cycles) dimensions merge to form predictive setups.",
+                frameworkTitle: "The Time Framework",
+                frameworkSubtitle: "Visualize the nested fractal structure of the Chronos Cycles hierarchy.",
+                macroTitle: "Macro-Structure",
+                macroContent: "Yearly, Semester, Quarterly, Monthly",
+                mesoTitle: "Meso-Structure",
+                mesoContent: "Weekly, Daily",
+                microTitle: "Micro-Structure",
+                microContent: "4-Hour, 1-Hour, 15-Min, 1-Min",
+                macroDesc: "<strong>Purpose:</strong> To establish the long-term, dominant market trend and overall regime. RRA levels on these timeframes act as powerful gravitational fields that influence all smaller price movements. Analysis here prevents fighting the primary market tide.",
+                mesoDesc: "<strong>Purpose:</strong> To define the tactical plan for the week or day. The weekly range sets the battlefield, while the daily chart reveals the specific struggles for key RRA levels within that context. This is the primary operational timeframe.",
+                microDesc: "<strong>Purpose:</strong> For precise trade execution and management. This is the 'ground level' where the four phases of the Chronos Cycle become most apparent. Entries and exits are timed by observing price interaction with daily RRA levels within these intraday cycles.",
+                frameworkDescDefault: "Click a structure level above to see its detailed purpose and context.",
+                toolsTitle: "Tools & Resources",
+                toolsSubtitle: "Practical tools and further reading to apply the RSA framework.",
+                tool1Title: "Multi-Timeframe Analysis",
+                tool1Desc: "An article explaining the core concept of using a top-down approach to establish directional bias, a foundational practice for RSA.",
+                tool2Title: "Auto Residual Range Calculator",
+                tool2Desc: "The official TradingView indicator that automatically calculates and displays the RRA levels on your chart.",
+                tool3Title: "Multi-Timeframe Bias Analyzer",
+                tool3Desc: "A companion TradingView tool to consolidate and visualize the directional bias across multiple timeframes at a glance.",
+                readMore: "Read More",
+                downloadTitle: "Download the Whitepaper",
+                downloadDesc: "Access the complete RSA framework documentation with detailed explanations, mathematical formulations, and practical applications.",
+                downloadBtn: "Download PDF",
+                backBtn: "Back to Portfolio",
+                footerText: "An interactive interpretation of the \"Reflexive Symmetrical Architecture\" whitepaper.",
+                accordionData: [
+                    { title: 'Core Terminology', content: `<ul><li class="mb-2"><strong>RSA (Reflexive Symmetrical Architecture):</strong> The complete, unified framework that combines both price and time analysis. It operates on the principle that the market is both reflexive (participant behavior influences outcomes) and symmetrical (movements balance around a central point).</li><li class="mb-2"><strong>RRA (Reflex Range Architecture):</strong> The <strong>spatial (price)</strong> component of RSA. It maps *how far* price can move by projecting symmetrical levels based on previous volatility.</li><li><strong>Chronos Cycles:</strong> The <strong>temporal (time)</strong> component of RSA. It maps the *narrative flow* of a session by dividing it into four predictable phases, suggesting *when* certain price actions are likely to occur.</li></ul>` },
+                    { title: 'The Axiom of Binary Division', content: `The structural integrity of RSA rests upon a single, self-evident truth: The Axiom of Binary Division. This principle posits that any whole unit within a market context—be it of price potential or time duration—is subject to a natural, recursive division by two. This reflects the market's fundamental duality: buy vs. sell, expansion vs. contraction. Every complex market behavior is an emergent property of this irreducible, binary foundation.` },
+                    { title: 'RRA Conceptual Foundations', content: `<ul class="list-disc list-inside space-y-2"><li><strong>Dynamic Equilibrium (EQ):</strong> The absolute center of the session's price field, calculated continuously as the arithmetic mean of the session's evolving high and low. It is the point of 'fair value' toward which price is perpetually drawn.</li><li><strong>Symmetrical Envelopes:</strong> Mirrored layers of potential energy (R-levels for resistance, S-levels for support) that expand from the EQ. They are not targets but energetic boundaries that define the probable limits of expansion and contraction.</li><li><strong>Spatial Memory:</strong> RRA posits that price-space holds memory. As price interacts with a level, it energizes that zone. Upon a retest, that zone will act as a high-probability reaction point, demonstrating structural polarity.</li></ul>` },
+                    { title: 'Deeper Theoretical Foundations', content: `<div class="space-y-4"><div><h4 class="font-semibold text-[var(--text-primary)]">Parallels with Quantum Mechanics</h4><p>The concept of a 25% volatility quantum draws a parallel to the quantization of energy in physics. Just as energy in an atom exists in discrete levels, RSA posits that market volatility expresses itself in discrete, probabilistic packets. Price does not move smoothly; it "jumps" between these quantized volatility states.</p></div><div><h4 class="font-semibold text-[var(--text-primary)]">Information Theory Basis</h4><p>The framework's reliance on T-1 data (the previous session's range) assumes that the most recent data contains the maximum actionable information and the least noise. By intentionally limiting its "memory", RSA prioritizes signal over noise, creating a highly adaptive system.</p></div><div><h4 class="font-semibold text-[var(--text-primary)]">Complexity Science & Emergence</h4><p>RSA is an example of emergence, where simple, deterministic rules give rise to complex, unpredictable behavior. The framework models the underlying geometric and temporal constraints within which this complex behavior unfolds. The intricate patterns on a chart are an emergent property of these foundational rules.</p></div><div><h4 class="font-semibold text-[var(--text-primary)]">Market Ecology Perspective</h4><p>RSA treats the market as a natural ecological system. Its rules are derived from observation of the market's inherent properties—symmetry, fractal nature, and reflexive feedback loops. RRA and Chronos Cycles are maps of the natural laws governing energy flow in this financial ecosystem.</p></div></div>` }
+                ],
+                synthesisData: [
+                    { title: 'The Spring-Coil', icon: '⧓', description: 'Price remains tightly range-bound between the R1 and S1 levels throughout the Early and Mid Phases. This failure to expand indicates a significant buildup of compressive energy, predicting a volatile, expansive breakout during the Late Phase.' },
+                    { title: 'The Momentum Thrust', icon: '⭢', description: 'After establishing an anchor, price accelerates decisively through the R3/S3 level early in the Late Phase. This action confirms strong trend continuation and suggests market participants are targeting higher expansion levels with confidence.' },
+                    { title: 'The Climactic Reversal', icon: '⥀', description: 'Price tags a major expansion level (e.g., R6) during the Final Phase. This represents a climactic, often exhaustive, move. It is a classic high-probability signal for a stall and a reversion trade back toward EQ.' }
+                ],
+                levelZoneExpansion: "Expansion Zone",
+                levelZoneNeutral: "Neutral Zone", 
+                levelZoneContraction: "Contraction Zone",
+                levelDescExpansion: "Indicates trend enthusiasm and potential exhaustion.",
+                levelDescNeutral: "Reflects 1:1 energy extension from previous session.",
+                levelDescContraction: "Indicates market indecision and energy consolidation."
+            },
+            id: {
+                navIntro: "Pendahuluan",
+                navTheory: "Teori",
+                navModel: "Model",
+                navSynthesis: "Sintesis",
+                navFramework: "Kerangka Waktu",
+                navTools: "Perangkat",
+                navWhitepaper: "Dokumen Utama",
+                heroTitle: "Arsitektur Simetris Refleksif",
+                heroSubtitle: "Sebuah teori terpadu yang memetakan ruang dan waktu harga, dibangun di atas prinsip dasar pembagian biner yang terus berulang.",
+                heroAuthor: "Oleh Adiyat Coto",
+                introTitle: "Pengenalan RSA",
+                introContent: `<div class="space-y-4">
+                    <p><strong>Apa itu RSA?</strong> RSA, atau Arsitektur Simetris Refleksif, adalah sebuah kerangka kerja analisis pasar yang lengkap. Ini menyatukan studi tentang harga (ruang) dan struktur sesi (waktu) ke dalam satu teori yang utuh.</p>
+                    <p><strong>Latar Belakang Filosofis:</strong> Kerangka kerja ini menolak perangkat statis dan memandang pasar sebagai sistem yang hidup dan dinamis. Filosofi intinya adalah "Aksioma Pembagian Biner"—gagasan bahwa semua struktur pasar muncul dari pembagian dua yang sederhana dan berulang, yang mencerminkan keseimbangan alami antara kekuatan yang berlawanan.</p>
+                    <p><strong>Komponen Inti:</strong>
+                        <ul class="list-disc list-inside ml-4 mt-2">
+                            <li><strong>RRA (Arsitektur Rentang Refleksif):</strong> Komponen spasial. Ini memetakan *seberapa jauh* harga berpotensi bergerak dengan memproyeksikan level-level simetris berdasarkan volatilitas sesi sebelumnya.</li>
+                            <li><strong>Siklus Chronos:</strong> Komponen temporal. Ini memetakan *alur cerita* sebuah sesi perdagangan dengan membaginya menjadi empat fase yang dapat diprediksi, memberi petunjuk *kapan* perilaku harga tertentu kemungkinan akan terjadi.</li>
+                        </ul>
+                    </p>
+                    <p><strong>Apa yang membuatnya unik?</strong> Keunikan RSA terletak pada sifatnya yang dinamis dan berorientasi ke depan. Ia hanya menggunakan data sesi terbaru (T-1) untuk memproyeksikan kemungkinan, membuatnya sangat adaptif terhadap kondisi pasar terkini, tidak seperti indikator lagging yang bergantung pada data historis yang ekstensif.</p>
+                </div>`,
+                theoryTitle: "Teori",
+                theoryIntro: "Bagian ini merinci komponen inti dari kerangka kerja RSA. Jelajahi setiap konsep untuk memahami mekanik di balik model ini.",
+                modelTitle: "Model RRA",
+                modelSubtitle: "Berinteraksi dengan model spasial inti. Masukkan data pasar untuk menghitung dan memvisualisasikan level RRA secara dinamis.",
+                modelInputTitle: "Variabel Input",
+                inputPrevHigh: "Tertinggi Sebelumnya (Hp)",
+                inputPrevLow: "Terendah Sebelumnya (Lp)",
+                inputCurrHigh: "Tertinggi Saat Ini (Hc)",
+                inputCurrLow: "Terendah Saat Ini (Lc)",
+                modelCalcTitle: "Perhitungan Inti",
+                calcVu: "Unit Volatilitas (Vu):",
+                calcQv: "Kuantum 25% (qv):",
+                vizTitle: "Visualisasi RRA",
+                levelsTitle: "Level-Level Perhitungan",
+                synthesisTitle: "Sintesis: Integrasi Ruang dan Waktu Harga",
+                synthesisSubtitle: "Pahami bagaimana dimensi spasial (RRA) dan temporal (Chronos Cycles) berpadu untuk membentuk setup dengan probabilitas tinggi.",
+                frameworkTitle: "Kerangka Waktu",
+                frameworkSubtitle: "Visualisasi struktur bertingkat dari hierarki siklus waktu (Chronos Cycles).",
+                macroTitle: "Struktur Makro",
+                macroContent: "Tahunan, Semester, Kuartalan, Bulanan",
+                mesoTitle: "Struktur Meso",
+                mesoContent: "Mingguan, Harian",
+                microTitle: "Struktur Mikro",
+                microContent: "4-Jam, 1-Jam, 15-Menit, 1-Menit",
+                macroDesc: "<strong>Tujuan:</strong> Untuk menetapkan tren pasar jangka panjang yang dominan dan rezim secara keseluruhan. Level RRA pada kerangka waktu ini bertindak sebagai medan gravitasi yang kuat yang mempengaruhi semua pergerakan harga yang lebih kecil. Analisis di sini mencegah perlawanan terhadap arus pasar utama.",
+                mesoDesc: "<strong>Tujuan:</strong> Untuk menentukan rencana taktis selama seminggu atau sehari. Rentang mingguan menetapkan medan pertempuran, sementara grafik harian mengungkapkan perebutan spesifik untuk level RRA utama dalam konteks mingguan tersebut. Ini adalah kerangka waktu operasional utama.",
+                microDesc: "<strong>Tujuan:</strong> Untuk eksekusi dan manajemen perdagangan yang presisi. Ini adalah 'level dasar' di mana empat fase Siklus Chronos menjadi paling jelas. Entri dan keluar diatur waktunya dengan mengamati interaksi harga dengan level RRA harian dalam siklus intraday ini.",
+                frameworkDescDefault: "Klik level struktur di atas untuk melihat tujuan dan konteks rincinya.",
+                toolsTitle: "Perangkat & Sumber Daya",
+                toolsSubtitle: "Perangkat praktis dan bacaan lebih lanjut untuk menerapkan kerangka kerja RSA.",
+                tool1Title: "Analisis Multi-Timeframe",
+                tool1Desc: "Artikel yang menjelaskan konsep inti pendekatan top-down untuk menentukan bias arah, sebuah praktik dasar untuk RSA.",
+                tool2Title: "Kalkulator Auto Residual Range",
+                tool2Desc: "Indikator resmi untuk TradingView yang secara otomatis menghitung dan menampilkan level RRA pada grafik Anda.",
+                tool3Title: "Penganalisis Bias Multi-Timeframe",
+                tool3Desc: "Alat pendamping di TradingView untuk mengkonsolidasikan dan memvisualisasikan bias arah di berbagai kerangka waktu.",
+                readMore: "Baca Selengkapnya",
+                downloadTitle: "Unduh Whitepaper",
+                downloadDesc: "Akses dokumen teknis lengkap untuk pemahaman menyeluruh tentang kerangka kerja Arsitektur Simetris Refleksif.",
+                downloadBtn: "Unduh PDF",
+                backBtn: "Kembali ke Portfolio",
+                footerText: "Interpretasi interaktif dari whitepaper \"Arsitektur Simetris Refleksif\".",
+                accordionData: [
+                    { title: "Terminologi Inti", content: `<ul><li class="mb-2"><strong>RSA (Arsitektur Simetris Refleksif):</strong> Adalah kerangka kerja utuh yang menyatukan analisis harga (ruang) dan waktu. RSA beroperasi pada prinsip bahwa pasar bersifat refleksif (perilaku partisipan mempengaruhi hasil) dan simetris (pergerakan harga seimbang di sekitar titik pusat).</li><li class="mb-2"><strong>RRA (Arsitektur Rentang Refleksif):</strong> Merupakan komponen <strong>spasial (harga)</strong> dari RSA. Fungsinya adalah memetakan *seberapa jauh* harga berpotensi bergerak dengan memproyeksikan level-level simetris berdasarkan volatilitas sebelumnya.</li><li><strong>Siklus Chronos:</strong> Merupakan komponen <strong>temporal (waktu)</strong> dari RSA. Fungsinya adalah memetakan *alur cerita* sebuah sesi dengan membaginya menjadi empat fase yang dapat diprediksi, menunjukkan *kapan* jenis pergerakan harga tertentu kemungkinan akan terjadi.</li></ul>` },
+                    { title: "Aksioma Pembagian Biner", content: "Integritas struktural RSA bersandar pada satu kebenaran fundamental: Aksioma Pembagian Biner. Prinsip ini menyatakan bahwa setiap unit utuh dalam konteks pasar—baik itu potensi harga maupun durasi waktu—akan mengalami pembagian dua secara alami dan berulang. Hal ini mencerminkan dualitas pasar: beli vs. jual, ekspansi vs. kontraksi. Semua perilaku pasar yang kompleks pada dasarnya adalah hasil dari fondasi biner ini." },
+                ],
+                synthesisData: [
+                    { title: "Koil Pegas", icon: '⧓', description: "Harga bergerak dalam rentang sempit antara level R1 dan S1 selama Fase Awal dan Pengembangan. Kegagalan harga untuk berekspansi menandakan adanya penumpukan energi, yang berpotensi memicu breakout yang kuat pada Fase Akselerasi." },
+                    { title: "Dorongan Momentum", icon: '⭢', description: "Setelah jangkar terbentuk, harga menembus level R3/S3 secara meyakinkan pada awal Fase Akselerasi. Aksi ini mengkonfirmasi kelanjutan tren yang kuat dan mengindikasikan bahwa pelaku pasar menargetkan level ekspansi yang lebih tinggi." },
+                    { title: "Pembalikan Klimaks", icon: '⥀', description: "Harga menyentuh level ekspansi mayor (misalnya R6) selama Fase Resolusi. Ini menandakan sebuah pergerakan klimaks yang seringkali bersifat jenuh. Ini adalah sinyal klasik dengan probabilitas tinggi untuk terjadinya pembalikan arah kembali menuju EQ." }
+                ],
+                levelZoneExpansion: "Zona Ekspansi",
+                levelZoneNeutral: "Zona Netral",
+                levelZoneContraction: "Zona Kontraksi",
+                levelDescExpansion: "Menandakan antusiasme tren dan potensi kejenuhan.",
+                levelDescNeutral: "Mencerminkan perpanjangan energi 1:1 dari sesi sebelumnya.",
+                levelDescContraction: "Menandakan keraguan pasar dan konsolidasi energi."
+            }
+        };
+        
+        let currentLang = 'en';
+        let rraChart;
+        
+        function calculateRRA() {
+            const prevHigh = parseFloat(document.getElementById('prev_high').value);
+            const prevLow = parseFloat(document.getElementById('prev_low').value);
+            const currHigh = parseFloat(document.getElementById('curr_high').value);
+            const currLow = parseFloat(document.getElementById('curr_low').value);
+            
+            if ([prevHigh, prevLow, currHigh, currLow].some(isNaN)) return;
+            
+            const vu = prevHigh - prevLow;
+            const qv = 0.25 * vu;
+            const eq = (currHigh + currLow) / 2;
+            
+            // Update display
+            document.getElementById('vu_output').textContent = vu.toFixed(4);
+            document.getElementById('qv_output').textContent = qv.toFixed(4);
+            
+            // Calculate levels
+            const levels = { EQ: eq };
+            const multipliers = { R1: 0.50, S1: 0.50, R2: 0.75, S2: 0.75, R3: 1.00, S3: 1.00, R4: 1.25, S4: 1.25, R5: 1.50, S5: 1.50, R6: 2.00, S6: 2.00, R7: 3.00, S7: 3.00, R8: 4.00, S8: 4.00 };
+            
+            for (const [key, mult] of Object.entries(multipliers)) {
+                levels[key] = key.startsWith('R') ? currLow + mult * vu : currHigh - mult * vu;
+            }
+            
+            updateLevelDisplay(levels);
+            renderChart({ levels, hc: currHigh, lc: currLow });
+        }
+        
+        function updateLevelDisplay(levels) {
+            const levelsOutput = document.getElementById('levels-output');
+            const translations = langData[currentLang];
+            
+            const renderLevel = (key, value, type) => {
+                const colors = { R: 'text-red-400', S: 'text-green-400', EQ: 'text-[var(--accent-color)] font-bold' };
+                return `<div class="flex justify-between items-center font-mono ${colors[type]}"><span>${key}</span><span>${value.toFixed(4)}</span></div>`;
+            };
+            
+            const sortedR = ['R8','R7','R6','R5','R4'];
+            const sortedS = ['S4','S5','S6','S7','S8'];
+            const neutralR = ['R3'];
+            const neutralS = ['S3'];
+            const contractR = ['R2','R1'];
+            const contractS = ['S1','S2'];
+            
+            levelsOutput.innerHTML = `
+                <div class="mb-4">
+                    <h5 class="font-bold text-[var(--text-primary)]">${translations.levelZoneExpansion}</h5>
+                    <p class="text-xs text-[var(--text-secondary)] pb-1">${translations.levelDescExpansion}</p>
+                    ${sortedR.map(k => renderLevel(k, levels[k], 'R')).join('')}
+                </div>
+                <div class="mb-4">
+                    <h5 class="font-bold text-[var(--text-primary)]">${translations.levelZoneNeutral}</h5>
+                    <p class="text-xs text-[var(--text-secondary)] pb-1">${translations.levelDescNeutral}</p>
+                     ${neutralR.map(k => renderLevel(k, levels[k], 'R')).join('')}
+                     ${renderLevel('EQ', levels.EQ, 'EQ')}
+                     ${neutralS.map(k => renderLevel(k, levels[k], 'S')).join('')}
+                </div>
+                <div class="mb-4">
+                    <h5 class="font-bold text-[var(--text-primary)]">${translations.levelZoneContraction}</h5>
+                    <p class="text-xs text-[var(--text-secondary)] pb-1">${translations.levelDescContraction}</p>
+                    ${contractR.map(k => renderLevel(k, levels[k], 'R')).join('')}
+                    ${contractS.map(k => renderLevel(k, levels[k], 'S')).join('')}
+                </div>
+                 <div class="mb-4">
+                    <h5 class="font-bold text-[var(--text-primary)]">${translations.levelZoneExpansion}</h5>
+                    <p class="text-xs text-[var(--text-secondary)] pb-1">${translations.levelDescExpansion}</p>
+                    ${sortedS.map(k => renderLevel(k, levels[k], 'S')).join('')}
+                </div>
+            `;
+        }
+        
+        function renderChart(data) {
+            if (!data) return;
+            const { levels, hc, lc } = data;
+            const ctx = document.getElementById('rraChart').getContext('2d');
+            
+            if (rraChart) {
+                rraChart.destroy();
+            }
+            
+            const levelColors = { R: 'rgba(239, 68, 68, 0.5)', S: 'rgba(34, 197, 94, 0.5)', EQ: 'rgba(34, 211, 238, 1)' };
+            const annotations = {};
+            const percentages = { R1: '50%', S1: '50%', R2: '75%', S2: '75%', R3: '100%', S3: '100%', R4: '125%', S4: '125%', R5: '150%', S5: '150%', R6: '200%', S6: '200%', R7: '300%', S7: '300%', R8: '400%', S8: '400%'};
+
+            Object.entries(levels).forEach(([key, value]) => {
+                const type = key.startsWith('R') ? 'R' : (key.startsWith('S') ? 'S' : 'EQ');
+                
+                let borderDash;
+                if (key === 'EQ') borderDash = [6, 6];
+                else if (key.includes('1') || key.includes('2')) borderDash = [2, 2];
+                else if (key.includes('3')) borderDash = [10, 5];
+                else borderDash = [];
+                
+                annotations[key] = {
+                    type: 'line', yMin: value, yMax: value, borderColor: levelColors[type],
+                    borderWidth: key === 'EQ' ? 2 : 1.5,
+                    borderDash: borderDash,
+                    label: {
+                        enabled: true,
+                        content: `${key} ${percentages[key] || ''} (${value.toFixed(4)})`,
+                        position: 'end', 
+                        textAlign: 'right',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        color: '#ffffff',
+                        fontSize: 10,
+                        padding: 2
+                    }
+                };
+            });
+            
+            rraChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Current High',
+                            data: [{ x: 0, y: hc }],
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            pointRadius: 8
+                        },
+                        {
+                            label: 'Current Low',
+                            data: [{ x: 0, y: lc }],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            pointRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            type: 'linear',
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(4);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        annotation: { annotations }
+                    }
+                }
+            });
+        }
+        
+        function populateContent() {
+            const translations = langData[currentLang];
+            
+            // Populate intro content
+            document.getElementById('intro-content-container').innerHTML = translations.introContent;
+            
+            // Populate theory accordion
+            const accordionContainer = document.getElementById('accordion-container');
+            accordionContainer.innerHTML = translations.accordionData.map((item, index) => `
+                <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left font-semibold bg-[var(--card-bg)] hover:bg-[var(--bg-secondary)] transition-colors accordion-btn flex justify-between items-center" data-target="accordion-${index}">
+                        <span>${item.title}</span>
+                        <span class="accordion-icon text-xl">+</span>
+                    </button>
+                    <div id="accordion-${index}" class="accordion-content hidden px-6 py-4 text-[var(--text-secondary)] leading-relaxed bg-[var(--bg-primary)] border-t border-[var(--border-color)]">
+                        ${item.content}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Populate synthesis cards
+            const synthesisContainer = document.getElementById('synthesis-container');
+            synthesisContainer.innerHTML = translations.synthesisData.map(setup => `
+                <div class="bg-[var(--bg-primary)] p-6 rounded-lg border border-[var(--border-color)] hover:shadow-lg transition-shadow">
+                    <div class="text-4xl text-[var(--accent-color)] mb-4 text-center">${setup.icon}</div>
+                    <h4 class="text-xl font-semibold mb-3 text-center">${setup.title}</h4>
+                    <p class="text-[var(--text-secondary)] leading-relaxed">${setup.description}</p>
+                </div>
+            `).join('');
+            
+            // Populate framework pyramid
+            const frameworkPyramid = document.getElementById('framework-pyramid');
+            frameworkPyramid.innerHTML = `
+                <div class="framework-level w-full max-w-xs mb-2" data-level="macro">
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg text-center cursor-pointer hover:scale-105 transition-transform">
+                        <h4 class="font-bold" data-lang-key="macroTitle">${translations.macroTitle}</h4>
+                        <p class="text-sm mt-1" data-lang-key="macroContent">${translations.macroContent}</p>
+                    </div>
+                </div>
+                <div class="framework-level w-full max-w-sm mb-2" data-level="meso">
+                    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-4 rounded-lg text-center cursor-pointer hover:scale-105 transition-transform">
+                        <h4 class="font-bold" data-lang-key="mesoTitle">${translations.mesoTitle}</h4>
+                        <p class="text-sm mt-1" data-lang-key="mesoContent">${translations.mesoContent}</p>
+                    </div>
+                </div>
+                <div class="framework-level w-full max-w-lg" data-level="micro">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg text-center cursor-pointer hover:scale-105 transition-transform">
+                        <h4 class="font-bold" data-lang-key="microTitle">${translations.microTitle}</h4>
+                        <p class="text-sm mt-1" data-lang-key="microContent">${translations.microContent}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Set default framework description
+            const frameworkDesc = document.getElementById('framework-description');
+            frameworkDesc.innerHTML = `<p class="text-[var(--text-secondary)]" data-lang-key="frameworkDescDefault">${translations.frameworkDescDefault}</p>`;
+            
+            // Populate tools section
+            const resourcesContainer = document.getElementById('resources-container');
+            const toolsData = [
+                { title: translations.tool1Title, desc: translations.tool1Desc },
+                { title: translations.tool2Title, desc: translations.tool2Desc },
+                { title: translations.tool3Title, desc: translations.tool3Desc }
+            ];
+            
+            resourcesContainer.innerHTML = toolsData.map(tool => `
+                <div class="bg-[var(--bg-primary)] p-6 rounded-lg border border-[var(--border-color)] hover:shadow-lg transition-shadow">
+                    <h4 class="text-xl font-semibold mb-3">${tool.title}</h4>
+                    <p class="text-[var(--text-secondary)] mb-4">${tool.desc}</p>
+                    <button class="text-[var(--accent-color)] hover:text-[var(--accent-hover)] font-medium" data-lang-key="readMore">${translations.readMore}</button>
+                </div>
+            `).join('');
+            
+            // Update all text content
+            Object.keys(translations).forEach(key => {
+                const elements = document.querySelectorAll(`[data-lang-key="${key}"]`);
+                elements.forEach(el => {
+                    if (key === 'introContent') {
+                        el.innerHTML = translations[key];
+                    } else if (key === 'theoryIntro') {
+                        el.innerHTML = `<p class="mt-4 text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">${translations[key]}</p>`;
+                    } else {
+                        el.textContent = translations[key];
+                    }
+                });
+            });
+            
+            // Setup accordion functionality
+            setupAccordionListeners();
+            setupFrameworkListeners();
+        }
+        
+        function setupAccordionListeners() {
+            document.querySelectorAll('.accordion-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const targetId = this.dataset.target;
+                    const target = document.getElementById(targetId);
+                    const icon = this.querySelector('.accordion-icon');
+                    
+                    if (!target || !icon) {
+                        console.log('Missing target or icon:', targetId);
+                        return;
+                    }
+                    
+                    const isHidden = target.classList.contains('hidden');
+                    
+                    // Close all other accordions first
+                    document.querySelectorAll('.accordion-content').forEach(content => {
+                        if (content.id !== targetId) {
+                            content.classList.add('hidden');
+                            const otherBtn = document.querySelector(`[data-target="${content.id}"]`);
+                            const otherIcon = otherBtn?.querySelector('.accordion-icon');
+                            if (otherIcon) otherIcon.textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current accordion
+                    if (isHidden) {
+                        target.classList.remove('hidden');
+                        icon.textContent = '−';
+                        console.log('Opened accordion:', targetId);
+                    } else {
+                        target.classList.add('hidden');
+                        icon.textContent = '+';
+                        console.log('Closed accordion:', targetId);
+                    }
+                });
+            });
+        }
+        
+        function setupFrameworkListeners() {
+            const translations = langData[currentLang];
+            const frameworkDesc = document.getElementById('framework-description');
+            
+            document.querySelectorAll('.framework-level').forEach(level => {
+                level.addEventListener('click', () => {
+                    const levelType = level.dataset.level;
+                    let content = '';
+                    
+                    switch(levelType) {
+                        case 'macro':
+                            content = translations.macroDesc;
+                            break;
+                        case 'meso':
+                            content = translations.mesoDesc;
+                            break;
+                        case 'micro':
+                            content = translations.microDesc;
+                            break;
+                        default:
+                            content = translations.frameworkDescDefault;
+                    }
+                    
+                    frameworkDesc.innerHTML = `<p class="text-[var(--text-secondary)]">${content}</p>`;
+                });
+            });
+        }
+        
+        function setupLanguageSwitching() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const newLang = btn.dataset.lang;
+                    if (newLang !== currentLang) {
+                        currentLang = newLang;
+                        
+                        // Update active button styling
+                        langButtons.forEach(b => {
+                            b.classList.remove('bg-[var(--accent-color)]', 'text-white');
+                            b.classList.add('text-[var(--text-secondary)]');
+                        });
+                        btn.classList.add('bg-[var(--accent-color)]', 'text-white');
+                        btn.classList.remove('text-[var(--text-secondary)]');
+                        
+                        // Repopulate content
+                        populateContent();
+                    }
+                });
+            });
+        }
+        
+        // Theme Toggle Function
+        function toggleTheme() {
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            localStorage.setItem('rsa-theme', newTheme);
+        }
+        
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('rsa-theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            populateContent();
+            calculateRRA();
+            setupLanguageSwitching();
+            
+            // Set initial language button states
+            const langButtons = document.querySelectorAll('.lang-btn');
+            langButtons.forEach(btn => {
+                if (btn.dataset.lang === currentLang) {
+                    btn.classList.add('bg-[var(--accent-color)]', 'text-white');
+                    btn.classList.remove('text-[var(--text-secondary)]');
+                } else {
+                    btn.classList.remove('bg-[var(--accent-color)]', 'text-white');
+                    btn.classList.add('text-[var(--text-secondary)]');
+                }
+            });
+            
+            // Add event listeners to inputs
+            ['prev_high', 'prev_low', 'curr_high', 'curr_low'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateRRA);
+            });
+            
+            // Mobile navigation
+            const mobileNav = document.getElementById('mobile-nav');
+            if (mobileNav) {
+                const navItems = [
+                    { href: '#introduction', key: 'navIntro' },
+                    { href: '#theory', key: 'navTheory' },
+                    { href: '#model', key: 'navModel' },
+                    { href: '#synthesis', key: 'navSynthesis' },
+                    { href: '#framework', key: 'navFramework' },
+                    { href: '#tools', key: 'navTools' },
+                    { href: '#whitepaper', key: 'navWhitepaper' }
+                ];
+                
+                mobileNav.innerHTML = navItems.map(item => 
+                    `<option value="${item.href}">${langData[currentLang][item.key]}</option>`
+                ).join('');
+                
+                mobileNav.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        document.querySelector(e.target.value)?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
