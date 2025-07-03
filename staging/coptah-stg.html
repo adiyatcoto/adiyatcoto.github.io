@@ -23,9 +23,9 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-primary-bg);
-            color: var(--color-text-primary);
-            background: linear-gradient(-45deg, var(--gradient-bg-start), var(--gradient-bg-mid1), var(--gradient-bg-mid2), var(--gradient-bg-end));
+            background-color: var(--color-primary-bg, #0D1117);
+            color: var(--color-text-primary, #C9D1D9);
+            background: linear-gradient(-45deg, var(--gradient-bg-start, #0a0a0f), var(--gradient-bg-mid1, #0d1117), var(--gradient-bg-mid2, #1a202c), var(--gradient-bg-end, #0d1117));
             background-size: 400% 400%;
             animation: gradient-animation 25s ease infinite;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -33,7 +33,7 @@
             overflow-x: hidden;
         }
 
-        /* Dark mode colors (default) */
+        /* Dark mode colors (default) with fallbacks */
         :root {
             --color-primary-bg: #0D1117;
             --color-secondary-bg: rgba(22, 27, 34, 0.8);
@@ -84,10 +84,10 @@
 
         /* Header & Navigation */
         .main-header {
-            background: var(--color-secondary-bg);
+            background: var(--color-secondary-bg, rgba(22, 27, 34, 0.8));
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -107,7 +107,7 @@
             align-items: center;
             gap: 0.75rem;
             font-weight: 600;
-            color: var(--color-text-primary);
+            color: var(--color-text-primary, #C9D1D9);
             text-decoration: none;
             font-size: 1.1rem;
         }
@@ -124,7 +124,7 @@
             font-size: 0.9rem;
         }
         .back-to-portfolio {
-            color: var(--color-text-secondary);
+            color: var(--color-text-secondary, #8B949E);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
@@ -133,7 +133,7 @@
             gap: 0.5rem;
         }
         .back-to-portfolio:hover {
-            color: var(--color-accent);
+            color: var(--color-accent, #00A8E8);
         }
         .header-right {
             display: flex;
@@ -144,7 +144,7 @@
             display: none;
             background: none;
             border: none;
-            color: var(--color-text-primary);
+            color: var(--color-text-primary, #C9D1D9);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.5rem;
@@ -159,11 +159,11 @@
             width: 100%;
             max-width: none;
             height: auto;
-            background: var(--color-secondary-bg);
+            background: var(--color-secondary-bg, rgba(22, 27, 34, 0.8));
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: none;
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
             padding: 6rem 2rem 2rem;
             transition: top 0.3s ease;
             z-index: 999;
@@ -189,10 +189,10 @@
             transition: color 0.3s ease, transform 0.3s ease;
             display: block;
             padding: 0.5rem 0;
-            color: var(--color-text-primary);
+            color: var(--color-text-primary, #C9D1D9);
         }
         .mobile-menu-links a:hover {
-            color: var(--color-accent);
+            color: var(--color-accent, #00A8E8);
             transform: translateX(10px);
         }
         .mobile-menu-overlay {
@@ -216,20 +216,21 @@
 
         /* Glassmorphism Card Style */
         .glass-card {
-            background: var(--color-card-bg-transparent);
+            background: var(--color-card-bg-transparent, rgba(22, 27, 34, 0.5));
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 1rem;
-            border: 1px solid var(--color-border);
+            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
             position: relative;
             padding: 2.5rem;
             box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), 0 0 10px rgba(59, 130, 246, 0.1);
             transition: all 0.3s ease;
+            min-width: 0;
         }
 
         .glass-card:hover {
             transform: translateY(-8px);
-            border-color: var(--color-accent);
+            border-color: var(--color-accent, #00A8E8);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
         
@@ -240,16 +241,16 @@
         }
 
         /* Typography */
-        h1, h2, h3 { font-family: 'Inter', sans-serif; line-height: 1; color: var(--color-text-primary); }
+        h1, h2, h3 { font-family: 'Inter', sans-serif; line-height: 1; color: var(--color-text-primary, #C9D1D9); }
         h1 { font-size: 3.75rem; font-weight: 800; }
         h2 { font-size: 2.5rem; line-height: 2.5rem; font-weight: 800; }
         h3 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 700; }
-        p { line-height: 1.75; color: var(--color-text-secondary); font-weight: 400; }
+        p { line-height: 1.75; color: var(--color-text-secondary, #8B949E); font-weight: 400; }
 
         .hero-title {
             font-size: 5rem;
             font-weight: 300;
-            background: var(--hero-title-gradient);
+            background: var(--hero-title-gradient, linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -262,18 +263,18 @@
         }
 
         .hero-subtitle {
-            color: var(--color-accent);
+            color: var(--color-accent, #00A8E8);
             font-size: 1.5rem;
             font-weight: 500;
         }
         .hero-author {
-            color: var(--color-text-secondary);
+            color: var(--color-text-secondary, #8B949E);
             font-size: 1.1rem;
             font-weight: 400;
         }
 
         .section-title {
-            background: var(--title-gradient);
+            background: var(--title-gradient, linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -296,7 +297,7 @@
         }
 
         .glass-card h3 {
-            background: var(--card-title-gradient);
+            background: var(--card-title-gradient, linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -307,25 +308,25 @@
 
         .formula-box {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-formula-bg-transparent);
-            color: var(--color-formula-text);
+            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
+            color: var(--color-text-primary, #C9D1D9);
             padding: 1rem 1.5rem;
             border-radius: 0.5rem;
-            border: 1px solid var(--color-border);
-            overflow-x: auto;
-            white-space: nowrap;
+            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
             text-align: center;
             margin-left: auto;
             margin-right: auto;
             display: block;
+            white-space: normal;
+            word-break: break-all;
         }
         .formula-box .highlight-formula {
-            background-color: var(--highlight-formula-bg);
-            box-shadow: 0 0 15px var(--highlight-formula-shadow);
+            background-color: var(--highlight-formula-bg, rgba(0, 255, 255, 0.3));
+            box-shadow: 0 0 15px var(--highlight-formula-shadow, rgba(0, 255, 255, 0.6));
             border-radius: 4px;
             padding: 2px 6px;
             transition: all 0.3s ease-in-out;
-            color: var(--highlight-formula-text);
+            color: var(--highlight-formula-text, #C9D1D9);
         }
         
         .btn {
@@ -337,28 +338,29 @@
             border: 1px solid transparent;
         }
         .btn-active {
-            background: linear-gradient(90deg, #3B82F6, var(--color-accent));
+            background: linear-gradient(90deg, #3B82F6, var(--color-accent, #00A8E8));
             color: white;
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
         }
-        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--color-accent-hover); }
+        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--color-accent-hover, #00BFFF); }
         .btn-inactive {
-            background-color: var(--color-button-inactive-bg);
-            color: var(--color-button-inactive-text);
+            background-color: var(--color-button-inactive-bg, rgba(31, 41, 55, 0.5));
+            color: var(--color-button-inactive-text, #9ca3af);
         }
-        .btn-inactive:hover { background-color: var(--color-border); color: var(--color-text-primary); }
-        .highlight { color: var(--color-accent); font-weight: 600; }
+        .btn-inactive:hover { background-color: var(--color-border, rgba(48, 54, 61, 0.6)); color: var(--color-text-primary, #C9D1D9); }
+        .highlight { color: var(--color-accent, #00A8E8); font-weight: 600; }
         
         .chart-container {
             position: relative;
             width: 100%;
             height: 500px;
-            background-color: var(--color-chart-bg-transparent);
+            background-color: var(--color-chart-bg-transparent, rgba(13, 17, 23, 0.7));
             border-radius: 0.5rem;
             padding: 20px;
             box-sizing: border-box;
-            border: 1px solid var(--color-border);
+            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
             overflow: hidden;
+            min-width: 0;
         }
         .pivot-line {
             position: absolute;
@@ -380,45 +382,45 @@
         input[type=range] {
             -webkit-appearance: none; appearance: none;
             width: 100%; height: 4px;
-            background: var(--color-accent);
+            background: var(--color-accent, #00A8E8);
             border-radius: 5px; outline: none;
         }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 18px; height: 18px;
-            background: var(--color-accent);
+            background: var(--color-accent, #00A8E8);
             cursor: pointer; border-radius: 50%;
-            border: 2px solid var(--color-primary-bg);
-            box-shadow: 0 0 10px var(--color-accent);
+            border: 2px solid var(--color-primary-bg, #0D1117);
+            box-shadow: 0 0 10px var(--color-accent, #00A8E8);
         }
         input[type=range]::-moz-range-thumb {
             width: 18px; height: 18px;
-            background: var(--color-accent);
+            background: var(--color-accent, #00A8E8);
             cursor: pointer; border-radius: 50%;
-            border: 2px solid var(--color-primary-bg);
-            box-shadow: 0 0 10px var(--color-accent);
+            border: 2px solid var(--color-primary-bg, #0D1117);
+            box-shadow: 0 0 10px var(--color-accent, #00A8E8);
         }
 
         .tab-button.active {
-            background: linear-gradient(90deg, #3B82F6, var(--color-accent));
+            background: linear-gradient(90deg, #3B82F6, var(--color-accent, #00A8E8));
             color: white;
             box-shadow: 0 0 15px rgba(0, 168, 232, 0.3);
         }
         .tab-button.inactive {
-            background-color: var(--color-button-inactive-bg);
-            color: var(--color-button-inactive-text);
+            background-color: var(--color-button-inactive-bg, rgba(31, 41, 55, 0.5));
+            color: var(--color-button-inactive-text, #9ca3af);
         }
         .tab-button.inactive:hover {
-            background-color: var(--color-border);
-            color: var(--color-text-primary);
+            background-color: var(--color-border, rgba(48, 54, 61, 0.6));
+            color: var(--color-text-primary, #C9D1D9);
         }
         .tab-content {
             display: none;
             padding: 1.5rem;
-            background-color: var(--color-formula-bg-transparent);
+            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
             border-radius: 0.5rem;
             margin-top: -1px;
-            border: 1px solid var(--color-border);
+            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
         }
         .tab-content.active { display: block; }
 
@@ -434,30 +436,30 @@
             margin-top: 1.5rem;
         }
         .explanation-box.show {
-            background-color: var(--color-formula-bg-transparent);
-            border-color: var(--color-border);
+            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
+            border-color: var(--color-border, rgba(48, 54, 61, 0.6));
         }
         .explanation-box.show.border-cyan-500\/30 {
-            border-color: var(--color-accent);
+            border-color: var(--color-accent, #00A8E8);
         }
 
         .nav-link {
-            color: var(--color-text-secondary);
+            color: var(--color-text-secondary, #8B949E);
             font-weight: 600;
             transition: color 0.3s ease, border-bottom-color 0.3s ease;
             padding-bottom: 8px;
             border-bottom: 2px solid transparent;
         }
         .nav-link:hover {
-            color: var(--color-text-primary);
+            color: var(--color-text-primary, #C9D1D9);
         }
         .nav-link.active {
-            color: var(--color-accent);
-            border-bottom-color: var(--color-accent);
+            color: var(--color-accent, #00A8E8);
+            border-bottom-color: var(--color-accent, #00A8E8);
         }
 
         .btn-download-primary {
-            background: var(--color-accent);
+            background: var(--color-accent, #00A8E8);
             color: white;
             padding: 1rem 2rem;
             border: none;
@@ -470,10 +472,10 @@
         }
         .btn-download-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--color-accent-hover);
+            box-shadow: 0 8px 20px var(--color-accent-hover, #00BFFF);
         }
         .btn-download-secondary {
-            color: var(--color-accent);
+            color: var(--color-accent, #00A8E8);
             text-decoration: none;
             padding: 1rem 2rem;
             border-radius: 50px;
@@ -481,18 +483,53 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             background: transparent;
-            border: 2px solid var(--color-accent);
+            border: 2px solid var(--color-accent, #00A8E8);
         }
         .btn-download-secondary:hover {
-            background: var(--color-accent);
+            background: var(--color-accent, #00A8E8);
             color: white;
             transform: translateY(-2px);
         }
 
-        /* FIX: Ensure visualizer cards can shrink infinitely */
-        #visualizer > .glass-card {
-            min-width: 0;
+        .lang-switch {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: var(--color-input-bg, #0F131A);
+            border-radius: 9999px;
+            padding: 4px;
+            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            cursor: pointer;
         }
+        .lang-option {
+            padding: 4px 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text-secondary, #8B949E);
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+        .lang-switch .lang-glider {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            width: calc(50% - 4px);
+            background-color: var(--color-accent, #00A8E8);
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+            z-index: 0;
+        }
+        .lang-switch.lang-id-active .lang-glider {
+            transform: translateX(0%);
+        }
+        .lang-switch.lang-en-active .lang-glider {
+            transform: translateX(100%);
+        }
+        .lang-switch.lang-id-active .lang-option.lang-id,
+        .lang-switch.lang-en-active .lang-option.lang-en {
+            color: white;
+        }
+
 
         /* Responsive adjustments */
         @media (max-width: 1024px) {
@@ -515,8 +552,9 @@
             .flex.justify-center.md\:justify-start { justify-content: center; }
             .chart-container { height: 300px; }
             .pivot-label-box { font-size: 10px; padding: 1px 3px; }
-            .formula-box { font-size: 0.9rem; }
             .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+
+            .formula-box { font-size: 0.8rem; }
 
             #visualizer input[type=range] {
                 display: none;
@@ -580,14 +618,14 @@
         .flare-item:nth-child(4) { background: radial-gradient(circle at center, var(--flare-color-4) 0%, transparent 70%); animation: flare-sweep-glow 22s infinite alternate; left: 60%; top: 10%; animation-delay: 2s; }
         .flare-item:nth-child(5) { background: radial-gradient(circle at center, var(--flare-color-5) 0%, transparent 70%); animation: flare-sweep-glow 28s infinite alternate; left: 0%; top: 90%; animation-delay: 7s; }
 
-        .glass-card svg text { fill: var(--color-svg-text-default); }
-        .glass-card svg line { stroke: var(--color-svg-line-default); }
-        .glass-card svg .stroke-red-400 { stroke: var(--color-svg-line-r); }
-        .glass-card svg .fill-red-400 { fill: var(--color-svg-label-r); }
-        .glass-card svg .stroke-green-400 { stroke: var(--color-svg-line-s); }
-        .glass-card svg .fill-green-400 { fill: var(--color-svg-label-s); }
-        .glass-card svg .stroke-blue-400 { stroke: var(--color-svg-line-pp); }
-        .glass-card svg .fill-blue-400 { fill: var(--color-svg-label-pp); }
+        .glass-card svg text { fill: var(--color-svg-text-default, #8B949E); }
+        .glass-card svg line { stroke: var(--color-svg-line-default, #8B949E); }
+        .glass-card svg .stroke-red-400 { stroke: var(--color-svg-line-r, #EF4444); }
+        .glass-card svg .fill-red-400 { fill: var(--color-svg-label-r, #EF4444); }
+        .glass-card svg .stroke-green-400 { stroke: var(--color-svg-line-s, #22C55E); }
+        .glass-card svg .fill-green-400 { fill: var(--color-svg-label-s, #22C55E); }
+        .glass-card svg .stroke-blue-400 { stroke: var(--color-svg-line-pp, #00ffff); }
+        .glass-card svg .fill-blue-400 { fill: var(--color-svg-label-pp, #00ffff); }
         .svg-label-id { font-size: 0.6rem; }
         .svg-label-en { font-size: 0.75rem; }
     </style>
@@ -619,7 +657,11 @@
                 <a href="#download-whitepaper" class="nav-link" data-en="Download Whitepaper" data-id="Unduh Whitepaper">Download Whitepaper</a>
             </nav>
             <div class="header-right">
-                <button id="language-toggle" class="btn btn-inactive px-4 py-2 rounded-md text-sm font-semibold">ID / EN</button>
+                <div id="language-toggle" class="lang-switch">
+                    <div class="lang-glider"></div>
+                    <span class="lang-option lang-id">ID</span>
+                    <span class="lang-option lang-en">EN</span>
+                </div>
                 <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Open mobile menu" aria-expanded="false"><i data-lucide="menu"></i></button>
             </div>
         </div>
@@ -830,8 +872,8 @@
                     <p class="text-lg mb-6" data-en="These patterns, especially those approaching the Golden Ratio ($\phi \approx 1.618$), are often considered natural equilibrium zones in the market." data-id="Pola-pola ini, terutama yang mendekati Rasio Emas ($\phi \approx 1.618$), sering dianggap sebagai zona keseimbangan alami di pasar.">These patterns, especially those approaching the Golden Ratio ($\phi \approx 1.618$), are often considered natural equilibrium zones in the market.</p>
                 </div>
                 <div class="w-full p-4 glass-card flex-grow flex flex-col">
-                    <div id="distance-chart-container" class="relative w-full h-64 mb-4 flex-grow"></div>
-                    <div class="space-y-3 flex-shrink-0">
+                    <div id="distance-chart-container" class="relative w-full h-64 flex-grow"></div>
+                    <div class="space-y-3 flex-shrink-0 mt-4">
                         <p data-en="<strong class='text-cyan-300'>How to Read the Chart:</strong> The chart shows the deviation of each S/R level from the central PP. Each point is labeled, colored, and connected to show the harmonic expansion." data-id="<strong class='text-cyan-300'>Cara Membaca Grafik:</strong> Grafik ini menunjukkan deviasi setiap level S/R dari PP pusat. Setiap titik diberi label, warna, dan dihubungkan untuk menunjukkan ekspansi harmonik."><strong class="text-cyan-300">How to Read the Chart:</strong> The chart shows the deviation of each S/R level from the central PP. Each point is labeled, colored, and connected to show the harmonic expansion.</p>
                     </div>
                 </div>
@@ -1029,12 +1071,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const candleWick = document.createElement('div');
         Object.assign(candleWick.style, {
             position: 'absolute', left: `${prevDayX + 7}px`, top: `${wickTop}%`, height: `${wickBottom - wickTop}%`,
-            backgroundColor: 'var(--color-prev-day)', width: '2px'
+            backgroundColor: 'var(--color-prev-day, #9ca3af)', width: '2px'
         });
         if(chartContainer) chartContainer.appendChild(candleWick);
 
         const isBullish = currOpen > prevOpen;
-        const candleBodyColor = isBullish ? 'var(--color-level-s)' : 'var(--color-level-r)';
+        const candleBodyColor = isBullish ? 'var(--color-level-s, #22C55E)' : 'var(--color-level-r, #EF4444)';
 
         const bodyTopY = getY(Math.max(prevOpen, currOpen));
         const bodyBottomY = getY(Math.min(prevOpen, currOpen));
@@ -1049,11 +1091,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if(chartContainer) chartContainer.appendChild(candleBody);
         
         const prevDayLabel = document.createElement('span');
-        // FIX: Shorten label on small screens
         prevDayLabel.textContent = chartWidth < 200 ? 'Prev' : (currentLanguage === 'en' ? 'Prev Day' : 'Hari Lalu');
         Object.assign(prevDayLabel.style, {
             position: 'absolute', top: `${wickBottom + 2}%`, left: `${prevDayX - 10}px`,
-            color: 'var(--color-prev-day)', fontSize: '12px', whiteSpace: 'nowrap'
+            color: 'var(--color-prev-day, #9ca3af)', fontSize: '12px', whiteSpace: 'nowrap'
         });
         if(chartContainer) chartContainer.appendChild(prevDayLabel);
 
@@ -1061,21 +1102,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const currOpenLine = document.createElement('div');
         Object.assign(currOpenLine.style, {
             position: 'absolute', top: `${currOpenY}%`, left: '0', right: '0', height: '1px',
-            borderTop: `1px dashed var(--color-curr-open-line)`, opacity: '0.8'
+            borderTop: `1px dashed var(--color-curr-open-line, #00ffff)`, opacity: '0.8'
         });
         if(chartContainer) chartContainer.appendChild(currOpenLine);
         
         const currOpenLabel = document.createElement('div');
-        // FIX: Shorten label on small screens
         currOpenLabel.textContent = chartWidth < 250 ? `${currOpen.toFixed(2)}` : `${currentLanguage === 'en' ? 'Curr Open' : 'Buka'}: ${currOpen.toFixed(2)}`;
         Object.assign(currOpenLabel.style, {
             position: 'absolute', top: `${currOpenY}%`, left: '10px', transform: 'translateY(-120%)',
-            color: 'var(--color-curr-open-label-text)', fontSize: '12px', fontWeight: 'bold',
-            backgroundColor: 'var(--color-curr-open-label-bg)', padding: '2px 4px', borderRadius: '4px', whiteSpace: 'nowrap'
+            color: 'var(--color-curr-open-label-text, #00ffff)', fontSize: '12px', fontWeight: 'bold',
+            backgroundColor: 'var(--color-curr-open-label-bg, rgba(13, 17, 23, 0.8))', padding: '2px 4px', borderRadius: '4px', whiteSpace: 'nowrap'
         });
         if(chartContainer) chartContainer.appendChild(currOpenLabel);
 
-        const levelColors = { R: 'var(--color-level-r)', S: 'var(--color-level-s)', PP: 'var(--color-level-pp)' };
+        const levelColors = { R: 'var(--color-level-r, #EF4444)', S: 'var(--color-level-s, #22C55E)', PP: 'var(--color-level-pp, #F59E0B)' };
         const allLevelsSorted = Object.entries(levels).sort((a, b) => b[1] - a[1]); 
 
         allLevelsSorted.forEach(([name, value]) => {
@@ -1094,7 +1134,6 @@ document.addEventListener('DOMContentLoaded', function() {
             Object.assign(label.style, {
                 top: `${y}%`, right: '10px', transform: 'translateY(-50%)', backgroundColor: color, color: '#FFFFFF'
             });
-            // FIX: Shorten label text on small screens
             label.textContent = chartWidth < 250 ? `${name}` : `${name}: ${value.toFixed(2)}`;
             
             if(chartContainer) chartContainer.appendChild(line);
@@ -1107,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const color = name.startsWith('R') ? levelColors.R : name.startsWith('S') ? levelColors.S : levelColors.PP;
             levelsHTML += `<div class="flex justify-between items-center gap-2">
                 <span style="color:${color}; font-weight:600;">${name}</span>
-                <span style="color:var(--color-text-primary);">${value.toFixed(3)}</span>
+                <span style="color:var(--color-text-primary, #C9D1D9);">${value.toFixed(3)}</span>
             </div>`;
         });
         levelsHTML += `</div>`;
@@ -1130,35 +1169,33 @@ document.addEventListener('DOMContentLoaded', function() {
             supportData[i].ratio = (i > 0) ? (supportData[i].dist / supportData[i - 1].dist) : 0;
         }
 
-        levelsHTML += `<div class="font-bold" style="color:var(--color-level-r)">${currentLanguage === 'en' ? 'Resistance Deviation' : 'Deviasi Resistance'}</div>`;
+        levelsHTML += `<div class="font-bold" style="color:var(--color-level-r, #EF4444)">${currentLanguage === 'en' ? 'Resistance Deviation' : 'Deviasi Resistance'}</div>`;
         resistanceData.slice().reverse().forEach(data => {
             const { name, dist, ratio } = data;
-            let ratioStyle = `color: var(--color-text-secondary);`;
+            let ratioStyle = `color: var(--color-text-secondary, #8B949E);`;
             if (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) {
-                ratioStyle = `color: var(--color-level-pp); font-weight: bold;`;
+                ratioStyle = `color: var(--color-level-pp, #F59E0B); font-weight: bold;`;
             }
-             // FIX: Use flexbox for more robust wrapping
             levelsHTML += `<div class="flex flex-wrap justify-between items-center gap-x-2">
-                <span class="flex-shrink-0" style="color:var(--color-text-secondary);">${name}-PP</span>
+                <span class="flex-shrink-0" style="color:var(--color-text-secondary, #8B949E);">${name}-PP</span>
                 <div class="flex-grow text-right">
-                    <span style="color:var(--color-text-primary); font-family: monospace;">${dist.toFixed(3)}</span>
+                    <span style="color:var(--color-text-primary, #C9D1D9); font-family: monospace;">${dist.toFixed(3)}</span>
                     <span style="${ratioStyle} font-family: monospace; min-width: 3em; display: inline-block;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span>
                 </div>
             </div>`;
         });
 
-        levelsHTML += `<div class="font-bold mt-3" style="color:var(--color-level-s)">${currentLanguage === 'en' ? 'Support Deviation' : 'Deviasi Support'}</div>`;
+        levelsHTML += `<div class="font-bold mt-3" style="color:var(--color-level-s, #22C55E)">${currentLanguage === 'en' ? 'Support Deviation' : 'Deviasi Support'}</div>`;
         supportData.forEach(data => {
             const { name, dist, ratio } = data;
-            let ratioStyle = `color: var(--color-text-secondary);`;
+            let ratioStyle = `color: var(--color-text-secondary, #8B949E);`;
             if (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) {
-                ratioStyle = `color: var(--color-level-pp); font-weight: bold;`;
+                ratioStyle = `color: var(--color-level-pp, #F59E0B); font-weight: bold;`;
             }
-            // FIX: Use flexbox for more robust wrapping
             levelsHTML += `<div class="flex flex-wrap justify-between items-center gap-x-2">
-                <span class="flex-shrink-0" style="color:var(--color-text-secondary);">PP-${name}</span>
+                <span class="flex-shrink-0" style="color:var(--color-text-secondary, #8B949E);">PP-${name}</span>
                  <div class="flex-grow text-right">
-                    <span style="color:var(--color-text-primary); font-family: monospace;">${dist.toFixed(3)}</span>
+                    <span style="color:var(--color-text-primary, #C9D1D9); font-family: monospace;">${dist.toFixed(3)}</span>
                     <span style="${ratioStyle} font-family: monospace; min-width: 3em; display: inline-block;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span>
                 </div>
             </div>`;
@@ -1166,17 +1203,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         levelsHTML += `</div>`;
         levelsHTML += `<div class="mt-4 text-xs text-gray-400 flex items-start gap-2">
-            <i data-lucide="info" class="h-4 w-4 flex-shrink-0 mt-0.5" style="color:var(--color-level-pp)"></i>
-            <span>${currentLanguage === 'en' ? 'Ratios highlighted in <span class="font-bold" style="color:var(--color-level-pp)">yellow</span> are approaching the Golden Ratio ($\phi \approx 1.618$ or $0.618$).' : 'Rasio yang disorot dengan warna <span class="font-bold" style="color:var(--color-level-pp)">kuning</span> mendekati Rasio Emas ($\phi \approx 1.618$ atau $0.618$).'}</span>
+            <i data-lucide="info" class="h-4 w-4 flex-shrink-0 mt-0.5" style="color:var(--color-level-pp, #F59E0B)"></i>
+            <span>${currentLanguage === 'en' ? 'Ratios highlighted in <span class="font-bold" style="color:var(--color-level-pp, #F59E0B)">yellow</span> are approaching the Golden Ratio ($\phi \approx 1.618$ or $0.618$).' : 'Rasio yang disorot dengan warna <span class="font-bold" style="color:var(--color-level-pp, #F59E0B)">kuning</span> mendekati Rasio Emas ($\phi \approx 1.618$ atau $0.618$).'}</span>
         </div>`;
         if(levelsOutput) levelsOutput.innerHTML = levelsHTML;
 
-        // --- Harmonic Analysis SVG Chart ---
         if(distanceChartContainer) distanceChartContainer.innerHTML = '';
-        const harmonicData = [
-            ...supportData.slice().reverse(),
-            ...resistanceData
-        ];
+        const harmonicData = [...resistanceData.slice().reverse(), ...supportData];
         
         if (harmonicData.length > 0) {
             const maxDist = Math.max(...harmonicData.map(d => d.dist));
@@ -1205,7 +1238,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const lineD = 'M' + points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' L');
             linePath.setAttribute('d', lineD);
             linePath.setAttribute('fill', 'none');
-            linePath.setAttribute('stroke', 'var(--color-accent)');
+            linePath.setAttribute('stroke', 'var(--color-accent, #00A8E8)');
             linePath.setAttribute('stroke-width', '0.5');
 
             const defs = document.createElementNS(svgNS, 'defs');
@@ -1217,11 +1250,11 @@ document.addEventListener('DOMContentLoaded', function() {
             gradient.setAttribute('y2', '100%');
             const stop1 = document.createElementNS(svgNS, 'stop');
             stop1.setAttribute('offset', '0%');
-            stop1.setAttribute('stop-color', 'var(--color-accent)');
+            stop1.setAttribute('stop-color', 'var(--color-accent, #00A8E8)');
             stop1.setAttribute('stop-opacity', '0.3');
             const stop2 = document.createElementNS(svgNS, 'stop');
             stop2.setAttribute('offset', '100%');
-            stop2.setAttribute('stop-color', 'var(--color-accent)');
+            stop2.setAttribute('stop-color', 'var(--color-accent, #00A8E8)');
             stop2.setAttribute('stop-opacity', '0');
             gradient.appendChild(stop1);
             gradient.appendChild(stop2);
@@ -1238,13 +1271,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 circle.setAttribute('cy', p.y.toFixed(2));
                 circle.setAttribute('r', '1.5');
                 circle.setAttribute('fill', color);
-                circle.setAttribute('stroke', 'var(--color-primary-bg)');
+                circle.setAttribute('stroke', 'var(--color-primary-bg, #0D1117)');
                 circle.setAttribute('stroke-width', '0.5');
                 
                 const text = document.createElementNS(svgNS, 'text');
                 text.setAttribute('x', p.x.toFixed(2));
                 text.setAttribute('y', (p.y - 4).toFixed(2));
-                text.setAttribute('fill', 'var(--color-text-primary)');
+                text.setAttribute('fill', 'var(--color-text-primary, #C9D1D9)');
                 text.setAttribute('font-size', '4');
                 text.setAttribute('text-anchor', 'middle');
                 text.textContent = p.data.name;
@@ -1257,13 +1290,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    let currentLanguage = localStorage.getItem('language') || 'en';
+    let currentLanguage = localStorage.getItem('language') || 'id'; // Default to ID
 
     function setLanguage(lang) {
+        const langSwitch = document.getElementById('language-toggle');
+        if(langSwitch) {
+            langSwitch.classList.remove('lang-id-active', 'lang-en-active');
+            langSwitch.classList.add(`lang-${lang}-active`);
+        }
+
         document.querySelectorAll('[data-en], [data-id]').forEach(element => {
             const key = `data-${lang}`;
             if (element.hasAttribute(key)) {
-                element.innerHTML = element.getAttribute(key);
+                if(element.children.length === 0 || (element.children.length === 1 && element.children[0].tagName === 'I')) {
+                    const icon = element.querySelector('i');
+                    element.textContent = element.getAttribute(key);
+                    if(icon) element.prepend(icon);
+                } else {
+                    element.innerHTML = element.getAttribute(key);
+                }
             }
         });
         const titleElement = document.querySelector('title');
@@ -1280,12 +1325,14 @@ document.addEventListener('DOMContentLoaded', function() {
         currentLanguage = lang;
         localStorage.setItem('language', lang);
         calculateAndVisualize();
+        lucide.createIcons();
     }
 
     const languageToggleButton = document.getElementById('language-toggle');
     if (languageToggleButton) {
         languageToggleButton.addEventListener('click', () => {
-            setLanguage(currentLanguage === 'en' ? 'id' : 'en');
+            const newLang = currentLanguage === 'en' ? 'id' : 'en';
+            setLanguage(newLang);
         });
     }
 
