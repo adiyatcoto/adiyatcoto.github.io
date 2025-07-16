@@ -1,0 +1,461 @@
+//@version=5
+indicator("(For All Asset Class) Coto's COPTAH Auto Residual Range Calculator (RSA Spec)", "COPTAH (RSA Spec)", overlay=true, max_lines_count=500, max_labels_count=500)
+
+// --- Constants & Inputs ---
+
+// Define constants for various timeframes available in the indicator's settings.
+AUTO = "Auto"
+DAILY = "Daily"
+WEEKLY = "Weekly"
+MONTHLY = "Monthly"
+QUARTERLY = "Quarterly"
+SEMESTER = "SEMESTER"
+YEARLY = "Yearly"
+BIYEARLY = "BIYEARLY (2Y)"
+QUADRENNIALLY = "QUADRENNIALLY (4Y)"
+OCTANNIALLY = "OCTANNIALLY (8Y)"
+SIXTEENYEARS = "SIXTEENYEARS (16Y)"
+THIRTYTWOYEARS = "THIRTYTWOYEARS (32Y)"
+
+// --- Input Groups ---
+
+// COPTAH Settings: Inputs related to the calculation of COPTAH pivots.
+pivot_time_frame = input.string(title="Pivots Timeframe", defval=AUTO, options=[AUTO, DAILY, WEEKLY, MONTHLY, QUARTERLY, SEMESTER, YEARLY, BIYEARLY, QUADRENNIALLY, OCTANNIALLY, SIXTEENYEARS, THIRTYTWOYEARS], group="COPTAH")
+use_manual_start_year = input.bool(title="Use Manual Start Year", defval=false, group="COPTAH", tooltip="Only applies to Yearly and multi-year timeframes. Allows aligning cycles with specific events like Bitcoin Halvings.")
+manual_start_year = input.int(title="Manual Start Year", defval=2009, group="COPTAH")
+p_look_back = input.int(title="Number of Pivots Back", defval=3, minval=1, maxval=500, group="COPTAH")
+
+
+// Central Pivot Range Settings: Inputs for the Dynamic Equilibrium (EQ) line.
+enable_EQ = input.bool(title="Show Dynamic Equilibrium (EQ)", defval=true, group="Equilibrium")
+eq_linestyle = input.string(defval = line.style_dashed, title = "EQ Line Style", options = [line.style_dashed, line.style_dotted, line.style_solid], group="Equilibrium")
+eq_linewidth = input.int(title="EQ Line Width", defval=1, minval=1, maxval=100, group="Equilibrium")
+eq_look_back = input.int(title="Number of EQ Back", defval=3, minval=1, maxval=500, group="Equilibrium")
+
+// Labels & Style Settings: Inputs to control the appearance of labels and lines.
+show_labels = input.bool(title="Show Labels", defval=true, group="labels", inline="showlabels")
+show_prices = input.bool(title="Show Prices", defval=false, group="labels", inline="showlabels")
+position_labels = input.string("Right", "Labels Position", options=["Left", "Right"], group="labels")
+position_pivot_label = input.string("Left", "EQ Label Position", options=["Left", "Right"], group="labels")
+line_width = input.int(title="Line Width", defval=1, minval=1, maxval=100, group="levels", inline="pivotstyle")
+line_style = input.string(defval = line.style_solid, title = "Line Style", options = [line.style_dashed, line.style_dotted, line.style_solid], group="levels", inline="pivotstyle")
+
+// Level Colors & Visibility
+eq_color = input.color(#3179F5, "EQ", inline="EQ", group="levels")
+eq_show = input.bool(true, "", inline="EQ", group="levels")
+s1_color = input.color(color.new(#E91E63, 70), "L1 (50%)", inline="L1 (50%)/H1 (50%)", group="levels")
+s1_show = input.bool(true, "", inline="L1 (50%)/H1 (50%)", group="levels")
+r1_color = input.color(color.new(#4CAF50, 70), "          H1 (50%)", inline="L1 (50%)/H1 (50%)", group="levels")
+r1_show = input.bool(true, "", inline="L1 (50%)/H1 (50%)", group="levels")
+s2_color = input.color(color.new(#E91E63, 40), "L2 (75%)", inline="L2 (75%)/H2 (75%)", group="levels")
+s2_show = input.bool(true, "", inline="L2 (75%)/H2 (75%)", group="levels")
+r2_color = input.color(color.new(#4CAF50, 40), "          H2 (75%)", inline="L2 (75%)/H2 (75%)", group="levels")
+r2_show = input.bool(true, "", inline="L2 (75%)/H2 (75%)", group="levels")
+s3_color = input.color(#E91E63, "L3 (100%)", inline="L3 (100%)/H3 (100%)", group="levels")
+s3_show = input.bool(true, "", inline="L3 (100%)/H3 (100%)", group="levels")
+r3_color = input.color(#4CAF50, "          H3 (100%)", inline="L3 (100%)/H3 (100%)", group="levels")
+r3_show = input.bool(true, "", inline="L3 (100%)/H3 (100%)", group="levels")
+s4_color = input.color(color.new(#E91E63, 0), "L4 (125%)", inline="L4 (125%)/H4 (125%)", group="levels")
+s4_show = input.bool(true, "", inline="L4 (125%)/H4 (125%)", group="levels")
+r4_color = input.color(color.new(#4CAF50, 0), "          H4 (125%)", inline="L4 (125%)/H4 (125%)", group="levels")
+r4_show = input.bool(true, "", inline="L4 (125%)/H4 (125%)", group="levels")
+s5_color = input.color(color.new(#E91E63, 0), "L5 (150%)", inline="L5 (150%)/H5 (150%)", group="levels")
+s5_show = input.bool(true, "", inline="L5 (150%)/H5 (150%)", group="levels")
+r5_color = input.color(color.new(#4CAF50, 0), "          H5 (150%)", inline="L5 (150%)/H5 (150%)", group="levels")
+r5_show = input.bool(true, "", inline="L5 (150%)/H5 (150%)", group="levels")
+r6_color = input.color(color.new(#4CAF50, 0), "          H6 (200%)", inline="L6 (200%)/H6 (200%)", group="levels")
+r6_show = input.bool(true, "", inline="L6 (200%)/H6 (200%)", group="levels")
+s6_color = input.color(color.new(#E91E63, 0), "L6 (200%)", inline="L6 (200%)/H6 (200%)", group="levels")
+s6_show = input.bool(true, "", inline="L6 (200%)/H6 (200%)", group="levels")
+
+// Future Projection Settings
+enable_future_projection = input.bool(title="Show Future Projection", defval=true, group="Future Projection")
+future_projection_color = input.color(#FFC107, "Projection Color", inline="FP_Style", group="Future Projection")
+future_projection_linestyle = input.string(defval = line.style_dotted, title = "Projection Style", options = [line.style_dashed, line.style_dotted, line.style_solid], inline="FP_Style", group="Future Projection")
+future_projection_linewidth = input.int(title="Projection Width", defval=1, minval=1, maxval=100, inline="FP_Style", group="Future Projection")
+future_projection_horizontal_offset = input.int(title="Projection Horizontal Offset (Bars)", defval=5, minval=0, maxval=500, group="Future Projection", tooltip="Offset the entire future projection (lines and labels) by this many bars to the right.")
+
+
+look_back = math.max(p_look_back, eq_look_back)
+
+// --- Global Variables ---
+var lines = array.new_line()
+var labels = array.new_label()
+var arr_time = array.new_int()
+var arr_eq = array.new_float()
+var arr_r1 = array.new_float()
+var arr_s1 = array.new_float()
+var arr_r2 = array.new_float()
+var arr_s2 = array.new_float()
+var arr_r3 = array.new_float()
+var arr_s3 = array.new_float()
+var arr_r4 = array.new_float()
+var arr_s4 = array.new_float()
+var arr_r5 = array.new_float()
+var arr_s5 = array.new_float()
+var arr_r6 = array.new_float()
+var arr_s6 = array.new_float()
+
+// New arrays for future projection levels
+var arr_future_r1 = array.new_float()
+var arr_future_s1 = array.new_float()
+var arr_future_r2 = array.new_float()
+var arr_future_s2 = array.new_float()
+var arr_future_r3 = array.new_float()
+var arr_future_s3 = array.new_float()
+var arr_future_r4 = array.new_float()
+var arr_future_s4 = array.new_float()
+var arr_future_r5 = array.new_float()
+var arr_future_s5 = array.new_float()
+var arr_future_r6 = array.new_float()
+var arr_future_s6 = array.new_float()
+var arr_future_eq = array.new_float() // New array for future EQ
+
+// --- Functions ---
+
+get_pivot_resolution() =>
+    resolution = "D" // Default to Daily
+    if pivot_time_frame == AUTO
+        if timeframe.isintraday
+            resolution := "D"
+        else if timeframe.isdaily
+            resolution := "W"
+        else if timeframe.isweekly
+            resolution := "M"
+        else // timeframe.ismonthly
+            resolution := "12M"
+    else if pivot_time_frame == DAILY
+        resolution := "D"
+    else if pivot_time_frame == WEEKLY
+        resolution := "W"
+    else if pivot_time_frame == MONTHLY
+        resolution := "M"
+    else if pivot_time_frame == SEMESTER
+        resolution := "6M"
+    else if pivot_time_frame == QUARTERLY
+        resolution := "3M"
+    else if pivot_time_frame == YEARLY or pivot_time_frame == BIYEARLY or pivot_time_frame == QUADRENNIALLY or pivot_time_frame == OCTANNIALLY or pivot_time_frame == SIXTEENYEARS or pivot_time_frame == THIRTYTWOYEARS
+        resolution := "12M"
+    resolution
+
+// Modified draw_level function to support label offset and forced right position
+draw_level(i, startTime, endTime, level_array, color, style, width, label_text, label_x_offset_bars = 0.0, force_label_right_position = false) =>
+    if array.size(level_array) > i and not na(array.get(level_array, i))
+        y_val = array.get(level_array, i)
+        array.push(lines, line.new(startTime, y_val, endTime, y_val, color=color, xloc=xloc.bar_time, width=width, style=style))
+        if (show_labels or show_prices)
+            display_text = (show_labels ? label_text : "") + (show_prices ? str.format(" ({0})", math.round_to_mintick(y_val)) : "")
+            
+            int label_x = na
+            string label_style_val = na 
+
+            if force_label_right_position
+                // Calculate label X position: end of the line + offset in milliseconds
+                label_x := endTime + math.round(label_x_offset_bars * timeframe.in_seconds(timeframe.period) * 1000)
+                label_style_val := label.style_label_left // Label text is left-aligned relative to its anchor point (x)
+            else if label_text == "EQ"
+                label_x := position_pivot_label == "Left" ? startTime : endTime
+                label_style_val := position_pivot_label == "Left" ? label.style_label_right : label.style_label_left
+            else
+                label_x := position_labels == "Left" ? startTime : endTime
+                label_style_val := position_labels == "Left" ? label.style_label_right : label.style_label_left
+            
+            array.push(labels, label.new(x=label_x, y=y_val, text=display_text, textcolor=color, style=label_style_val, color=#00000000, xloc=xloc.bar_time))
+
+// Function to calculate and update the level values (EQ, R1-R6, S1-S6) for a given period.
+// _Hp_prev and _Lp_prev now represent the high/low from the *previous completed* cycle.
+// _Cc_current is the current running close price.
+update_levels(i, _Hc, _Lc, _Cc_current, _Hp_prev, _Lp_prev) =>
+    if array.size(arr_time) > i and not na(_Hc) and not na(_Lc) and not na(_Cc_current) and not na(_Hp_prev) and not na(_Lp_prev)
+        // Calculate Vu for historical R/S levels using previous completed period's range
+        Vu_historical = _Hp_prev - _Lp_prev
+        
+        // Calculate EQ using current running high/low
+        EQ = (_Hc + _Lc) / 2
+        
+        // Store EQ and historical R/S levels
+        array.set(arr_eq, i, EQ)
+        array.set(arr_r1, i, _Lc + (0.50 * Vu_historical))
+        array.set(arr_s1, i, _Hc - (0.50 * Vu_historical))
+        array.set(arr_r2, i, _Lc + (0.75 * Vu_historical))
+        array.set(arr_s2, i, _Hc - (0.75 * Vu_historical))
+        array.set(arr_r3, i, _Lc + (1.00 * Vu_historical))
+        array.set(arr_s3, i, _Hc - (1.00 * Vu_historical))
+        array.set(arr_r4, i, _Lc + (1.25 * Vu_historical))
+        array.set(arr_s4, i, _Hc - (1.25 * Vu_historical))
+        array.set(arr_r5, i, _Lc + (1.50 * Vu_historical))
+        array.set(arr_s5, i, _Hc - (1.50 * Vu_historical))
+        array.set(arr_r6, i, _Lc + (2.00 * Vu_historical))
+        array.set(arr_s6, i, _Hc - (2.00 * Vu_historical))
+
+        // Calculate Vu for future projection levels using current running range (Hc - Lc)
+        float Vu_current_running = _Hc - _Lc
+
+        // Store future projection levels, projected from current running close (Cc_current)
+        array.set(arr_future_r1, i, _Cc_current + (0.50 * Vu_current_running))
+        array.set(arr_future_s1, i, _Cc_current - (0.50 * Vu_current_running))
+        array.set(arr_future_r2, i, _Cc_current + (0.75 * Vu_current_running))
+        array.set(arr_future_s2, i, _Cc_current - (0.75 * Vu_current_running))
+        array.set(arr_future_r3, i, _Cc_current + (1.00 * Vu_current_running))
+        array.set(arr_future_s3, i, _Cc_current - (1.00 * Vu_current_running))
+        array.set(arr_future_r4, i, _Cc_current + (1.25 * Vu_current_running))
+        array.set(arr_future_s4, i, _Cc_current - (1.25 * Vu_current_running))
+        array.set(arr_future_r5, i, _Cc_current + (1.50 * Vu_current_running))
+        array.set(arr_future_s5, i, _Cc_current - (1.50 * Vu_current_running))
+        array.set(arr_future_r6, i, _Cc_current + (2.00 * Vu_current_running))
+        array.set(arr_future_s6, i, _Cc_current - (2.00 * Vu_current_running))
+
+        // Store future EQ as current running close price
+        array.set(arr_future_eq, i, _Cc_current)
+
+
+// Function to calculate the end time of the next full period based on resolution
+get_next_period_end_time(current_period_start_time, resolution_str, divisor_val) =>
+    int next_end_time = na
+    if resolution_str == "D"
+        next_end_time := current_period_start_time + timeframe.in_seconds("D") * 1000 - 1
+    else if resolution_str == "W"
+        next_end_time := current_period_start_time + timeframe.in_seconds("W") * 1000 - 1
+    else if resolution_str == "M"
+        next_end_time := current_period_start_time + timeframe.in_seconds("M") * 1000 - 1
+    else if resolution_str == "3M" // QUARTERLY
+        next_end_time := current_period_start_time + timeframe.in_seconds("3M") * 1000 - 1
+    else if resolution_str == "6M" // SEMESTER
+        next_end_time := current_period_start_time + timeframe.in_seconds("6M") * 1000 - 1
+    else // "12M" (YEARLY and multi-year)
+        // Calculate the start of the next block
+        int current_year_val = year(current_period_start_time, syminfo.timezone)
+        int next_block_start_year = current_year_val + divisor_val
+        next_end_time := timestamp(syminfo.timezone, next_block_start_year, 1, 1, 0, 0, 0) - 1
+    next_end_time
+
+// Function to get the duration of one full pivot period in milliseconds
+get_pivot_period_duration_ms(resolution_str, divisor_val) =>
+    int duration_ms = 0
+    if resolution_str == "D"
+        duration_ms := timeframe.in_seconds("D") * 1000
+    else if resolution_str == "W"
+        duration_ms := timeframe.in_seconds("W") * 1000
+    else if resolution_str == "M"
+        duration_ms := timeframe.in_seconds("M") * 1000
+    else if resolution_str == "3M" // QUARTERLY
+        duration_ms := timeframe.in_seconds("3M") * 1000
+    else if resolution_str == "6M" // SEMESTER
+        duration_ms := timeframe.in_seconds("6M") * 1000
+    else // "12M" (YEARLY and multi-year)
+        // Calculate the duration of a full year or multi-year block
+        int current_year_val = year(time, syminfo.timezone) // Use current bar's year for calculation
+        int next_block_start_year = current_year_val + divisor_val
+        duration_ms := timestamp(syminfo.timezone, next_block_start_year, 1, 1, 0, 0, 0) - timestamp(syminfo.timezone, current_year_val, 1, 1, 0, 0, 0)
+    duration_ms
+
+
+// --- Main Logic ---
+
+string tf_res = get_pivot_resolution()
+int divisor = pivot_time_frame == "YEARLY" ? 1 : 
+              pivot_time_frame == "BIYEARLY (2Y)" ? 2 :
+              pivot_time_frame == "QUADRENNIALLY (4Y)" ? 4 :
+              pivot_time_frame == "OCTANNIALLY (8Y)" ? 8 :
+              pivot_time_frame == "SIXTEENYEARS (16Y)" ? 16 :
+              pivot_time_frame == "THIRTYTWOYEARS (32Y)" ? 32 : 0
+
+[sec_high, sec_low, sec_close, sec_time] = request.security(syminfo.tickerid, tf_res, [high, low, close, time], lookahead=barmerge.lookahead_off)
+
+// State variables
+var float Hc = na, var float Lc = na, var float Cc = na // Running high/low/close of the current security period
+var float Hp = na, var float Lp = na // High/low of the *previous completed* security period
+var int current_cycle_start_time = na // Stores the start time of the *current* pivot cycle
+
+bool is_new_sec_bar = ta.change(sec_time) // True when a new bar in the security resolution starts
+
+// Determine if a new *pivot cycle* has started based on the chosen timeframe.
+bool new_pivot_cycle_detected = false
+int next_cycle_start_time_calculated = na
+
+if pivot_time_frame == DAILY or pivot_time_frame == WEEKLY or pivot_time_frame == MONTHLY or pivot_time_frame == QUARTERLY or pivot_time_frame == SEMESTER
+    // For fixed non-yearly timeframes, a new cycle starts with every new security bar.
+    new_pivot_cycle_detected := is_new_sec_bar
+    next_cycle_start_time_calculated := sec_time
+else // Yearly and multi-year (divisor >= 1)
+    int current_year_val = year(sec_time)
+    int calculated_block_start_year = current_year_val // Default for 1Y
+    if divisor > 1 // Only apply multi-year block calculation if divisor > 1
+        if use_manual_start_year
+            calculated_block_start_year := manual_start_year + (math.floor((current_year_val - manual_start_year) / divisor) * divisor)
+        else
+            calculated_block_start_year := math.floor(current_year_val / divisor) * divisor
+    
+    // A new pivot cycle is detected if the calculated block start year changes or it's the very first bar.
+    if na(current_cycle_start_time) // First bar initialization
+        new_pivot_cycle_detected := true
+        next_cycle_start_time_calculated := timestamp(syminfo.timezone, calculated_block_start_year, 1, 1, 0, 0, 0)
+    else if timestamp(syminfo.timezone, calculated_block_start_year, 1, 1, 0, 0, 0) != current_cycle_start_time
+        new_pivot_cycle_detected := true
+        next_cycle_start_time_calculated := timestamp(syminfo.timezone, calculated_block_start_year, 1, 1, 0, 0, 0)
+
+
+// Logic for when a new pivot cycle is detected
+if new_pivot_cycle_detected
+    // Store the finalized Hc and Lc from the *previous* security period as Hp and Lp for the *new* period's Vu calculation.
+    // Hc[1] and Lc[1] here refer to the *accumulated* high/low of the *previous completed tf_res period*.
+    Hp := nz(Hc[1], sec_high) // Use nz() for the very first bar
+    Lp := nz(Lc[1], sec_low)  // Use nz() for the very first bar
+
+    // Reset Hc, Lc, Cc for the *new* current security period.
+    Hc := sec_high
+    Lc := sec_low
+    Cc := sec_close
+
+    // Update the current_cycle_start_time
+    current_cycle_start_time := next_cycle_start_time_calculated
+
+    // Push the new period's start time and placeholder 'na' values for levels into arrays.
+    array.push(arr_time, current_cycle_start_time)
+    array.push(arr_eq, na), array.push(arr_r1, na), array.push(arr_s1, na), array.push(arr_r2, na), array.push(arr_s2, na), array.push(arr_r3, na), array.push(arr_s3, na), array.push(arr_r4, na), array.push(arr_s4, na), array.push(arr_r5, na), array.push(arr_s5, na), array.push(arr_r6, na), array.push(arr_s6, na)
+    // Push placeholder 'na' values for future projection arrays as well
+    array.push(arr_future_r1, na), array.push(arr_future_s1, na), array.push(arr_future_r2, na), array.push(arr_future_s2, na), array.push(arr_future_r3, na), array.push(arr_future_s3, na), array.push(arr_future_r4, na), array.push(arr_future_s4, na), array.push(arr_future_r5, na), array.push(arr_future_s5, na), array.push(arr_future_r6, na), array.push(arr_future_s6, na)
+    array.push(arr_future_eq, na) // Push placeholder for future EQ array
+
+    // If the number of stored periods exceeds the lookback, shift (remove) the oldest period.
+    if array.size(arr_time) > look_back + 1
+        array.shift(arr_time), array.shift(arr_eq), array.shift(arr_r1), array.shift(arr_s1), array.shift(arr_r2), array.shift(arr_s2), array.shift(arr_r3), array.shift(arr_s3), array.shift(arr_r4), array.shift(arr_s4), array.shift(arr_r5), array.shift(arr_s5), array.shift(arr_r6), array.shift(arr_s6)
+        // Shift future projection arrays as well
+        array.shift(arr_future_r1), array.shift(arr_future_s1), array.shift(arr_future_r2), array.shift(arr_future_s2), array.shift(arr_future_r3), array.shift(arr_future_s3), array.shift(arr_future_r4), array.shift(arr_future_s4), array.shift(arr_future_r5), array.shift(arr_future_s5), array.shift(arr_future_r6), array.shift(arr_future_s6)
+        array.shift(arr_future_eq) // Shift future EQ array
+
+else // Not a new pivot cycle (still within the same pivot period)
+    // Continue accumulating Hc and Lc for the current running period
+    Hc := math.max(Hc, sec_high)
+    Lc := math.min(Lc, sec_low)
+    Cc := sec_close // Update current close.
+
+// --- Update Array Logic ---
+// This update should happen on every bar to reflect the running Hc/Lc for EQ,
+// and to update R/S based on the latest Hp/Lp (from the *start* of the current cycle).
+if array.size(arr_time) > 0
+    update_levels(array.size(arr_time) - 1, Hc, Lc, Cc, Hp, Lp)
+
+
+// --- Drawing Logic: Dieksekusi hanya pada bar terakhir untuk stabilitas ---
+if barstate.islast
+    // 1. Bersihkan gambar lama
+    for l in lines
+        line.delete(l)
+    array.clear(lines)
+    for l in labels
+        label.delete(l)
+    array.clear(labels)
+
+    if array.size(arr_time) > 0
+        // 2. Ulangi untuk setiap periode yang dihitung dan gambar
+        for i = 0 to array.size(arr_time) - 1
+            startTime = array.get(arr_time, i)
+            
+            int endTime = na
+            if i < array.size(arr_time) - 1
+                // End of current period is just before start of next period
+                endTime := array.get(arr_time, i + 1) - 1
+            else
+                // For the very last period, calculate its end time precisely based on tf_res.
+                string current_tf_res = get_pivot_resolution() // Get the actual resolution being used
+                if current_tf_res == "D"
+                    endTime := startTime + timeframe.in_seconds("D") * 1000 - 1
+                else if current_tf_res == "W"
+                    endTime := startTime + timeframe.in_seconds("W") * 1000 - 1
+                else if current_tf_res == "M"
+                    endTime := startTime + timeframe.in_seconds("M") * 1000 - 1
+                else if current_tf_res == "3M" // QUARTERLY
+                    endTime := startTime + timeframe.in_seconds("3M") * 1000 - 1
+                else if current_tf_res == "6M" // SEMESTER
+                    endTime := startTime + timeframe.in_seconds("6M") * 1000 - 1
+                else // "12M" (YEARLY and multi-year)
+                    _startTime = array.get(arr_time, i)
+                    _startYear = year(_startTime, syminfo.timezone)
+                    _divisor_for_end_time = divisor > 0 ? divisor : 1 // Use the global divisor
+                    _endYear = _startYear + _divisor_for_end_time
+                    endTime := timestamp(syminfo.timezone, _endYear, 1, 1, 0, 0, 0) - 1
+
+
+            // Tentukan apakah periode ini harus digambar
+            pivots_in_range = array.size(arr_time) - 1 - i < p_look_back
+            eq_in_range = array.size(arr_time) - 1 - i < eq_look_back
+
+            // Gambar Level S/R
+            if pivots_in_range
+                if r1_show
+                    draw_level(i, startTime, endTime, arr_r1, r1_color, line_style, line_width, "H1 (50%)")
+                if s1_show
+                    draw_level(i, startTime, endTime, arr_s1, s1_color, line_style, line_width, "L1 (50%)")
+                if r2_show
+                    draw_level(i, startTime, endTime, arr_r2, r2_color, line_style, line_width, "H2 (75%)")
+                if s2_show
+                    draw_level(i, startTime, endTime, arr_s2, s2_color, line_style, line_width, "L2 (75%)")
+                if r3_show
+                    draw_level(i, startTime, endTime, arr_r3, r3_color, line_style, line_width, "H3 (100%)")
+                if s3_show
+                    draw_level(i, startTime, endTime, arr_s3, s3_color, line_style, line_width, "L3 (100%)")
+                if r4_show
+                    draw_level(i, startTime, endTime, arr_r4, r4_color, line_style, line_width, "H4 (125%)")
+                if s4_show
+                    draw_level(i, startTime, endTime, arr_s4, s4_color, line_style, line_width, "L4 (125%)")
+                if r5_show
+                    draw_level(i, startTime, endTime, arr_r5, r5_color, line_style, line_width, "H5 (150%)")
+                if s5_show
+                    draw_level(i, startTime, endTime, arr_s5, s5_color, line_style, line_width, "L5 (150%)")
+                if r6_show
+                    draw_level(i, startTime, endTime, arr_r6, r6_color, line_style, line_width, "H6 (200%)")
+                if s6_show
+                    draw_level(i, startTime, endTime, arr_s6, s6_color, line_style, line_width, "L6 (200%)")
+            
+            // Gambar Dynamic Equilibrium (EQ)
+            if eq_in_range and enable_EQ and eq_show
+                draw_level(i, startTime, endTime, arr_eq, eq_color, eq_linestyle, eq_linewidth, "EQ")
+
+        // --- Drawing Future Projection Levels ---
+        if enable_future_projection and array.size(arr_time) > 0
+            int current_period_idx = array.size(arr_time) - 1
+            
+            // Calculate future start and end times with the new horizontal offset
+            int offset_milliseconds = math.round(future_projection_horizontal_offset * timeframe.in_seconds(timeframe.period) * 1000)
+            
+            int future_line_start_time = time + offset_milliseconds
+            
+            // Calculate the duration of one full pivot period based on the selected TF
+            string current_tf_res = get_pivot_resolution()
+            int duration_of_pivot_period_ms = get_pivot_period_duration_ms(current_tf_res, divisor)
+            
+            // The future line should span one full pivot period from its shifted start
+            int future_line_end_time = future_line_start_time + duration_of_pivot_period_ms - 1
+
+            // Draw future projection levels
+            // Here we draw the future R/S levels.
+            // No additional label offset or forced right position, as it will follow general label settings.
+            if r1_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r1, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H1 (50%) (Future)")
+            if s1_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s1, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L1 (50%) (Future)")
+            if r2_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r2, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H2 (75%) (Future)")
+            if s2_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s2, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L2 (75%) (Future)")
+            if r3_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r3, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H3 (100%) (Future)")
+            if s3_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s3, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L3 (100%) (Future)")
+            if r4_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r4, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H4 (125%) (Future)")
+            if s4_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s4, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L4 (125%) (Future)")
+            if r5_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r5, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H5 (150%) (Future)")
+            if s5_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s5, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L5 (150%) (Future)")
+            if r6_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_r6, future_projection_color, future_projection_linestyle, future_projection_linewidth, "H6 (200%) (Future)")
+            if s6_show
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_s6, future_projection_color, future_projection_linestyle, future_projection_linewidth, "L6 (200%) (Future)")
+            
+            // Draw Future EQ
+            if eq_show and enable_EQ
+                draw_level(current_period_idx, future_line_start_time, future_line_end_time, arr_future_eq, future_projection_color, future_projection_linestyle, future_projection_linewidth, "EQ (Future)")
