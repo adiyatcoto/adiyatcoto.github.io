@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=0.80">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adiyat Coto - Personal Portfolio</title>
 <!-- Lucide Icons CDN -->
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,6 +20,7 @@
         --primary-green: #10B981;
         --gradient-blue: linear-gradient(135deg, #3B82F6, #1E40AF);
         --gradient-purple: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        --gradient-green: linear-gradient(135deg, #10B981, #059669); /* New Gradient */
         
         /* New dramatic gradients */
         --title-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
@@ -722,7 +723,7 @@
     [data-theme="dark"] .contact-card:hover {
         /* Glowing shadow for dark mode hover */
         box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
-                    0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+                      0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
     }
 
     .card-header {
@@ -908,7 +909,7 @@
     /* Projects Section */
     .projects-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive Grid */
         gap: 3rem;
         margin-bottom: 4rem;
     }
@@ -930,7 +931,7 @@
     [data-theme="dark"] .project-card:hover {
         /* Glowing shadow for dark mode hover */
         box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
-                    0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+                      0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
     }
 
     .project-header {
@@ -952,6 +953,10 @@
     .project-header.purple {
         background: var(--gradient-purple);
     }
+    
+    .project-header.green {
+        background: var(--gradient-green);
+    }
 
     /* New styles for card ribbons */
     .card-ribbon {
@@ -964,7 +969,8 @@
         animation-iteration-count: infinite;
     }
 
-    .project-header.blue .card-ribbon:nth-child(1) {
+    .project-header.blue .card-ribbon:nth-child(1),
+    .project-header.green .card-ribbon:nth-child(1) {
         top: 20%;
         left: -50%;
         width: 150px;
@@ -972,7 +978,8 @@
         animation: cardRibbonFlow1 15s infinite;
     }
 
-    .project-header.blue .card-ribbon:nth-child(2) {
+    .project-header.blue .card-ribbon:nth-child(2),
+    .project-header.green .card-ribbon:nth-child(2) {
         top: 60%;
         right: -50%;
         width: 120px;
@@ -980,7 +987,8 @@
         animation: cardRibbonFlow2 18s infinite reverse;
     }
 
-    .project-header.blue .card-ribbon:nth-child(3) {
+    .project-header.blue .card-ribbon:nth-child(3),
+    .project-header.green .card-ribbon:nth-child(3) {
         top: 40%;
         left: -70%;
         width: 180px;
@@ -989,7 +997,8 @@
         animation: cardRibbonFlow5 20s infinite;
     }
 
-    .project-header.blue .card-ribbon:nth-child(4) {
+    .project-header.blue .card-ribbon:nth-child(4),
+    .project-header.green .card-ribbon:nth-child(4) {
         top: 80%;
         right: -80%;
         width: 160px;
@@ -1107,6 +1116,10 @@
     .project-icon.purple-icon {
         background: var(--primary-purple);
     }
+    
+    .project-icon.green-icon {
+        background: var(--primary-green);
+    }
 
     .project-name {
         font-size: 1.4rem;
@@ -1163,6 +1176,11 @@
 
     .btn-small.purple {
         background: var(--primary-purple);
+        color: white;
+    }
+
+    .btn-small.green {
+        background: var(--primary-green);
         color: white;
     }
 
@@ -1761,11 +1779,40 @@
                 </div>
             </div>
         </div>
+
+        <!-- NEW PROJECT CARD -->
+        <div class="project-card">
+            <div class="project-header green">
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="youtube"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon green-icon"><i data-lucide="youtube"></i></div>
+                    <h3 class="project-name">Voice from Zero Point</h3>
+                </div>
+                <p class="project-description">A YouTube channel exploring broad topics like philosophy, the financial market, and history, offering deep insights and reflections.</p>
+                <div class="project-tags">
+                    <span class="tag">YouTube</span>
+                    <span class="tag">Philosophy</span>
+                    <span class="tag">Financial Markets</span>
+                    <span class="tag">History</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="https://www.youtube.com/@VoicefromZeroPoint" class="btn-small green" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+            </div>
+        </div>
+        <!-- END NEW PROJECT CARD -->
+
     </div>
 
     <div class="stats">
         <div class="stat">
-            <div class="stat-number blue">2</div>
+            <div class="stat-number blue">3</div>
             <div class="stat-label">Active Projects</div>
         </div>
         <div class="stat">
