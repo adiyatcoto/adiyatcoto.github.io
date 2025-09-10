@@ -1,0 +1,626 @@
+//@version=5
+indicator("Coto COP TAH - Multi-Timeframe Bias Analyzer", overlay=false)
+
+// Input parameters for timeframes to analyze
+showMinute = input.bool(true, "Show Minute Timeframes")
+show30Min = input.bool(true, "Show 30 Minute Timeframe") // Added 30-minute option
+showHour = input.bool(true, "Show Hour Timeframes")
+showDay = input.bool(true, "Show Daily Timeframe")
+showWeek = input.bool(true, "Show Weekly Timeframe")
+showMonth = input.bool(true, "Show Monthly Timeframe")
+showQuarter = input.bool(false, "Show Quarterly Timeframe")
+showSemiAnnual = input.bool(false, "Show Semi-Annual Timeframe") // Added 6-month option
+showYear = input.bool(false, "Show Yearly Timeframe")
+
+// Table position and size options
+tablePositionInput = input.string("Top Right", "Table Position", options=["Top Right", "Top Center", "Top Left", "Bottom Right", "Bottom Center", "Bottom Left"])
+tableSizeInput = input.string("100%", "Table Size", options=["100%", "75%", "50%"])
+
+// Function to convert position string to position.* value
+getTablePosition(posStr) =>
+    posStr == "Top Right" ? position.top_right : posStr == "Top Center" ? position.top_center : posStr == "Top Left" ? position.top_left : posStr == "Bottom Right" ? position.bottom_right : posStr == "Bottom Center" ? position.bottom_center : position.bottom_left
+
+// Function to convert size string to multiplier
+getTableSizeMultiplier(sizeStr) =>
+    sizeStr == "100%" ? 1.0 : sizeStr == "75%" ? 0.80 : 0.55
+
+// Function to determine bias based on Open to Open concept with timing logic and pattern recognition
+getBias(timeframe) =>
+    // Get all needed data in one security call instead of multiple
+    [currentOpen, previousOpen, currentHigh, previousHigh, currentLow, previousLow, currentTime, currentClose] = request.security(syminfo.tickerid, timeframe, [open, open[1], high, high[1], low, low[1], time, close])
+    
+    // Calculate current and previous ranges
+    float currentRange = currentHigh - currentLow
+    float previousRange = previousHigh - previousLow
+    
+    // Calculate range percentage compared to previous range
+    float rangePercentage = previousRange != 0 ? (currentRange / previousRange) * 100 : 100
+    
+    // Calculate average range over historical data (using 20 periods)
+    float avgRange = request.security(syminfo.tickerid, timeframe, ta.sma(high - low, 4))
+    
+    // Calculate range percentage compared to average range
+    float avgRangePercentage = avgRange != 0 ? (currentRange / avgRange) * 100 : 100
+    
+    // Determine bias based on Open to Open relationship
+    string bias = currentOpen > previousOpen ? "Bullish" : currentOpen < previousOpen ? "Bearish" : "Neutral"
+    
+    // Check high-low patterns
+    bool isHigherHigh = currentHigh > previousHigh
+    bool isHigherLow = currentLow > previousLow
+    bool isLowerHigh = currentHigh < previousHigh
+    bool isLowerLow = currentLow < previousLow
+    
+    // Determine pattern type based on bias and high-low relationships
+    string pattern = ""
+    
+    if bias == "Bullish"
+        if isHigherHigh and isHigherLow
+            pattern := "Normal Bull"
+        else if isHigherHigh and isLowerLow
+            pattern := "Breakout Bull"
+        else if isLowerHigh and isHigherLow
+            pattern := "Sideways"
+        else if isLowerHigh and isLowerLow
+            pattern := "Anomaly (LL Break)"
+    else if bias == "Bearish"
+        if isLowerHigh and isLowerLow
+            pattern := "Normal Bear"
+        else if isHigherHigh and isLowerLow
+            pattern := "Breakout Bear"
+        else if isLowerHigh and isHigherLow
+            pattern := "Sideways"
+        else if isHigherHigh and isHigherLow
+            pattern := "Anomaly (HH Break)"
+    else
+        pattern := "Neutral"
+    
+    // Calculate percentage change
+    percentChange = 100 - (((currentHigh + currentLow) / 2) / currentClose * 100)
+    
+    // Calculate timing - where we are in the current timeframe cycle
+    currentBarTime = timenow
+    timeElapsedMs = currentBarTime - currentTime
+    
+    // Convert to percentage of timeframe completed
+    float timePercentage = 0.0
+    
+    if timeframe == "15"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 15 * 100, 99.9)
+    else if timeframe == "30"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 30 * 100, 99.9) // Added 30-minute calculation
+    else if timeframe == "60"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 60 * 100, 99.9)
+    else if timeframe == "240"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 240 * 100, 99.9)
+    else if timeframe == "D"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 1440 * 100, 99.9) // 1440 minutes in a day
+    else if timeframe == "W"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 10080 * 100, 99.9) // 10080 minutes in a week
+    else if timeframe == "M"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 43200 * 100, 99.9) // ~43200 minutes in a month (30 days)
+    else if timeframe == "6M"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 259200 * 100, 99.9) // ~259200 minutes in 6 months (180 days)
+    else if timeframe == "3M"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 129600 * 100, 99.9) // ~129600 minutes in a quarter (90 days)
+    else if timeframe == "12M"
+        timePercentage := math.min((timeElapsedMs / 1000 / 60) / 525600 * 100, 99.9) // ~525600 minutes in a year (365 days)
+    
+    // Determine cycle phase based on percentage and bias
+    string cyclePeriod = ""
+    if bias == "Bullish"
+        if timePercentage < 25
+            cyclePeriod := "Early - Seeking Low"
+        else if timePercentage < 50
+            cyclePeriod := "Mid - Ready to Pump"
+        else if timePercentage < 75
+            cyclePeriod := "Late - Pump in Process"
+        else
+            cyclePeriod := "Final - Final Pump"
+    else if bias == "Bearish"
+        if timePercentage < 25
+            cyclePeriod := "Early - Seeking High"
+        else if timePercentage < 50
+            cyclePeriod := "Mid - Ready to Dump"
+        else if timePercentage < 75
+            cyclePeriod := "Late - Dump in Process"
+        else
+            cyclePeriod := "Final - Final Dump"
+    else
+        if timePercentage < 25
+            cyclePeriod := "Early (1st Qtr)"
+        else if timePercentage < 50
+            cyclePeriod := "Mid (2nd Qtr)"
+        else if timePercentage < 75
+            cyclePeriod := "Late (3rd Qtr)"
+        else
+            cyclePeriod := "Final (4th Qtr)"
+    
+    // Determine projected next bias based on current price vs current open
+    string projectedBias = ""
+    if bias == "Bullish"
+        if currentClose >= currentOpen
+            projectedBias := "Still Bullish"
+        else
+            projectedBias := "Potential Bearish"
+    else if bias == "Bearish"
+        if currentClose <= currentOpen
+            projectedBias := "Still Bearish"
+        else
+            projectedBias := "Potential Bullish"
+    else
+        projectedBias := "Neutral"
+    
+    [bias, pattern, percentChange, cyclePeriod, timePercentage, projectedBias, rangePercentage, avgRangePercentage]
+
+// Get table position and size multiplier
+tablePos = getTablePosition(tablePositionInput)
+tableSizeMult = getTableSizeMultiplier(tableSizeInput)
+
+// Calculate cell height based on size multiplier (we only need to control height)
+int cellHeight = math.round(3 * tableSizeMult)
+
+// Define font size based on size multiplier
+string fontSize = tableSizeMult >= 1.0 ? size.normal :
+                 tableSizeMult >= 0.75 ? size.small :
+                 size.tiny
+
+// Create a table to display the multi-timeframe bias
+var table biasTable = table.new(tablePos, 9, 12, bgcolor = color.black, border_width = 1)
+
+// Update the table on each bar close
+if barstate.islast
+    // Set table headers with adjusted cell sizes and font size
+    table.cell(biasTable, 0, 0, "Timeframe", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 1, 0, "Bias", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 2, 0, "Pattern", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 3, 0, "% Imbalance", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 4, 0, "Cycle Phase", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 5, 0, "% Complete", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 6, 0, "Projected Bias", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 7, 0, "Actual Range", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    table.cell(biasTable, 8, 0, "Average Range", bgcolor = color.blue, text_color = color.white, height = cellHeight, text_size = fontSize)
+    
+    // Initialize row counter
+    int row = 1
+    
+    // Minute timeframes - reduced to just 15m to save security calls
+    if showMinute
+        // 15 minutes
+        [bias15m, pattern15m, percentChange15m, cyclePeriod15m, timePercentage15m, projectedBias15m, rangePercentage15m, avgRangePercentage15m] = getBias("15")
+        biasColor15m = bias15m == "Bullish" ? color.green : bias15m == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColor15m = color.gray
+        if pattern15m == "Normal Bull" or pattern15m == "Breakout Bull"
+            patternColor15m := color.green
+        else if pattern15m == "Normal Bear" or pattern15m == "Breakout Bear"
+            patternColor15m := color.red
+        else if pattern15m == "Anomaly (Bear Rev)" or pattern15m == "Anomaly (Bull Rev)"
+            patternColor15m := color.rgb(137, 127, 28)
+        else if pattern15m == "Sideways"
+            patternColor15m := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColor15m = timePercentage15m < 25 ? color.new(color.blue, 20) : 
+                       timePercentage15m < 50 ? color.new(color.green, 20) : 
+                       timePercentage15m < 75 ? color.new(color.yellow, 20) : 
+                       color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColor15m = projectedBias15m == "Still Bullish" ? color.green : 
+                           projectedBias15m == "Still Bearish" ? color.red : 
+                           projectedBias15m == "Potential Bullish" ? color.new(color.green, 50) : 
+                           projectedBias15m == "Potential Bearish" ? color.new(color.red, 50) : 
+                           color.gray
+        
+        // Range colors
+        rangeColor15m = rangePercentage15m >= 100 ? color.green : color.red
+        avgRangeColor15m = avgRangePercentage15m >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "15 Minutes", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, bias15m, text_color = color.white, bgcolor = biasColor15m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, pattern15m, text_color = color.white, bgcolor = patternColor15m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChange15m, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriod15m, text_color = color.white, bgcolor = phaseColor15m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentage15m, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBias15m, text_color = color.white, bgcolor = projectedColor15m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentage15m, "#.##") + "%", text_color = color.white, bgcolor = rangeColor15m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentage15m, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColor15m, height = cellHeight, text_size = fontSize)
+        row := row + 1
+    
+    // 30 minutes timeframe
+    if show30Min
+        // 30 minutes
+        [bias30m, pattern30m, percentChange30m, cyclePeriod30m, timePercentage30m, projectedBias30m, rangePercentage30m, avgRangePercentage30m] = getBias("30")
+        biasColor30m = bias30m == "Bullish" ? color.green : bias30m == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColor30m = color.gray
+        if pattern30m == "Normal Bull" or pattern30m == "Breakout Bull"
+            patternColor30m := color.green
+        else if pattern30m == "Normal Bear" or pattern30m == "Breakout Bear"
+            patternColor30m := color.red
+        else if pattern30m == "Anomaly (Bear Rev)" or pattern30m == "Anomaly (Bull Rev)"
+            patternColor30m := color.rgb(137, 127, 28)
+        else if pattern30m == "Sideways"
+            patternColor30m := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColor30m = timePercentage30m < 25 ? color.new(color.blue, 20) : 
+                       timePercentage30m < 50 ? color.new(color.green, 20) : 
+                       timePercentage30m < 75 ? color.new(color.yellow, 20) : 
+                       color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColor30m = projectedBias30m == "Still Bullish" ? color.green : 
+                           projectedBias30m == "Still Bearish" ? color.red : 
+                           projectedBias30m == "Potential Bullish" ? color.new(color.green, 50) : 
+                           projectedBias30m == "Potential Bearish" ? color.new(color.red, 50) : 
+                           color.gray
+        
+        // Range colors
+        rangeColor30m = rangePercentage30m >= 100 ? color.green : color.red
+        avgRangeColor30m = avgRangePercentage30m >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "30 Minutes", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, bias30m, text_color = color.white, bgcolor = biasColor30m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, pattern30m, text_color = color.white, bgcolor = patternColor30m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChange30m, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriod30m, text_color = color.white, bgcolor = phaseColor30m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentage30m, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBias30m, text_color = color.white, bgcolor = projectedColor30m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentage30m, "#.##") + "%", text_color = color.white, bgcolor = rangeColor30m, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentage30m, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColor30m, height = cellHeight, text_size = fontSize)
+        row := row + 1
+    
+    // Hour timeframes
+    if showHour
+        // 1 hour
+        [bias1h, pattern1h, percentChange1h, cyclePeriod1h, timePercentage1h, projectedBias1h, rangePercentage1h, avgRangePercentage1h] = getBias("60")
+        biasColor1h = bias1h == "Bullish" ? color.green : bias1h == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColor1h = color.gray
+        if pattern1h == "Normal Bull" or pattern1h == "Breakout Bull"
+            patternColor1h := color.green
+        else if pattern1h == "Normal Bear" or pattern1h == "Breakout Bear"
+            patternColor1h := color.red
+        else if pattern1h == "Anomaly (Bear Rev)" or pattern1h == "Anomaly (Bull Rev)"
+            patternColor1h := color.rgb(106, 98, 26)
+        else if pattern1h == "Sideways"
+            patternColor1h := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColor1h = timePercentage1h < 25 ? color.new(color.blue, 20) : 
+                      timePercentage1h < 50 ? color.new(color.green, 20) : 
+                      timePercentage1h < 75 ? color.new(color.yellow, 20) : 
+                      color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColor1h = projectedBias1h == "Still Bullish" ? color.green : 
+                          projectedBias1h == "Still Bearish" ? color.red : 
+                          projectedBias1h == "Potential Bullish" ? color.new(color.green, 50) : 
+                          projectedBias1h == "Potential Bearish" ? color.new(color.red, 50) : 
+                          color.gray
+        
+        // Range colors
+        rangeColor1h = rangePercentage1h >= 100 ? color.green : color.red
+        avgRangeColor1h = avgRangePercentage1h >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "1 Hour", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, bias1h, text_color = color.white, bgcolor = biasColor1h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, pattern1h, text_color = color.white, bgcolor = patternColor1h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChange1h, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriod1h, text_color = color.white, bgcolor = phaseColor1h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentage1h, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBias1h, text_color = color.white, bgcolor = projectedColor1h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentage1h, "#.##") + "%", text_color = color.white, bgcolor = rangeColor1h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentage1h, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColor1h, height = cellHeight, text_size = fontSize)
+        row := row + 1
+        
+        // 4 hours
+        [bias4h, pattern4h, percentChange4h, cyclePeriod4h, timePercentage4h, projectedBias4h, rangePercentage4h, avgRangePercentage4h] = getBias("240")
+        biasColor4h = bias4h == "Bullish" ? color.green : bias4h == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColor4h = color.gray
+        if pattern4h == "Normal Bull" or pattern4h == "Breakout Bull"
+            patternColor4h := color.green
+        else if pattern4h == "Normal Bear" or pattern4h == "Breakout Bear"
+            patternColor4h := color.red
+        else if pattern4h == "Anomaly (Bear Rev)" or pattern4h == "Anomaly (Bull Rev)"
+            patternColor4h := color.rgb(124, 113, 18)
+        else if pattern4h == "Sideways"
+            patternColor4h := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColor4h = timePercentage4h < 25 ? color.new(color.blue, 20) : 
+                      timePercentage4h < 50 ? color.new(color.green, 20) : 
+                      timePercentage4h < 75 ? color.new(color.yellow, 20) : 
+                      color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColor4h = projectedBias4h == "Still Bullish" ? color.green : 
+                          projectedBias4h == "Still Bearish" ? color.red : 
+                          projectedBias4h == "Potential Bullish" ? color.new(color.green, 50) : 
+                          projectedBias4h == "Potential Bearish" ? color.new(color.red, 50) : 
+                          color.gray
+        
+        // Range colors
+        rangeColor4h = rangePercentage4h >= 100 ? color.green : color.red
+        avgRangeColor4h = avgRangePercentage4h >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "4 Hours", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, bias4h, text_color = color.white, bgcolor = biasColor4h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, pattern4h, text_color = color.white, bgcolor = patternColor4h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChange4h, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriod4h, text_color = color.white, bgcolor = phaseColor4h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentage4h, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBias4h, text_color = color.white, bgcolor = projectedColor4h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentage4h, "#.##") + "%", text_color = color.white, bgcolor = rangeColor4h, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentage4h, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColor4h, height = cellHeight, text_size = fontSize)
+        row := row + 1
+    
+    // Daily timeframe
+    if showDay
+        [biasD, patternD, percentChangeD, cyclePeriodD, timePercentageD, projectedBiasD, rangePercentageD, avgRangePercentageD] = getBias("D")
+        biasColorD = biasD == "Bullish" ? color.green : biasD == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColorD = color.gray
+        if patternD == "Normal Bull" or patternD == "Breakout Bull"
+            patternColorD := color.green
+        else if patternD == "Normal Bear" or patternD == "Breakout Bear"
+            patternColorD := color.red
+        else if patternD == "Anomaly (Bear Rev)" or patternD == "Anomaly (Bull Rev)"
+            patternColorD := color.rgb(151, 138, 24)
+        else if patternD == "Sideways"
+            patternColorD := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorD = timePercentageD < 25 ? color.new(color.blue, 20) : 
+                     timePercentageD < 50 ? color.new(color.green, 20) : 
+                     timePercentageD < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColorD = projectedBiasD == "Still Bullish" ? color.green : 
+                         projectedBiasD == "Still Bearish" ? color.red : 
+                         projectedBiasD == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasD == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+        
+        // Range colors
+        rangeColorD = rangePercentageD >= 100 ? color.green : color.red
+        avgRangeColorD = avgRangePercentageD >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Daily", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasD, text_color = color.white, bgcolor = biasColorD, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternD, text_color = color.white, bgcolor = patternColorD, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeD, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodD, text_color = color.white, bgcolor = phaseColorD, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageD, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasD, text_color = color.white, bgcolor = projectedColorD, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageD, "#.##") + "%", text_color = color.white, bgcolor = rangeColorD, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageD, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorD, height = cellHeight, text_size = fontSize)
+        row := row + 1
+    
+    // Weekly timeframe
+    if showWeek
+        [biasW, patternW, percentChangeW, cyclePeriodW, timePercentageW, projectedBiasW, rangePercentageW, avgRangePercentageW] = getBias("W")
+        biasColorW = biasW == "Bullish" ? color.green : biasW == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColorW = color.gray
+        if patternW == "Normal Bull" or patternW == "Breakout Bull"
+            patternColorW := color.green
+        else if patternW == "Normal Bear" or patternW == "Breakout Bear"
+            patternColorW := color.red
+        else if patternW == "Anomaly (Bear Rev)" or patternW == "Anomaly (Bull Rev)"
+            patternColorW := color.rgb(154, 141, 25)
+        else if patternW == "Sideways"
+            patternColorW := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorW = timePercentageW < 25 ? color.new(color.blue, 20) : 
+                     timePercentageW < 50 ? color.new(color.green, 20) : 
+                     timePercentageW < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColorW = projectedBiasW == "Still Bullish" ? color.green : 
+                         projectedBiasW == "Still Bearish" ? color.red : 
+                         projectedBiasW == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasW == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+        
+        // Range colors
+        rangeColorW = rangePercentageW >= 100 ? color.green : color.red
+        avgRangeColorW = avgRangePercentageW >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Weekly", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasW, text_color = color.white, bgcolor = biasColorW, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternW, text_color = color.white, bgcolor = patternColorW, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeW, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodW, text_color = color.white, bgcolor = phaseColorW, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageW, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasW, text_color = color.white, bgcolor = projectedColorW, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageW, "#.##") + "%", text_color = color.white, bgcolor = rangeColorW, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageW, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorW, height = cellHeight, text_size = fontSize)
+        row := row + 1
+    
+    // Monthly timeframe
+    if showMonth
+        [biasM, patternM, percentChangeM, cyclePeriodM, timePercentageM, projectedBiasM, rangePercentageM, avgRangePercentageM] = getBias("M")
+        biasColorM = biasM == "Bullish" ? color.green : biasM == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColorM = color.gray
+        if patternM == "Normal Bull" or patternM == "Breakout Bull"
+            patternColorM := color.green
+        else if patternM == "Normal Bear" or patternM == "Breakout Bear"
+            patternColorM := color.red
+        else if patternM == "Anomaly (Bear Rev)" or patternM == "Anomaly (Bull Rev)"
+            patternColorM := color.rgb(135, 123, 16)
+        else if patternM == "Sideways"
+            patternColorM := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorM = timePercentageM < 25 ? color.new(color.blue, 20) : 
+                     timePercentageM < 50 ? color.new(color.green, 20) : 
+                     timePercentageM < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColorM = projectedBiasM == "Still Bullish" ? color.green : 
+                         projectedBiasM == "Still Bearish" ? color.red : 
+                         projectedBiasM == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasM == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+        
+        // Range colors
+        rangeColorM = rangePercentageM >= 100 ? color.green : color.red
+        avgRangeColorM = avgRangePercentageM >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Monthly", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasM, text_color = color.white, bgcolor = biasColorM, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternM, text_color = color.white, bgcolor = patternColorM, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeM, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodM, text_color = color.white, bgcolor = phaseColorM, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageM, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasM, text_color = color.white, bgcolor = projectedColorM, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageM, "#.##") + "%", text_color = color.white, bgcolor = rangeColorM, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageM, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorM, height = cellHeight, text_size = fontSize)
+        row := row + 1
+            
+    // Quarterly timeframe section (continued)
+    if showQuarter
+        [biasQ, patternQ, percentChangeQ, cyclePeriodQ, timePercentageQ, projectedBiasQ, rangePercentageQ, avgRangePercentageQ] = getBias("3M")
+        biasColorQ = biasQ == "Bullish" ? color.green : biasQ == "Bearish" ? color.red : color.gray
+
+        // Pattern color based on type
+        patternColorQ = color.gray
+        if patternQ == "Normal Bull" or patternQ == "Breakout Bull"
+            patternColorQ := color.green
+        else if patternQ == "Normal Bear" or patternQ == "Breakout Bear"
+            patternColorQ := color.red
+        else if patternQ == "Anomaly (Bear Rev)" or patternQ == "Anomaly (Bull Rev)"
+            patternColorQ := color.rgb(124, 113, 17)
+        else if patternQ == "Sideways"
+            patternColorQ := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorQ = timePercentageQ < 25 ? color.new(color.blue, 20) : 
+                     timePercentageQ < 50 ? color.new(color.green, 20) : 
+                     timePercentageQ < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+
+        // Projected bias color
+        projectedColorQ = projectedBiasQ == "Still Bullish" ? color.green : 
+                         projectedBiasQ == "Still Bearish" ? color.red : 
+                         projectedBiasQ == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasQ == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+
+        rangeColorQ = rangePercentageQ >= 100 ? color.green : color.red
+        avgRangeColorQ = avgRangePercentageQ >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Quarterly", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasQ, text_color = color.white, bgcolor = biasColorQ, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternQ, text_color = color.white, bgcolor = patternColorQ, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeQ, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodQ, text_color = color.white, bgcolor = phaseColorQ, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageQ, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasQ, text_color = color.white, bgcolor = projectedColorQ, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageQ, "#.##") + "%", text_color = color.white, bgcolor = rangeColorQ, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageQ, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorQ, height = cellHeight, text_size = fontSize)
+        row := row + 1
+
+    // Semi-Annual timeframe (6 months)
+    if showSemiAnnual
+        [biasSA, patternSA, percentChangeSA, cyclePeriodSA, timePercentageSA, projectedBiasSA, rangePercentageSA, avgRangePercentageSA] = getBias("6M")
+        biasColorSA = biasSA == "Bullish" ? color.green : biasSA == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColorSA = color.gray
+        if patternSA == "Normal Bull" or patternSA == "Breakout Bull"
+            patternColorSA := color.green
+        else if patternSA == "Normal Bear" or patternSA == "Breakout Bear"
+            patternColorSA := color.red
+        else if patternSA == "Anomaly (Bear Rev)" or patternSA == "Anomaly (Bull Rev)"
+            patternColorSA := color.rgb(130, 120, 15)
+        else if patternSA == "Sideways"
+            patternColorSA := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorSA = timePercentageSA < 25 ? color.new(color.blue, 20) : 
+                     timePercentageSA < 50 ? color.new(color.green, 20) : 
+                     timePercentageSA < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColorSA = projectedBiasSA == "Still Bullish" ? color.green : 
+                         projectedBiasSA == "Still Bearish" ? color.red : 
+                         projectedBiasSA == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasSA == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+        
+        // Range colors
+        rangeColorSA = rangePercentageSA >= 100 ? color.green : color.red
+        avgRangeColorSA = avgRangePercentageSA >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Semi-Annual", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasSA, text_color = color.white, bgcolor = biasColorSA, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternSA, text_color = color.white, bgcolor = patternColorSA, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeSA, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodSA, text_color = color.white, bgcolor = phaseColorSA, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageSA, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasSA, text_color = color.white, bgcolor = projectedColorSA, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageSA, "#.##") + "%", text_color = color.white, bgcolor = rangeColorSA, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageSA, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorSA, height = cellHeight, text_size = fontSize)
+        row := row + 1
+
+    
+    // Yearly timeframe
+    if showYear
+        [biasY, patternY, percentChangeY, cyclePeriodY, timePercentageY, projectedBiasY, rangePercentageY, avgRangePercentageY] = getBias("12M")
+        biasColorY = biasY == "Bullish" ? color.green : biasY == "Bearish" ? color.red : color.gray
+        
+        // Pattern color based on type
+        patternColorY = color.gray
+        if patternY == "Normal Bull" or patternY == "Breakout Bull"
+            patternColorY := color.green
+        else if patternY == "Normal Bear" or patternY == "Breakout Bear"
+            patternColorY := color.red
+        else if patternY == "Anomaly (Bear Rev)" or patternY == "Anomaly (Bull Rev)"
+            patternColorY := color.rgb(141, 129, 20)
+        else if patternY == "Sideways"
+            patternColorY := color.blue
+        
+        // Phase color based on completion percentage
+        phaseColorY = timePercentageY < 25 ? color.new(color.blue, 20) : 
+                     timePercentageY < 50 ? color.new(color.green, 20) : 
+                     timePercentageY < 75 ? color.new(color.yellow, 20) : 
+                     color.new(color.red, 20)
+        
+        // Projected bias color
+        projectedColorY = projectedBiasY == "Still Bullish" ? color.green : 
+                         projectedBiasY == "Still Bearish" ? color.red : 
+                         projectedBiasY == "Potential Bullish" ? color.new(color.green, 50) : 
+                         projectedBiasY == "Potential Bearish" ? color.new(color.red, 50) : 
+                         color.gray
+        
+        // Range colors
+        rangeColorY = rangePercentageY >= 100 ? color.green : color.red
+        avgRangeColorY = avgRangePercentageY >= 100 ? color.green : color.red
+        
+        table.cell(biasTable, 0, row, "Yearly", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 1, row, biasY, text_color = color.white, bgcolor = biasColorY, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 2, row, patternY, text_color = color.white, bgcolor = patternColorY, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 3, row, str.tostring(percentChangeY, "#.##") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 4, row, cyclePeriodY, text_color = color.white, bgcolor = phaseColorY, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 5, row, str.tostring(timePercentageY, "#.#") + "%", text_color = color.white, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 6, row, projectedBiasY, text_color = color.white, bgcolor = projectedColorY, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 7, row, str.tostring(rangePercentageY, "#.##") + "%", text_color = color.white, bgcolor = rangeColorY, height = cellHeight, text_size = fontSize)
+        table.cell(biasTable, 8, row, str.tostring(avgRangePercentageY, "#.##") + "%", text_color = color.white, bgcolor = avgRangeColorY, height = cellHeight, text_size = fontSize)

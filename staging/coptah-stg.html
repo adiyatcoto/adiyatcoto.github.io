@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- [MODIFIED] Mengubah initial-scale ke 0.8 untuk zoom out di mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title data-en="The COP TAH Formula: A Revolutionary Pivot System" data-id="Formula COP TAH: Sistem Pivot Revolusioner">The COP TAH Formula: A Revolutionary Pivot System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,9 +24,9 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-primary-bg, #0D1117);
-            color: var(--color-text-primary, #C9D1D9);
-            background: linear-gradient(-45deg, var(--gradient-bg-start, #0a0a0f), var(--gradient-bg-mid1, #0d1117), var(--gradient-bg-mid2, #1a202c), var(--gradient-bg-end, #0d1117));
+            background-color: var(--color-primary-bg);
+            color: var(--color-text-primary);
+            background: linear-gradient(-45deg, var(--gradient-bg-start), var(--gradient-bg-mid1), var(--gradient-bg-mid2), var(--gradient-bg-end));
             background-size: 400% 400%;
             animation: gradient-animation 25s ease infinite;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -33,7 +34,7 @@
             overflow-x: hidden;
         }
 
-        /* Dark mode colors (default) with fallbacks */
+        /* [MODIFIED] Hanya menggunakan Dark mode sebagai tema default */
         :root {
             --color-primary-bg: #0D1117;
             --color-secondary-bg: rgba(22, 27, 34, 0.8);
@@ -84,10 +85,10 @@
 
         /* Header & Navigation */
         .main-header {
-            background: var(--color-secondary-bg, rgba(22, 27, 34, 0.8));
+            background: var(--color-secondary-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            border-bottom: 1px solid var(--color-border);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -107,7 +108,7 @@
             align-items: center;
             gap: 0.75rem;
             font-weight: 600;
-            color: var(--color-text-primary, #C9D1D9);
+            color: var(--color-text-primary);
             text-decoration: none;
             font-size: 1.1rem;
         }
@@ -124,7 +125,7 @@
             font-size: 0.9rem;
         }
         .back-to-portfolio {
-            color: var(--color-text-secondary, #8B949E);
+            color: var(--color-text-secondary);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
@@ -133,18 +134,67 @@
             gap: 0.5rem;
         }
         .back-to-portfolio:hover {
-            color: var(--color-accent, #00A8E8);
+            color: var(--color-accent);
         }
         .header-right {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+        
+        /* [FIXED] Language Toggle Switch Glitch */
+        .language-toggle {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: var(--color-input-bg);
+            border-radius: 9999px;
+            padding: 4px;
+            cursor: pointer;
+            border: 1px solid var(--color-input-border);
+            width: 70px;
+            height: 36px;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Menambahkan overflow hidden untuk memotong artefak render */
+        }
+
+        .language-toggle .toggle-switch {
+            position: absolute;
+            height: calc(100% - 8px);
+            width: calc(50% - 4px);
+            background-color: var(--color-accent);
+            border-radius: 9999px;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            top: 4px;
+            left: 4px;
+        }
+
+        .language-toggle.lang-en .toggle-switch {
+            transform: translateX(100%);
+        }
+
+        .language-toggle .lang-text {
+            flex: 1;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1;
+            transition: color 0.3s ease;
+            color: var(--color-text-secondary);
+            user-select: none;
+        }
+
+        .language-toggle.lang-id .lang-id,
+        .language-toggle.lang-en .lang-en {
+            color: white;
+        }
+
+        /* Mobile menu toggle */
         .mobile-menu-toggle {
             display: none;
             background: none;
             border: none;
-            color: var(--color-text-primary, #C9D1D9);
+            color: var(--color-text-primary);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.5rem;
@@ -159,40 +209,34 @@
             width: 100%;
             max-width: none;
             height: auto;
-            background: var(--color-secondary-bg, rgba(22, 27, 34, 0.8));
+            background: var(--color-secondary-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: none;
-            border-bottom: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            border-bottom: 1px solid var(--color-border);
             padding: 6rem 2rem 2rem;
             transition: top 0.3s ease;
             z-index: 999;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             display: none;
         }
-
         .mobile-menu.active {
             top: 0;
             display: block;
         }
-        .mobile-menu-links {
-            list-style: none;
-            padding: 0;
-        }
-        .mobile-menu-links li {
-            margin-bottom: 2rem;
-        }
+        .mobile-menu-links { list-style: none; padding: 0; }
+        .mobile-menu-links li { margin-bottom: 2.5rem; }
         .mobile-menu-links a {
             text-decoration: none;
-            font-size: 1.25rem;
-            font-weight: 500;
-            transition: color 0.3s ease, transform 0.3s ease;
+            font-size: 1.8rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
             display: block;
             padding: 0.5rem 0;
-            color: var(--color-text-primary, #C9D1D9);
+            color: var(--color-text-primary);
         }
         .mobile-menu-links a:hover {
-            color: var(--color-accent, #00A8E8);
+            color: var(--color-accent);
             transform: translateX(10px);
         }
         .mobile-menu-overlay {
@@ -209,48 +253,40 @@
             transition: all 0.3s ease;
             z-index: 998;
         }
-        .mobile-menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .mobile-menu-overlay.active { opacity: 1; visibility: visible; }
 
-        /* Glassmorphism Card Style */
         .glass-card {
-            background: var(--color-card-bg-transparent, rgba(22, 27, 34, 0.5));
+            background: var(--color-card-bg-transparent);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 1rem;
-            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            border: 1px solid var(--color-border);
             position: relative;
             padding: 2.5rem;
-            box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), 0 0 10px rgba(59, 130, 246, 0.1);
             transition: all 0.3s ease;
-            min-width: 0;
+            box-shadow: 0 0 5px rgba(139, 92, 246, 0.2), 0 0 10px rgba(59, 130, 246, 0.1);
         }
-
         .glass-card:hover {
             transform: translateY(-8px);
-            border-color: var(--color-accent, #00A8E8);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2);
         }
-        
         .glass-card.top-level {
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
         }
-
+        
         /* Typography */
-        h1, h2, h3 { font-family: 'Inter', sans-serif; line-height: 1; color: var(--color-text-primary, #C9D1D9); }
+        h1, h2, h3 { font-family: 'Inter', sans-serif; line-height: 1; color: var(--color-text-primary); }
         h1 { font-size: 3.75rem; font-weight: 800; }
         h2 { font-size: 2.5rem; line-height: 2.5rem; font-weight: 800; }
         h3 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 700; }
-        p { line-height: 1.75; color: var(--color-text-secondary, #8B949E); font-weight: 400; }
+        p { line-height: 1.75; color: var(--color-text-secondary); font-weight: 400; }
 
         .hero-title {
             font-size: 5rem;
             font-weight: 300;
-            background: var(--hero-title-gradient, linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%));
+            background: var(--hero-title-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -261,20 +297,10 @@
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-
-        .hero-subtitle {
-            color: var(--color-accent, #00A8E8);
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-        .hero-author {
-            color: var(--color-text-secondary, #8B949E);
-            font-size: 1.1rem;
-            font-weight: 400;
-        }
-
+        .hero-subtitle { color: var(--color-accent); font-size: 1.5rem; font-weight: 500; }
+        .hero-author { color: var(--color-text-secondary); font-size: 1.1rem; font-weight: 400; }
         .section-title {
-            background: var(--title-gradient, linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%));
+            background: var(--title-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -289,15 +315,10 @@
             text-align: center;
             font-size: 2.25rem;
             font-weight: 700;
-            overflow-wrap: break-word;
-            max-width: 100%;
         }
-        .section-title i {
-            display: none;
-        }
-
+        .section-title i { display: none; }
         .glass-card h3 {
-            background: var(--card-title-gradient, linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%));
+            background: var(--card-title-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -308,228 +329,71 @@
 
         .formula-box {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
-            color: var(--color-text-primary, #C9D1D9);
+            background-color: var(--color-formula-bg-transparent);
+            color: var(--color-formula-text);
             padding: 1rem 1.5rem;
             border-radius: 0.5rem;
-            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            border: 1px solid var(--color-border);
+            overflow-x: auto;
+            white-space: nowrap;
             text-align: center;
             margin-left: auto;
             margin-right: auto;
             display: block;
-            white-space: normal;
-            word-break: break-all;
         }
         .formula-box .highlight-formula {
-            background-color: var(--highlight-formula-bg, rgba(0, 255, 255, 0.3));
-            box-shadow: 0 0 15px var(--highlight-formula-shadow, rgba(0, 255, 255, 0.6));
+            background-color: var(--highlight-formula-bg);
+            box-shadow: 0 0 15px var(--highlight-formula-shadow);
             border-radius: 4px;
             padding: 2px 6px;
             transition: all 0.3s ease-in-out;
-            color: var(--highlight-formula-text, #C9D1D9);
+            color: var(--highlight-formula-text);
         }
         
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        .btn-active {
-            background: linear-gradient(90deg, #3B82F6, var(--color-accent, #00A8E8));
-            color: white;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-        }
-        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--color-accent-hover, #00BFFF); }
-        .btn-inactive {
-            background-color: var(--color-button-inactive-bg, rgba(31, 41, 55, 0.5));
-            color: var(--color-button-inactive-text, #9ca3af);
-        }
-        .btn-inactive:hover { background-color: var(--color-border, rgba(48, 54, 61, 0.6)); color: var(--color-text-primary, #C9D1D9); }
-        .highlight { color: var(--color-accent, #00A8E8); font-weight: 600; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+        .btn-active { background: linear-gradient(90deg, #3B82F6, var(--color-accent)); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--color-accent-hover); }
+        .btn-inactive { background-color: var(--color-button-inactive-bg); color: var(--color-button-inactive-text); }
+        .btn-inactive:hover { background-color: var(--color-border); color: var(--color-text-primary); }
+        .highlight { color: var(--color-accent); font-weight: 600; }
         
         .chart-container {
             position: relative;
             width: 100%;
             height: 500px;
-            background-color: var(--color-chart-bg-transparent, rgba(13, 17, 23, 0.7));
+            background-color: var(--color-chart-bg-transparent);
             border-radius: 0.5rem;
             padding: 20px;
             box-sizing: border-box;
-            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
+            border: 1px solid var(--color-border);
             overflow: hidden;
-            min-width: 0;
         }
-        .pivot-line {
-            position: absolute;
-            height: 1px;
-            transform-origin: left;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .pivot-label-box {
-            position: absolute;
-            font-size: 11px;
-            padding: 2px 5px;
-            border-radius: 4px;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            color: #ffffff;
-            font-weight: 500;
-            z-index: 10;
-        }
+        .pivot-line { position: absolute; height: 1px; transform-origin: left; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .pivot-label-box { position: absolute; font-size: 11px; padding: 2px 5px; border-radius: 4px; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); color: #ffffff; font-weight: 500; z-index: 10; }
+        .distance-bar { transition: all 0.5s ease-in-out; border-radius: 2px; }
         
-        input[type=range] {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 4px;
-            background: var(--color-accent, #00A8E8);
-            border-radius: 5px; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 18px; height: 18px;
-            background: var(--color-accent, #00A8E8);
-            cursor: pointer; border-radius: 50%;
-            border: 2px solid var(--color-primary-bg, #0D1117);
-            box-shadow: 0 0 10px var(--color-accent, #00A8E8);
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 18px; height: 18px;
-            background: var(--color-accent, #00A8E8);
-            cursor: pointer; border-radius: 50%;
-            border: 2px solid var(--color-primary-bg, #0D1117);
-            box-shadow: 0 0 10px var(--color-accent, #00A8E8);
-        }
+        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: var(--color-accent); border-radius: 5px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--color-accent); cursor: pointer; border-radius: 50%; border: 2px solid var(--color-primary-bg); box-shadow: 0 0 10px var(--color-accent); }
+        input[type=range]::-moz-range-thumb { width: 18px; height: 18px; background: var(--color-accent); cursor: pointer; border-radius: 50%; border: 2px solid var(--color-primary-bg); box-shadow: 0 0 10px var(--color-accent); }
 
-        .tab-button.active {
-            background: linear-gradient(90deg, #3B82F6, var(--color-accent, #00A8E8));
-            color: white;
-            box-shadow: 0 0 15px rgba(0, 168, 232, 0.3);
-        }
-        .tab-button.inactive {
-            background-color: var(--color-button-inactive-bg, rgba(31, 41, 55, 0.5));
-            color: var(--color-button-inactive-text, #9ca3af);
-        }
-        .tab-button.inactive:hover {
-            background-color: var(--color-border, rgba(48, 54, 61, 0.6));
-            color: var(--color-text-primary, #C9D1D9);
-        }
-        .tab-content {
-            display: none;
-            padding: 1.5rem;
-            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
-            border-radius: 0.5rem;
-            margin-top: -1px;
-            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
-        }
+        .tab-button.active { background: linear-gradient(90deg, #3B82F6, var(--color-accent)); color: white; box-shadow: 0 0 15px rgba(0, 168, 232, 0.3); }
+        .tab-button.inactive { background-color: var(--color-button-inactive-bg); color: var(--color-button-inactive-text); }
+        .tab-button.inactive:hover { background-color: var(--color-border); color: var(--color-text-primary); }
+        .tab-content { display: none; padding: 1.5rem; background-color: var(--color-formula-bg-transparent); border-radius: 0.5rem; margin-top: -1px; border: 1px solid var(--color-border); }
         .tab-content.active { display: block; }
 
-        .explanation-box {
-            transition: all 0.5s ease-in-out;
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-        }
-        .explanation-box.show {
-            max-height: 500px;
-            opacity: 1;
-            margin-top: 1.5rem;
-        }
-        .explanation-box.show {
-            background-color: var(--color-formula-bg-transparent, rgba(13, 17, 23, 0.5));
-            border-color: var(--color-border, rgba(48, 54, 61, 0.6));
-        }
-        .explanation-box.show.border-cyan-500\/30 {
-            border-color: var(--color-accent, #00A8E8);
-        }
+        .explanation-box { transition: all 0.5s ease-in-out; max-height: 0; overflow: hidden; opacity: 0; }
+        .explanation-box.show { max-height: 500px; opacity: 1; margin-top: 1.5rem; background-color: var(--color-formula-bg-transparent); border-color: var(--color-border); }
+        .explanation-box.show.border-cyan-500\/30 { border-color: var(--color-accent); }
 
-        .nav-link {
-            color: var(--color-text-secondary, #8B949E);
-            font-weight: 600;
-            transition: color 0.3s ease, border-bottom-color 0.3s ease;
-            padding-bottom: 8px;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-link:hover {
-            color: var(--color-text-primary, #C9D1D9);
-        }
-        .nav-link.active {
-            color: var(--color-accent, #00A8E8);
-            border-bottom-color: var(--color-accent, #00A8E8);
-        }
+        .nav-link { color: var(--color-text-secondary); font-weight: 600; transition: color 0.3s ease, border-bottom-color 0.3s ease; padding-bottom: 8px; border-bottom: 2px solid transparent; }
+        .nav-link:hover { color: var(--color-text-primary); }
+        .nav-link.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
 
-        .btn-download-primary {
-            background: var(--color-accent, #00A8E8);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .btn-download-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--color-accent-hover, #00BFFF);
-        }
-        .btn-download-secondary {
-            color: var(--color-accent, #00A8E8);
-            text-decoration: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: transparent;
-            border: 2px solid var(--color-accent, #00A8E8);
-        }
-        .btn-download-secondary:hover {
-            background: var(--color-accent, #00A8E8);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .lang-switch {
-            position: relative;
-            display: flex;
-            align-items: center;
-            background-color: var(--color-input-bg, #0F131A);
-            border-radius: 9999px;
-            padding: 4px;
-            border: 1px solid var(--color-border, rgba(48, 54, 61, 0.6));
-            cursor: pointer;
-        }
-        .lang-option {
-            padding: 4px 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--color-text-secondary, #8B949E);
-            z-index: 1;
-            transition: color 0.3s ease;
-        }
-        .lang-switch .lang-glider {
-            position: absolute;
-            top: 4px;
-            bottom: 4px;
-            width: calc(50% - 4px);
-            background-color: var(--color-accent, #00A8E8);
-            border-radius: 9999px;
-            transition: transform 0.3s ease;
-            z-index: 0;
-        }
-        .lang-switch.lang-id-active .lang-glider {
-            transform: translateX(0%);
-        }
-        .lang-switch.lang-en-active .lang-glider {
-            transform: translateX(100%);
-        }
-        .lang-switch.lang-id-active .lang-option.lang-id,
-        .lang-switch.lang-en-active .lang-option.lang-en {
-            color: white;
-        }
-
+        .btn-download-primary { background: var(--color-accent); color: white; padding: 1rem 2rem; border: none; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn-download-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--color-accent-hover); }
+        .btn-download-secondary { color: var(--color-accent); text-decoration: none; padding: 1rem 2rem; border-radius: 50px; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; background: transparent; border: 2px solid var(--color-accent); }
+        .btn-download-secondary:hover { background: var(--color-accent); color: white; transform: translateY(-2px); }
 
         /* Responsive adjustments */
         @media (max-width: 1024px) {
@@ -542,7 +406,7 @@
 
         @media (max-width: 768px) {
             .header-container { padding: 0 1rem; }
-            .back-to-portfolio span { display: none; }
+            .back-to-portfolio .text-content { display: none; }
             .mobile-menu-toggle { display: flex; }
             .main-nav-links { display: none; }
             .hero-title { font-size: 2.5rem; }
@@ -552,48 +416,27 @@
             .flex.justify-center.md\:justify-start { justify-content: center; }
             .chart-container { height: 300px; }
             .pivot-label-box { font-size: 10px; padding: 1px 3px; }
+            .formula-box { font-size: 0.9rem; }
             .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
-
-            .formula-box { font-size: 0.8rem; }
-
-            #visualizer input[type=range] {
-                display: none;
-            }
-            #visualizer .flex.items-center.space-x-3 {
-                display: block;
-            }
-            #visualizer input[type=number] {
-                width: 100%;
-            }
         }
 
         @media (min-width: 769px) {
             .mobile-menu-toggle { display: none; }
-            .mobile-menu {
-                display: none !important;
-            }
+            .mobile-menu { display: none !important; }
         }
 
         @media (prefers-reduced-motion: reduce) {
             body, .main-header, .btn, .tab-button, .glass-card,
-            .formula-box .highlight-formula, .pivot-line, .pivot-label-box,
+            .formula-box .highlight-formula, .pivot-line, .pivot-label-box, .distance-bar,
             input[type=range]::-webkit-slider-thumb, input[type=range]::-moz-range-thumb,
-            .explanation-box, .nav-link, .btn-download-primary, .btn-download-secondary {
+            .explanation-box, .nav-link, .btn-download-primary, .btn-download-secondary, .language-toggle .toggle-switch {
                 animation: none !important;
                 transition: none !important;
             }
         }
 
-        .flare-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-        }
+        /* [FIXED] Dynamic Flare Background for iOS */
+        .flare-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
         .flare-item {
             position: absolute;
             width: 300px;
@@ -603,50 +446,43 @@
             filter: blur(50px);
             animation-iteration-count: infinite;
             animation-timing-function: ease-in-out;
-            background: radial-gradient(circle at center, var(--flare-color-center) 0%, var(--flare-color-edge) 70%, transparent 100%);
+            /* [FIXED] Menambahkan transform: translateZ(0) untuk hardware acceleration di iOS */
+            transform: translateZ(0);
+            /* [FIXED] Menghapus properti background yang salah dengan variabel tidak terdefinisi */
         }
-        @keyframes flare-sweep-glow {
-            0% { transform: translate(-50vw, -50vh) scale(0.5) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            50% { transform: translate(70vw, -20vh) scale(1.2) rotate(180deg); opacity: 0.8; }
-            90% { opacity: 0.3; }
-            100% { transform: translate(120vw, 120vh) scale(0.5) rotate(360deg); opacity: 0; }
-        }
+
+        @keyframes flare-sweep-glow { 0% { transform: translate(-50vw, -50vh) scale(0.5) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 50% { transform: translate(70vw, -20vh) scale(1.2) rotate(180deg); opacity: 0.8; } 90% { opacity: 0.3; } 100% { transform: translate(120vw, 120vh) scale(0.5) rotate(360deg); opacity: 0; } }
         .flare-item:nth-child(1) { background: radial-gradient(circle at center, var(--flare-color-1) 0%, transparent 70%); animation: flare-sweep-glow 20s infinite alternate; left: 10%; top: 20%; }
         .flare-item:nth-child(2) { background: radial-gradient(circle at center, var(--flare-color-2) 0%, transparent 70%); animation: flare-sweep-glow 25s infinite alternate; left: 80%; top: 50%; animation-delay: 5s; }
         .flare-item:nth-child(3) { background: radial-gradient(circle at center, var(--flare-color-3) 0%, transparent 70%); animation: flare-sweep-glow 18s infinite alternate; left: 30%; top: 70%; animation-delay: 10s; }
         .flare-item:nth-child(4) { background: radial-gradient(circle at center, var(--flare-color-4) 0%, transparent 70%); animation: flare-sweep-glow 22s infinite alternate; left: 60%; top: 10%; animation-delay: 2s; }
         .flare-item:nth-child(5) { background: radial-gradient(circle at center, var(--flare-color-5) 0%, transparent 70%); animation: flare-sweep-glow 28s infinite alternate; left: 0%; top: 90%; animation-delay: 7s; }
 
-        .glass-card svg text { fill: var(--color-svg-text-default, #8B949E); }
-        .glass-card svg line { stroke: var(--color-svg-line-default, #8B949E); }
-        .glass-card svg .stroke-red-400 { stroke: var(--color-svg-line-r, #EF4444); }
-        .glass-card svg .fill-red-400 { fill: var(--color-svg-label-r, #EF4444); }
-        .glass-card svg .stroke-green-400 { stroke: var(--color-svg-line-s, #22C55E); }
-        .glass-card svg .fill-green-400 { fill: var(--color-svg-label-s, #22C55E); }
-        .glass-card svg .stroke-blue-400 { stroke: var(--color-svg-line-pp, #00ffff); }
-        .glass-card svg .fill-blue-400 { fill: var(--color-svg-label-pp, #00ffff); }
+        /* SVG styles */
+        .glass-card svg text { fill: var(--color-svg-text-default); }
+        .glass-card svg line { stroke: var(--color-svg-line-default); }
+        .glass-card svg .stroke-red-400 { stroke: var(--color-svg-line-r); }
+        .glass-card svg .fill-red-400 { fill: var(--color-svg-label-r); }
+        .glass-card svg .stroke-green-400 { stroke: var(--color-svg-line-s); }
+        .glass-card svg .fill-green-400 { fill: var(--color-svg-label-s); }
+        .glass-card svg .stroke-blue-400 { stroke: var(--color-svg-line-pp); }
+        .glass-card svg .fill-blue-400 { fill: var(--color-svg-label-pp); }
         .svg-label-id { font-size: 0.6rem; }
         .svg-label-en { font-size: 0.75rem; }
     </style>
 </head>
-<body class="antialiased" data-theme="dark">
+<body class="antialiased">
 
-    <!-- Dynamic Flare Background -->
-    <div class="flare-background">
-        <div class="flare-item"></div>
-        <div class="flare-item"></div>
-        <div class="flare-item"></div>
-        <div class="flare-item"></div>
-        <div class="flare-item"></div>
-    </div>
+    <div class="flare-background"></div>
 
-    <!-- Header & Navigation -->
     <header class="main-header">
         <div class="header-container">
             <a href="/index.html#projects" class="header-logo">
                 <div class="header-logo-icon">AC</div>
-                <span class="back-to-portfolio" data-en="Back to Portfolio" data-id="Kembali ke Portofolio"><i data-lucide="arrow-left"></i> Back to Portfolio</span>
+                <span class="back-to-portfolio" data-en="Back to Portfolio" data-id="Kembali ke Portofolio">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> 
+                    <span class="text-content">Back to Portfolio</span>
+                </span>
             </a>
             <nav class="main-nav-links hidden md:flex space-x-6 md:space-x-10">
                 <a href="#abstract" class="nav-link" data-en="Abstract" data-id="Abstrak">Abstract</a>
@@ -657,10 +493,10 @@
                 <a href="#download-whitepaper" class="nav-link" data-en="Download Whitepaper" data-id="Unduh Whitepaper">Download Whitepaper</a>
             </nav>
             <div class="header-right">
-                <div id="language-toggle" class="lang-switch">
-                    <div class="lang-glider"></div>
-                    <span class="lang-option lang-id">ID</span>
-                    <span class="lang-option lang-en">EN</span>
+                <div id="language-toggle" class="language-toggle">
+                    <div class="toggle-switch"></div>
+                    <span class="lang-text lang-id">ID</span>
+                    <span class="lang-text lang-en">EN</span>
                 </div>
                 <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Open mobile menu" aria-expanded="false"><i data-lucide="menu"></i></button>
             </div>
@@ -723,6 +559,7 @@
                     <button id="btn-60" class="btn btn-inactive" data-en="60% Historical" data-id="60% Historis">60% Historical</button>
                     <button id="btn-40" class="btn btn-active" data-en="40% Bias" data-id="40% Bias">40% Bias</button>
                 </div>
+                <!-- Explanation Boxes -->
                 <div id="explanation-historical" class="explanation-box">
                     <h3 class="font-bold text-white mb-2" data-en="The Historical Context (60%)" data-id="Konteks Historis (60%)">The Historical Context (60%)</h3>
                     <p class="text-gray-300" data-en="This component, comprising the Previous Day's Open, High, and Low, accounts for three of the five factors in the formula (60%). It grounds the calculation in established fact—the completed price action of the prior session. This provides a stable, objective baseline that represents the market's historical equilibrium before the current session's sentiment is introduced." data-id="Komponen ini, yang terdiri dari Pembukaan, Tertinggi, dan Terendah Hari Sebelumnya, menyumbang tiga dari lima faktor dalam formula (60%). Ini mendasari perhitungan pada fakta yang telah ditetapkan—aksi harga yang telah selesai dari sesi sebelumnya. Ini memberikan dasar yang stabil dan objektif yang mewakili keseimbangan historis pasar sebelum sentimen sesi saat ini diperkenalkan.">This component, comprising the Previous Day's Open, High, and Low, accounts for three of the five factors in the formula (60%).  It grounds the calculation in established fact—the completed price action of the prior session. This provides a stable, objective baseline that represents the market's historical equilibrium before the current session's sentiment is introduced.</p>
@@ -731,6 +568,7 @@
                     <h3 class="font-bold text-white mb-2" data-en="The Dynamic Bias (40%)" data-id="Bias Dinamis (40%)">The Dynamic Bias (40%)</h3>
                     <p class="text-gray-300" data-en="This is the revolutionary core of the formula. By giving the Current Open a double weighting (two of the five factors, or 40%), the system becomes <span class='text-cyan-300'>forward-looking and bias-aware</span>. It immediately incorporates the most recent market sentiment—the psychology at the moment the new session begins—to dynamically shift the entire pivot structure up or down, making the levels instantly adaptive." data-id="Ini adalah inti revolusioner dari formula. Dengan memberikan bobot ganda pada Pembukaan Saat Ini (dua dari lima faktor, atau 40%), sistem menjadi <span class='text-cyan-300'>berwawasan ke depan dan sadar bias</span>. Ini segera menggabungkan sentimen pasar terbaru—psikologi pada saat sesi baru dimulai—untuk secara dinamis menggeser seluruh struktur pivot ke atas atau ke bawah, membuat level-level tersebut langsung adaptif.">This is the revolutionary core of the formula. By giving the Current Open a double weighting (two of the five factors, or 40%), the system becomes <span class="text-cyan-300">forward-looking and bias-aware</span>. It immediately incorporates the most recent market sentiment—the psychology at the moment the new session begins—to dynamically shift the entire pivot structure up or down, making the levels instantly adaptive.</p>
                 </div>
+                <!-- Footnote -->
                 <div class="mt-6 pt-6 border-t border-gray-700/50">
                     <p class="text-sm text-gray-500 italic text-center" data-en="*A key departure from traditional pivots: Notice the deliberate omission of the `Close` price. This formula prioritizes opening sentiment over the closing settlement, a core tenet of its forward-looking philosophy." data-id="*Perbedaan utama dari pivot tradisional: Perhatikan penghilangan harga `Penutupan` secara sengaja. Formula ini memprioritaskan sentimen pembukaan daripada penyelesaian penutupan, sebuah prinsip inti dari filosofi berwawasan ke depan.">
                         *A key departure from traditional pivots: Notice the deliberate omission of the `Close` price. This formula prioritizes opening sentiment over the closing settlement, a core tenet of its forward-looking philosophy.
@@ -775,6 +613,7 @@
                 <p class="text-lg text-center mb-8" data-en="The formula's core strength is how it translates opening sentiment into the pivot structure. See how the levels shift based on the relationship between the previous open and the current open." data-id="Kekuatan inti formula adalah bagaimana ia menerjemahkan sentimen pembukaan ke dalam struktur pivot. Lihat bagaimana level bergeser berdasarkan hubungan antara pembukaan sebelumnya dan pembukaan saat ini.">The formula's core strength is how it translates opening sentiment into the pivot structure. See how the levels shift based on the relationship between the previous open and the current open.</p>
                 
                 <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Bullish Bias Visualization -->
                     <div class="glass-card !p-6 max-w-none mx-0">
                         <h3 class="text-xl font-bold text-center text-green-400 mb-4 flex items-center justify-center gap-3" data-en="Bullish Bias" data-id="Bias Bullish">
                             <i data-lucide="trending-up"></i>
@@ -796,6 +635,7 @@
                         </svg>
                         <p class="text-center mt-4 text-gray-400" data-en="When <span class='text-green-400'>CurrOpen > PrevOpen</span>, the entire pivot structure is shifted <span class='font-bold text-white'>UPWARDS</span>." data-id="Ketika <span class='text-green-400'>Pembukaan Saat Ini > Pembukaan Sebelumnya</span>, seluruh struktur pivot digeser <span class='font-bold text-white'>KE ATAS</span>.">When <span class="text-green-400">CurrOpen > PrevOpen</span>, the entire pivot structure is shifted <span class="font-bold text-white">UPWARDS</span>.</p>
                     </div>
+                    <!-- Bearish Bias Visualization -->
                     <div class="glass-card !p-6 max-w-none mx-0">
                         <h3 class="text-xl font-bold text-center text-red-400 mb-4 flex items-center justify-center gap-3" data-en="Bearish Bias" data-id="Bias Bearish">
                             <i data-lucide="trending-down"></i>
@@ -810,7 +650,7 @@
                                 <line x1="120" y1="65" x2="180" y2="65" stroke="var(--color-svg-line-s)" stroke-width="1.5" stroke-dasharray="3 3"/>
                                 <text x="100" y="68" class="text-xs font-semibold svg-label" fill="var" text-anchor="left" dominant-baseline="left" data-en="CO" data-id="CO">Curr Open</text>
                                 <line x1="120" y1="47" x2="180" y2="47" stroke="var(--color-svg-line-r)" stroke-width="1"/>
-                                <text x="195" y="48" class="text-xs" fill="var(--color-svg-label-r)" text-anchor="end" dominant-baseline="middle">PP</text>
+                                <text x="195" y="48" class="text-xs" fill="var(--color-svg-line-r)" text-anchor="end" dominant-baseline="middle">PP</text>
                                 <line x1="120" y1="90" x2="180" y2="90" stroke="var(--color-svg-line-s)" stroke-width="1"/>
                                 <text x="195" y="90" class="text-xs" fill="var(--color-svg-label-s)" text-anchor="end" dominant-baseline="middle">S1</text>
                             </g>
@@ -823,7 +663,7 @@
 
         <!-- Combined Visualizer and Analysis Section -->
         <section id="visualizer" class="grid lg:grid-cols-2 gap-8 items-start">
-            <div class="glass-card h-full flex flex-col">
+            <div class="glass-card top-level h-full flex flex-col">
                  <h2 class="section-title text-center mb-8" data-en="Interactive Real-Time Visualizer" data-id="Visualisator Interaktif Waktu Nyata">
                     Interactive Real-Time Visualizer
                 </h2>
@@ -863,18 +703,18 @@
                 </div>
             </div>
             
-            <div class="glass-card h-full flex flex-col">
+            <div class="glass-card top-level h-full flex flex-col">
                 <h2 class="section-title text-center mb-2" data-en="Harmonic Analysis" data-id="Analisis Harmonik">
                     Harmonic Analysis
                 </h2>
-                <div class="text-center mx-auto flex-shrink-0">
+                <div class="text-center max-w-3xl mx-auto flex-shrink-0">
                     <p class="text-lg mb-2" data-en="This analysis examines the <span class='highlight'>deviation</span> of each level from the central Pivot Point. Harmoniously expanding or contracting distances can indicate potential trend continuation or consolidation." data-id="Analisis ini menguji <span class='highlight'>deviasi</span> setiap level dari Titik Pivot pusat. Jarak yang memuai atau menyusut secara harmonis dapat menunjukkan kelanjutan tren atau konsolidasi yang potensial.">This analysis examines the <span class="highlight">deviation</span> of each level from the central Pivot Point. Harmoniously expanding or contracting distances can indicate potential trend continuation or consolidation.</p>
                     <p class="text-lg mb-6" data-en="These patterns, especially those approaching the Golden Ratio ($\phi \approx 1.618$), are often considered natural equilibrium zones in the market." data-id="Pola-pola ini, terutama yang mendekati Rasio Emas ($\phi \approx 1.618$), sering dianggap sebagai zona keseimbangan alami di pasar.">These patterns, especially those approaching the Golden Ratio ($\phi \approx 1.618$), are often considered natural equilibrium zones in the market.</p>
                 </div>
-                <div class="w-full p-4 glass-card flex-grow flex flex-col">
-                    <div id="distance-chart-container" class="relative w-full h-64 flex-grow"></div>
-                    <div class="space-y-3 flex-shrink-0 mt-4">
-                        <p data-en="<strong class='text-cyan-300'>How to Read the Chart:</strong> The chart shows the deviation of each S/R level from the central PP. Each point is labeled, colored, and connected to show the harmonic expansion." data-id="<strong class='text-cyan-300'>Cara Membaca Grafik:</strong> Grafik ini menunjukkan deviasi setiap level S/R dari PP pusat. Setiap titik diberi label, warna, dan dihubungkan untuk menunjukkan ekspansi harmonik."><strong class="text-cyan-300">How to Read the Chart:</strong> The chart shows the deviation of each S/R level from the central PP. Each point is labeled, colored, and connected to show the harmonic expansion.</p>
+                <div class="w-full max-w-4xl mx-auto p-4 glass-card flex-grow flex flex-col">
+                    <div id="distance-chart-container" class="relative h-64 flex items-end justify-center space-x-1 mb-4 flex-grow"></div>
+                    <div class="space-y-3 flex-shrink-0">
+                        <p data-en="<strong class='text-cyan-300'>How to Read the Chart:</strong> The chart visualizes the total distance of each level from the central Pivot Point (PP). Progressively taller bars signify <span class='text-white'>greater deviation from equilibrium</span>. Bars that glow have a distance ratio approaching the Golden Ratio, as shown in the table." data-id="<strong class='text-cyan-300'>Cara Membaca Grafik:</strong> Grafik memvisualisasikan total jarak setiap level dari Titik Pivot pusat (PP). Batang yang semakin tinggi menandakan <span class='text-white'>deviasi yang lebih besar dari keseimbangan</span>. Batang yang bersinar memiliki rasio jarak yang mendekati Rasio Emas, seperti yang ditunjukkan dalam tabel."><strong class="text-cyan-300">How to Read the Chart:</strong> The chart visualizes the total distance of each level from the central Pivot Point (PP). Progressively taller bars signify <span class="text-white">greater deviation from equilibrium</span>. Bars that glow have a distance ratio approaching the Golden Ratio, as shown in the table.</p>
                     </div>
                 </div>
             </div>
@@ -1023,12 +863,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
     // --- Interactive Calculator ---
     const chartContainer = document.getElementById('chartContainer');
     const levelsOutput = document.getElementById('levels-output');
     const inputIds = ['prevOpen', 'prevHigh', 'prevLow', 'currOpen'];
     const distanceChartContainer = document.getElementById('distance-chart-container');
-    const svgNS = "http://www.w3.org/2000/svg";
 
     function calculateAndVisualize() {
         const values = {};
@@ -1051,6 +891,14 @@ document.addEventListener('DOMContentLoaded', function() {
             S5: (pp * 4) - ((4 * prevHigh) - prevLow)
         };
 
+        // [FIXED] Moved data calculation to a higher scope
+        const resistanceData = ['R1', 'R2', 'R3', 'R4', 'R5'].map(levelName => ({ name: levelName, type: 'R', dist: Math.abs(levels[levelName] - pp) }));
+        resistanceData.forEach((data, i) => data.ratio = (i > 0) ? (data.dist / resistanceData[i - 1].dist) : 0);
+
+        const supportData = ['S1', 'S2', 'S3', 'S4', 'S5'].map(levelName => ({ name: levelName, type: 'S', dist: Math.abs(levels[levelName] - pp) }));
+        supportData.forEach((data, i) => data.ratio = (i > 0) ? (data.dist / supportData[i - 1].dist) : 0);
+
+
         const allValues = Object.values(levels).concat([prevHigh, prevLow, prevOpen, currOpen]);
         const chartMax = Math.max(...allValues);
         const chartMin = Math.min(...allValues);
@@ -1064,6 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const chartWidth = chartContainer ? chartContainer.clientWidth : 0;
         
+        // Draw Previous Day Candlestick
         const wickTop = getY(prevHigh);
         const wickBottom = getY(prevLow);
         const prevDayX = chartWidth * 0.1;
@@ -1071,12 +920,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const candleWick = document.createElement('div');
         Object.assign(candleWick.style, {
             position: 'absolute', left: `${prevDayX + 7}px`, top: `${wickTop}%`, height: `${wickBottom - wickTop}%`,
-            backgroundColor: 'var(--color-prev-day, #9ca3af)', width: '2px'
+            backgroundColor: 'var(--color-prev-day)', width: '2px'
         });
         if(chartContainer) chartContainer.appendChild(candleWick);
 
         const isBullish = currOpen > prevOpen;
-        const candleBodyColor = isBullish ? 'var(--color-level-s, #22C55E)' : 'var(--color-level-r, #EF4444)';
+        const candleBodyColor = isBullish ? 'var(--color-level-s)' : 'var(--color-level-r)';
 
         const bodyTopY = getY(Math.max(prevOpen, currOpen));
         const bodyBottomY = getY(Math.min(prevOpen, currOpen));
@@ -1091,31 +940,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if(chartContainer) chartContainer.appendChild(candleBody);
         
         const prevDayLabel = document.createElement('span');
-        prevDayLabel.textContent = chartWidth < 200 ? 'Prev' : (currentLanguage === 'en' ? 'Prev Day' : 'Hari Lalu');
+        prevDayLabel.textContent = currentLanguage === 'en' ? 'Prev Day' : 'Hari Sblm';
         Object.assign(prevDayLabel.style, {
             position: 'absolute', top: `${wickBottom + 2}%`, left: `${prevDayX - 10}px`,
-            color: 'var(--color-prev-day, #9ca3af)', fontSize: '12px', whiteSpace: 'nowrap'
+            color: 'var(--color-prev-day)', fontSize: '12px'
         });
         if(chartContainer) chartContainer.appendChild(prevDayLabel);
 
+        // Draw Current Open Line
         const currOpenY = getY(currOpen);
         const currOpenLine = document.createElement('div');
         Object.assign(currOpenLine.style, {
             position: 'absolute', top: `${currOpenY}%`, left: '0', right: '0', height: '1px',
-            borderTop: `1px dashed var(--color-curr-open-line, #00ffff)`, opacity: '0.8'
+            borderTop: `1px dashed var(--color-curr-open-line)`, opacity: '0.8'
         });
         if(chartContainer) chartContainer.appendChild(currOpenLine);
-        
         const currOpenLabel = document.createElement('div');
-        currOpenLabel.textContent = chartWidth < 250 ? `${currOpen.toFixed(2)}` : `${currentLanguage === 'en' ? 'Curr Open' : 'Buka'}: ${currOpen.toFixed(2)}`;
+        currOpenLabel.textContent = `${currentLanguage === 'en' ? 'Curr Open' : 'Buka Saat Ini'}: ${currOpen.toFixed(2)}`;
         Object.assign(currOpenLabel.style, {
             position: 'absolute', top: `${currOpenY}%`, left: '10px', transform: 'translateY(-120%)',
-            color: 'var(--color-curr-open-label-text, #00ffff)', fontSize: '12px', fontWeight: 'bold',
-            backgroundColor: 'var(--color-curr-open-label-bg, rgba(13, 17, 23, 0.8))', padding: '2px 4px', borderRadius: '4px', whiteSpace: 'nowrap'
+            color: 'var(--color-curr-open-label-text)', fontSize: '12px', fontWeight: 'bold',
+            backgroundColor: 'var(--color-curr-open-label-bg)', padding: '2px 4px', borderRadius: '4px'
         });
         if(chartContainer) chartContainer.appendChild(currOpenLabel);
 
-        const levelColors = { R: 'var(--color-level-r, #EF4444)', S: 'var(--color-level-s, #22C55E)', PP: 'var(--color-level-pp, #F59E0B)' };
+        // Draw Pivot Lines
+        const levelColors = { R: 'var(--color-level-r)', S: 'var(--color-level-s)', PP: 'var(--color-level-pp)' };
         const allLevelsSorted = Object.entries(levels).sort((a, b) => b[1] - a[1]); 
 
         allLevelsSorted.forEach(([name, value]) => {
@@ -1134,201 +984,126 @@ document.addEventListener('DOMContentLoaded', function() {
             Object.assign(label.style, {
                 top: `${y}%`, right: '10px', transform: 'translateY(-50%)', backgroundColor: color, color: '#FFFFFF'
             });
-            label.textContent = chartWidth < 250 ? `${name}` : `${name}: ${value.toFixed(2)}`;
+            label.textContent = `${name}: ${value.toFixed(2)}`;
             
             if(chartContainer) chartContainer.appendChild(line);
             if(chartContainer) chartContainer.appendChild(label);
         });
         
-        if(levelsOutput) levelsOutput.innerHTML = '';
-        let levelsHTML = `<h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">${currentLanguage === 'en' ? 'Calculated Levels' : 'Level Terhitung'}</h3><div class="space-y-2 text-sm font-mono">`;
-        allLevelsSorted.forEach(([name, value]) => {
-            const color = name.startsWith('R') ? levelColors.R : name.startsWith('S') ? levelColors.S : levelColors.PP;
-            levelsHTML += `<div class="flex justify-between items-center gap-2">
-                <span style="color:${color}; font-weight:600;">${name}</span>
-                <span style="color:var(--color-text-primary, #C9D1D9);">${value.toFixed(3)}</span>
-            </div>`;
-        });
-        levelsHTML += `</div>`;
-        
-        levelsHTML += `<h3 class="font-bold text-white mt-6 mb-4 border-b border-gray-700 pb-2">${currentLanguage === 'en' ? 'Distance Analysis' : 'Analisis Jarak'}</h3>`;
-        
-        levelsHTML += `<div class="text-xs space-y-3 mt-3">`;
-        
-        const resistanceData = ['R1', 'R2', 'R3', 'R4', 'R5'].map(levelName => ({
-            name: levelName, type: 'R', dist: Math.abs(levels[levelName] - pp)
-        }));
-        for (let i = 0; i < resistanceData.length; i++) {
-            resistanceData[i].ratio = (i > 0) ? (resistanceData[i].dist / resistanceData[i - 1].dist) : 0;
-        }
-
-        const supportData = ['S1', 'S2', 'S3', 'S4', 'S5'].map(levelName => ({
-            name: levelName, type: 'S', dist: Math.abs(levels[levelName] - pp)
-        }));
-        for (let i = 0; i < supportData.length; i++) {
-            supportData[i].ratio = (i > 0) ? (supportData[i].dist / supportData[i - 1].dist) : 0;
-        }
-
-        levelsHTML += `<div class="font-bold" style="color:var(--color-level-r, #EF4444)">${currentLanguage === 'en' ? 'Resistance Deviation' : 'Deviasi Resistance'}</div>`;
-        resistanceData.slice().reverse().forEach(data => {
-            const { name, dist, ratio } = data;
-            let ratioStyle = `color: var(--color-text-secondary, #8B949E);`;
-            if (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) {
-                ratioStyle = `color: var(--color-level-pp, #F59E0B); font-weight: bold;`;
-            }
-            levelsHTML += `<div class="flex flex-wrap justify-between items-center gap-x-2">
-                <span class="flex-shrink-0" style="color:var(--color-text-secondary, #8B949E);">${name}-PP</span>
-                <div class="flex-grow text-right">
-                    <span style="color:var(--color-text-primary, #C9D1D9); font-family: monospace;">${dist.toFixed(3)}</span>
-                    <span style="${ratioStyle} font-family: monospace; min-width: 3em; display: inline-block;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span>
-                </div>
-            </div>`;
-        });
-
-        levelsHTML += `<div class="font-bold mt-3" style="color:var(--color-level-s, #22C55E)">${currentLanguage === 'en' ? 'Support Deviation' : 'Deviasi Support'}</div>`;
-        supportData.forEach(data => {
-            const { name, dist, ratio } = data;
-            let ratioStyle = `color: var(--color-text-secondary, #8B949E);`;
-            if (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) {
-                ratioStyle = `color: var(--color-level-pp, #F59E0B); font-weight: bold;`;
-            }
-            levelsHTML += `<div class="flex flex-wrap justify-between items-center gap-x-2">
-                <span class="flex-shrink-0" style="color:var(--color-text-secondary, #8B949E);">PP-${name}</span>
-                 <div class="flex-grow text-right">
-                    <span style="color:var(--color-text-primary, #C9D1D9); font-family: monospace;">${dist.toFixed(3)}</span>
-                    <span style="${ratioStyle} font-family: monospace; min-width: 3em; display: inline-block;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span>
-                </div>
-            </div>`;
-        });
-
-        levelsHTML += `</div>`;
-        levelsHTML += `<div class="mt-4 text-xs text-gray-400 flex items-start gap-2">
-            <i data-lucide="info" class="h-4 w-4 flex-shrink-0 mt-0.5" style="color:var(--color-level-pp, #F59E0B)"></i>
-            <span>${currentLanguage === 'en' ? 'Ratios highlighted in <span class="font-bold" style="color:var(--color-level-pp, #F59E0B)">yellow</span> are approaching the Golden Ratio ($\phi \approx 1.618$ or $0.618$).' : 'Rasio yang disorot dengan warna <span class="font-bold" style="color:var(--color-level-pp, #F59E0B)">kuning</span> mendekati Rasio Emas ($\phi \approx 1.618$ atau $0.618$).'}</span>
-        </div>`;
-        if(levelsOutput) levelsOutput.innerHTML = levelsHTML;
-
-        if(distanceChartContainer) distanceChartContainer.innerHTML = '';
-        const harmonicData = [...resistanceData.slice().reverse(), ...supportData];
-        
-        if (harmonicData.length > 0) {
-            const maxDist = Math.max(...harmonicData.map(d => d.dist));
-            if (maxDist === 0) return;
-
-            const svg = document.createElementNS(svgNS, "svg");
-            svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('preserveAspectRatio', 'none');
-            svg.style.width = '100%';
-            svg.style.height = '100%';
-            svg.style.overflow = 'visible';
-
-            const points = harmonicData.map((d, i) => ({
-                x: i * (100 / (harmonicData.length - 1)),
-                y: 95 - (d.dist / maxDist) * 85,
-                data: d
-            }));
-
-            const areaPath = document.createElementNS(svgNS, "path");
-            const areaD = 'M' + points[0].x.toFixed(2) + ',100 ' + points.map(p => `L${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ') + ' L' + points[points.length - 1].x.toFixed(2) + ',100 Z';
-            areaPath.setAttribute('d', areaD);
-            areaPath.setAttribute('fill', 'url(#area-gradient)');
-            areaPath.setAttribute('stroke', 'none');
-            
-            const linePath = document.createElementNS(svgNS, "path");
-            const lineD = 'M' + points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' L');
-            linePath.setAttribute('d', lineD);
-            linePath.setAttribute('fill', 'none');
-            linePath.setAttribute('stroke', 'var(--color-accent, #00A8E8)');
-            linePath.setAttribute('stroke-width', '0.5');
-
-            const defs = document.createElementNS(svgNS, 'defs');
-            const gradient = document.createElementNS(svgNS, 'linearGradient');
-            gradient.setAttribute('id', 'area-gradient');
-            gradient.setAttribute('x1', '0%');
-            gradient.setAttribute('y1', '0%');
-            gradient.setAttribute('x2', '0%');
-            gradient.setAttribute('y2', '100%');
-            const stop1 = document.createElementNS(svgNS, 'stop');
-            stop1.setAttribute('offset', '0%');
-            stop1.setAttribute('stop-color', 'var(--color-accent, #00A8E8)');
-            stop1.setAttribute('stop-opacity', '0.3');
-            const stop2 = document.createElementNS(svgNS, 'stop');
-            stop2.setAttribute('offset', '100%');
-            stop2.setAttribute('stop-color', 'var(--color-accent, #00A8E8)');
-            stop2.setAttribute('stop-opacity', '0');
-            gradient.appendChild(stop1);
-            gradient.appendChild(stop2);
-            defs.appendChild(gradient);
-            
-            svg.appendChild(defs);
-            svg.appendChild(areaPath);
-            svg.appendChild(linePath);
-
-            points.forEach(p => {
-                const color = p.data.type === 'R' ? levelColors.R : levelColors.S;
-                const circle = document.createElementNS(svgNS, 'circle');
-                circle.setAttribute('cx', p.x.toFixed(2));
-                circle.setAttribute('cy', p.y.toFixed(2));
-                circle.setAttribute('r', '1.5');
-                circle.setAttribute('fill', color);
-                circle.setAttribute('stroke', 'var(--color-primary-bg, #0D1117)');
-                circle.setAttribute('stroke-width', '0.5');
-                
-                const text = document.createElementNS(svgNS, 'text');
-                text.setAttribute('x', p.x.toFixed(2));
-                text.setAttribute('y', (p.y - 4).toFixed(2));
-                text.setAttribute('fill', 'var(--color-text-primary, #C9D1D9)');
-                text.setAttribute('font-size', '4');
-                text.setAttribute('text-anchor', 'middle');
-                text.textContent = p.data.name;
-
-                svg.appendChild(circle);
-                svg.appendChild(text);
+        // Update Levels & Analysis Panel
+        if(levelsOutput) {
+            let levelsHTML = `<h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">${currentLanguage === 'en' ? 'Calculated Levels' : 'Level Terhitung'}</h3><div class="space-y-2 text-sm font-mono">`;
+            allLevelsSorted.forEach(([name, value]) => {
+                const color = name.startsWith('R') ? levelColors.R : name.startsWith('S') ? levelColors.S : levelColors.PP;
+                levelsHTML += `<div class="flex justify-between items-center">
+                    <span style="color:${color}; font-weight:600;">${name}</span>
+                    <span style="color:var(--color-text-primary);">${value.toFixed(3)}</span>
+                </div>`;
             });
+            levelsHTML += `</div>`;
             
-            if(distanceChartContainer) distanceChartContainer.appendChild(svg);
+            levelsHTML += `<h3 class="font-bold text-white mt-6 mb-4 border-b border-gray-700 pb-2">${currentLanguage === 'en' ? 'Distance Analysis (from PP)' : 'Analisis Jarak (dari PP)'}</h3>`;
+            levelsHTML += `<div class="text-xs space-y-3 mt-3">`;
+
+            levelsHTML += `<div class="font-bold" style="color:var(--color-level-r)">${currentLanguage === 'en' ? 'Resistance Deviation' : 'Deviasi Resistance'}</div>`;
+            resistanceData.slice().reverse().forEach(({ name, dist, ratio }) => {
+                const ratioStyle = (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) ? `color: var(--color-level-pp); font-weight: bold;` : `color: var(--color-text-secondary);`;
+                levelsHTML += `<div class="grid grid-cols-3 items-center"><span style="color:var(--color-text-secondary);">${name}-PP</span><span style="color:var(--color-text-primary); text-align: right;">${dist.toFixed(3)}</span><span style="${ratioStyle} text-align: right;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span></div>`;
+            });
+
+            levelsHTML += `<div class="font-bold mt-3" style="color:var(--color-level-s)">${currentLanguage === 'en' ? 'Support Deviation' : 'Deviasi Support'}</div>`;
+            supportData.forEach(({ name, dist, ratio }) => {
+                const ratioStyle = (Math.abs(ratio - 1.618) < 0.1 || Math.abs(ratio - 0.618) < 0.1) ? `color: var(--color-level-pp); font-weight: bold;` : `color: var(--color-text-secondary);`;
+                levelsHTML += `<div class="grid grid-cols-3 items-center"><span style="color:var(--color-text-secondary);">PP-${name}</span><span style="color:var(--color-text-primary); text-align: right;">${dist.toFixed(3)}</span><span style="${ratioStyle} text-align: right;">${ratio > 0 ? ratio.toFixed(3) : '-'}</span></div>`;
+            });
+
+            levelsHTML += `</div>`;
+            levelsHTML += `<div class="mt-4 text-xs text-gray-400 flex items-start gap-2">
+                <i data-lucide="info" class="h-4 w-4 flex-shrink-0 mt-0.5" style="color:var(--color-level-pp)"></i>
+                <span>${currentLanguage === 'en' ? 'Ratios highlighted in <span class="font-bold" style="color:var(--color-level-pp)">yellow</span> are approaching the Golden Ratio ($\phi \approx 1.618$ or $0.618$).' : 'Rasio yang disorot dengan warna <span class="font-bold" style="color:var(--color-level-pp)">kuning</span> mendekati Rasio Emas ($\phi \approx 1.618$ atau $0.618$).'}</span>
+            </div>`;
+            levelsOutput.innerHTML = levelsHTML;
+        }
+
+        // Harmonic Analysis Visualization
+        if(distanceChartContainer) {
+            distanceChartContainer.innerHTML = '';
+            const harmonicData = [...resistanceData.slice().reverse(), ...supportData];
+            if (harmonicData.length > 0) {
+                const maxDist = Math.max(...harmonicData.map(d => d.dist));
+                harmonicData.forEach((distData) => {
+                    const bar = document.createElement('div');
+                    bar.className = 'distance-bar relative flex-1 flex flex-col justify-end items-center';
+                    bar.style.height = `${(distData.dist / maxDist) * 100}%`;
+                    const color = distData.type === 'R' ? 'var(--color-level-r)' : 'var(--color-level-s)';
+                    bar.style.backgroundColor = color;
+                    if (Math.abs(distData.ratio - 1.618) < 0.1 || Math.abs(distData.ratio - 0.618) < 0.1) {
+                        bar.style.boxShadow = `0 0 15px ${color}`;
+                    }
+                    const nameLabel = document.createElement('span');
+                    nameLabel.className = 'absolute -top-5 text-xs text-white text-center w-full font-semibold';
+                    nameLabel.textContent = distData.type === 'R' ? `${distData.name}-PP` : `PP-${distData.name}`;
+                    bar.appendChild(nameLabel);
+                    const valueLabel = document.createElement('span');
+                    valueLabel.className = 'text-xs text-black font-bold pb-1';
+                    valueLabel.textContent = distData.dist.toFixed(2);
+                    bar.appendChild(valueLabel);
+                    distanceChartContainer.appendChild(bar);
+                });
+            }
         }
     }
 
-    let currentLanguage = localStorage.getItem('language') || 'id'; // Default to ID
+    // --- Language Toggle Functionality ---
+    let currentLanguage = localStorage.getItem('language') || 'en';
+    const languageToggleButton = document.getElementById('language-toggle');
+
+    function updateToggleState(lang) {
+        if (!languageToggleButton) return;
+        if (lang === 'id') {
+            languageToggleButton.classList.add('lang-id');
+            languageToggleButton.classList.remove('lang-en');
+        } else {
+            languageToggleButton.classList.add('lang-en');
+            languageToggleButton.classList.remove('lang-id');
+        }
+    }
 
     function setLanguage(lang) {
-        const langSwitch = document.getElementById('language-toggle');
-        if(langSwitch) {
-            langSwitch.classList.remove('lang-id-active', 'lang-en-active');
-            langSwitch.classList.add(`lang-${lang}-active`);
-        }
-
         document.querySelectorAll('[data-en], [data-id]').forEach(element => {
-            const key = `data-${lang}`;
-            if (element.hasAttribute(key)) {
-                if(element.children.length === 0 || (element.children.length === 1 && element.children[0].tagName === 'I')) {
-                    const icon = element.querySelector('i');
-                    element.textContent = element.getAttribute(key);
-                    if(icon) element.prepend(icon);
-                } else {
-                    element.innerHTML = element.getAttribute(key);
+            if (element.classList.contains('back-to-portfolio') || element.classList.contains('text-content')) {
+                const textSpan = element.querySelector('.text-content') || element;
+                 if (lang === 'en' && element.dataset.en) {
+                    textSpan.textContent = element.dataset.en;
+                } else if (lang === 'id' && element.dataset.id) {
+                    textSpan.textContent = element.dataset.id;
+                }
+            } else {
+                 if (lang === 'en' && element.dataset.en) {
+                    element.innerHTML = element.dataset.en;
+                } else if (lang === 'id' && element.dataset.id) {
+                    element.innerHTML = element.dataset.id;
                 }
             }
         });
+
         const titleElement = document.querySelector('title');
         if (titleElement) {
-            const key = `data-${lang}`;
-            if (titleElement.hasAttribute(key)) {
-                titleElement.textContent = titleElement.getAttribute(key);
-            }
+            titleElement.textContent = lang === 'en' ? titleElement.dataset.en : titleElement.dataset.id;
         }
+
         document.querySelectorAll('.svg-label').forEach(label => {
             label.classList.toggle('svg-label-id', lang === 'id');
-            label.classList.toggle('svg-label-en', lang === 'en');
+            label.classList.toggle('svg-label-en', lang !== 'id');
         });
+
         currentLanguage = lang;
         localStorage.setItem('language', lang);
+        updateToggleState(lang);
         calculateAndVisualize();
-        lucide.createIcons();
+        // [FIXED] Menghapus pemanggilan lucide.createIcons() dari sini untuk mencegah glitch
     }
 
-    const languageToggleButton = document.getElementById('language-toggle');
     if (languageToggleButton) {
         languageToggleButton.addEventListener('click', () => {
             const newLang = currentLanguage === 'en' ? 'id' : 'en';
@@ -1336,96 +1111,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Setup Listeners ---
     inputIds.forEach(id => {
         const numberInput = document.getElementById(id);
         const sliderInput = document.getElementById(`${id}Slider`);
         if(numberInput && sliderInput) {
-            numberInput.addEventListener('input', (e) => {
-                sliderInput.value = e.target.value;
-                calculateAndVisualize();
-            });
-            sliderInput.addEventListener('input', (e) => {
-                numberInput.value = e.target.value;
-                calculateAndVisualize();
-            });
+            numberInput.addEventListener('input', (e) => { sliderInput.value = e.target.value; calculateAndVisualize(); });
+            sliderInput.addEventListener('input', (e) => { numberInput.value = e.target.value; calculateAndVisualize(); });
         }
     });
 
     const tabsContainer = document.getElementById('tabs-container');
-    const tabContentContainer = document.getElementById('tab-content-container');
-    if(tabsContainer && tabContentContainer) {
+    if(tabsContainer) {
         tabsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('tab-button')) {
                 tabsContainer.querySelectorAll('.tab-button').forEach(btn => {
-                    btn.classList.remove('active', 'btn-active');
-                    btn.classList.add('inactive', 'btn-inactive');
+                    btn.classList.remove('active'); btn.classList.add('inactive');
                 });
-                e.target.classList.add('active', 'btn-active');
-                e.target.classList.remove('inactive', 'btn-inactive');
-
-                tabContentContainer.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
+                e.target.classList.add('active'); e.target.classList.remove('inactive');
+                document.querySelectorAll('#tab-content-container .tab-content').forEach(content => content.classList.remove('active'));
                 document.getElementById(`tab-${e.target.dataset.tab}`).classList.add('active');
             }
         });
     }
 
-    const sections = document.querySelectorAll('main section[id]');
+    const sections = document.querySelectorAll('main section');
     const navLinks = document.querySelectorAll('.main-nav-links .nav-link');
-
     const observer = new IntersectionObserver((entries) => {
-        let activeSectionId = null;
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                activeSectionId = entry.target.id;
-            }
-        });
-
+        let lastIntersecting = null;
+        entries.forEach(entry => { if (entry.isIntersecting) lastIntersecting = entry.target.id; });
         navLinks.forEach(link => {
             link.classList.remove('active');
-            if (activeSectionId && link.getAttribute('href') === `#${activeSectionId}`) {
+            if (lastIntersecting && link.getAttribute('href').substring(1) === lastIntersecting) {
                 link.classList.add('active');
             }
         });
     }, { root: null, rootMargin: '-100px 0px -50% 0px', threshold: 0 });
-
     sections.forEach(section => observer.observe(section));
 
+    // Initial calls
     setLanguage(currentLanguage);
-    calculateAndVisualize();
-    if(chartContainer) {
-        new ResizeObserver(calculateAndVisualize).observe(chartContainer);
-    }
-    lucide.createIcons();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+    if(chartContainer) new ResizeObserver(calculateAndVisualize).observe(chartContainer);
+    
     const flareBackground = document.querySelector('.flare-background');
-    if (!flareBackground) return;
-    const numberOfFlares = 15;
-
-    function createFlare() {
-        const flare = document.createElement('div');
-        flare.classList.add('flare-item');
-        const size = Math.random() * 400 + 200;
-        flare.style.width = `${size}px`;
-        flare.style.height = `${size}px`;
-        flare.style.left = `${Math.random() * 100}vw`;
-        flare.style.top = `${Math.random() * 100}vh`;
-        flare.style.animationDuration = `${Math.random() * 15 + 25}s`;
-        flare.style.animationDelay = `${Math.random() * 20}s`;
-        const colorIndex = Math.floor(Math.random() * 5) + 1;
-        flare.style.background = `radial-gradient(circle at center, var(--flare-color-${colorIndex}) 0%, transparent 70%)`;
-        flareBackground.appendChild(flare);
-        flare.addEventListener('animationiteration', () => {
-            flare.remove();
-            createFlare();
-        });
+    if (flareBackground) {
+        for (let i = 0; i < 5; i++) {
+            const flare = document.createElement('div');
+            flare.classList.add('flare-item');
+            flareBackground.appendChild(flare);
+        }
     }
-    for (let i = 0; i < numberOfFlares; i++) {
-        createFlare();
-    }
+    
+    // [MODIFIED] Memanggil createIcons() hanya sekali setelah semua siap
+    lucide.createIcons();
 });
 </script>
 

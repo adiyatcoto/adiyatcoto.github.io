@@ -1,0 +1,247 @@
+//@version=5
+// ══════════════════════════════════════════════════════════════════════════════════════════════════ //
+//# * ══════════════════════════════════════════════════════════════════════════════════════════════
+//# * //# * Study       : Mutitimeframe Candle Overlay (Cleaned Version)
+//# * Author      : © dgtrd (Modified by Adiyat Coto)
+//# *
+//# * Revision History
+//# * Cleaned    : July 16, 2025 : Removed all features except 1st and 2nd HTF Candles and Mini Charts.
+//# * Update     : July 16, 2025 : Added options for 3rd, 4th, and 5th HTF Candles.
+//# * //# * ══════════════════════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════════════════════════════ //
+
+// ---------------------------------------------------------------------------------------------- //
+// Functions  ----------------------------------------------------------------------------------- //
+
+// Function to check if the candlestick timeframe is supported by the chart's timeframe.
+checkIf(_chartTF, _candlestickTF) =>
+    // This function will lead to the warning message 'XXX should be called on each calculation for consistency. It is recommended to extract the call from this scope'
+    var stat = false
+    candlestickTF = _candlestickTF == 'D' ? 1440 : _candlestickTF == 'W' ? 10080 :  _candlestickTF == 'M' ? 302400 :  _candlestickTF == '3M' ? 3 * 302400 :  _candlestickTF == '6M' ? 6 * 302400 :  _candlestickTF == '12M' ? 12 * 302400 : str.tonumber(_candlestickTF)
+
+    if timeframe.isintraday
+        stat := candlestickTF >= str.tonumber(_chartTF)
+    else
+        chartTF = str.contains(_chartTF, 'D') ? _chartTF == 'D' ? 1440 : str.tonumber(str.replace(_chartTF, 'D', '', 0)) * 1440 : str.contains(_chartTF, 'W') ? _chartTF == 'W' ? 10080 : str.tonumber(str.replace(_chartTF, 'W', '', 0)) * 10080 : _chartTF == 'M' ? 302400 : str.tonumber(str.replace(_chartTF, 'M', '', 0)) * 302400
+        stat := candlestickTF >= chartTF
+    stat
+
+// Function to get Higher Timeframe OHLC data.
+f_htf_ohlc(_htf) =>
+    var htf_o  = 0., var htf_h  = 0., var htf_l  = 0.,       htf_c  = close
+    var htf_ox = 0., var htf_hx = 0., var htf_lx = 0., var htf_cx = 0.
+
+    if ta.change(time(_htf))
+        htf_ox := htf_o, htf_o := open
+        htf_hx := htf_h, htf_h := high
+        htf_lx := htf_l, htf_l := low
+        htf_cx := htf_c[1]
+        true
+    else
+        htf_h := math.max(high, htf_h)
+        htf_l := math.min(low , htf_l)
+        true
+
+    [htf_ox, htf_hx, htf_lx, htf_cx, htf_o, htf_h, htf_l, htf_c]
+
+// Function to get OHLC data for historical bars (used for mini charts).
+f_getOHLC(_o , _h , _l , _c, _atr, _hist) =>
+    Ox = ta.valuewhen(ta.change(_o), _o, _hist)
+    Hx = ta.valuewhen(ta.change(_h), _h, _hist)
+    Lx = ta.valuewhen(ta.change(_l), _l, _hist)
+    Cx = ta.valuewhen(ta.change(_c), _c, _hist)
+    Ax = ta.valuewhen(ta.change(_atr), _atr, _hist + 1) // ATR from previous bar
+    [Ox , Hx , Lx , Cx, Ax]
+
+// Function to draw a line.
+f_drawLineX(_x1, _y1, _x2, _y2, _xloc, _extend, _color, _style, _width) =>
+    if _x1 >= 0 and _x1 <= 4999 and _x2 >= 0 and _x2 <= 4999
+        var id = line.new(_x1, _y1, _x2, _y2, _xloc, _extend, _color, _style, _width)
+        line.set_xy1(id, _x1, _y1)
+        line.set_xy2(id, _x2, _y2)
+        line.set_color(id, _color)
+    else
+        na
+
+// Function to draw a label.
+f_drawLabelX(_x, _y, _text, _xloc, _yloc, _color, _style, _textcolor, _size, _textalign, _tooltip) =>
+    var id = label.new(_x, _y, _text, _xloc, _yloc, _color, _style, _textcolor, _size, _textalign, _tooltip)
+    label.set_xy(id, _x, _y)
+    label.set_text(id, _text)
+    label.set_tooltip(id, _tooltip)
+    label.set_textcolor(id, _textcolor)
+
+// Function to get Heikin Ashi ticker data.
+f_haTicker(_htf) =>
+    haTicker = ticker.heikinashi(syminfo.tickerid)
+    [ha_o, ha_h, ha_l, ha_c] = request.security(haTicker, _htf, [open, high, low, close])
+    ha_ox = ta.valuewhen(ta.change(time(_htf)), ha_o, 0)
+    ha_hx = ta.valuewhen(ta.change(time(_htf)), ha_h, 0)
+    ha_lx = ta.valuewhen(ta.change(time(_htf)), ha_l, 0)
+    ha_cx = ta.valuewhen(ta.change(time(_htf)), ha_c, 0)
+
+    [ha_ox, ha_hx, ha_lx, ha_cx, ha_o, ha_h, ha_l, ha_c]
+
+// Function to convert user-friendly TF string to Pine Script TF string.
+f_getTF(_htf) =>
+    htf = _htf == '3 Mins' ? '3' : _htf == '5 Mins' ? '5' : _htf == '10 Mins' ? '10' : _htf == '15 Mins' ? '15' : _htf == '30 Mins' ? '30' : _htf == '45 Mins' ? '45' : _htf == '1 Hour' ? '60' : _htf == '2 Hours' ? '120' : _htf == '3 Hours' ? '180' : _htf == '4 Hours' ? '240' : _htf == '1 Day' ? 'D' : _htf == '1 Week' ? 'W' : _htf == '1 Month' ? 'M' : _htf == '3 Months' ? '3M' : _htf == '6 Months' ? '6M' : _htf == '1 Year' ? '12M' : na
+    htf
+
+// Function to get ATR for tooltip.
+f_atr(_length, _htf) =>
+    request.security(syminfo.tickerid, _htf, ta.atr(_length))
+
+// Function to generate tooltip text for candles.
+f_getTooltip(_o, _h, _l, _c, _c1, _atr, _atrM) =>
+    highVolatility = _h - _l > _atr * _atrM
+    'Change % : ' + str.tostring((_c / _c1 - 1) * 100, '#.##') + '%\n' + (highVolatility ? '⚡ High Volatility Detected\nATR Value ' + str.tostring(_atr, '#.##') + '\n' : 'ATR Value : ' + str.tostring(_atr, '#.##') + '\n') + 'Candle Range : ' + str.tostring(_h - _l) + '\n\nO : ' + str.tostring(_o) + '\nH : ' + str.tostring(_h) + '\nL : ' + str.tostring(_l) + '\nC : ' + str.tostring(_c)
+
+// Function to draw a single mini candle (line and label).
+f_drawCandle(_x, _o, _h, _l, _c, _color, _text, _tooltip) =>
+    f_drawLineX(_x, _o, _x, _c, xloc.bar_index, extend.none, _color, line.style_solid, 3)
+    f_drawLineX(_x, _h, _x, _l, xloc.bar_index, extend.none, _color, line.style_solid, 1)
+    f_drawLabelX(_x, _h, _text, xloc.bar_index, yloc.price, #00000000, label.style_label_down, _color, size.normal, text.align_left, _tooltip)
+
+// Function for alerts.
+alarm(_cond, _message, _htfUser, _oncePerBarClose) => 
+    if _cond
+        alert(_message + '\n' + syminfo.ticker + ' Price (' + str.tostring(close, format.mintick) + '), Timeframe ' + _htfUser + '\n')
+        if _oncePerBarClose 
+            alert(_message + '\n' + syminfo.ticker + ' Price (' + str.tostring(close, format.mintick) + '), Timeframe ' + _htfUser + '\n', alert.freq_once_per_bar_close)
+
+// Main function to process and draw HTF candles and mini charts.
+f_processCandles(_show, _htf, _cndl, _bullC, _bearC, _trans, _btransp, _width, _mini, _offset, _atr, _atrM, _hcount, _disableCandle, _alarm) =>
+    if _show
+        [O1 , H1 , L1 , C1 , O0 , H0 , L0 , C0 ] = f_htf_ohlc(_htf)
+        [hO1, hH1, hL1, hC1, hO0, hH0, hL0, hC0] = f_haTicker(_htf)
+
+        O0 := _cndl == 'Heikin Ashi' ? hO0 : O0, O1 := _cndl == 'Heikin Ashi' ? hO1 : O1
+        H0 := _cndl == 'Heikin Ashi' ? hH0 : H0, H1 := _cndl == 'Heikin Ashi' ? hH1 : H1
+        L0 := _cndl == 'Heikin Ashi' ? hL0 : L0, L1 := _cndl == 'Heikin Ashi' ? hL1 : L1
+        C0 := _cndl == 'Heikin Ashi' ? hC0 : C0, C1 := _cndl == 'Heikin Ashi' ? hC1 : C1
+
+        color0  = O0 < C0 ? color.new(_bullC, _trans)    : color.new(_bearC, _trans)
+        color01 = O0 < C0 ? color.new(_bullC, _btransp) : color.new(_bearC, _btransp)
+        color1  = O1 < C1 ? color.new(_bullC, _trans)    : color.new(_bearC, _trans)
+        color11 = O1 < C1 ? color.new(_bullC, _btransp) : color.new(_bearC, _btransp)
+
+        var box hl  = na
+        var box oc  = na
+        var int x11 = na
+        var int x1  = na
+
+        if _htf != timeframe.period and not _disableCandle
+            if ta.change(time(_htf))
+                x11 := x1
+                x1  := bar_index
+
+                if L1 != 0 
+                    box.new(x11, H1, x1 - 1, L1, color11, _width, line.style_dotted, extend.none, xloc.bar_index, color1)
+                    box.new(x11, O1, x1 - 1, C1, color11, _width, line.style_solid , extend.none, xloc.bar_index, color1)
+
+                box.delete(hl), hl := box.new(x1, H0, 2 * x1 - x11 - 1, L0, color01, _width, line.style_dotted, extend.none, xloc.bar_index, color0)
+                box.delete(oc), oc := box.new(x1, O0, 2 * x1 - x11 - 1, C0, color01, _width, line.style_solid , extend.none, xloc.bar_index, color0)
+                true
+            else
+                box.set_top(hl, H0)
+                box.set_bottom(hl, L0)
+                box.set_bgcolor(hl, color0)
+                box.set_border_color(hl, color01)
+
+                box.set_top(oc, math.max(O0, C0))
+                box.set_bottom(oc, math.min(O0, C0))
+                box.set_bgcolor(oc, color0)
+                box.set_border_color(oc, color01)
+                true
+        
+        if _mini
+            // Mini chart for current bar
+            if _hcount > 0
+                f_drawCandle(bar_index + _offset, O0, H0, L0, C0, O0 < C0 ? _bullC : _bearC, _htf, f_getTooltip(O0, H0, L0, C0, C1, _atr, _atrM) ) 
+            // Mini chart for previous bar
+            if _hcount > 1
+                f_drawCandle(bar_index + _offset - 1, O1, H1, L1, C1, O1 < C1 ? _bullC : _bearC, '', f_getTooltip(O1, H1, L1, C1, ta.valuewhen(ta.change(C1), C1, 1), ta.valuewhen(ta.change(_atr), _atr, 1), _atrM) ) 
+            // Note: Removed drawing for _hcount > 2 as per request to keep only 1st and 2nd.
+            // If you need more, the original f_getOHLC logic would need to be re-added for those specific bars.
+
+
+// ---------------------------------------------------------------------------------------------- //
+
+indicator('(For All Asset Class) Cotos COP TAH Mutitimeframe Candle Overlay', 'Cotos COP TAH Mutitimeframe Candle Overlay', true, max_boxes_count = 500, max_bars_back = 4999, max_lines_count = 500, max_labels_count = 500)
+
+// ---------------------------------------------------------------------------------------------- //
+// Inputs  -------------------------------------------------------------------------------------- //
+
+group_candle = 'HTF Candle & Mini Chart Settings'
+htfCndl1  = input.bool(true, '1st HTF Candle', inline='TYP', group=group_candle)
+cndlType1 = input.string('Standart', '', options=['Standart', 'Heikin Ashi'], inline='TYP', group=group_candle)
+htfUser1  = input.string('1 Week', 'TF', options=['3 Mins', '5 Mins', '10 Mins', '15 Mins', '30 Mins', '45 Mins', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '1 Day', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year'], inline='TYP', group=group_candle)
+htfCndl2  = input.bool(false, '2nd HTF Candle', inline='TYP3', group=group_candle)
+cndlType2 = input.string('Standart', '', options=['Standart', 'Heikin Ashi'], inline='TYP3', group=group_candle)
+htfUser2  = input.string('1 Month', 'TF', options=['3 Mins', '5 Mins', '10 Mins', '15 Mins', '30 Mins', '45 Mins', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '1 Day', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year'], inline='TYP3', group=group_candle)
+// New inputs for 3rd, 4th, and 5th HTF Candles
+htfCndl3  = input.bool(false, '3rd HTF Candle', inline='TYP4', group=group_candle)
+cndlType3 = input.string('Standart', '', options=['Standart', 'Heikin Ashi'], inline='TYP4', group=group_candle)
+htfUser3  = input.string('3 Months', 'TF', options=['3 Mins', '5 Mins', '10 Mins', '15 Mins', '30 Mins', '45 Mins', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '1 Day', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year'], inline='TYP4', group=group_candle)
+htfCndl4  = input.bool(false, '4th HTF Candle', inline='TYP5', group=group_candle)
+cndlType4 = input.string('Standart', '', options=['Standart', 'Heikin Ashi'], inline='TYP5', group=group_candle)
+htfUser4  = input.string('6 Months', 'TF', options=['3 Mins', '5 Mins', '10 Mins', '15 Mins', '30 Mins', '45 Mins', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '1 Day', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year'], inline='TYP5', group=group_candle)
+htfCndl5  = input.bool(false, '5th HTF Candle', inline='TYP6', group=group_candle)
+cndlType5 = input.string('Standart', '', options=['Standart', 'Heikin Ashi'], inline='TYP6', group=group_candle)
+htfUser5  = input.string('1 Year', 'TF', options=['3 Mins', '5 Mins', '10 Mins', '15 Mins', '30 Mins', '45 Mins', '1 Hour', '2 Hours', '3 Hours', '4 Hours', '1 Day', '1 Week', '1 Month', '3 Months', '6 Months', '1 Year'], inline='TYP6', group=group_candle)
+
+bullC     = input.color(#26a69a, 'Candle : Bull', inline='CNDL', group=group_candle)
+bearC     = input.color(#ef5350, 'Bear', inline='CNDL', group=group_candle)
+trans     = input.int(85, 'Transp', inline='CNDL', minval=65, maxval=95, group=group_candle)
+cndlAlarm = input.bool(true, 'Enable Candle Alerts', group=group_candle, tooltip = '')
+
+group_mini = 'HTF Mini Chart Settings'
+tp_mini    = 'HTF Mini Charts feature adds ability to display higher timeframe candles on the current chart timeframe with additional candle statistics included in the tooltips available on each htf candle top'
+mChart     = input.bool(true, 'Enable HTF Mini Chart(s) Display', inline='mini', group=group_mini, tooltip = tp_mini)
+// Adjusted maxval for count to allow up to 5 bars
+count1     = input.int(1, 'Number of Bars : 1st', minval=1, maxval=5, inline='TYP1', group=group_mini)
+count2     = input.int(1, '2nd', minval=1, maxval=5, inline='TYP1', group=group_mini)
+// New count inputs for 3rd, 4th, and 5th HTF candles
+count3     = input.int(1, '3rd', minval=1, maxval=5, inline='TYP1', group=group_mini)
+count4     = input.int(1, '4th', minval=1, maxval=5, inline='TYP1', group=group_mini)
+count5     = input.int(1, '5th', minval=1, maxval=5, inline='TYP1', group=group_mini)
+
+mOffset    = input.int(0, "Horizontal Offset", minval = -3, maxval = 25, inline='oth', group=group_mini)
+disableMum = input.bool(false, 'Disable HTF Candle(s) Display', group=group_mini)
+
+
+// ---------------------------------------------------------------------------------------------- //
+// HTF Candles, Mini Charts --------------------------------------------------------------------- //
+
+htf1       = f_getTF(htfUser1)
+htf2       = f_getTF(htfUser2)
+htf3       = f_getTF(htfUser3) // New HTF variable
+htf4       = f_getTF(htfUser4) // New HTF variable
+htf5       = f_getTF(htfUser5) // New HTF variable
+
+htfOffset1 = 23 + mOffset
+htfOffset2 = htfOffset1 + 24 // Consistent offset increment
+htfOffset3 = htfOffset2 + 24 // New offset
+htfOffset4 = htfOffset3 + 24 // New offset
+htfOffset5 = htfOffset4 + 24 // New offset
+
+supported1 = checkIf(timeframe.period, htf1)
+supported2 = checkIf(timeframe.period, htf2)
+supported3 = checkIf(timeframe.period, htf3) // New supported check
+supported4 = checkIf(timeframe.period, htf4) // New supported check
+supported5 = checkIf(timeframe.period, htf5) // New supported check
+
+
+if chart.is_standard
+    if supported1
+        f_processCandles(htfCndl1, htf1, cndlType1, bullC, bearC, trans, 34, 1, mChart, htfOffset1, f_atr(14, htf1), 1.5, count1, disableMum, cndlAlarm)
+    if supported2
+        f_processCandles(htfCndl2, htf2, cndlType2, bullC, bearC, 100, 0, 2, mChart, htfOffset2, f_atr(14, htf2), 1.5, count2, disableMum, cndlAlarm)
+    // New processing blocks for 3rd, 4th, and 5th HTF candles
+    if supported3
+        f_processCandles(htfCndl3, htf3, cndlType3, bullC, bearC, trans, 34, 1, mChart, htfOffset3, f_atr(14, htf3), 1.5, count3, disableMum, cndlAlarm)
+    if supported4
+        f_processCandles(htfCndl4, htf4, cndlType4, bullC, bearC, trans, 34, 1, mChart, htfOffset4, f_atr(14, htf4), 1.5, count4, disableMum, cndlAlarm)
+    if supported5
+        f_processCandles(htfCndl5, htf5, cndlType5, bullC, bearC, trans, 34, 1, mChart, htfOffset5, f_atr(14, htf5), 1.5, count5, disableMum, cndlAlarm)
+

@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.80">
+<title>Adiyat Coto - Personal Portfolio</title>
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    /* Global styles and variables */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --primary-purple: #6366F1;
+        --primary-blue: #3B82F6;
+        --primary-green: #10B981;
+        --gradient-blue: linear-gradient(135deg, #3B82F6, #1E40AF);
+        --gradient-purple: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        
+        /* New dramatic gradients */
+        --title-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
+        --blue-purple-gradient: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+        --purple-pink-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    }
+
+    /* Light theme variables */
+    [data-theme="light"] {
+        --bg-primary: #F8FAFC;
+        --bg-secondary: #FFFFFF;
+        --bg-hero: linear-gradient(135deg, #E0E7FF 0%, #F3E8FF 100%);
+        --text-primary: #1E293B;
+        --text-secondary: #64748B;
+        --nav-bg: rgba(255, 255, 255, 0.95);
+        --card-bg: #FFFFFF;
+        --border-color: #E2E8F0;
+        --tag-bg: #F1F5F9;
+        --tag-text: #475569;
+        
+        /* Ribbon colors for light theme */
+        --hero-bg-1: #DDD6FE;
+        --hero-bg-2: #E0E7FF;
+        --hero-bg-3: #DBEAFE;
+        --ribbon-1: rgba(139, 92, 246, 0.4);
+        --ribbon-2: rgba(59, 130, 246, 0.3);
+        --ribbon-3: rgba(16, 185, 129, 0.25);
+        --ribbon-4: rgba(99, 102, 241, 0.5);
+        --particle-1: rgba(139, 92, 246, 0.6);
+        --particle-2: rgba(59, 130, 246, 0.5);
+        --particle-3: rgba(16, 185, 129, 0.45);
+    }
+
+    /* Dark theme variables */
+    [data-theme="dark"] {
+        --bg-primary: #050810; /* Even darker */
+        --bg-secondary: #0A0D15; /* Even darker */
+        --bg-hero: linear-gradient(135deg, #0F131A 0%, #1A1F26 100%); /* Darker gradient */
+        --text-primary: #E0E6F0; /* Slightly less bright for contrast */
+        --text-secondary: #7A8599; /* Darker secondary text */
+        --nav-bg: rgba(25, 30, 40, 0.8); /* Brighter and transparent for dark mode navbar */
+        --card-bg: #0F131A; /* Darker card background */
+        --border-color: #1A1F26; /* Darker border */
+        --tag-bg: #1A1F26; /* Darker tag background */
+        --tag-text: #BCC2CC; /* Slightly darker tag text */
+        
+        /* Ribbon colors for dark theme - adjust opacity/shade if too bright */
+        --hero-bg-1: #0A0818; /* Darker */
+        --hero-bg-2: #151336; /* Darker */
+        --hero-bg-3: #0F131A; /* Darker */
+        --ribbon-1: rgba(139, 92, 246, 0.5); /* Slightly less opaque */
+        --ribbon-2: rgba(59, 130, 246, 0.4); /* Slightly less opaque */
+        --ribbon-3: rgba(16, 185, 129, 0.3); /* Slightly less opaque */
+        --ribbon-4: rgba(99, 102, 241, 0.6); /* Slightly less opaque */
+        --particle-1: rgba(139, 92, 246, 0.7); /* Slightly less opaque */
+        --particle-2: rgba(59, 130, 246, 0.6); /* Slightly less opaque */
+        --particle-3: rgba(16, 185, 129, 0.5); /* Slightly less opaque */
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: all 0.3s ease;
+    }
+
+    /* Navigation */
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 1000;
+        padding: 1rem 0;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .navbar {
+        background: var(--nav-bg); /* Using the new transparent variable */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-size: 1.1rem;
+        z-index: 1001;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--primary-purple);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+    }
+
+    .nav-links a:hover {
+        color: var(--primary-purple);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary-purple);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .theme-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--text-secondary);
+        padding: 0.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        display: flex; /* Added for Lucide icon alignment */
+        align-items: center; /* Added for Lucide icon alignment */
+        justify-content: center; /* Added for Lucide icon alignment */
+    }
+
+    .theme-toggle:hover {
+        background: var(--primary-purple);
+        color: white;
+        border-color: var(--primary-purple);
+        transform: scale(1.05);
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-toggle {
+        display: none; /* Hidden by default for desktop */
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-menu {
+        position: fixed;
+        top: -100%;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        background: rgba(255, 255, 255, 0.1); /* Adjusted for light theme transparency */
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 6rem 2rem 2rem;
+        transition: top 0.3s ease;
+        z-index: 1000;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] .mobile-menu {
+        background: var(--nav-bg); /* Dark theme: semi-transparent */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu.active {
+        top: 0;
+    }
+
+    .mobile-menu-links {
+        list-style: none;
+        padding: 0;
+    }
+
+    .mobile-menu-links li {
+        margin-bottom: 2.5rem;
+    }
+
+    .mobile-menu-links a {
+        text-decoration: none;
+        font-size: 1.8rem;
+        font-weight: 600;
+        transition: color 0.3s ease;
+        display: block;
+        padding: 0.5rem 0;
+    }
+    /* Specific color for mobile menu links in light theme */
+    [data-theme="light"] .mobile-menu-links a {
+        color: #FFFFFF; /* Changed to white for light mode */
+    }
+    /* Specific color for mobile menu links in dark theme */
+    [data-theme="dark"] .mobile-menu-links a {
+        color: var(--text-primary); /* Using light text-primary for dark mode */
+    }
+
+
+    .mobile-menu-links a:hover {
+        color: var(--primary-blue);
+        transform: translateX(10px);
+    }
+
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    .mobile-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Hero Section with Ribbon Screensaver */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--hero-bg-1) 0%, var(--hero-bg-2) 30%, var(--hero-bg-3) 60%, var(--hero-bg-1) 100%);
+        background-size: 300% 300%;
+        animation: gradientShift 12s ease-in-out infinite;
+    }
+
+    @keyframes gradientShift {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        25% {
+            background-position: 100% 0%;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0% 100%;
+        }
+    }
+
+    /* Complex Ribbon Animation */
+    .ribbon {
+        position: absolute;
+        height: 8px;
+        opacity: 0.8;
+        border-radius: 4px;
+        filter: blur(0.5px);
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+    }
+
+    .ribbon:nth-child(1) {
+        top: 10%;
+        left: -30%;
+        width: 400px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-1), var(--ribbon-2), var(--ribbon-1), transparent);
+        animation: ribbonFlow1 25s infinite;
+        box-shadow: 0 0 20px var(--ribbon-1);
+    }
+
+    .ribbon:nth-child(2) {
+        top: 25%;
+        right: -30%;
+        width: 350px;
+        height: 6px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-2), var(--ribbon-3), var(--ribbon-2), transparent);
+        animation: ribbonFlow2 30s infinite reverse;
+        box-shadow: 0 0 15px var(--ribbon-2);
+    }
+
+    .ribbon:nth-child(3) {
+        top: 40%;
+        left: -25%;
+        width: 500px;
+        height: 10px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-3), var(--ribbon-4), var(--ribbon-1), var(--ribbon-3), transparent);
+        animation: ribbonFlow3 20s infinite;
+        box-shadow: 0 0 25px var(--ribbon-3);
+    }
+
+    .ribbon:nth-child(4) {
+        top: 55%;
+        right: -35%;
+        width: 300px;
+        height: 5px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-4), var(--ribbon-1), var(--ribbon-4), transparent);
+        animation: ribbonFlow4 35s infinite reverse;
+        box-shadow: 0 0 18px var(--ribbon-4);
+    }
+
+    .ribbon:nth-child(5) {
+        top: 70%;
+        left: -40%;
+        width: 450px;
+        height: 7px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-1), var(--ribbon-3), var(--ribbon-2), var(--ribbon-1), transparent);
+        animation: ribbonFlow5 28s infinite;
+        box-shadow: 0 0 22px var(--ribbon-1);
+    }
+
+    .ribbon:nth-child(6) {
+        top: 85%;
+        right: -20%;
+        width: 380px;
+        height: 9px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-2), var(--ribbon-4), var(--ribbon-3), transparent);
+        animation: ribbonFlow6 22s infinite reverse;
+        box-shadow: 0 0 20px var(--ribbon-2);
+    }
+
+    /* Ribbon Animation Keyframes */
+    @keyframes ribbonFlow1 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(5deg) scaleY(1);
+        }
+        25% {
+            transform: translateX(70vw) translateY(-20px) rotate(15deg) scaleY(1.5);
+        }
+        50% {
+            transform: translateX(140vw) translateY(30px) rotate(-10deg) scaleY(0.8);
+        }
+        75% {
+            transform: translateX(100vw) translateY(-15px) rotate(20deg) scaleY(1.2);
+        }
+        100% {
+            transform: translateX(160vw) translateY(0) rotate(5deg) scaleY(1);
+        }
+    }
+
+    @keyframes ribbonFlow2 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(-8deg) scaleY(1);
+        }
+        30% {
+            transform: translateX(-80vw) translateY(25px) rotate(-25deg) scaleY(1.3);
+        }
+        60% {
+            transform: translateX(-150vw) translateY(-35px) rotate(12deg) scaleY(0.7);
+        }
+        100% {
+            transform: translateX(-180vw) translateY(10px) rotate(-8deg) scaleY(1);
+        }
+    }
+
+    @keyframes ribbonFlow3 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(12deg) scaleY(1);
+        }
+        20% {
+            transform: translateX(50vw) translateY(40px) rotate(30deg) scaleY(1.4);
+        }
+        40% {
+            transform: translateX(100vw) translateY(-25px) rotate(-15deg) scaleY(0.9);
+        }
+        60% {
+            transform: translateX(130vw) translateY(35px) rotate(25deg) scaleY(1.1);
+        }
+        80% {
+            transform: translateX(160vw) translateY(-10px) rotate(-5deg) scaleY(1.3);
+        }
+        100% {
+            transform: translateX(190vw) translateY(0) rotate(12deg) scaleY(1);
+        }
+    }
+
+    @keyframes ribbonFlow4 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(-15deg) scaleY(1);
+        }
+        35% {
+            transform: translateX(-60vw) translateY(-30px) rotate(-35deg) scaleY(1.2);
+        }
+        70% {
+            transform: translateX(-120vw) translateY(40px) rotate(10deg) scaleY(0.8);
+        }
+        100% {
+            transform: translateX(-160vw) translateY(0) rotate(-15deg) scaleY(1);
+        }
+    }
+
+    @keyframes ribbonFlow5 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(18deg) scaleY(1);
+        }
+        25% {
+            transform: translateX(40vw) translateY(-35px) rotate(40deg) scaleY(1.6);
+        }
+        50% {
+            transform: translateX(90vw) translateY(45px) rotate(-20deg) scaleY(0.6);
+        }
+        75% {
+            transform: translateX(140vw) translateY(-20px) rotate(30deg) scaleY(1.3);
+        }
+        100% {
+            transform: translateX(180vw) translateY(0) rotate(18deg) scaleY(1);
+        }
+    }
+
+    @keyframes ribbonFlow6 {
+        0% {
+            transform: translateX(0) translateY(0) rotate(-12deg) scaleY(1);
+        }
+        40% {
+            transform: translateX(-70vw) translateY(20px) rotate(-30deg) scaleY(1.4);
+        }
+        80% {
+            transform: translateX(-140vw) translateY(-40px) rotate(15deg) scaleY(0.9);
+        }
+        100% {
+            transform: translateX(-170vw) translateY(0) rotate(-12deg) scaleY(1);
+        }
+    }
+
+    /* Enhanced Particle System */
+    .particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: var(--particle-1);
+        border-radius: 50%;
+        animation: particleFloat 15s linear infinite;
+        opacity: 0;
+        box-shadow: 0 0 10px currentColor;
+    }
+
+    .particle:nth-child(2n) {
+        background: var(--particle-2);
+        animation-duration: 20s;
+        width: 5px;
+        height: 5px;
+        box-shadow: 0 0 8px currentColor;
+    }
+
+    .particle:nth-child(3n) {
+        background: var(--particle-3);
+        animation-duration: 25s;
+        width: 4px;
+        height: 4px;
+        box-shadow: 0 0 6px currentColor;
+    }
+
+    @keyframes particleFloat {
+        0% {
+            transform: translateY(100vh) translateX(0) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) translateX(100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    /* Generate particles with different positions */
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 16s; }
+    .particle:nth-child(10) { left: 15%; animation-delay: 18s; }
+
+    .hero-content {
+        max-width: 700px;
+        padding: 2rem;
+        z-index: 10;
+        position: relative;
+    }
+
+    .hero h1 {
+        font-size: 5rem;
+        font-weight: 300; /* Thin weight like mockup */
+        margin-bottom: 1rem;
+        background: var(--blue-purple-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradientMove 4s ease-in-out infinite;
+    }
+
+    @keyframes gradientMove {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        animation: fadeInUp 1s ease-out 0.5s both;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1s ease-out 1s both;
+    }
+
+    .btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+        color: var(--text-primary);
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    [data-theme="dark"] .btn-secondary {
+        background: rgba(5, 8, 16, 0.1); /* Updated to darker */
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+        background: var(--primary-purple);
+        color: white;
+        border-color: var(--primary-purple);
+        transform: translateY(-2px);
+    }
+
+    /* Sections */
+    .section {
+        padding: 6rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: var(--blue-purple-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradientMove 3s ease-in-out infinite;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 4rem;
+        font-size: 1.1rem;
+    }
+
+    /* About Section */
+    .about {
+        background: var(--bg-secondary);
+    }
+
+    .about-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 4rem;
+    }
+
+    .about-card, .project-card, .contact-card {
+        background: transparent; /* Remove background */
+        backdrop-filter: none; /* Remove backdrop filter */
+        -webkit-backdrop-filter: none;
+        padding: 2.5rem;
+        border-radius: 16px;
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove box shadow */
+        transition: all 0.3s ease;
+    }
+
+    /* Remove the dark theme specific styles for cards */
+    [data-theme="dark"] .about-card,
+    [data-theme="dark"] .project-card,
+    [data-theme="dark"] .contact-card {
+        background: transparent; /* Keep transparent */
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove box shadow */
+    }
+
+    /* Unified hover effect for all cards */
+    .about-card:hover, 
+    .project-card:hover, 
+    .contact-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); /* Light shadow for light mode */
+    }
+
+    [data-theme="dark"] .about-card:hover,
+    [data-theme="dark"] .project-card:hover,
+    [data-theme="dark"] .contact-card:hover {
+        /* Glowing shadow for dark mode hover */
+        box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
+                    0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .card-icon.professional {
+        background: var(--primary-purple);
+    }
+
+    .card-icon.beyond {
+        background: var(--primary-green);
+    }
+
+    .card-text {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    .tools-section {
+        margin-top: 2rem;
+    }
+
+    .tools-title {
+        color: var(--primary-blue);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tag {
+        background: var(--tag-bg);
+        color: var(--tag-text);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .industries-title {
+        color: var(--primary-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .industries-text {
+        color: var(--text-secondary);
+    }
+
+    .medium-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .medium-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .medium-icon {
+        width: 24px;
+        height: 24px;
+        background: var(--text-primary);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bg-secondary);
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    .external-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    /* Connect Section */
+    .connect-icons {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .social-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    [data-theme="dark"] .social-icon {
+        background: rgba(5, 8, 16, 0.1); /* Updated to darker */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-icon:hover {
+        background: var(--primary-purple);
+        color: white;
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Psychology Section */
+    .psychology section {
+        background: var(--bg-secondary);
+    }
+
+    .psychology-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--primary-blue);
+        border: 2px solid var(--primary-blue);
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-outline:hover {
+        background: var(--primary-blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline.purple {
+        color: var(--primary-purple);
+        border-color: var(--primary-purple);
+    }
+
+    .btn-outline.purple:hover {
+        background: var(--primary-purple);
+        color: white;
+    }
+
+    /* Projects Section */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 4rem;
+    }
+
+    .project-card {
+        background: transparent; /* Changed from var(--card-bg) */
+        border-radius: 16px;
+        overflow: hidden;
+        border: none; /* Changed from 1px solid var(--border-color) */
+        box-shadow: none; /* Changed from 0 4px 12px rgba(0, 0, 0, 0.05) */
+        transition: all 0.3s ease; /* Add smooth transition */
+    }
+
+    .project-card:hover {
+        transform: translateY(-8px); /* Slightly more lift */
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); /* Light shadow for light mode */
+    }
+
+    [data-theme="dark"] .project-card:hover {
+        /* Glowing shadow for dark mode hover */
+        box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
+                    0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+    }
+
+    .project-header {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4rem;
+        border-radius: 12px 12px 0 0;
+        position: relative; /* Added for ribbon positioning */
+        overflow: hidden; /* Hide overflowing ribbons */
+    }
+
+    .project-header.blue {
+        background: var(--gradient-blue);
+    }
+
+    .project-header.purple {
+        background: var(--gradient-purple);
+    }
+
+    /* New styles for card ribbons */
+    .card-ribbon {
+        position: absolute;
+        height: 4px;
+        opacity: 0.6;
+        border-radius: 2px;
+        filter: blur(0.2px);
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+    }
+
+    .project-header.blue .card-ribbon:nth-child(1) {
+        top: 20%;
+        left: -50%;
+        width: 150px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: cardRibbonFlow1 15s infinite;
+    }
+
+    .project-header.blue .card-ribbon:nth-child(2) {
+        top: 60%;
+        right: -50%;
+        width: 120px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: cardRibbonFlow2 18s infinite reverse;
+    }
+
+    .project-header.blue .card-ribbon:nth-child(3) {
+        top: 40%;
+        left: -70%;
+        width: 180px;
+        height: 5px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: cardRibbonFlow5 20s infinite;
+    }
+
+    .project-header.blue .card-ribbon:nth-child(4) {
+        top: 80%;
+        right: -80%;
+        width: 160px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        animation: cardRibbonFlow6 22s infinite reverse;
+    }
+
+    .project-header.purple .card-ribbon:nth-child(1) {
+        top: 30%;
+        left: -60%;
+        width: 180px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: cardRibbonFlow3 16s infinite;
+    }
+
+    .project-header.purple .card-ribbon:nth-child(2) {
+        top: 70%;
+        right: -60%;
+        width: 140px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: cardRibbonFlow4 19s infinite reverse;
+    }
+
+    .project-header.purple .card-ribbon:nth-child(3) {
+        top: 50%;
+        left: -50%;
+        width: 130px;
+        height: 6px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+        animation: cardRibbonFlow7 17s infinite;
+    }
+
+    .project-header.purple .card-ribbon:nth-child(4) {
+        top: 10%;
+        right: -70%;
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        animation: cardRibbonFlow8 21s infinite reverse;
+    }
+
+    /* Keyframes for card ribbons */
+    @keyframes cardRibbonFlow1 {
+        0% { transform: translateX(0) rotate(5deg); }
+        100% { transform: translateX(200%) rotate(-5deg); }
+    }
+
+    @keyframes cardRibbonFlow2 {
+        0% { transform: translateX(0) rotate(-8deg); }
+        100% { transform: translateX(-200%) rotate(8deg); }
+    }
+
+    @keyframes cardRibbonFlow3 {
+        0% { transform: translateX(0) rotate(10deg); }
+        100% { transform: translateX(200%) rotate(-10deg); }
+    }
+
+    @keyframes cardRibbonFlow4 {
+        0% { transform: translateX(0) rotate(-12deg); }
+        100% { transform: translateX(-200%) rotate(12deg); }
+    }
+
+    @keyframes cardRibbonFlow5 {
+        0% { transform: translateX(0) translateY(0) rotate(15deg); }
+        50% { transform: translateX(150%) translateY(10px) rotate(30deg); }
+        100% { transform: translateX(250%) translateY(0) rotate(15deg); }
+    }
+
+    @keyframes cardRibbonFlow6 {
+        0% { transform: translateX(0) translateY(0) rotate(-10deg); }
+        50% { transform: translateX(-150%) translateY(-10px) rotate(-25deg); }
+        100% { transform: translateX(-250%) translateY(0) rotate(-10deg); }
+    }
+
+    @keyframes cardRibbonFlow7 {
+        0% { transform: translateX(0) translateY(0) rotate(7deg); }
+        50% { transform: translateX(180%) translateY(-5px) rotate(20deg); }
+        100% { transform: translateX(280%) translateY(0) rotate(7deg); }
+    }
+
+    @keyframes cardRibbonFlow8 {
+        0% { transform: translateX(0) translateY(0) rotate(-18deg); }
+        50% { transform: translateX(-120%) translateY(5px) rotate(-35deg); }
+        100% { transform: translateX(-220%) translateY(0) rotate(-18deg); }
+    }
+
+
+    .project-content {
+        padding: 2.5rem; /* Changed from 2rem 0 to add side padding */
+    }
+
+    .project-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .project-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-blue);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        position: relative; /* Ensure icon is above ribbons */
+        z-index: 1; /* Ensure icon is above ribbons */
+    }
+
+    .project-icon.purple-icon {
+        background: var(--primary-purple);
+    }
+
+    .project-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .project-description {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    .project-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .project-tag {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-purple);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .project-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-small {
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-small.primary {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-small.secondary {
+        background: transparent;
+        color: var(--primary-blue);
+        border: 2px solid var(--primary-blue);
+    }
+
+    .btn-small.purple {
+        background: var(--primary-purple);
+        color: white;
+    }
+
+    .btn-small:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Stats */
+    .stats {
+        display: flex;
+        justify-content: center;
+        gap: 6rem;
+        margin: 4rem 0;
+        flex-wrap: wrap;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number.blue {
+        color: var(--primary-blue);
+    }
+
+    .stat-number.purple {
+        color: var(--primary-purple);
+    }
+
+    .stat-number.green {
+        color: var(--primary-green);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Contact Section */
+    .contact {
+        background: var(--bg-secondary);
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+
+    .contact-card {
+        background: transparent; /* Remove background */
+        padding: 2.5rem;
+        border-radius: 16px;
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove box shadow */
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .contact-icon.green {
+        background: var(--primary-green);
+    }
+
+    .contact-details strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+
+    .contact-details {
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .opportunity-section {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        border-radius: 16px; /* Updated to match parent card radius */
+        border-left: 4px solid;
+    }
+
+    .opportunity-section.blue {
+        background: rgba(59, 130, 246, 0.05);
+        border-color: var(--primary-blue);
+    }
+
+    .opportunity-section.purple {
+        background: rgba(139, 92, 246, 0.05);
+        border-color: var(--primary-purple);
+    }
+
+    .opportunity-section.green {
+        background: rgba(16, 185, 129, 0.05);
+        border-color: var(--primary-green);
+    }
+
+    .opportunity-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .opportunity-text {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .follow-section {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .medium-link {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .medium-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Footer with Ribbon Animation */
+    .footer {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .footer-ribbon {
+        position: absolute;
+        height: 4px;
+        opacity: 0.3;
+        border-radius: 2px;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+    }
+
+    .footer-ribbon:nth-child(1) {
+        top: 20%;
+        left: -20%;
+        width: 200px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-1), transparent);
+        animation: footerRibbon1 20s infinite;
+    }
+
+    .footer-ribbon:nth-child(2) {
+        top: 60%;
+        right: -20%;
+        width: 150px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-2), transparent);
+        animation: footerRibbon2 25s infinite reverse;
+    }
+
+    .footer-ribbon:nth-child(3) {
+        top: 80%;
+        left: -15%;
+        width: 180px;
+        height: 5px;
+        background: linear-gradient(90deg, transparent, var(--ribbon-3), transparent);
+        animation: footerRibbon3 18s infinite;
+    }
+
+    @keyframes footerRibbon1 {
+        0% {
+            transform: translateX(0) rotate(10deg);
+        }
+        50% {
+            transform: translateX(120vw) rotate(-10deg);
+        }
+        100% {
+            transform: translateX(140vw) rotate(10deg);
+        }
+    }
+
+    @keyframes footerRibbon2 {
+        0% {
+            transform: translateX(0) rotate(-15deg);
+        }
+        50% {
+            transform: translateX(-100vw) rotate(15deg);
+        }
+        100% {
+            transform: translateX(-120vw) rotate(-15deg);
+        }
+    }
+
+    @keyframes footerRibbon3 {
+        0% {
+            transform: translateX(0) rotate(8deg);
+        }
+        50% {
+            transform: translateX(110vw) rotate(-8deg);
+        }
+        100% {
+            transform: translateX(130vw) rotate(8deg);
+        }
+    }
+
+    .footer p {
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .hero h1 {
+            font-size: 4rem;
+        }
+        .section-title {
+            font-size: 2.5rem;
+        }
+        .about-cards,
+        .projects-grid,
+        .contact-grid {
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none; /* Hide desktop nav links on mobile */
+        }
+
+        .mobile-menu-toggle {
+            display: flex; /* Show burger menu on mobile */
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 300; /* Keep thin on mobile */
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Remove default box-shadow from grid containers on mobile */
+        .about-cards,
+        .projects-grid,
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            box-shadow: none; /* Remove explicit shadow */
+        }
+
+        [data-theme="dark"] .about-cards,
+        [data-theme="dark"] .projects-grid,
+        [data-theme="dark"] .contact-grid {
+            box-shadow: none; /* Remove explicit shadow */
+        }
+
+        /* Apply subtle border glow to all cards on mobile */
+        .about-card, .project-card, .contact-card {
+            /* Ensure no default shadow from previous rules */
+            box-shadow: none;
+            /* Apply border-like glow */
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); /* Subtle border for light theme */
+            transform: none; /* Reset transform from hover */
+        }
+
+        [data-theme="dark"] .about-card,
+        [data-theme="dark"] .project-card,
+        [data-theme="dark"] .contact-card {
+            box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.4); /* Subtle purple glow for dark theme */
+            transform: none; /* Reset transform from hover */
+        }
+
+        /* Ensure hover effects are removed or overridden for mobile cards */
+        .about-card:hover,
+        .project-card:hover,
+        .contact-card:hover {
+            transform: none; /* Prevent translateY on hover */
+            /* No additional shadow on hover, keep the default mobile glow */
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); /* Light theme */
+        }
+        [data-theme="dark"] .about-card:hover,
+        [data-theme="dark"] .project-card:hover,
+        [data-theme="dark"] .contact-card:hover {
+            transform: none; /* Prevent translateY on hover */
+            /* No additional shadow on hover, keep the default mobile glow */
+            box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.4); /* Dark theme */
+        }
+
+
+        .stats {
+            gap: 3rem;
+        }
+
+        .section {
+            padding: 4rem 1rem;
+        }
+
+        .nav-container {
+            padding: 0 1rem;
+        }
+
+        /* Reduce animations on mobile for performance */
+        .ribbon {
+            animation-duration: 15s;
+        }
+
+        .particles .particle {
+            animation-duration: 12s;
+        }
+
+        /* Reduce number of particles on very small screens */
+        @media (max-width: 480px) {
+            .particle:nth-child(n+6) {
+                display: none;
+            }
+        }
+    }
+
+    /* Hide burger menu on larger screens */
+    @media (min-width: 769px) {
+        .mobile-menu-toggle {
+            display: none; /* Hide burger menu on desktop */
+        }
+    }
+
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+        .hero,
+        .ribbon,
+        .footer-ribbon,
+        .particle,
+        .hero h1,
+        .card-ribbon { /* Added card-ribbon */
+            animation: none;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--hero-bg-1) 0%, var(--hero-bg-2) 100%);
+        }
+    }
+
+    /* Psychology section with purple-pink gradient */
+    .psychology .section-title {
+        background: var(--purple-pink-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradientMove 3s ease-in-out infinite;
+    }
+
+    /* Projects section with rainbow gradient */
+    #projects .section-title {
+        background: var(--title-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 300% 300%;
+        animation: rainbowMove 5s ease-in-out infinite;
+    }
+
+    @keyframes rainbowMove {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        25% {
+            background-position: 100% 0%;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0% 100%;
+        }
+    }
+</style>
+</head>
+<body data-theme="light">
+<!-- Navigation -->
+<nav class="navbar" aria-label="Main navigation">
+    <div class="nav-container">
+        <a href="#home" class="logo">
+            <div class="logo-icon">AC</div>
+            Adiyat Coto
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark theme"><i data-lucide="moon"></i></button>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Open mobile menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu">
+    <ul class="mobile-menu-links">
+        <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+        <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
+        <li><a href="#projects" onclick="closeMobileMenu()">Projects</a></li>
+        <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+    </ul>
+</div>
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <!-- Complex Ribbon Animation -->
+    <div class="ribbon"></div>
+    <div class="ribbon"></div>
+    <div class="ribbon"></div>
+    <div class="ribbon"></div>
+    <div class="ribbon"></div>
+    <div class="ribbon"></div>
+    
+    <!-- Particle System -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <div class="hero-content">
+        <h1>Adiyat Coto</h1>
+        <p>Welcome to my personal space where technology meets creativity and innovation drives meaningful solutions.</p>
+        <div class="hero-buttons">
+            <a href="#about" class="btn-primary">Learn More About Me</a>
+            <a href="#projects" class="btn-secondary">View My Projects</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about section">
+    <h2 class="section-title">About Me</h2>
+    <p class="section-subtitle">Get to know the person behind the professional profile</p>
+    
+    <div class="about-cards">
+        <div class="about-card">
+            <div class="card-header">
+                <div class="card-icon professional"><i data-lucide="briefcase"></i></div>
+                <div>
+                    <h3 class="card-title">Professional Profile</h3>
+                    <p class="card-subtitle">Customer Success Expert</p>
+                </div>
+            </div>
+            <p class="card-text">Customer-oriented professional with 7+ years of experience in SaaS, B2B2C, and Merchant Services. Specialized in tech support, system implementation, and cross-functional collaboration.</p>
+            <p class="card-text">Acted as the bridge between customers, product, and sales — driving onboarding, troubleshooting, and post-sales engagement. Strong background in incident management, technical consultations, and stakeholder communication.</p>
+            
+            <div class="tools-section">
+                <div class="tools-title">Tools & Platforms:</div>
+                <div class="tags">
+                    <span class="tag">Jira</span>
+                    <span class="tag">Google Workspace</span>
+                    <span class="tag">Microsoft 365</span>
+                    <span class="tag">Kissflow</span>
+                    <span class="tag">Trello</span>
+                    <span class="tag">Slack</span>
+                </div>
+                
+                <div class="industries-title">Industries:</div>
+                <div class="industries-text">Fintech, Tech, Startups, Banking, Creative</div>
+            </div>
+        </div>
+        
+        <div class="about-card">
+            <div class="card-header">
+                <div class="card-icon beyond"><i data-lucide="trending-up"></i></div>
+                <div>
+                    <h3 class="card-title">Beyond Work</h3>
+                    <p class="card-subtitle">Trading & Analysis</p>
+                </div>
+            </div>
+            <p class="card-text">Personally active in forex, stock, and crypto trading, with a passion for market psychology and macroeconomic insights. I develop and publish custom indicators in TradingView Pine Script, contributing to the trader community.</p>
+            
+            <div class="medium-section">
+                <div class="medium-header">
+                    <div class="medium-icon"><i data-lucide="book"></i></div>
+                    <div>
+                        <h4 class="card-title">Medium Articles</h4>
+                        <a href="https://medium.com/@coto.adiyat" class="external-link" target="_blank" rel="noopener noreferrer">Market behavior insights and reflections ↗</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="connect-icons">
+        <a href="https://www.linkedin.com/in/adiyatcoto/" class="social-icon" title="LinkedIn" aria-label="LinkedIn profile" target="_blank" rel="noopener noreferrer"><i data-lucide="linkedin"></i></a>
+        <a href="https://medium.com/@coto.adiyat" class="social-icon" title="Medium" aria-label="Medium articles" target="_blank" rel="noopener noreferrer"><i data-lucide="book"></i></a>
+        <a href="https://www.instagram.com/cotoadiyat/" class="social-icon" title="Instagram" aria-label="Instagram profile" target="_blank" rel="noopener noreferrer"><i data-lucide="instagram"></i></a>
+    </div>
+</section>
+
+<!-- Psychology Section -->
+<section class="psychology section">
+    <h2 class="section-title">Comprehensive Psychological Analysis</h2>
+    <p class="section-subtitle">Understanding my psychological profile for better collaboration</p>
+    <div class="psychology-buttons">
+        <a href="/docs/Psycho_Report_EN.pdf" class="btn-outline">Download English Version</a>
+        <a href="/docs/Psycho_Report_ID.pdf" class="btn-outline purple">Download Bahasa Indonesia</a>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="section">
+    <h2 class="section-title">My Projects</h2>
+    <p class="section-subtitle">Explore my innovative projects that blend technology with creative solutions</p>
+    
+    <div class="projects-grid">
+        <div class="project-card">
+            <div class="project-header blue">
+                <!-- Added more ribbons for complexity -->
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="package"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon"><i data-lucide="layout-grid"></i></div>
+                    <h3 class="project-name">Reflexive Symmetrical Architecture</h3>
+                </div>
+                <p class="project-description">A comprehensive theoretical framework that unifies price-space and structure-time analysis through recursive binary division. RSA combines Reflex Range Architecture (RRA) for spatial price mapping with Chronos Cycles for temporal session structure, creating a dynamic model for identifying high-probability market events and structural changes.</p>
+                <div class="project-tags">
+                    <span class="tag">Market Analysis</span>
+                    <span class="tag">Framework</span>
+                    <span class="tag">Trading</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="/docs/RSA_Whitepaper.pdf" class="btn-small primary" target="_blank" rel="noopener noreferrer">Download Whitepaper ↗</a>
+                    <a href="/rsa/rsa.html" class="btn-small secondary" target="_blank" rel="noopener noreferrer">Interactive Demo ↗</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="project-card">
+            <div class="project-header purple">
+                <!-- Added more ribbons for complexity -->
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="rocket"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon purple-icon"><i data-lucide="compass"></i></div>
+                    <h3 class="project-name">COP TAH Pivot</h3>
+                </div>
+                <p class="project-description">This page presents a comprehensive analysis of the COP TAH Formula, a novel pivot-based market calculation system developed by Raffa Jetndrya (RushArt). Unlike traditional pivot methods that rely primarily on historical price extremes, the COP TAH system introduces a revolutionary bias-based approach that incorporates current market opening dynamics to create more responsive and predictive support and resistance levels.</p>
+                <div class="project-tags">
+                    <span class="tag">Pivot System</span>
+                    <span class="tag">Golden Ratio</span>
+                    <span class="tag">Market Analysis</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="/docs/COPTAH_Whitepaper.pdf" class="btn-small purple" target="_blank" rel="noopener noreferrer">Download Whitepaper ↗</a>
+                    <a href="/coptah/coptah.html" class="btn-small secondary" target="_blank" rel="noopener noreferrer">Interactive Demo ↗</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number blue">2</div>
+            <div class="stat-label">Active Projects</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number purple">∞</div>
+            <div class="stat-label">Innovative Ideas</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number green">7+</div>
+            <div class="stat-label">Years Experience</div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact section">
+    <h2 class="section-title">Let's Connect</h2>
+    <p class="section-subtitle">Ready to collaborate or discuss opportunities? I'd love to hear from you.</p>
+    
+    <div class="contact-grid">
+        <div class="contact-card">
+            <div class="card-header">
+                <div class="card-icon"><i data-lucide="mail"></i></div>
+                <div>
+                    <h3 class="card-title">Get in Touch</h3>
+                    <p class="card-subtitle">Ready to start a conversation</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-icon"><i data-lucide="at-sign"></i></div>
+                <div class="contact-details">
+                    <strong>Email</strong>
+                    <a href="mailto:coto.adiyat@gmail.com" style="color: inherit; text-decoration: none;">coto.adiyat@gmail.com</a>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-icon"><i data-lucide="map-pin"></i></div>
+                <div class="contact-details">
+                    <strong>Location</strong>
+                    Available for Remote Work
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-icon"><i data-lucide="clock"></i></div>
+                <div class="contact-details">
+                    <strong>Response Time</strong>
+                    Usually within 24 hours
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-card">
+            <div class="card-header">
+                <div class="card-icon green"><i data-lucide="briefcase"></i></div>
+                <div>
+                    <h3 class="card-title">Career Opportunities</h3>
+                    <p class="card-subtitle">Open to new opportunities and collaborations</p>
+                </div>
+            </div>
+            
+            <div class="opportunity-section blue">
+                <div class="opportunity-title">Full-Time Opportunities</div>
+                <div class="opportunity-text">Customer Success, SaaS implementation, cross-functional collaboration roles</div>
+            </div>
+            
+            <div class="opportunity-section purple">
+                <div class="opportunity-title">Contract Projects</div>
+                <div class="opportunity-text">System implementation, market analysis frameworks, technical consulting</div>
+            </div>
+            
+            <div class="opportunity-section green">
+                <div class="opportunity-title">Industry Discussion</div>
+                <div class="opportunity-text">Fintech trends, market psychology, trading technology insights</div>
+            </div>
+            
+            <div class="follow-section">
+                <div style="margin-bottom: 0.5rem; color: var(--text-secondary);">Follow my latest insights</div>
+                <a href="https://medium.com/@coto.adiyat" class="medium-link" target="_blank" rel="noopener noreferrer"><i data-lucide="book"></i> Medium Articles ↗</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer with Ribbon Animation -->
+<footer class="footer">
+    <!-- Footer Ribbon Animation -->
+    <div class="footer-ribbon"></div>
+    <div class="footer-ribbon"></div>
+    <div class="footer-ribbon"></div>
+    
+    <p>© 2025 Adiyat Coto. Bridging technology and human connection.</p>
+</footer>
+
+<script>
+    // Function to toggle between light and dark themes
+    function toggleTheme() {
+        const body = document.body;
+        const themeToggle = document.querySelector('.theme-toggle');
+        let currentTheme = body.getAttribute('data-theme');
+        let newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme); // Save theme preference
+
+        // Update button icon and aria-label
+        if (newTheme === 'dark') {
+            themeToggle.innerHTML = '<i data-lucide="sun"></i>';
+            themeToggle.setAttribute('aria-label', 'Toggle light theme');
+        } else {
+            themeToggle.innerHTML = '<i data-lucide="moon"></i>';
+            themeToggle.setAttribute('aria-label', 'Toggle dark theme');
+        }
+        lucide.createIcons(); // Re-render Lucide icons after theme change
+    }
+
+    // Function to toggle mobile menu visibility
+    function toggleMobileMenu() {
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        const toggleButton = document.querySelector('.mobile-menu-toggle');
+
+        const isActive = mobileMenu.classList.toggle('active');
+        overlay.classList.toggle('active');
+
+        // Update aria-expanded attribute for accessibility
+        toggleButton.setAttribute('aria-expanded', isActive);
+        toggleButton.setAttribute('aria-label', isActive ? 'Close mobile menu' : 'Open mobile menu');
+    }
+
+    // Function to close mobile menu
+    function closeMobileMenu() {
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        const toggleButton = document.querySelector('.mobile-menu-toggle');
+
+        mobileMenu.classList.remove('active');
+        overlay.classList.remove('active');
+
+        // Reset aria-expanded attribute for accessibility
+        toggleButton.setAttribute('aria-expanded', 'false');
+        toggleButton.setAttribute('aria-label', 'Open mobile menu');
+    }
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+            // Close mobile menu if it's open and a navigation link is clicked
+            if (document.querySelector('.mobile-menu').classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+    });
+
+    // Initialize theme based on system preference or saved preference
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const body = document.body;
+        const themeToggle = document.querySelector('.theme-toggle');
+
+        if (savedTheme) {
+            body.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') {
+                themeToggle.innerHTML = '<i data-lucide="sun"></i>';
+                themeToggle.setAttribute('aria-label', 'Toggle light theme');
+            } else {
+                themeToggle.innerHTML = '<i data-lucide="moon"></i>';
+                themeToggle.setAttribute('aria-label', 'Toggle dark theme');
+            }
+        } else if (prefersDark) {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i data-lucide="sun"></i>';
+            themeToggle.setAttribute('aria-label', 'Toggle light theme');
+        } else {
+            body.setAttribute('data-theme', 'light');
+            themeToggle.innerHTML = '<i data-lucide="moon"></i>';
+            themeToggle.setAttribute('aria-label', 'Toggle dark theme');
+        }
+
+        // Initialize Lucide icons after the DOM is loaded and theme is set
+        lucide.createIcons();
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+
+        // Check if the click is outside the menu and toggle button, and if the menu is active
+        if (mobileMenu.classList.contains('active') && !mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target) && overlay.contains(e.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // Handle window resize to close mobile menu on larger screens
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
+        }
+    });
+</script>
+</body>
+</html>

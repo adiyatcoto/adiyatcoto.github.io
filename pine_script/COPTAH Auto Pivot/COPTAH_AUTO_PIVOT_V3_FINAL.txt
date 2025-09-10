@@ -1,0 +1,754 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © JayRogers
+
+//@version=4
+//@author=JayRogers
+
+//@modified by = adiyatcoto
+//@coptah pivot calculation invented by = Raffa Jetndrya - COP TAH - RushArt House of Gold
+
+study(title = "(For Gold/Another Asset Class) COP TAH AUTO PIVOT - V3 FINAL (UNTIL 5 LEVEL)", shorttitle = "(For Gold/Another Asset Class) COP TAH AUTO PIVOT - V3 •", overlay = true, format = format.price)
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// ====== ABOUT THIS INDICATOR
+//
+//  - All your common Pivot types in one nifty bundle.
+//
+//    • Have up to three pivot sets.
+//    • Each pivot set has it's own resolution option.
+//    • Whatever flavour suits your tastes - each pivot set can be of a
+//      different type if you truly wish.
+//
+// ====== SOURCES and CREDITS
+//
+//  - All included pivot calcs were sourced from:
+//
+//    • https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
+//    • Using the new 'time_close()' function, so thankyou Pine dev's <3
+//
+// ====== REASON FOR STUDY
+//
+//  - To practice making scalable code for working with similar datasets.
+//
+//    • all the reasons
+//
+// ====== DISCLAIMER
+//
+//    Any trade decisions you make are entirely your own responsibility.
+//    I've made an effort to squash all the bugs, but you never know!
+//
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== OPTION LIST VARS ======                       //
+//                                                                            //
+//    * Setting up option list variables outside of the actual input can      //
+//      make them much easier to work with if any comparison checks are       //
+//      required, and can help keep subsequent code clean and readable.       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+// -- verbose resolution options.
+i_res0  = "1 Hour",     i_res1  = "2 Hour",     i_res2  = "3 Hour"
+i_res3  = "4 Hour",     i_res4  = "6 Hour",     i_res5  = "12 Hour"
+i_res6  = "1 Day",      i_res7  = "5 Day",      i_res8  = "1 Week"
+i_res9  = "1 Month",    i_res10 = "3 Month",    i_res11 = "6 Month"
+i_res12 = "1 Year"
+
+// -- pivot options
+i_piv0  = "COP TAH",    i_piv1 = "Fibonacci"
+i_piv2  = "Woodie",         i_piv3 = "Classic"
+i_piv4  = "Demark",         i_piv5 = "Camarilla"
+i_piv6  = "Fibonacci Extended"
+
+// -- line style options.
+i_line0 = "Solid",      i_line1 = "Dotted",     i_line2 = "Dashed"
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                     ====== VAR and ARRAY PRESET ======                     //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+// -- Preset INT for maximum amount of S|R levels for any single pivot type.
+// NOTE - this variable should only be changed if:
+//  • you extend a pivot to have more than 5 levels of S|R
+//  • you add a new pivot type wiith more than 5 levels of S|R
+var int i_maxLevels = 5
+
+// -- Preset INT for max length of pivot arrays [PP + S max + R max]
+//  * NOTE: should not be changed.
+var int i_maxLength = 1 + ( i_maxLevels * 2 )
+
+// -- Initiate arrays to contain INT variables used in drawing function
+//    settings, we fill these at the end of the INPUTS section.
+var int[] i_settingsA = array.new_int(3, 0)
+var int[] i_settingsB = array.new_int(3, 0)
+var int[] i_settingsC = array.new_int(3, 0)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                            ====== INPUTS ======                            //
+//                                                                            //
+//                     * Using the new 'inline' feature *                     //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+// -- Pivots A Main Settings
+
+INP_resolutionA = input( i_res6,    " ",                    inline = "line1",   group = "Pivot Set A Settings",
+      options = [ i_res0, i_res1, i_res2, i_res3, i_res4, i_res5,
+      i_res6, i_res7, i_res8, i_res9, i_res10, i_res11, i_res12
+      ])
+INP_showPivotsA = input( true,      " Show Pivots Set A",   inline = "line1",   group = "Pivot Set A Settings",
+      type = input.bool
+      )
+INP_supportsA   = input( 2,         " ",                    inline = "line2",   group = "Pivot Set A Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+INP_flavourA    = input( i_piv1,    "S# ",                  inline = "line2",   group = "Pivot Set A Settings",
+      options = [ i_piv0, i_piv1, i_piv2, i_piv3, i_piv4, i_piv5, i_piv6
+      ])
+INP_resistsA    = input( 2,         " R#",                  inline = "line2",   group = "Pivot Set A Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+
+// -- Pivots B Main Settings
+
+INP_resolutionB = input( i_res8,    " ",                    inline = "line3",   group = "Pivot Set B Settings",
+      options = [ i_res0, i_res1, i_res2, i_res3, i_res4, i_res5,
+      i_res6, i_res7, i_res8, i_res9, i_res10, i_res11, i_res12
+      ])
+INP_showPivotsB = input( false,     " Show Pivots Set B",   inline = "line3",   group = "Pivot Set B Settings",
+      type = input.bool
+      )
+INP_supportsB   = input( 2,         " ",                    inline = "line4",   group = "Pivot Set B Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+INP_flavourB    = input( i_piv1,    "S# ",                  inline = "line4",   group = "Pivot Set B Settings",
+      options = [ i_piv0, i_piv1, i_piv2, i_piv3, i_piv4, i_piv5, i_piv6
+      ])
+INP_resistsB    = input( 2,         " R#",                  inline = "line4",   group = "Pivot Set B Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+
+// -- Pivots C Main Settings
+
+INP_resolutionC = input( i_res9,    " ",                    inline = "line5",   group = "Pivot Set C Settings",
+      options = [ i_res0, i_res1, i_res2, i_res3, i_res4, i_res5,
+      i_res6, i_res7, i_res8, i_res9, i_res10, i_res11, i_res12
+      ])
+INP_showPivotsC = input( false,     " Show Pivots Set C",   inline = "line5",   group = "Pivot Set C Settings",
+      type = input.bool
+      )
+INP_supportsC   = input( 2,         " ",                    inline = "line6",   group = "Pivot Set C Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+INP_flavourC    = input( i_piv1,    "S# ",                  inline = "line6",   group = "Pivot Set C Settings",
+      options = [ i_piv0, i_piv1, i_piv2, i_piv3, i_piv4, i_piv5, i_piv6
+      ])
+INP_resistsC    = input( 2,         " R#",                  inline = "line6",   group = "Pivot Set C Settings",
+      type = input.integer, minval = 0, maxval = i_maxLevels
+      )
+
+// -- price labels
+
+INP_showPrice   = input( false,         " ",                inline = "line7",   group = "Price Labels",
+      type = input.bool
+      )
+INP_priceColour = input( color.gray,    " Text Colour",     inline = "line7",   group = "Price Labels",
+      type = input.color
+      )
+
+// -- styling options
+
+INP_supportStyle    = input(i_line0,        " ",            inline = "line8",   group = "Styling Options",
+      options = [ i_line0, i_line1, i_line2
+      ])
+INP_supportColour   = input( color.green,   " S Levels",    inline = "line8",   group = "Styling Options",
+      type = input.color
+      )
+
+INP_pivotStyle      = input(i_line0,        " ",            inline = "line9",   group = "Styling Options",
+      options = [ i_line0, i_line1, i_line2
+      ])
+INP_pivotColour     = input( color.silver,  " P Levels",    inline = "line9",   group = "Styling Options",
+      type = input.color
+      )
+
+INP_resistStyle     = input(i_line0,        " ",            inline = "line10",  group = "Styling Options",
+      options = [ i_line0, i_line1, i_line2
+      ])
+INP_resistColour    = input( color.red,     " R Levels",    inline = "line10",  group = "Styling Options",
+      type = input.color
+      )
+
+// -- drawing settings for selection A
+array.set(i_settingsA, 0, INP_showPivotsA ? 1 : 0)
+array.set(i_settingsA, 1, INP_supportsA)
+array.set(i_settingsA, 2, INP_resistsA)
+// -- drawing settings for selection B
+array.set(i_settingsB, 0, INP_showPivotsB ? 1 : 0)
+array.set(i_settingsB, 1, INP_supportsB)
+array.set(i_settingsB, 2, INP_resistsB)
+// -- drawing settings for selection C
+array.set(i_settingsC, 0, INP_showPivotsC ? 1 : 0)
+array.set(i_settingsC, 1, INP_supportsC)
+array.set(i_settingsC, 2, INP_resistsC)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                          ====== FUNCTIONS ======                           //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getResolution( _inputResolution ) =>
+    //  string  _inputResolution : user selected resolution input
+    // () Description:
+    //  - Resolver for custom resolution input selection, converts input to
+    //    compatible return string for security, output is also used for less
+    //    verbose label text options.
+    // Dependencies:
+    //  - i_res1, i_res2, i_res3, i_res4, i_res5, i_res6
+    //  - i_res7, i_res8, i_res9, i_res10, i_res11, i_res12
+    // Notes:
+    //  - i_res0 excluded as it's a token placeholder for default "60".
+
+    string _r       = _inputResolution  // a more ternary challenge friendly var
+    string _default = "60"              // if i_res0 was input, or failure.
+
+    // compare input to determine proper string return for security calls.
+    _return = _r == i_res1 ? "120"  : _r == i_res2 ? "180"  : _r == i_res3 ? "240"  :
+              _r == i_res4 ? "360"  : _r == i_res5 ? "720"  : _r == i_res6 ? "1D"   :
+              _r == i_res7 ? "5D"   : _r == i_res8 ? "1W"   : _r == i_res9 ? "1M"   :
+              _r == i_res10 ? "3M"  : _r == i_res11 ? "6M"  : _r == i_res12 ? "12M" : _default
+
+f_getLineStyle( _inputStyle ) =>
+    //  string  _inputStyle : user selected style input
+    // () resolver for custom line style input selection, returns a usable
+    //    line style type.
+    // Dependencies:
+    //  - i_line1, i_line2
+    // Notes:
+    //  * i_line0 omitted as we default to 'line.style_solid' anyway
+
+    // compare input to determine proper line style to return.
+    _return = _inputStyle == i_line1 ? line.style_dotted :
+              _inputStyle == i_line2 ? line.style_dashed : line.style_solid
+
+// -- helper function for checking if a value is inside a min-max range
+f_isInsideRange(_val, _min, _max) => _val >= _min and _val <= _max
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== COP TAH FORMULA ======                        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotCOPTAH ( _prevHigh, _prevLow, _prevOpen, _currentOpen ) =>
+    //  float   _prevHigh | _prevLow | _prevClose : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, 10 )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevOpen + _prevHigh + _prevLow + _currentOpen + (_currentOpen - 1 * 0.01) ) / 5
+    array.set( _array, 0, _pivot )
+    _s1 = (_pivot * 2) - _prevHigh
+    _r1 = (_pivot * 2) - _prevLow
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, _s1 )
+    array.set( _array, 2, _pivot - ( _r1 - _s1 ) )
+    array.set( _array, 3, (_pivot * 2) - ( (2 * _prevHigh) - _prevLow  ))
+    array.set( _array, 4, (_pivot * 3) - ( (3 * _prevHigh) - _prevLow  ))
+    array.set( _array, 5, (_pivot * 4) - ( (4 * _prevHigh) - _prevLow  ))
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, _r1 )
+    array.set( _array, 2 + i_maxLevels, _pivot - _s1 + _r1 )
+    array.set( _array, 3 + i_maxLevels, _pivot * 2 + ( _prevHigh - (2 * _prevLow ) ))
+    array.set( _array, 4 + i_maxLevels, _pivot * 3 + ( _prevHigh - (3 * _prevLow ) ))
+    array.set( _array, 5 + i_maxLevels, _pivot * 4 + ( _prevHigh - (4 * _prevLow ) ))
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== FIBONACCI ======                              //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotFibonacci( _prevHigh, _prevLow, _prevClose ) =>
+    //  float   _prevHigh | _prevLow | _prevClose : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevHigh + _prevLow + _prevClose ) / 3
+    array.set( _array, 0, _pivot )
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, _pivot - 0.382 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 2, _pivot - 0.618 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 3, _pivot - ( _prevHigh - _prevLow ) )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, _pivot + 0.382 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 2 + i_maxLevels, _pivot + 0.618 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 3 + i_maxLevels, _pivot + ( _prevHigh - _prevLow ) )
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== WOODIE FORMULA ======                         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotWoodie( _prevHigh, _prevLow, _currentOpen ) =>
+    //  float   _prevHigh | _prevLow | _currentOpen : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevHigh + _prevLow + 2 * _currentOpen ) / 4
+    array.set( _array, 0, _pivot )
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, 2 * _pivot - _prevHigh )
+    array.set( _array, 2, _pivot - ( _prevHigh - _prevLow ) )
+    array.set( _array, 3, _prevLow - 2 * ( _prevHigh - _pivot ) )
+    array.set( _array, 4, array.get( _array, 3 ) - ( _prevHigh - _prevLow ) )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, 2 * _pivot - _prevLow )
+    array.set( _array, 2 + i_maxLevels, _pivot + ( _prevHigh - _prevLow ) )
+    array.set( _array, 3 + i_maxLevels, _prevHigh + 2 * ( _pivot -  _prevLow ) )
+    array.set( _array, 4 + i_maxLevels, array.get( _array, 3 + i_maxLevels ) + ( _prevHigh - _prevLow ) )
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== CLASSIC FORMULA ======                        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotClassic( _prevHigh, _prevLow, _prevClose ) =>
+    //  float   _prevHigh | _prevLow | _prevClose : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevHigh + _prevLow + _prevClose ) / 3
+    array.set( _array, 0, _pivot )
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, 2 * _pivot - _prevHigh )
+    array.set( _array, 2, _pivot - ( _prevHigh - _prevLow ) )
+    array.set( _array, 3, _pivot - 2 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 4, _pivot - 3 * ( _prevHigh - _prevLow ) )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, 2 * _pivot - _prevLow )
+    array.set( _array, 2 + i_maxLevels, _pivot + ( _prevHigh - _prevLow ) )
+    array.set( _array, 3 + i_maxLevels, _pivot + 2 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 4 + i_maxLevels, _pivot + 3 * ( _prevHigh - _prevLow ) )
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== DEMARK FORMULA ======                         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotDemark( _prevOpen, _prevHigh, _prevLow, _prevClose ) =>
+    //  float   _prevOpen | _prevHigh
+    //          _prevLow | _prevClose : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // demark basis calc
+    var float _basis = na
+    if _prevOpen == _prevClose
+        _basis := _prevHigh + _prevLow + ( 2 * _prevClose )
+    else if _prevClose >  _prevOpen
+        _basis := ( 2 * _prevHigh ) + _prevLow + _prevClose
+    else
+        _basis := _prevHigh + ( 2 * _prevLow ) + _prevClose
+
+    // pivot level, array index [0]
+    _pivot = _basis / 4
+    array.set( _array, 0, _pivot )
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, _basis / 2 - _prevHigh )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, _basis / 2 - _prevLow )
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== CAMARILLA FORMULA ======                      //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotCamarilla( _prevHigh, _prevLow, _prevClose ) =>
+    //  float   _open | _high | _low | _close : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevHigh + _prevLow + _prevClose ) / 3
+    array.set( _array, 0, _pivot)
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, _prevClose - 1.1 * ( _prevHigh - _prevLow ) / 12 )
+    array.set( _array, 2, _prevClose - 1.1 * ( _prevHigh - _prevLow ) / 6 )
+    array.set( _array, 3, _prevClose - 1.1 * ( _prevHigh - _prevLow ) / 4 )
+    array.set( _array, 4, _prevClose - 1.1 * ( _prevHigh - _prevLow ) / 2 )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, _prevClose + 1.1 * ( _prevHigh - _prevLow ) / 12 )
+    array.set( _array, 2 + i_maxLevels, _prevClose + 1.1 * ( _prevHigh - _prevLow ) / 6 )
+    array.set( _array, 3 + i_maxLevels, _prevClose + 1.1 * ( _prevHigh - _prevLow ) / 4 )
+    array.set( _array, 4 + i_maxLevels, _prevClose + 1.1 * ( _prevHigh - _prevLow ) / 2 )
+
+    _return = _array
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                       ====== FIBO EXT FORMULA ======                       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+f_getPivotFibonacciExt( _prevHigh, _prevLow, _prevClose ) =>
+    //  float   _open | _high | _low | _close : HTF security OHLC values
+    // () calculates a pivot set and assigns to proper array indexes for return.
+    // Notes:
+    //  - f_renderPivotArray() expects float data in the following sequence..
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]
+
+    // init empty array with predefined length of i_maxLength
+    var float[] _array = array.new_float( i_maxLength, na )
+
+    // pivot level, array index [0]
+    _pivot = ( _prevHigh + _prevLow + _prevClose ) / 3
+    array.set( _array, 0, _pivot )
+
+    // support levels, array indexes [1] through [i_maxLevels]
+    array.set( _array, 1, _pivot - 0.236 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 2, _pivot - 0.382 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 3, _pivot - 0.618 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 4, _pivot - 0.786 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 5, _pivot - ( _prevHigh - _prevLow ) )
+
+    // resistance levels, array indexes [i_maxLevels + 1] through [i_maxLength]
+    array.set( _array, 1 + i_maxLevels, _pivot + 0.236 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 2 + i_maxLevels, _pivot + 0.382 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 3 + i_maxLevels, _pivot + 0.618 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 4 + i_maxLevels, _pivot + 0.786 * ( _prevHigh - _prevLow ) )
+    array.set( _array, 5 + i_maxLevels, _pivot + ( _prevHigh - _prevLow ) )
+
+    _return = _array
+
+f_getPivotSet( _flavour, _resolution ) =>
+    //  string  _flavour    : user input pivot type selection
+    //  string  _resolution : user input resolution selection
+    // () gets OHLC values from selected resolution, and returns requested
+    //    pivot calculation array.
+
+    // previous OHLC series for selected resolution
+    [ _prevOpen,
+      _prevHigh,
+      _prevLow,
+      _prevClose ] = security( syminfo.tickerid, _resolution, [ open[1], high[1], low[1], close[1] ], lookahead = true )
+    
+    var float _currOpen = na
+    if change( time( _resolution ) ) != 0
+        _currOpen := open
+
+    // float array to contain S|R levels for return.
+    var float[] _pivotSet = array.new_float(i_maxLength, na)
+
+    _pivotSet := _flavour == i_piv0 ? f_getPivotCOPTAH( _prevHigh, _prevLow, _prevOpen, _currOpen )  :
+                 _flavour == i_piv1 ? f_getPivotFibonacci( _prevHigh, _prevLow, _prevClose )         :
+                 _flavour == i_piv2 ? f_getPivotWoodie( _prevHigh, _prevLow, _currOpen )             :
+                 _flavour == i_piv3 ? f_getPivotClassic( _prevHigh, _prevLow, _prevClose )           :
+                 _flavour == i_piv4 ? f_getPivotDemark( _prevOpen, _prevHigh, _prevLow, _prevClose ) :
+                 _flavour == i_piv5 ? f_getPivotCamarilla( _prevHigh, _prevLow, _prevClose )         : f_getPivotFibonacciExt( _prevHigh, _prevLow, _prevClose )
+
+    _pivotSet // return the float array
+
+f_renderPivotArray( _resolution, _settings, _floats, _lines, _labels ) =>
+    //  string  _resolution : user selected resolution input
+    //  int[]   _settings   : pivot specific input settings
+    //  float[] _floats     : pivot float array
+    //  line[]  _lines      : line array to hold rendered lines
+    //  label[] _labels     : label array to hold rendered labels
+    //  
+    // () Description:
+    //  - Designed for scalability and plug-n-play functionality if any new
+    //    pivot type is added, or extended.
+    //  - If a f_pivotType() function properly assigns it's float values in the
+    //    following format/order, it should be able to to render them with no
+    //    hassle at all.
+    //
+    //      Pivot     : [ 0 ]
+    //      Supports  : [ 1 to i_maxLevels ]
+    //      Resists   : [ ( i_maxLevels + 1 ) to i_maxLength ]  
+
+    // set up a few common vars for drawing using 'time' placement
+    _xloc   = xloc.bar_time
+    _x1     = valuewhen( change( time( _resolution ) ), time, 0 ) // time
+    _x2     = time_close( _resolution ) // new! Thanks pine team <3
+
+    // set up some temp vars for creating our lines and labels
+    var line    _line       = na
+    var label   _labelLeft  = na
+    var label   _labelRight = na
+    var label   _labelPrice = na
+
+    // init some readable settings variables to hold _settings data
+    var bool    _showPivot      = false
+    var int     _maxSupports    = i_maxLevels
+    var int     _maxResists     = i_maxLevels
+
+    // hand off the settings array to the vars
+    _showPivot      := array.get( _settings, 0 ) > 0 ? true : false
+    _maxSupports    := array.get( _settings, 1 )
+    _maxResists     := array.get( _settings, 2 )
+
+    // if we want to show the particular pivot set
+    // * the change() check was causing issues on extended hours intraday charts
+    //   so i have removed it for now. I will look into other options for the
+    //   next proper update.
+    if _showPivot // change( time( _resolution ) ) != 0 and _showPivot
+
+        // clean up old lines and labels before drawing our new set
+        for i = 1 to array.size( _lines ) // loop and delete 1 by 1
+            line.delete( array.get( _lines, i - 1 ) )
+
+        // the label array is dynamic length, so we..
+        if array.size( _labels ) > 0 // ..check to see if it has content..
+            for i = 1 to array.size( _labels ) // ..then loop it into the trash
+                label.delete( array.shift( _labels ) )
+
+        // check for properly populated float array
+        if array.size( _floats ) > 0 and not na( array.get( _floats, 0 ) )
+
+            // now loop through the floats
+            for i = 1 to array.size( _floats )
+
+                // don't want to bother with [i - 1] throughout the entire loop
+                _index = i - 1 // so set up a var
+
+                // if we have a valid float at the current loop index
+                if not na( array.get( _floats, _index ) )
+
+                    // common variables used in all conditions
+                    _activePrice = array.get( _floats, _index )
+                    _priceString = "• " + tostring( _activePrice, "#.#####" )
+
+                    //  IDENTIFYING SUPPORT LEVELS IN ARRAY
+                    //
+                    // support index range : [ from 1 to i_maxLevels ]
+                    if f_isInsideRange( _index, 1, i_maxLevels )
+
+                        // only draw levels : [ from 1 to _maxSupports ]
+                        if f_isInsideRange( _index, 1, _maxSupports )
+
+                            // dynamic line width based on index value
+                            int     _width  = _index > 3 ? _index - 2 : _index
+                            // use index to set level numbers on labels
+                            string  _level  = tostring( _index )
+
+                            _line   := line.new( _x1, _activePrice, _x2, _activePrice, _xloc, extend.none,
+                                                      style = f_getLineStyle( INP_supportStyle ),
+                                                      color = INP_supportColour,
+                                                      width = _width )
+
+                            _labelLeft  := label.new( _x1, _activePrice, "S" + _level + "\n", _xloc,
+                                                      style = label.style_label_left,
+                                                      color = #00000000,
+                                                      textcolor = INP_supportColour )
+
+                            _labelRight := label.new( _x2, _activePrice, "S" + _level + "\n", _xloc,
+                                                      style = label.style_label_right,
+                                                      color = #00000000,
+                                                      textcolor = INP_supportColour )
+
+                            _labelPrice := INP_showPrice ? label.new( _x2, _activePrice, _priceString, _xloc,
+                                                      style = label.style_label_left,
+                                                      color = #00000000,
+                                                      textcolor = INP_priceColour ) : na
+
+                    //  IDENTIFYING RESISTANCE LEVELS IN ARRAY
+                    //
+                    // resistance index range : [ from (1 + i_maxLevels) to (2 * i_maxLevels) ]
+                    else if f_isInsideRange( _index, 1 + i_maxLevels, 2 * i_maxLevels )
+
+                        // only draw levels : [ from (1 + i_maxLevels) to (_maxResists + i_maxLevels) ]
+                        if f_isInsideRange( _index, 1 + i_maxLevels, _maxResists + i_maxLevels )
+
+                            // adjusted _index value to attain 1/2/3 sequence for string operation
+                            int     _adjust = _index - i_maxLevels
+                            // dynamic line width based on adjusted _index value
+                            int     _width  = _adjust > 3 ? _adjust - 2 : _adjust
+                            // use adjusted index value to set proper level numbers on labels
+                            string  _level  = tostring( _adjust )
+
+                            _line   := line.new( _x1, _activePrice, _x2, _activePrice, _xloc, extend.none,
+                                                      style = f_getLineStyle( INP_resistStyle ),
+                                                      color = INP_resistColour,
+                                                      width = _width )
+
+                            _labelLeft  := label.new( _x1, _activePrice, "R" + _level + "\n", _xloc,
+                                                      style = label.style_label_left,
+                                                      color = #00000000,
+                                                      textcolor = INP_resistColour )
+
+                            _labelRight := label.new( _x2, _activePrice, "R" + _level + "\n", _xloc,
+                                                      style = label.style_label_right,
+                                                      color = #00000000,
+                                                      textcolor = INP_resistColour )
+
+                            _labelPrice := INP_showPrice ? label.new( _x2, _activePrice, _priceString, _xloc,
+                                                      style = label.style_label_left,
+                                                      color = #00000000,
+                                                      textcolor = INP_priceColour ) : na
+
+                    else // PIVOT - No identification needed, always using index 0
+
+                        _line   := line.new( _x1, _activePrice, _x2, _activePrice, _xloc, extend.none,
+                                                  style = f_getLineStyle( INP_pivotStyle ),
+                                                  color = INP_pivotColour,
+                                                  width = 3 )
+
+                        _labelLeft  := label.new( _x1, _activePrice, "PP\n", _xloc,
+                                                  style = label.style_label_left,
+                                                  color = #00000000,
+                                                  textcolor = INP_pivotColour )
+
+                        _labelRight  := label.new( _x2, _activePrice, "PP\n", _xloc,
+                                                  style = label.style_label_right,
+                                                  color = #00000000,
+                                                  textcolor = INP_pivotColour )
+
+                        _labelPrice := INP_showPrice ? label.new( _x2, _activePrice, _priceString, _xloc,
+                                                  style = label.style_label_left,
+                                                  color = #00000000,
+                                                  textcolor = INP_priceColour ) : na
+
+                    // set our line to it's respective array index
+                    array.set( _lines, _index, _line )
+
+                    // push labels into array, order doesn't matter.
+                    if not na(_labelLeft)
+                        array.push( _labels, _labelLeft )
+                    if not na(_labelRight)
+                        array.push( _labels, _labelRight )
+                    if not na(_labelPrice)
+                        array.push( _labels, _labelPrice )
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                   ====== SERIES, LINES and LABELS ======                   //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+// -- selected resolutions
+string _resolutionA = f_getResolution( INP_resolutionA )
+string _resolutionB = f_getResolution( INP_resolutionB )
+string _resolutionC = f_getResolution( INP_resolutionC )
+
+// -- pivot series price data sets
+float[] _pivotFloatsA   = f_getPivotSet( INP_flavourA, _resolutionA )
+float[] _pivotFloatsB   = f_getPivotSet( INP_flavourB, _resolutionB )
+float[] _pivotFloatsC   = f_getPivotSet( INP_flavourC, _resolutionC )
+
+// -- pivot lines array A, and companion labels array
+var line[]  _pivotLinesA    = array.new_line( i_maxLength, na )
+var label[] _pivotLabelsA   = array.new_label()
+
+// -- pivot lines array B, and companion labels array
+var line[]  _pivotLinesB    = array.new_line( i_maxLength, na )
+var label[] _pivotLabelsB   = array.new_label()
+
+// -- pivot lines array C, and companion labels array
+var line[]  _pivotLinesC    = array.new_line( i_maxLength, na )
+var label[] _pivotLabelsC   = array.new_label()
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                     ====== DRAWING and PLOTTING ======                     //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+// -- feed in our settings and data to the render function for set A
+f_renderPivotArray( _resolutionA, i_settingsA, _pivotFloatsA, _pivotLinesA, _pivotLabelsA )
+
+// -- feed in our settings and data to the render function for set B
+f_renderPivotArray( _resolutionB, i_settingsB, _pivotFloatsB, _pivotLinesB, _pivotLabelsB )
+
+// -- feed in our settings and data to the render function for set C
+f_renderPivotArray( _resolutionC, i_settingsC, _pivotFloatsC, _pivotLinesC, _pivotLabelsC )
+
+
+// -- PEANUT
