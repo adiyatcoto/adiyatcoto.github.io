@@ -113,6 +113,9 @@
         .ui-button:hover {
             background: rgba(0,0,0,0.5);
         }
+        body.fullscreen-active #home-btn {
+            display: none;
+        }
         #playlist-panel {
             position: absolute;
             top: 0;
@@ -278,7 +281,7 @@
             <h2>Playlist</h2>
             <div class="flex items-center gap-2">
                 <label for="file-input" class="arrow-btn" title="Add Tracks">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </label>
                 <button id="close-playlist-btn" class="arrow-btn" title="Close Playlist">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -888,6 +891,17 @@
         // --- Event Handlers & Audio Setup ---
         
         function goHome() {
+            // BUG FIX: Check if in fullscreen and exit if necessary before resetting UI
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                }
+            }
+            
             audio.pause();
             
             // Explicitly stop Matrix vis if it's active and show the 3D canvas
@@ -982,6 +996,7 @@
             if (newFiles.length === 0) return;
 
             const wasPlaylistEmpty = playlist.length === 0;
+            const isFromHomepage = initialPrompt.style.display !== 'none';
 
             newFiles.forEach(file => {
                 playlist.push({
@@ -992,15 +1007,23 @@
 
             renderPlaylist();
 
-            if (wasPlaylistEmpty) {
-                playTrack(0);
+            if (isFromHomepage) {
+                // If upload is from the homepage, always transition to active mode
                 resumeSession();
+                // and show the playlist
+                playlistPanel.classList.add('visible');
+                // If it was the first track, start playing it
+                if (wasPlaylistEmpty) {
+                    playTrack(0);
+                }
             }
-             if (!controls) {
-                 controls = new OrbitControls(camera, renderer.domElement);
-                 controls.enableDamping = true;
-                 controls.dampingFactor = 0.05;
-             }
+            
+            // Setup audio context and controls if they don't exist
+            if (!controls) {
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+            }
             if (!analyser) setupAudioContext();
             
             fileInput.value = '';
@@ -1115,6 +1138,7 @@
 
         function onFullscreenChange() {
             const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            document.body.classList.toggle('fullscreen-active', isFullscreen);
 
             enterFullscreenIcon.classList.toggle('hidden', isFullscreen);
             exitFullscreenIcon.classList.toggle('hidden', !isFullscreen);
@@ -1171,8 +1195,10 @@
                     avgVolume: (lowSum + midSum + highSum) / bufferLength
                 };
                 
-                if (visualizations.length > 0 && visualizations[currentVisualizationIndex].group.visible) {
-                    visualizations[currentVisualizationIndex].update(dataArray, audioFeatures);
+                // This condition now correctly handles both Three.js and Matrix visualizations
+                const currentVis = visualizations[currentVisualizationIndex];
+                if (currentVis && (currentVis.group.visible || currentVis.name === "Matrix")) {
+                     currentVis.update(dataArray, audioFeatures);
                 }
             }
 
@@ -1184,7 +1210,4 @@
     </script>
 </body>
 </html>
-
-
-
 
