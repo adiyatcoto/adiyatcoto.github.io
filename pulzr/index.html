@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>PULZR Audioverse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +15,7 @@
             background-color: #000000;
             font-family: 'Poppins', sans-serif;
             color: #e5e7eb;
+            overscroll-behavior-x: none; /* Prevent horizontal pull-to-refresh/navigation */
         }
         canvas {
             display: block;
@@ -323,8 +324,8 @@
     <!-- Main script -->
     <script type="module">
         // Import necessary Three.js components
-        import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
-        import { OrbitControls } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js';
+        import * as THREE from 'https://esm.sh/three@0.132.2';
+        import { OrbitControls } from 'https://esm.sh/three@0.132.2/examples/jsm/controls/OrbitControls';
 
         // --- Global Variables ---
         let scene, camera, renderer, controls, analyser, dataArray, audioContext;
@@ -1003,6 +1004,16 @@
             const newFiles = Array.from(event.target.files);
             if (newFiles.length === 0) return;
 
+            // --- KEY FIX FOR MOBILE/SAFARI ---
+            // Ensure AudioContext is created and resumed within this user gesture.
+            if (!audioContext) {
+                setupAudioContext();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            // --- END FIX ---
+
             const wasPlaylistEmpty = playlist.length === 0;
             const isFromHomepage = initialPrompt.style.display !== 'none';
 
@@ -1015,20 +1026,16 @@
 
             renderPlaylist();
 
-            // Setup audio context and controls if they don't exist
-            if (!analyser) setupAudioContext();
             if (!controls) {
                 controls = new OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true;
                 controls.dampingFactor = 0.05;
+                controls.enablePan = false; // Disable panning for a cleaner mobile experience
             }
 
             if (isFromHomepage) {
-                // If upload is from the homepage, always transition to active mode
                 resumeSession();
-                // and show the playlist
                 playlistPanel.classList.add('visible');
-                // If it was the first track, start playing it
                 if (wasPlaylistEmpty) {
                     playTrack(0);
                 }
