@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adiyat Coto - Personal Portfolio</title>
-<!-- Lucide Icons CDN -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
     /* Global styles and variables */
@@ -723,7 +722,7 @@
     [data-theme="dark"] .contact-card:hover {
         /* Glowing shadow for dark mode hover */
         box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
-                      0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+                        0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
     }
 
     .card-header {
@@ -931,7 +930,7 @@
     [data-theme="dark"] .project-card:hover {
         /* Glowing shadow for dark mode hover */
         box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), /* Purple glow */
-                      0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
+                        0 0 50px rgba(59, 130, 246, 0.4); /* Blue glow */
     }
 
     .project-header {
@@ -1586,7 +1585,6 @@
 </style>
 </head>
 <body data-theme="light">
-<!-- Navigation -->
 <nav class="navbar" aria-label="Main navigation">
     <div class="nav-container">
         <a href="#home" class="logo">
@@ -1608,7 +1606,6 @@
     </div>
 </nav>
 
-<!-- Mobile Menu -->
 <div class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-menu">
     <ul class="mobile-menu-links">
@@ -1621,9 +1618,7 @@
     </ul>
 </div>
 
-<!-- Hero Section -->
 <section id="home" class="hero">
-    <!-- Complex Ribbon Animation -->
     <div class="ribbon"></div>
     <div class="ribbon"></div>
     <div class="ribbon"></div>
@@ -1631,7 +1626,6 @@
     <div class="ribbon"></div>
     <div class="ribbon"></div>
     
-    <!-- Particle System -->
     <div class="particles">
         <div class="particle"></div>
         <div class="particle"></div>
@@ -1655,7 +1649,6 @@
     </div>
 </section>
 
-<!-- About Section -->
 <section id="about" class="about section">
     <h2 class="section-title">About Me</h2>
     <p class="section-subtitle">Get to know the person behind the professional profile</p>
@@ -1717,10 +1710,6 @@
     </div>
 </section>
 
-<!-- Psychology Section -->
-
-
-<!-- Projects Section -->
 <section id="projects" class="section">
     <h2 class="section-title">My Projects</h2>
     <p class="section-subtitle">Explore my innovative projects that blend technology with creative solutions</p>
@@ -1728,7 +1717,6 @@
     <div class="projects-grid">
         <div class="project-card">
             <div class="project-header blue">
-                <!-- Added more ribbons for complexity -->
                 <div class="card-ribbon"></div>
                 <div class="card-ribbon"></div>
                 <div class="card-ribbon"></div>
@@ -1755,7 +1743,6 @@
         
         <div class="project-card">
             <div class="project-header purple">
-                <!-- Added more ribbons for complexity -->
                 <div class="card-ribbon"></div>
                 <div class="card-ribbon"></div>
                 <div class="card-ribbon"></div>
@@ -1780,7 +1767,6 @@
             </div>
         </div>
 
-        <!-- NEW PROJECT CARD -->
         <div class="project-card">
             <div class="project-header green">
                 <div class="card-ribbon"></div>
@@ -1806,13 +1792,93 @@
                 </div>
             </div>
         </div>
-        <!-- END NEW PROJECT CARD -->
+
+        <div class="project-card">
+            <div class="project-header blue">
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="music"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon"><i data-lucide="music"></i></div>
+                    <h3 class="project-name">PULZR Audioverse</h3>
+                </div>
+                <p class="project-description">A sophisticated, browser-based application that generates dynamic 3D and 2D visuals synchronized with audio. Users can upload a playlist and switch between multiple unique visualization modes in real-time.</p>
+                <div class="project-tags">
+                    <span class="tag">Three.js</span>
+                    <span class="tag">Web Audio API</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Creative Coding</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="/pulzr/" class="btn-small primary" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>
+                    <a href="https://github.com/adiyatcoto/adiyatcoto.github.io/blob/main/pulzr/index.html" class="btn-small secondary" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="project-card">
+            <div class="project-header purple">
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="hourglass"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon purple-icon"><i data-lucide="hourglass"></i></div>
+                    <h3 class="project-name">Nested Time Visualization</h3>
+                </div>
+                <p class="project-description">An interactive artwork that visualizes the nested, cyclical nature of time. Each concentric ring represents a different time unit, from a Millennium to a Second, with progress shown as a filled arc.</p>
+                <div class="project-tags">
+                    <span class="tag">SVG</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Data Visualization</span>
+                    <span class="tag">Creative Coding</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="/clock/" class="btn-small purple" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>
+                    <a href="https://github.com/adiyatcoto/adiyatcoto.github.io/blob/main/clock/index.html" class="btn-small secondary" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-header green">
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <div class="card-ribbon"></div>
+                <i data-lucide="candlestick-chart"></i>
+            </div>
+            <div class="project-content">
+                <div class="project-title">
+                    <div class="project-icon green-icon"><i data-lucide="candlestick-chart"></i></div>
+                    <h3 class="project-name">COP TAH - Bias Analyzer</h3>
+                </div>
+                <p class="project-description">A TradingView indicator in Pine Script that provides a multi-timeframe analysis of market bias. It uses the COP TAH framework to determine patterns, cycle phases, and projected direction across timeframes from minutes to years.</p>
+                <div class="project-tags">
+                    <span class="tag">Pine Script</span>
+                    <span class="tag">TradingView</span>
+                    <span class="tag">Technical Analysis</span>
+                    <span class="tag">Finance</span>
+                </div>
+                <div class="project-buttons">
+                    <a href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" class="btn-small green" target="_blank" rel="noopener noreferrer">View on TradingView ↗</a>
+                    <a href="https://medium.com/@coto.adiyat/the-multi-timeframe-bias-analyzer-8d5916d940a3" class="btn-small secondary" target="_blank" rel="noopener noreferrer">View Source ↗</a>
+                </div>
+            </div>
+        </div>
 
     </div>
 
     <div class="stats">
         <div class="stat">
-            <div class="stat-number blue">3</div>
+            <div class="stat-number blue">6</div>
             <div class="stat-label">Active Projects</div>
         </div>
         <div class="stat">
@@ -1826,7 +1892,6 @@
     </div>
 </section>
 
-<!-- Contact Section -->
 <section id="contact" class="contact section">
     <h2 class="section-title">Let's Connect</h2>
     <p class="section-subtitle">Ready to collaborate or discuss opportunities? I'd love to hear from you.</p>
@@ -1898,9 +1963,7 @@
     </div>
 </section>
 
-<!-- Footer with Ribbon Animation -->
 <footer class="footer">
-    <!-- Footer Ribbon Animation -->
     <div class="footer-ribbon"></div>
     <div class="footer-ribbon"></div>
     <div class="footer-ribbon"></div>
