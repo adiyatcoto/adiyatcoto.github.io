@@ -333,7 +333,7 @@
             fetchDataForAnalysis();
             fetchDeeperAnalysisData(symbol);
             handleCandlestickTimeframeChange(selectedCandlestickTimeframe);
-            analysisInterval = setInterval(fetchDataForAnalysis, 7000); // Increased interval to 30 seconds
+            analysisInterval = setInterval(fetchDataForAnalysis, 10000); // Increased interval to 30 seconds
         }
         
         function createInitialAnalysisCards() {
@@ -941,7 +941,7 @@
             clearInterval(window[intervalVar]);
             showTableLoading(document.getElementById(`${type.toLowerCase()}-table-body`), `Loading ${tf} data...`);
             fetchFn(tf);
-            window[intervalVar] = setInterval(() => fetchFn(tf), 60000);
+            window[intervalVar] = setInterval(() => fetchFn(tf), 10000);
         }
         
         function handleRankScaleChange(scale) {
