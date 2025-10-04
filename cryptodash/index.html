@@ -98,6 +98,7 @@
             <header class="text-center mb-8">
                 <h1 id="analysis-header" class="text-3xl sm:text-4xl font-bold">Loading Top Coins...</h1>
                 <p id="analysis-status" class="text-gray-400 mt-2">Loading initial data...</p>
+                <p id="vpn-suggestion" class="text-yellow-400 text-sm mt-2 hidden"></p>
                 <div class="mt-6 max-w-xs mx-auto relative" id="coin-search-container">
                     <input type="text" id="coin-search-input" placeholder="Search for a coin..." class="w-full bg-gray-800 border border-gray-600 text-white text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3">
                     <div id="coin-dropdown" class="coin-dropdown absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
@@ -176,7 +177,6 @@
                         <p class="text-sm text-gray-400 mt-2 mb-4">Ranks coins by price change from the start of the timeframe to gauge market momentum.</p>
                          <div class="table-container">
                              <table class="w-full text-left"><thead class="sticky top-0 bg-gray-800">
-                                <!-- MODIFIED: Changed table headers for clarity -->
                                 <tr>
                                     <th class="p-3 text-sm">#</th>
                                     <th class="p-3 text-sm">Symbol</th>
@@ -243,6 +243,23 @@
             { label: '1 Week', interval: '1w' },
         ];
         
+        // --- API Fallback Logic ---
+        const binanceApiBases = ['https://api.binance.com', 'https://api1.binance.com', 'https://api2.binance.com', 'https://api3.binance.com'];
+
+        async function fetchWithFallbacks(endpoint) {
+            for (const base of binanceApiBases) {
+                try {
+                    const response = await fetch(`${base}${endpoint}`);
+                    if (response.ok) {
+                        return response;
+                    }
+                } catch (error) {
+                    console.warn(`Failed to fetch from ${base}${endpoint}:`, error);
+                }
+            }
+            throw new Error(`Failed to fetch from all available API endpoints for: ${endpoint}`);
+        }
+
         // --- Page Switching Logic ---
         function switchPage(pageToShow) {
             clearInterval(analysisInterval);
@@ -273,7 +290,7 @@
             if (top100SymbolsCache.length > 0) return top100SymbolsCache;
             try {
                 const stablecoinBases = ['USDC', 'FDUSD', 'TUSD', 'USDP', 'BUSD', 'DAI']; 
-                const response = await fetch('https://api1.binance.com/api/v3/ticker/24hr'); 
+                const response = await fetchWithFallbacks('/api/v3/ticker/24hr'); 
                 if (!response.ok) throw new Error('Network response was not ok');
                 const tickers = await response.json();
                 top100SymbolsCache = tickers
@@ -295,6 +312,9 @@
                 analysisHeader.textContent = "API Connection Error";
                 analysisStatus.textContent = "Error: Could not connect to Binance API.";
                 updateStatus('offline');
+                const vpnSuggestion = document.getElementById('vpn-suggestion');
+                vpnSuggestion.textContent = "Suggestion: If you are in a restricted region, using a VPN may resolve this issue.";
+                vpnSuggestion.classList.remove('hidden');
                 return [];
             }
         }
@@ -342,6 +362,9 @@
                 analysisHeader.textContent = "Failed to Load Coins";
                 updateStatus('offline');
                 analysisStatus.textContent = "Error: Could not load coin list.";
+                const vpnSuggestion = document.getElementById('vpn-suggestion');
+                vpnSuggestion.textContent = "Suggestion: If you are in a restricted region, using a VPN may resolve this issue.";
+                vpnSuggestion.classList.remove('hidden');
                 coinSearchInput.placeholder = "Error loading coins";
             }
         }
@@ -349,6 +372,7 @@
         function updateDashboardForCoin(symbol) {
             selectedSymbol = symbol;
             analysisHeader.textContent = `Detailed Analysis: ${symbol}`;
+            document.getElementById('vpn-suggestion').classList.add('hidden');
             if (analysisInterval) clearInterval(analysisInterval);
             fetchDataForAnalysis();
             fetchDeeperAnalysisData(symbol);
@@ -390,7 +414,7 @@
         
         async function fetchDataForAnalysis() {
             if (!selectedSymbol) return;
-            const promises = timeframesConfig.map(tf => fetch(`https://api.binance.com/api/v3/klines?symbol=${selectedSymbol}&interval=${tf.interval}&limit=2`).then(res => res.json()));
+            const promises = timeframesConfig.map(tf => fetchWithFallbacks(`/api/v3/klines?symbol=${selectedSymbol}&interval=${tf.interval}&limit=2`).then(res => res.json()));
             const results = await Promise.allSettled(promises);
             let hasFailed = results.some(r => r.status === 'rejected');
             updateStatus(hasFailed ? 'offline' : 'online');
@@ -409,8 +433,8 @@
             deeperAnalysisContent.innerHTML = '<div class="text-center text-gray-400 col-span-full">Loading deeper analysis...</div>';
             try {
                 const [hourlyRes, dailyRes] = await Promise.all([
-                    fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=1000`),
-                    fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=1000`)
+                    fetchWithFallbacks(`/api/v3/klines?symbol=${symbol}&interval=1h&limit=1000`),
+                    fetchWithFallbacks(`/api/v3/klines?symbol=${symbol}&interval=1d&limit=1000`)
                 ]);
 
                 if (!hourlyRes.ok || !dailyRes.ok) {
@@ -507,7 +531,6 @@
             };
         }
         
-        // MODIFIED: Function updated to pass current time info to heatmaps
         function updateDeeperAnalysisUI(analysis) {
             const formatTs = (ts) => ts ? new Date(ts).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: selectedTimezone }) : 'N/A';
             deeperAnalysisContent.innerHTML = `
@@ -562,7 +585,6 @@
             createHeatmap('monthlyHeatmap', analysis.monthlyAvgPerf, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], currentUTCMonth);
         }
         
-        // MODIFIED: Function updated to draw glowing rectangle
         function createHeatmap(canvasId, data, labels, highlightIndex) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
@@ -649,7 +671,7 @@
             showChartMessage('candlestickChart', loadingIcon);
             try {
                 const limit = (tf === '1w') ? 300 : (tf === '1d' ? 365 : 500);
-                const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`);
+                const response = await fetchWithFallbacks(`/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`);
                 const data = await response.json();
                 if (!data || data.length === 0) throw new Error('No data returned from API');
 
@@ -741,7 +763,6 @@
             handleRankScaleChange(selectedRankScale);
         }
         
-        // MODIFIED: Added colspan parameter
         function showTableLoading(tbody, message, colspan = 4) {
             tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center p-8 text-gray-400">${message}</td></tr>`;
         }
@@ -782,7 +803,7 @@
             try {
                 const { interval, limit } = klineParams[tf];
                 const topSymbols = await getTop100Symbols();
-                const promises = topSymbols.map(symbol => fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
+                const promises = topSymbols.map(symbol => fetchWithFallbacks(`/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
                 const results = await Promise.allSettled(promises);
                 const klineData = results.map((res, i) => (res.status === 'fulfilled' && res.value) ? {symbol: topSymbols[i], data: res.value} : {symbol: topSymbols[i], data: []}).filter(d => d.data && d.data.length > 0);
                 if (klineData.length === 0 || klineData[0].data.length === 0) throw new Error("No kline data found");
@@ -815,7 +836,7 @@
                try {
                    const { interval, limit } = klineParams[tf];
                    const topSymbols = await getTop100Symbols();
-                   const promises = topSymbols.map(symbol => fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
+                   const promises = topSymbols.map(symbol => fetchWithFallbacks(`/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
                    const results = await Promise.allSettled(promises);
                    
                    const historicalPerformances = new Map();
@@ -1217,5 +1238,4 @@
 
 </body>
 </html>
-
 
