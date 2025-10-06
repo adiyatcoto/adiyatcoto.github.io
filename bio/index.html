@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Little More About Me</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-rose-50 via-white to-sky-50">
+        <div class="max-w-2xl w-full bg-white/80 backdrop-blur-sm shadow-2xl shadow-gray-300/20 rounded-2xl p-8 sm:p-12 space-y-6">
+            
+            <!-- Header/Intro -->
+            <div class="text-center">
+                <h1 id="bio-title" class="text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">
+                    Hello there.
+                </h1>
+                <p id="bio-subtitle" class="mt-2 text-base text-gray-600">
+                    A few thoughts I wanted to share.
+                </p>
+            </div>
+
+            <!-- Translation Button -->
+            <div class="text-center">
+                <button id="translate-btn" class="px-4 py-2 bg-rose-200 text-rose-800 rounded-full text-sm font-medium hover:bg-rose-300 transition-colors duration-300">
+                    Translate to Indonesian
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="w-20 h-1 bg-rose-300 rounded-full mx-auto"></div>
+
+            <!-- Bio Content -->
+            <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-5">
+                <p id="bio-p1">
+                    Never been married, no kids.
+                </p>
+                <p id="bio-p2">
+                    I’m someone who values sincerity, depth, and balance. The kind of person who’d rather build than chase, listen rather than judge, and choose peace.
+                </p>
+                <p id="bio-p3">
+                    I’ve seen how unpredictable life can be, its market swings, emotional tides, and quiet nights that turn into self-reflection. Through it all, I’ve learned that love isn’t about perfection; it’s about consistency and emotional honesty.
+                </p>
+                <p id="bio-p4">
+                    I’m looking for someone whose vibe matches mine. I’ll appreciate your sincerity, kindness, emotional depth, and grounded heart. Someone who understands that relationship is not a therapy session, but a partnership between two people who can laugh, think, and heal together.
+                </p>
+                <p id="bio-p5">
+                    I want to build a strong, loving family with smart kids, a cozy home, and a life filled with moments that matter. Cooking together, talking late into the night, and watching how our dreams evolve as we grow old side by side. That’s why our vibrations need to align, otherwise, our paths will lead to different goals.
+                </p>
+                <p id="bio-p6">
+                    I appreciate people who think deeply, those who see the world in layers, who can talk about everything from feelings to philosophy, from purpose to the absurdity of modern life. I value emotional independence, but also the courage to truly connect.
+                </p>
+                <p id="bio-p7">
+                    Life isn’t permanent, sunny days and storms will both come. I’ve been through both, and I no longer fear them. Remember, the moon remains the moon, through every phase. If you understand that, we’ll understand each other.
+                </p>
+                <p id="bio-p8">
+                    If you tend to avoid love or closeness, take time to heal yourself first. I’m here for something real, not perfect, but real.
+                </p>
+                <p id="bio-p9" class="font-semibold text-gray-800">
+                    So, just be yourself. Don’t wear a mask. The right person won’t need you to.
+                </p>
+                <p id="bio-p10">
+                    A great relationship takes time, I’m not here for something short-term.
+                </p>
+                <p id="bio-p11">
+                    Thank you.
+                </p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'bio-title': {
+                en: 'Hello there.',
+                id: 'Salam kenal.'
+            },
+            'bio-subtitle': {
+                en: 'A few thoughts I wanted to share.',
+                id: 'Sedikit hal yang ingin aku ceritakan.'
+            },
+            'bio-p1': {
+                en: 'Never been married, no kids.',
+                id: 'Belum pernah menikah dan belum punya anak.'
+            },
+            'bio-p2': {
+                en: 'I’m someone who values sincerity, depth, and balance. The kind of person who’d rather build than chase, listen rather than judge, and choose peace.',
+                id: 'Aku orang yang menghargai ketulusan, kedalaman makna, dan keseimbangan. Tipe yang lebih memilih membangun daripada mengejar, mendengar daripada menghakimi, dan memilih kedamaian.'
+            },
+            'bio-p3': {
+                en: 'I’ve seen how unpredictable life can be, its market swings, emotional tides, and quiet nights that turn into self-reflection. Through it all, I’ve learned that love isn’t about perfection; it’s about consistency and emotional honesty.',
+                id: 'Aku sudah melihat betapa hidup itu tak terduga, gejolak pasar, pasang surut emosi, dan malam-malam sunyi yang membawa perenungan. Dari semua itu, aku belajar bahwa cinta bukanlah kesempurnaan, melainkan konsistensi dan kejujuran hati.'
+            },
+            'bio-p4': {
+                en: 'I’m looking for someone whose vibe matches mine. I’ll appreciate your sincerity, kindness, emotional depth, and grounded heart. Someone who understands that relationship is not a therapy session, but a partnership between two people who can laugh, think, and heal together.',
+                id: 'Aku mencari seseorang dengan frekuensi yang cocok. Aku akan menghargai ketulusanmu, kebaikanmu, kedalaman emosimu, dan keteguhan hatimu. Seseorang yang paham bahwa hubungan bukanlah sesi terapi, melainkan kemitraan dua orang yang bisa tertawa, berpikir, dan saling menyembuhkan bersama.'
+            },
+            'bio-p5': {
+                en: 'I want to build a strong, loving family with smart kids, a cozy home, and a life filled with moments that matter. Cooking together, talking late into the night, and watching how our dreams evolve as we grow old side by side. That’s why our vibrations need to align, otherwise, our paths will lead to different goals.',
+                id: 'Aku ingin membangun keluarga yang kuat dan penuh cinta, dengan anak-anak yang cerdas, rumah yang hangat, dan hidup yang penuh akan momen bermakna. Memasak bersama, berbincang hingga larut malam, dan menyaksikan mimpi-mimpi kita tumbuh seiring menua bersama. Karena itu, getaran kita harus selaras, jika tidak, tujuan kita akan berjalan ke arah yang berbeda.'
+            },
+            'bio-p6': {
+                en: 'I appreciate people who think deeply, those who see the world in layers, who can talk about everything from feelings to philosophy, from purpose to the absurdity of modern life. I value emotional independence, but also the courage to truly connect.',
+                id: 'Aku menghargai mereka yang berpikir mendalam, yang melihat dunia tak hanya di permukaan, yang bisa bicara tentang apa saja, dari perasaan hingga filosofi, dari tujuan hidup hingga absurdnya dunia modern. Aku menghargai kemandirian emosi, sekaligus keberanian untuk terkoneksi seutuhnya.'
+            },
+            'bio-p7': {
+                en: 'Life isn’t permanent, sunny days and storms will both come. I’ve been through both, and I no longer fear them. Remember, the moon remains the moon, through every phase. If you understand that, we’ll understand each other.',
+                id: 'Hidup tak selamanya sama, hari cerah dan badai akan datang silih berganti. Aku sudah melalui keduanya, dan aku tak lagi takut. Ingat, bulan tetaplah bulan, dalam setiap fasenya. Jika kamu mengerti itu, kita akan saling mengerti.'
+            },
+            'bio-p8': {
+                en: 'If you tend to avoid love or closeness, take time to heal yourself first. I’m here for something real, not perfect, but real.',
+                id: 'Jika kamu cenderung menghindari cinta atau kedekatan, luangkan waktu untuk memulihkan dirimu lebih dulu. Aku di sini mencari sesuatu yang nyata, tak sempurna, tapi nyata.'
+            },
+            'bio-p9': {
+                en: 'So, just be yourself. Don’t wear a mask. The right person won’t need you to.',
+                id: 'So, jadilah dirimu sendiri. Tak perlu memakai topeng. Orang yang tepat tak akan memintamu menjadi orang lain.'
+            },
+            'bio-p10': {
+                en: 'A great relationship takes time, I’m not here for something short-term.',
+                id: 'Hubungan yang baik butuh waktu, aku tidak mencari sesuatu yang jangka pendek.'
+            },
+            'bio-p11': {
+                en: 'Thank you.',
+                id: 'Terima kasih.'
+            }
+        };
+
+        const translateBtn = document.getElementById('translate-btn');
+        let currentLang = 'en';
+
+        translateBtn.addEventListener('click', () => {
+            if (currentLang === 'en') {
+                for (const id in translations) {
+                    document.getElementById(id).innerText = translations[id].id;
+                }
+                translateBtn.innerText = 'Show Original (English)';
+                currentLang = 'id';
+            } else {
+                for (const id in translations) {
+                    document.getElementById(id).innerText = translations[id].en;
+                }
+                translateBtn.innerText = 'Translate to Indonesian';
+                currentLang = 'en';
+            }
+        });
+    </script>
+</body>
+</html>
+
