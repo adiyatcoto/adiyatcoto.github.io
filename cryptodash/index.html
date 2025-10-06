@@ -72,6 +72,25 @@
             opacity: 0.5;
             background-color: transparent;
         }
+        .sort-arrow::after {
+            content: ' ';
+            display: inline-block;
+            margin-left: 5px;
+            opacity: 0.5;
+            color: #9ca3af;
+            font-size: 0.6em;
+            content: '▼▲';
+        }
+        .sort-arrow.asc::after {
+            content: '▲';
+            opacity: 1;
+            color: #fff;
+        }
+        .sort-arrow.desc::after {
+            content: '▼';
+            opacity: 1;
+            color: #fff;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
@@ -98,6 +117,7 @@
             <header class="text-center mb-8">
                 <h1 id="analysis-header" class="text-3xl sm:text-4xl font-bold">Loading Top Coins...</h1>
                 <p id="analysis-status" class="text-gray-400 mt-2">Loading initial data...</p>
+                <p id="vpn-suggestion" class="text-yellow-400 text-sm mt-2 hidden"></p>
                 <div class="mt-6 max-w-xs mx-auto relative" id="coin-search-container">
                     <input type="text" id="coin-search-input" placeholder="Search for a coin..." class="w-full bg-gray-800 border border-gray-600 text-white text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3">
                     <div id="coin-dropdown" class="coin-dropdown absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
@@ -110,12 +130,12 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold">Candlestick Chart</h2>
                     <div id="candlestick-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg">
-                       <button data-tf="1w" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1W</button>
-                       <button data-tf="1d" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1D</button>
-                       <button data-tf="4h" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
-                       <button data-tf="1h" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
-                       <button data-tf="15m" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">15m</button>
-                   </div>
+                        <button data-tf="1w" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1W</button>
+                        <button data-tf="1d" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1D</button>
+                        <button data-tf="4h" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
+                        <button data-tf="1h" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
+                        <button data-tf="15m" class="candle-tf-btn px-3 py-1 rounded-md text-sm font-medium">15m</button>
+                    </div>
                 </div>
                 <div class="chart-container" style="height: 60vh;">
                     <canvas id="candlestickChart"></canvas>
@@ -140,17 +160,17 @@
                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                      <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-                            <h2 id="dominance-table-header" class="text-2xl font-semibold">Volume Dominance</h2>
-                            <div id="dominance-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg mt-2 sm:mt-0">
-                                <button data-tf="24h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">24h</button>
-                                <button data-tf="4h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
-                                <button data-tf="1h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
-                                <button data-tf="1w" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">1w</button>
-                            </div>
+                             <h2 id="dominance-table-header" class="text-2xl font-semibold">Volume Dominance</h2>
+                             <div id="dominance-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg mt-2 sm:mt-0">
+                                 <button data-tf="24h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">24h</button>
+                                 <button data-tf="4h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
+                                 <button data-tf="1h" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
+                                 <button data-tf="1w" class="dom-tf-btn px-3 py-1 rounded-md text-sm font-medium">1w</button>
+                             </div>
                          </div>
                         <p class="text-sm text-gray-400 mt-2 mb-4">Measures a coin's share of total trading volume, indicating market attention and liquidity.</p>
                          <div class="table-container">
-                            <table class="w-full text-left"><thead class="sticky top-0 bg-gray-800"><tr><th class="p-2 text-sm">#</th><th class="p-2 text-sm">Symbol</th><th class="p-2 text-sm text-right">Volume</th><th class="p-2 text-sm text-right">Dominance</th></tr></thead><tbody id="dominance-table-body"></tbody></table>
+                             <table class="w-full text-left"><thead class="sticky top-0 bg-gray-800"><tr><th class="p-2 text-sm">#</th><th class="p-2 text-sm">Symbol</th><th class="p-2 text-sm text-right">Volume</th><th class="p-2 text-sm text-right">Dominance</th></tr></thead><tbody id="dominance-table-body"></tbody></table>
                          </div>
                      </div>
                      <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 chart-container">
@@ -163,34 +183,106 @@
                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                      <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-                            <h2 id="rank-table-header" class="text-2xl font-semibold">Performance Ranking</h2>
+                             <h2 id="rank-table-header" class="text-2xl font-semibold">Performance Ranking</h2>
                              <div class="flex items-center space-x-2 mt-2 sm:mt-0">
-                                <div id="rank-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg">
-                                    <button data-tf="24h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">24h</button>
-                                    <button data-tf="4h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
-                                    <button data-tf="1h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
-                                    <button data-tf="1w" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">1w</button>
-                                </div>
+                                 <div id="rank-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg">
+                                     <button data-tf="24h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">24h</button>
+                                     <button data-tf="4h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
+                                     <button data-tf="1h" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
+                                     <button data-tf="1w" class="rank-tf-btn px-3 py-1 rounded-md text-sm font-medium">1w</button>
+                                 </div>
                              </div>
                          </div>
                         <p class="text-sm text-gray-400 mt-2 mb-4">Ranks coins by price change from the start of the timeframe to gauge market momentum.</p>
                          <div class="table-container">
-                            <table class="w-full text-left"><thead class="sticky top-0 bg-gray-800"><tr><th class="p-3">#</th><th class="p-3">Symbol</th><th class="p-3 text-right">Price</th><th class="p-3 text-right">Change (%)</th></tr></thead><tbody id="rank-table-body"></tbody></table>
+                             <table class="w-full text-left"><thead class="sticky top-0 bg-gray-800">
+                                 <tr>
+                                     <th class="p-3 text-sm">#</th>
+                                     <th class="p-3 text-sm">Symbol</th>
+                                     <th class="p-3 text-sm text-right">Start Price (T-1)</th>
+                                     <th class="p-3 text-sm text-right">Current Price (T0)</th>
+                                     <th class="p-3 text-sm text-right">Change (%)</th>
+                                 </tr>
+                             </thead><tbody id="rank-table-body"></tbody></table>
                          </div>
                      </div>
                       <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 chart-container">
-                         <div class="flex justify-between items-center mb-4">
-                             <div id="rank-chart-legend" class="flex flex-wrap items-center gap-x-2 gap-y-2 text-xs"></div>
-                             <div id="rank-scale-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg">
-                                <button data-scale="linear" class="rank-scale-btn px-3 py-1 rounded-md text-sm font-medium">Linear</button>
-                                <button data-scale="log" class="rank-scale-btn px-3 py-1 rounded-md text-sm font-medium">Log</button>
-                            </div>
-                         </div>
-                         <canvas id="rankChart"></canvas>
-                         <div id="rankChartMessage" class="chart-message hidden"></div>
-                     </div>
+                          <div class="flex justify-between items-center mb-4">
+                              <div id="rank-chart-legend" class="flex flex-wrap items-center gap-x-2 gap-y-2 text-xs"></div>
+                              <div id="rank-scale-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg">
+                                  <button data-scale="linear" class="rank-scale-btn px-3 py-1 rounded-md text-sm font-medium">Linear</button>
+                                  <button data-scale="log" class="rank-scale-btn px-3 py-1 rounded-md text-sm font-medium">Log</button>
+                              </div>
+                          </div>
+                          <canvas id="rankChart"></canvas>
+                          <div id="rankChartMessage" class="chart-message hidden"></div>
+                      </div>
                  </div>
              </section>
+
+             <!-- Correlation Section -->
+             <section class="mt-12">
+                <div class="grid grid-cols-1 gap-8">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                            <h2 id="correlation-table-header" class="text-2xl font-semibold">BTC Correlation Cohort</h2>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2 mb-4">Measures the statistical relationship between a coin's price movement and Bitcoin's price movement across different timeframes. A score of 1 indicates a perfect positive correlation (moves together), -1 a perfect negative correlation (moves opposite), and 0 no correlation.</p>
+                        <div class="table-container">
+                            <table class="w-full text-left">
+                                <thead class="sticky top-0 bg-gray-800">
+                                    <tr>
+                                        <th class="p-3 text-sm">#</th>
+                                        <th class="p-3 text-sm">Symbol</th>
+                                        <th class="p-3 text-sm text-center cursor-pointer" data-sort="1h">1h <span class="sort-arrow" data-sort-arrow="1h"></span></th>
+                                        <th class="p-3 text-sm text-center cursor-pointer" data-sort="4h">4h <span class="sort-arrow" data-sort-arrow="4h"></span></th>
+                                        <th class="p-3 text-sm text-center cursor-pointer" data-sort="24h">24h <span class="sort-arrow" data-sort-arrow="24h"></span></th>
+                                        <th class="p-3 text-sm text-center cursor-pointer" data-sort="1w">1w <span class="sort-arrow" data-sort-arrow="1w"></span></th>
+                                        <th class="p-3 text-sm text-center cursor-pointer" data-sort="weighted">Weighted Score <span class="sort-arrow" data-sort-arrow="weighted"></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="correlation-table-body">
+                                    <!-- Correlation data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alpha Section -->
+            <section class="mt-12">
+                <div class="grid grid-cols-1 gap-8">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                            <h2 id="alpha-table-header" class="text-2xl font-semibold">BTC Outperformance (Alpha)</h2>
+                            <div id="alpha-timeframe-selector" class="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg mt-2 sm:mt-0">
+                                <button data-tf="24h" class="alpha-tf-btn px-3 py-1 rounded-md text-sm font-medium">24h</button>
+                                <button data-tf="4h" class="alpha-tf-btn px-3 py-1 rounded-md text-sm font-medium">4h</button>
+                                <button data-tf="1h" class="alpha-tf-btn px-3 py-1 rounded-md text-sm font-medium">1h</button>
+                                <button data-tf="1w" class="alpha-tf-btn px-3 py-1 rounded-md text-sm font-medium">1w</button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2 mb-4">This table shows which coins have outperformed or underperformed Bitcoin over the selected timeframe. 'Alpha' is the difference between a coin's performance and BTC's performance.</p>
+                        <div class="table-container">
+                            <table class="w-full text-left">
+                                <thead class="sticky top-0 bg-gray-800">
+                                    <tr>
+                                        <th class="p-3 text-sm">#</th>
+                                        <th class="p-3 text-sm">Symbol</th>
+                                        <th class="p-3 text-sm text-right">Coin Change (%)</th>
+                                        <th class="p-3 text-sm text-right">BTC Change (%)</th>
+                                        <th class="p-3 text-sm text-right">Outperformance (Alpha %)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alpha-table-body">
+                                    <!-- Alpha data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
         
         <footer class="text-center text-gray-500 mt-12">
@@ -207,7 +299,7 @@
         const btnInsights = document.getElementById('btn-insights');
 
         let analysisInterval;
-        let dominanceInterval, rankInterval;
+        let dominanceInterval, rankInterval, correlationInterval, alphaInterval;
         let dominanceChart, rankChart, candlestickChart;
         let originalRankChartStyles = {};
         let selectedSymbol = '';
@@ -215,9 +307,20 @@
         let selectedCandlestickTimeframe = '1d';
         let selectedDominanceTimeframe = '24h';
         let selectedRankTimeframe = '24h';
+        let selectedAlphaTimeframe = '24h';
         let selectedRankScale = 'linear';
-        let selectedTimezone = 'UTC';
+        let selectedTimezone = 'Asia/Jakarta';
         let top100SymbolsCache = [];
+        let lastFetchedRankData = null; 
+        let lastCorrelationData = [];
+        let correlationSort = { column: 'weighted', direction: 'desc' };
+        let rankLegendState = {
+            btc: true,
+            dominance: true,
+            gainer: true,
+            loser: true,
+            other: true
+        };
 
         const timeframesConfig = [
             { label: '5 Minutes', interval: '5m' }, { label: '15 Minutes', interval: '15m' },
@@ -231,6 +334,8 @@
             clearInterval(analysisInterval);
             clearInterval(dominanceInterval);
             clearInterval(rankInterval);
+            clearInterval(correlationInterval);
+            clearInterval(alphaInterval);
 
             if (dominanceChart) { dominanceChart.destroy(); dominanceChart = null; }
             if (rankChart) { rankChart.destroy(); rankChart = null; }
@@ -256,7 +361,7 @@
             if (top100SymbolsCache.length > 0) return top100SymbolsCache;
             try {
                 const stablecoinBases = ['USDC', 'FDUSD', 'TUSD', 'USDP', 'BUSD', 'DAI']; 
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+                const response = await fetch('https://api1.binance.com/api/v3/ticker/24hr'); 
                 if (!response.ok) throw new Error('Network response was not ok');
                 const tickers = await response.json();
                 top100SymbolsCache = tickers
@@ -275,6 +380,12 @@
                 return top100SymbolsCache;
             } catch (error) {
                 console.error("Failed to fetch top 100 symbols:", error);
+                analysisHeader.textContent = "API Connection Error";
+                analysisStatus.textContent = "Error: Could not connect to Binance API.";
+                updateStatus('offline');
+                const vpnSuggestion = document.getElementById('vpn-suggestion');
+                vpnSuggestion.textContent = "Suggestion: If you are in a restricted region, using a VPN may resolve this issue.";
+                vpnSuggestion.classList.remove('hidden');
                 return [];
             }
         }
@@ -322,6 +433,9 @@
                 analysisHeader.textContent = "Failed to Load Coins";
                 updateStatus('offline');
                 analysisStatus.textContent = "Error: Could not load coin list.";
+                const vpnSuggestion = document.getElementById('vpn-suggestion');
+                vpnSuggestion.textContent = "Suggestion: If you are in a restricted region, using a VPN may resolve this issue.";
+                vpnSuggestion.classList.remove('hidden');
                 coinSearchInput.placeholder = "Error loading coins";
             }
         }
@@ -329,11 +443,12 @@
         function updateDashboardForCoin(symbol) {
             selectedSymbol = symbol;
             analysisHeader.textContent = `Detailed Analysis: ${symbol}`;
+            document.getElementById('vpn-suggestion').classList.add('hidden');
             if (analysisInterval) clearInterval(analysisInterval);
             fetchDataForAnalysis();
             fetchDeeperAnalysisData(symbol);
             handleCandlestickTimeframeChange(selectedCandlestickTimeframe);
-            analysisInterval = setInterval(fetchDataForAnalysis, 30000); // Increased interval to 30 seconds
+            analysisInterval = setInterval(fetchDataForAnalysis, 30000); 
         }
         
         function createInitialAnalysisCards() {
@@ -342,7 +457,28 @@
                 const card = document.createElement('div');
                 card.id = `card-${index}`;
                 card.className = 'bg-gray-800 p-5 rounded-xl shadow-lg border border-gray-700';
-                card.innerHTML = `<div class="flex justify-between items-start mb-2"><h2 class="text-xl font-semibold">${tf.label}</h2><span id="update-time-${index}" class="text-xs text-gray-500">Loading...</span></div><p class="text-gray-400 text-xs mb-3" id="period-${index}">Period: -</p><div class="text-center"><p class="text-gray-400 text-sm">Current Price</p><p id="price-${index}" class="text-3xl font-bold my-2 text-gray-500">---</p></div><div class="mt-4 flex justify-between items-center p-3 bg-gray-900 rounded-lg"><span class="text-sm font-medium">Change (T-1 vs T0)</span><div id="change-${index}" class="flex items-center text-lg font-bold price-neutral"><span>--- %</span></div></div>`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="text-xl font-semibold">${tf.label}</h2>
+                        <span id="update-time-${index}" class="text-xs text-gray-500">Loading...</span>
+                    </div>
+                    <p class="text-gray-400 text-xs mb-3" id="period-${index}">Period: -</p>
+                    <div class="grid grid-cols-2 gap-2 text-center my-4">
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">T-1 Close</p>
+                            <p id="t1-price-${index}" class="text-lg font-semibold text-gray-300 mt-1">---</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">T0 Price</p>
+                            <p id="t0-price-${index}" class="text-lg font-bold text-gray-500 mt-1" data-price="0">---</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center p-3 bg-gray-900 rounded-lg">
+                        <span class="text-sm font-medium">Change</span>
+                        <div id="change-${index}" class="flex items-center text-lg font-bold price-neutral">
+                            <span>--- %</span>
+                        </div>
+                    </div>`;
                 analysisGrid.appendChild(card);
             });
         }
@@ -356,9 +492,10 @@
             results.forEach((result, index) => {
                 if (result.status === 'fulfilled' && Array.isArray(result.value) && result.value.length >= 2) {
                     const [kline_t1, kline_t0] = result.value;
-                    const close_t1 = parseFloat(kline_t1[4]), close_t0 = parseFloat(kline_t0[4]);
+                    const close_t1 = parseFloat(kline_t1[4]);
+                    const close_t0 = parseFloat(kline_t0[4]);
                     const change = close_t1 > 0 ? ((close_t0 - close_t1) / close_t1) * 100 : 0;
-                    updateAnalysisCard(index, close_t0, change, kline_t1[0], kline_t0[6]);
+                    updateAnalysisCard(index, close_t1, close_t0, change, kline_t0[0], kline_t0[6]);
                 }
             });
         }
@@ -506,14 +643,20 @@
                     <canvas id="monthlyHeatmap" height="50"></canvas>
                 </div>
             `;
+            
+            const now = new Date();
+            const currentUTCHour = now.getUTCHours();
+            const currentUTCDay = now.getUTCDay();
+            const currentUTCWeek = Math.ceil(now.getUTCDate() / 7);
+            const currentUTCMonth = now.getUTCMonth();
 
-            createHeatmap('hourlyHeatmap', analysis.hourlyAvgPerf, Array.from(Array(24).keys()).map(h => `${h}`));
-            createHeatmap('dailyHeatmap', analysis.dailyAvgPerf, ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
-            createHeatmap('weeklyHeatmap', analysis.weeklyAvgPerf, ['W1', 'W2', 'W3', 'W4', 'W5']);
-            createHeatmap('monthlyHeatmap', analysis.monthlyAvgPerf, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+            createHeatmap('hourlyHeatmap', analysis.hourlyAvgPerf, Array.from(Array(24).keys()).map(h => `${h}`), currentUTCHour);
+            createHeatmap('dailyHeatmap', analysis.dailyAvgPerf, ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], currentUTCDay);
+            createHeatmap('weeklyHeatmap', analysis.weeklyAvgPerf, ['W1', 'W2', 'W3', 'W4', 'W5'], currentUTCWeek - 1);
+            createHeatmap('monthlyHeatmap', analysis.monthlyAvgPerf, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], currentUTCMonth);
         }
         
-        function createHeatmap(canvasId, data, labels) {
+        function createHeatmap(canvasId, data, labels, highlightIndex) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -530,6 +673,16 @@
                 ctx.fillStyle = color;
                 ctx.fillRect(index * cellWidth, 0, cellWidth - 1, canvas.height - 25);
 
+                if (index === highlightIndex) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.lineWidth = 2;
+                    ctx.shadowColor = 'rgba(255, 255, 255, 1)';
+                    ctx.shadowBlur = 10;
+                    ctx.strokeRect(index * cellWidth + 1, 1, cellWidth - 3, canvas.height - 27);
+                    ctx.restore();
+                }
+
                 ctx.fillStyle = '#E5E7EB';
                 ctx.textAlign = 'center';
                 ctx.font = '12px Inter';
@@ -538,21 +691,43 @@
         }
 
 
-        function updateAnalysisCard(index, price, change, startTime, endTime) {
-            const card = document.getElementById(`card-${index}`), priceEl = document.getElementById(`price-${index}`), changeEl = document.getElementById(`change-${index}`), updateTimeEl = document.getElementById(`update-time-${index}`), periodEl = document.getElementById(`period-${index}`);
-            const oldPrice = parseFloat(priceEl.textContent.replace(/[^0-9.-]+/g,""));
+        function updateAnalysisCard(index, price_t1, price_t0, change, startTime, endTime) {
+            const card = document.getElementById(`card-${index}`);
+            const t1PriceEl = document.getElementById(`t1-price-${index}`);
+            const t0PriceEl = document.getElementById(`t0-price-${index}`);
+            const changeEl = document.getElementById(`change-${index}`);
+            const updateTimeEl = document.getElementById(`update-time-${index}`);
+            const periodEl = document.getElementById(`period-${index}`);
+
+            const oldPrice = parseFloat(t0PriceEl.dataset.price || 0);
+            t0PriceEl.dataset.price = price_t0;
+
+            const formatPrice = (p) => `$${p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`;
             const formatDate = (ts) => new Date(ts).toLocaleString('en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: selectedTimezone });
-            priceEl.textContent = `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`;
+
+            t1PriceEl.textContent = formatPrice(price_t1);
+            t0PriceEl.textContent = formatPrice(price_t0);
+            
             periodEl.textContent = `Period: ${formatDate(startTime)} - ${formatDate(endTime)}`;
             updateTimeEl.textContent = `Updated: ${new Date().toLocaleTimeString('en-US', {timeZone: selectedTimezone})}`;
+            
             let changeClass = change > 0 ? 'price-up' : (change < 0 ? 'price-down' : 'price-neutral');
             let arrow = change > 0 ? '▲' : (change < 0 ? '▼' : '');
+            
             changeEl.innerHTML = `<span class="mr-1">${arrow}</span> <span>${change.toFixed(3)}%</span>`;
-            priceEl.className = `text-3xl font-bold my-2 ${changeClass}`;
+            
+            t0PriceEl.className = `text-lg font-bold mt-1 ${changeClass}`;
             changeEl.className = `flex items-center text-lg font-bold ${changeClass}`;
+            t1PriceEl.className = `text-lg font-semibold text-gray-300 mt-1`;
+
             card.classList.remove('flash-green', 'flash-red');
-            if(price > oldPrice && !isNaN(oldPrice)) card.classList.add('flash-green');
-            else if (price < oldPrice && !isNaN(oldPrice)) card.classList.add('flash-red');
+            if (!isNaN(oldPrice) && oldPrice !== 0) {
+                if(price_t0 > oldPrice) {
+                    card.classList.add('flash-green');
+                } else if (price_t0 < oldPrice) {
+                    card.classList.add('flash-red');
+                }
+            }
         }
 
         function updateStatus(newStatus) {
@@ -657,10 +832,12 @@
             handleDominanceTimeframeChange(selectedDominanceTimeframe);
             handleRankTimeframeChange(selectedRankTimeframe);
             handleRankScaleChange(selectedRankScale);
+            initializeCorrelationSection();
+            handleAlphaTimeframeChange(selectedAlphaTimeframe);
         }
         
-        function showTableLoading(tbody, message) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-400">${message}</td></tr>`;
+        function showTableLoading(tbody, message, colspan = 4) {
+            tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center p-8 text-gray-400">${message}</td></tr>`;
         }
         
         const chartColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#F97316', '#6B7280'];
@@ -728,46 +905,74 @@
 
         async function fetchRankData(tf) {
              const loadingIcon = `<div class="flex justify-center items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Loading ${tf} chart data...</div>`;
-              showChartMessage('rankChart', loadingIcon);
-              try {
-                  const { interval, limit } = klineParams[tf];
-                  const topSymbols = await getTop100Symbols();
-                  const promises = topSymbols.map(symbol => fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
-                  const results = await Promise.allSettled(promises);
-                  
-                  const historicalPerformances = new Map();
-                  let timeframeVolumes = new Map();
+                  showChartMessage('rankChart', loadingIcon);
+                  try {
+                       const { interval, limit } = klineParams[tf];
+                       const topSymbols = await getTop100Symbols();
+                       const promises = topSymbols.map(symbol => fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
+                       const results = await Promise.allSettled(promises);
+                       
+                       const historicalPerformances = new Map();
+                       let timeframeVolumes = new Map();
+                       const priceDetails = new Map(); 
 
-                  results.forEach((res, i) => {
-                      if (res.status === 'fulfilled' && res.value && res.value.length > 1) {
-                          const symbol = topSymbols[i];
-                          const startPrice = parseFloat(res.value[0][4]);
-                          let totalVolume = 0;
-                          if (startPrice > 0) {
-                              const performanceData = res.value.map(k => {
-                                  totalVolume += parseFloat(k[7]);
-                                  return { t: k[0], p: ((parseFloat(k[4]) - startPrice) / startPrice) * 100 };
-                              });
-                              historicalPerformances.set(symbol, performanceData);
-                              timeframeVolumes.set(symbol, totalVolume);
-                          }
-                      }
-                  });
-                  if (historicalPerformances.size === 0) throw new Error("No performance data calculated.");
+                       results.forEach((res, i) => {
+                           if (res.status === 'fulfilled' && res.value && res.value.length > 1) {
+                               const symbol = topSymbols[i];
+                               const startPrice = parseFloat(res.value[0][1]);
+                               const currentPrice = parseFloat(res.value[res.value.length - 1][4]);
+                               priceDetails.set(symbol, { startPrice, currentPrice });
 
-                  const rankedCoins = Array.from(historicalPerformances.entries()).map(([symbol, data]) => {
-                      return { symbol, priceChangePercent: data[data.length - 1].p, lastPrice: 0 };
-                  }).sort((a, b) => b.priceChangePercent - a.priceChangePercent);
-                  
-                  const top20ByDominance = Array.from(timeframeVolumes.entries()).sort(([, volA], [, volB]) => volB - volA).slice(0, 20).map(([symbol]) => symbol);
+                               let totalVolume = 0;
+                               if (startPrice > 0) {
+                                   const performanceData = res.value.map(k => {
+                                       totalVolume += parseFloat(k[7]);
+                                       return { t: k[0], p: ((parseFloat(k[4]) - startPrice) / startPrice) * 100 };
+                                   });
+                                   historicalPerformances.set(symbol, performanceData);
+                                   timeframeVolumes.set(symbol, totalVolume);
+                               }
+                           }
+                       });
+                       if (historicalPerformances.size === 0) throw new Error("No performance data calculated.");
 
-                  await updateRankTable(rankedCoins, top20ByDominance, rankedCoins.slice(0,10).map(c=>c.symbol), rankedCoins.slice(-10).map(c=>c.symbol) );
-                  createOrUpdateRankChart(historicalPerformances, rankedCoins, tf, top20ByDominance);
-             } catch (error) {
-                  console.error(`Error fetching rank data for ${tf}:`, error);
-                  rankTableBody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-red-400">Failed to load performance data.</td></tr>`;
-                  showChartMessage('rankChart', 'Error: Failed to load chart data.');
-             }
+                       let rankedCoins = Array.from(historicalPerformances.entries()).map(([symbol, data]) => {
+                            const prices = priceDetails.get(symbol);
+                            return {
+                                symbol,
+                                priceChangePercent: data[data.length - 1].p,
+                                t1Price: prices.startPrice,
+                                t0Price: prices.currentPrice
+                            };
+                       }).sort((a, b) => b.priceChangePercent - a.priceChangePercent);
+                       
+                       const top20ByDominance = Array.from(timeframeVolumes.entries()).sort(([, volA], [, volB]) => volB - volA).slice(0, 20).map(([symbol]) => symbol);
+                       const top10 = rankedCoins.slice(0, 10).map(c => c.symbol);
+                       const bottom10 = rankedCoins.slice(-10).map(c => c.symbol);
+
+                       rankedCoins = rankedCoins.map(coin => {
+                           let category = 'other';
+                           if (coin.symbol === 'BTCUSDT') {
+                               category = 'btc';
+                           } else if (top20ByDominance.includes(coin.symbol)) {
+                               category = 'dominance';
+                           } else if (top10.includes(coin.symbol)) {
+                               category = 'gainer';
+                           } else if (bottom10.includes(coin.symbol)) {
+                               category = 'loser';
+                           }
+                           return { ...coin, category };
+                       });
+
+                       lastFetchedRankData = { historicalPerformances, top20ByDominance, top10, bottom10 };
+
+                       updateRankTable(rankedCoins);
+                       createOrUpdateRankChart(historicalPerformances, tf, top20ByDominance, top10, bottom10);
+                  } catch (error) {
+                       console.error(`Error fetching rank data for ${tf}:`, error);
+                       rankTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-red-400">Failed to load performance data.</td></tr>`;
+                       showChartMessage('rankChart', 'Error: Failed to load chart data.');
+                  }
         }
         
         function createOrUpdateDominanceChart(historicalData, topSymbols, tf) {
@@ -800,7 +1005,7 @@
             });
         }
         
-        function createOrUpdateRankChart(historicalPerformances, rankedCoins, tf, top20ByDominance) {
+        function createOrUpdateRankChart(historicalPerformances, tf, top20ByDominance, top10, bottom10) {
             hideChartMessage('rankChart');
             if (rankChart) { rankChart.destroy(); rankChart = null; }
             if (historicalPerformances.size === 0) return;
@@ -810,25 +1015,21 @@
                 : { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' };
 
             const ctx = document.getElementById('rankChart').getContext('2d');
-            const top10 = rankedCoins.slice(0, 10).map(c => c.symbol);
-            const bottom10 = rankedCoins.slice(-10).map(c => c.symbol);
             
             originalRankChartStyles = {};
             const datasets = Array.from(historicalPerformances.entries()).map(([symbol, data]) => {
                 let color, width, category;
-
+                
                 if (symbol === 'BTCUSDT') {
                     width = 3.0; color = '#FBBF24'; category = 'btc';
                 } else if (top20ByDominance.includes(symbol)) {
                     width = 2.0; color = '#38BDF8'; category = 'dominance';
+                } else if (top10.includes(symbol)) {
+                    width = 1.5; color = '#22c55e'; category = 'gainer';
+                } else if (bottom10.includes(symbol)) {
+                    width = 1.5; color = '#ef4444'; category = 'loser';
                 } else {
                     width = 1.0; color = '#E5E7EB80'; category = 'other';
-                }
-
-                if (top10.includes(symbol) && symbol !== 'BTCUSDT') {
-                    color = '#22c55e'; category = 'gainer';
-                } else if (bottom10.includes(symbol) && symbol !== 'BTCUSDT') {
-                    color = '#ef4444'; category = 'loser';
                 }
                 
                 originalRankChartStyles[symbol] = { color, width };
@@ -836,20 +1037,29 @@
                 let chartData = data.map(d => d.p);
                 if (selectedRankScale === 'log') {
                      chartData = data.map(d => {
-                        const p = d.p;
-                        if (p === 0) return 0;
-                        return Math.sign(p) * Math.log10(Math.abs(p) + 1);
-                    });
+                         const p = d.p;
+                         if (p === 0) return 0;
+                         return Math.sign(p) * Math.log10(Math.abs(p) + 1);
+                     });
                 }
 
-                return { label: symbol, data: chartData, borderColor: color, borderWidth: width, pointRadius: 0, tension: 0.1, category: category };
+                return { 
+                    label: symbol, 
+                    data: chartData, 
+                    borderColor: color, 
+                    borderWidth: width, 
+                    pointRadius: 0, 
+                    tension: 0.1, 
+                    category: category,
+                    hidden: !rankLegendState[category]
+                };
             });
             
             rankChart = new Chart(ctx, {
                  type: 'line',
                  data: {
-                     labels: historicalPerformances.values().next().value.map(d => new Date(d.t).toLocaleString('en-GB', {...labelFormatOptions, timeZone: selectedTimezone})),
-                     datasets: datasets
+                      labels: historicalPerformances.values().next().value.map(d => new Date(d.t).toLocaleString('en-GB', {...labelFormatOptions, timeZone: selectedTimezone})),
+                      datasets: datasets
                  },
                  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { let r = c.raw; if (selectedRankScale === 'log') { r = Math.sign(r) * (Math.pow(10, Math.abs(r)) - 1); } return `${c.dataset.label}: ${r.toFixed(2)}%`; } } } }, scales: { y: { type: 'linear', ticks: { color: '#9CA3AF', callback: (v) => { if (selectedRankScale === 'log') { const o = Math.sign(v) * (Math.pow(10, Math.abs(v)) - 1); return o.toFixed(0) + '%'; } return v.toFixed(0) + '%'; } } }, x: { ticks: { color: '#9CA3AF', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } } }, interaction: { mode: 'nearest', intersect: false } }
             });
@@ -861,35 +1071,34 @@
             return num.toLocaleString('en-US');
         }
 
-        async function updateRankTable(rankedCoins, top20ByDominance, top10, bottom10) {
+        function updateRankTable(rankedCoins) {
             let tableHtml = '';
-            const pricesNeeded = rankedCoins.some(c => c.lastPrice === 0);
-            const priceMap = new Map();
-
-            if (pricesNeeded) {
-                const priceDataResponse = await fetch('https://api.binance.com/api/v3/ticker/price');
-                const priceData = await priceDataResponse.json();
-                priceData.forEach(p => priceMap.set(p.symbol, parseFloat(p.price)));
-            }
+            const formatPrice = (p) => p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
 
             rankedCoins.forEach((coin, index) => {
                 const change = coin.priceChangePercent;
                 const changeClass = change >= 0 ? 'price-up' : 'price-down';
                 const sign = change >= 0 ? '+' : '';
-                const lastPrice = pricesNeeded ? (priceMap.get(coin.symbol) || 0) : coin.lastPrice;
 
                 let highlightClass = '';
-                if (coin.symbol === 'BTCUSDT') {
+                if (coin.category === 'btc') {
                     highlightClass = 'highlight-btc';
-                } else if (top10.includes(coin.symbol)) {
+                } else if (coin.category === 'gainer') {
                     highlightClass = 'highlight-gainer';
-                } else if (bottom10.includes(coin.symbol)) {
+                } else if (coin.category === 'loser') {
                     highlightClass = 'highlight-loser';
-                } else if (top20ByDominance.includes(coin.symbol)) {
+                } else if (coin.category === 'dominance') {
                     highlightClass = 'highlight-dominance';
                 }
 
-                tableHtml += `<tr class="border-b border-gray-700 hover:bg-gray-700 ${highlightClass}" data-symbol="${coin.symbol}"><td class="p-3">${index + 1}</td><td class="p-3 font-semibold">${coin.symbol}</td><td class="p-3 text-right">${lastPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</td><td class="p-3 text-right font-medium ${changeClass}">${sign}${change.toFixed(2)}%</td></tr>`;
+                tableHtml += `
+                    <tr class="border-b border-gray-700 hover:bg-gray-700 ${highlightClass}" data-symbol="${coin.symbol}" data-category="${coin.category}">
+                        <td class="p-3">${index + 1}</td>
+                        <td class="p-3 font-semibold">${coin.symbol}</td>
+                        <td class="p-3 text-right text-gray-400">${formatPrice(coin.t1Price)}</td>
+                        <td class="p-3 text-right font-semibold ${changeClass}">${formatPrice(coin.t0Price)}</td>
+                        <td class="p-3 text-right font-medium ${changeClass}">${sign}${change.toFixed(2)}%</td>
+                    </tr>`;
             });
             rankTableBody.innerHTML = tableHtml;
 
@@ -897,6 +1106,7 @@
                 row.addEventListener('mouseover', handleRankHover);
                 row.addEventListener('mouseout', handleRankMouseOut);
             });
+            filterRankTableVisibility();
         }
         
         function handleRankHover(event) {
@@ -927,8 +1137,25 @@
             const stateVar = `selected${type}Timeframe`;
             const headerEl = document.getElementById(`${type.toLowerCase()}-table-header`);
             const selectorEl = document.getElementById(`${type.toLowerCase()}-timeframe-selector`);
-            const fetchFn = type === 'Dominance' ? fetchDominanceData : fetchRankData;
-            const intervalVar = `${type.toLowerCase()}Interval`;
+            
+            let fetchFn, intervalVar, colspan;
+            switch(type) {
+                case 'Dominance':
+                    fetchFn = fetchDominanceData;
+                    intervalVar = 'dominanceInterval';
+                    colspan = 4;
+                    break;
+                case 'Rank':
+                    fetchFn = fetchRankData;
+                    intervalVar = 'rankInterval';
+                    colspan = 5;
+                    break;
+                case 'Alpha':
+                    fetchFn = fetchAlphaData;
+                    intervalVar = 'alphaInterval';
+                    colspan = 5;
+                    break;
+            }
 
             window[stateVar] = tf;
             selectorEl.querySelectorAll('button').forEach(btn => {
@@ -936,10 +1163,10 @@
                 btn.classList.toggle('text-white', btn.dataset.tf === tf);
                 btn.classList.toggle('text-gray-400', btn.dataset.tf !== tf);
             });
-            headerEl.textContent = `${type} (${tf})`;
+            headerEl.textContent = `${type === 'Alpha' ? 'BTC Outperformance (Alpha)' : type} (${tf})`;
             
             clearInterval(window[intervalVar]);
-            showTableLoading(document.getElementById(`${type.toLowerCase()}-table-body`), `Loading ${tf} data...`);
+            showTableLoading(document.getElementById(`${type.toLowerCase()}-table-body`), `Loading ${tf} data...`, colspan);
             fetchFn(tf);
             window[intervalVar] = setInterval(() => fetchFn(tf), 60000);
         }
@@ -951,7 +1178,18 @@
                 btn.classList.toggle('text-white', btn.dataset.scale === scale);
                 btn.classList.toggle('text-gray-400', btn.dataset.scale !== scale);
             });
-            handleRankTimeframeChange(selectedRankTimeframe);
+            
+            if (rankChart && lastFetchedRankData) {
+                createOrUpdateRankChart(
+                    lastFetchedRankData.historicalPerformances,
+                    selectedRankTimeframe,
+                    lastFetchedRankData.top20ByDominance,
+                    lastFetchedRankData.top10,
+                    lastFetchedRankData.bottom10
+                );
+            } else {
+                handleRankTimeframeChange(selectedRankTimeframe);
+            }
         }
         
         function handleRankLegendToggle(event) {
@@ -962,12 +1200,26 @@
             button.classList.toggle('active');
             const isActive = button.classList.contains('active');
 
+            rankLegendState[category] = isActive;
+
             rankChart.data.datasets.forEach(dataset => {
                 if (dataset.category === category) {
                     dataset.hidden = !isActive;
                 }
             });
             rankChart.update();
+            filterRankTableVisibility();
+        }
+
+        function filterRankTableVisibility() {
+            if (!rankTableBody) return;
+            const rows = rankTableBody.querySelectorAll('tr[data-category]');
+            rows.forEach(row => {
+                const category = row.dataset.category;
+                if (rankLegendState.hasOwnProperty(category)) {
+                    row.style.display = rankLegendState[category] ? '' : 'none';
+                }
+            });
         }
 
         function updateDominanceTable(data) {
@@ -978,6 +1230,243 @@
                 tableHtml += `<tr class="border-b border-gray-700"><td class="p-2 text-sm">${index + 1}</td><td class="p-2 font-semibold text-sm">${coin.symbol.replace('USDT','')}</td><td class="p-2 text-right text-sm">${formatVolume(coin.volume)}</td><td class="p-2 text-right font-medium text-sm">${dominance.toFixed(2)}%</td></tr>`;
             });
             dominanceTableBody.innerHTML = tableHtml;
+        }
+
+        // --- Correlation Functions ---
+        function initializeCorrelationSection() {
+            document.getElementById('correlation-table-header').textContent = `BTC Correlation Cohort`;
+            clearInterval(correlationInterval);
+            fetchAllCorrelationsAndBuildTable();
+            correlationInterval = setInterval(fetchAllCorrelationsAndBuildTable, 60000 * 5);
+        }
+
+        async function fetchAllCorrelationsAndBuildTable() {
+            const tableBody = document.getElementById('correlation-table-body');
+            showTableLoading(tableBody, 'Calculating all correlations...', 7);
+            const correlationTimeframes = ['1h', '4h', '24h', '1w'];
+
+            try {
+                let topSymbols = await getTop100Symbols();
+                if (!topSymbols.includes('BTCUSDT')) {
+                    topSymbols = ['BTCUSDT', ...topSymbols.filter(s => s !== 'BTCUSDT')].slice(0, 100);
+                }
+                
+                const allPromises = topSymbols.flatMap(symbol =>
+                    correlationTimeframes.map(tf => {
+                        const { interval, limit } = klineParams[tf];
+                        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+                        return fetch(url).then(res => res.json()).then(data => ({ symbol, tf, data }));
+                    })
+                );
+                const allResults = await Promise.allSettled(allPromises);
+
+                const klineData = new Map(); 
+                allResults.forEach(res => {
+                    if (res.status === 'fulfilled' && res.value.data && res.value.data.length > 0) {
+                        const { symbol, tf, data } = res.value;
+                        if (!klineData.has(symbol)) {
+                            klineData.set(symbol, new Map());
+                        }
+                        klineData.get(symbol).set(tf, data.map(k => parseFloat(k[4])));
+                    }
+                });
+
+                const btcPricesByTf = klineData.get('BTCUSDT');
+                if (!btcPricesByTf) throw new Error("BTC price data could not be fetched.");
+
+                const correlationData = [];
+                const otherSymbols = topSymbols.filter(s => s !== 'BTCUSDT');
+                otherSymbols.forEach(symbol => {
+                    const symbolPricesByTf = klineData.get(symbol);
+                    if (!symbolPricesByTf) return;
+
+                    const result = { symbol };
+                    const weights = { '1h': 1, '4h': 2, '24h': 3, '1w': 4 };
+                    let weightedSum = 0;
+                    let totalWeight = 0;
+
+                    correlationTimeframes.forEach(tf => {
+                        const btcPrices = btcPricesByTf.get(tf);
+                        const symbolPrices = symbolPricesByTf.get(tf);
+
+                        if (btcPrices && symbolPrices) {
+                            const commonLength = Math.min(btcPrices.length, symbolPrices.length);
+                            if (commonLength > 1) {
+                                const correlation = pearsonCorrelation(btcPrices.slice(-commonLength), symbolPrices.slice(-commonLength));
+                                result[tf] = isNaN(correlation) ? null : correlation;
+                                if (result[tf] !== null) {
+                                  weightedSum += result[tf] * weights[tf];
+                                  totalWeight += weights[tf];
+                                }
+                            } else {
+                                result[tf] = null;
+                            }
+                        } else {
+                            result[tf] = null;
+                        }
+                    });
+                    result.weighted = totalWeight > 0 ? weightedSum / totalWeight : null;
+                    correlationData.push(result);
+                });
+
+                lastCorrelationData = correlationData;
+                sortAndRenderCorrelationTable();
+
+            } catch (error) {
+                console.error(`Error fetching correlation data:`, error);
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-8 text-red-400">Failed to load correlation data.</td></tr>`;
+            }
+        }
+
+        function sortAndRenderCorrelationTable() {
+            const { column, direction } = correlationSort;
+            lastCorrelationData.sort((a, b) => {
+                const valA = a[column] ?? -2;
+                const valB = b[column] ?? -2;
+                return direction === 'asc' ? valA - valB : valB - valA;
+            });
+            updateCorrelationCohortTable(lastCorrelationData);
+            updateCorrelationSortUI();
+        }
+
+        function updateCorrelationSortUI() {
+            document.querySelectorAll('#correlation-table-body').forEach(el => {
+                el.previousElementSibling.querySelectorAll('th .sort-arrow').forEach(arrow => {
+                    arrow.className = 'sort-arrow';
+                });
+            })
+            const activeArrow = document.querySelector(`.sort-arrow[data-sort-arrow="${correlationSort.column}"]`);
+            if (activeArrow) activeArrow.classList.add(correlationSort.direction);
+        }
+
+        function updateCorrelationCohortTable(data) {
+            const tableBody = document.getElementById('correlation-table-body');
+            const correlationTimeframes = ['1h', '4h', '24h', '1w'];
+            let tableHtml = '';
+
+            data.forEach((item, index) => {
+                tableHtml += `<tr class="border-b border-gray-700 hover:bg-gray-700">
+                                <td class="p-3">${index + 1}</td>
+                                <td class="p-3 font-semibold">${item.symbol}</td>`;
+                correlationTimeframes.forEach(tf => {
+                    tableHtml += `<td>${renderCorrelationCell(item[tf])}</td>`;
+                });
+                tableHtml += `<td>${renderCorrelationCell(item.weighted)}</td></tr>`;
+            });
+            tableBody.innerHTML = tableHtml;
+        }
+
+        function renderCorrelationCell(score) {
+            if (score !== null && typeof score !== 'undefined') {
+                const scoreClass = score > 0.5 ? 'text-green-400' : (score < -0.5 ? 'text-red-400' : 'text-gray-300');
+                const sign = score > 0 ? '+' : '';
+                return `<div class="p-3 text-center">
+                            <span class="font-medium ${scoreClass} px-3 py-1 rounded-md" style="background-color: ${getCorrelationColor(score)};">
+                                ${sign}${score.toFixed(4)}
+                            </span>
+                        </div>`;
+            }
+            return `<div class="p-3 text-center text-gray-500">-</div>`;
+        }
+
+        function pearsonCorrelation(x, y) {
+            let n = x.length;
+            if (n < 2 || n !== y.length) return 0;
+
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2 += x[i] * x[i];
+                sumY2 += y[i] * y[i];
+            }
+            const numerator = n * sumXY - sumX * sumY;
+            const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+            if (denominator === 0) return 0;
+            return numerator / denominator;
+        }
+        
+        function getCorrelationColor(score) {
+            const s = Math.max(-1, Math.min(1, score));
+            if (s >= 0) {
+                const r = 107 - (107 - 34) * s, g = 114 + (197 - 114) * s, b = 128 - (128 - 94) * s;
+                return `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, ${(0.2 + 0.6 * s).toFixed(2)})`;
+            } else {
+                const absS = Math.abs(s);
+                const r = 107 + (239 - 107) * absS, g = 114 - (114 - 68) * absS, b = 128 - (128 - 68) * absS;
+                return `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, ${(0.2 + 0.6 * absS).toFixed(2)})`;
+            }
+        }
+
+        // --- Alpha Functions ---
+        const handleAlphaTimeframeChange = (tf) => handleTimeframeChange('Alpha', tf);
+        
+        async function fetchAlphaData(tf) {
+            const tableBody = document.getElementById('alpha-table-body');
+            showTableLoading(tableBody, `Calculating ${tf} alpha...`, 5);
+            try {
+                const { interval, limit } = klineParams[tf];
+                let topSymbols = await getTop100Symbols();
+                if (!topSymbols.includes('BTCUSDT')) topSymbols.unshift('BTCUSDT');
+                
+                const promises = topSymbols.map(symbol => fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`).then(res => res.json()));
+                const results = await Promise.allSettled(promises);
+
+                const performanceData = new Map();
+                results.forEach((res, i) => {
+                    if (res.status === 'fulfilled' && res.value && res.value.length > 1) {
+                        const startPrice = parseFloat(res.value[0][1]);
+                        const endPrice = parseFloat(res.value[res.value.length - 1][4]);
+                        if (startPrice > 0) {
+                           performanceData.set(topSymbols[i], ((endPrice - startPrice) / startPrice) * 100);
+                        }
+                    }
+                });
+
+                const btcPerformance = performanceData.get('BTCUSDT');
+                if (typeof btcPerformance === 'undefined') throw new Error('Could not fetch BTC performance data.');
+
+                const alphaData = [];
+                performanceData.forEach((perf, symbol) => {
+                    if (symbol === 'BTCUSDT') return;
+                    alphaData.push({
+                        symbol,
+                        coinPerformance: perf,
+                        alpha: perf - btcPerformance,
+                    });
+                });
+
+                alphaData.sort((a, b) => b.alpha - a.alpha);
+                updateAlphaTable(alphaData, btcPerformance);
+
+            } catch(error) {
+                console.error(`Error fetching alpha data for ${tf}:`, error);
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-red-400">Failed to load alpha data.</td></tr>`;
+            }
+        }
+
+        function updateAlphaTable(data, btcPerformance) {
+            const tableBody = document.getElementById('alpha-table-body');
+            let tableHtml = '';
+            const btcPerfClass = btcPerformance >= 0 ? 'price-up' : 'price-down';
+
+            data.forEach((item, index) => {
+                const coinPerfClass = item.coinPerformance >= 0 ? 'price-up' : 'price-down';
+                const alphaClass = item.alpha >= 0 ? 'price-up' : 'price-down';
+                const signCoin = item.coinPerformance >= 0 ? '+' : '';
+                const signBtc = btcPerformance >= 0 ? '+' : '';
+                const signAlpha = item.alpha >= 0 ? '+' : '';
+
+                tableHtml += `<tr class="border-b border-gray-700 hover:bg-gray-700">
+                                <td class="p-3">${index + 1}</td>
+                                <td class="p-3 font-semibold">${item.symbol}</td>
+                                <td class="p-3 text-right font-medium ${coinPerfClass}">${signCoin}${item.coinPerformance.toFixed(2)}%</td>
+                                <td class="p-3 text-right font-medium ${btcPerfClass}">${signBtc}${btcPerformance.toFixed(2)}%</td>
+                                <td class="p-3 text-right font-bold ${alphaClass}">${signAlpha}${item.alpha.toFixed(2)}%</td>
+                              </tr>`;
+            });
+            tableBody.innerHTML = tableHtml;
         }
 
         function updateRankLegend() {
@@ -1014,7 +1503,7 @@
                 const option = document.createElement('option');
                 option.value = tz;
                 option.textContent = `(UTC${offset}) ${tz.replace(/_/g, ' ')}`;
-                if (tz === 'UTC') option.selected = true;
+                if (tz === 'Asia/Jakarta') option.selected = true;
                 selector.appendChild(option);
             });
 
@@ -1026,6 +1515,8 @@
                 } else if(currentPage === 'insights') {
                     handleDominanceTimeframeChange(selectedDominanceTimeframe);
                     handleRankTimeframeChange(selectedRankTimeframe);
+                    initializeCorrelationSection();
+                    handleAlphaTimeframeChange(selectedAlphaTimeframe);
                 }
             });
         }
@@ -1038,35 +1529,34 @@
             btnAnalysis.addEventListener('click', () => switchPage('analysis'));
             btnInsights.addEventListener('click', () => switchPage('insights'));
             
-            // New Searchable Dropdown Logic
-            coinSearchInput.addEventListener('focus', () => {
-                coinDropdown.classList.remove('hidden');
-            });
+            coinSearchInput.addEventListener('focus', () => coinDropdown.classList.remove('hidden'));
             coinSearchInput.addEventListener('input', () => {
                 const filter = coinSearchInput.value.toUpperCase();
                 const options = coinDropdown.getElementsByTagName('div');
                 for (let i = 0; i < options.length; i++) {
-                    const txtValue = options[i].textContent || options[i].innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        options[i].style.display = "";
-                    } else {
-                        options[i].style.display = "none";
-                    }
+                    options[i].style.display = (options[i].textContent || options[i].innerText).toUpperCase().indexOf(filter) > -1 ? "" : "none";
                 }
             });
             document.addEventListener('click', (event) => {
-                if (!coinSearchContainer.contains(event.target)) {
-                    coinDropdown.classList.add('hidden');
-                }
+                if (!coinSearchContainer.contains(event.target)) coinDropdown.classList.add('hidden');
             });
-
 
             document.getElementById('dominance-timeframe-selector').addEventListener('click', (e) => { if (e.target.classList.contains('dom-tf-btn')) handleDominanceTimeframeChange(e.target.dataset.tf); });
             document.getElementById('rank-timeframe-selector').addEventListener('click', (e) => { if (e.target.classList.contains('rank-tf-btn')) handleRankTimeframeChange(e.target.dataset.tf); });
             document.getElementById('rank-scale-selector').addEventListener('click', (e) => { if (e.target.classList.contains('rank-scale-btn')) handleRankScaleChange(e.target.dataset.scale); });
             rankChartLegend.addEventListener('click', handleRankLegendToggle);
             document.getElementById('candlestick-timeframe-selector').addEventListener('click', (e) => { if (e.target.classList.contains('candle-tf-btn')) handleCandlestickTimeframeChange(e.target.dataset.tf); });
-            
+            document.getElementById('alpha-timeframe-selector').addEventListener('click', (e) => { if (e.target.classList.contains('alpha-tf-btn')) handleAlphaTimeframeChange(e.target.dataset.tf); });
+
+            document.querySelector('#correlation-table-body').previousElementSibling.addEventListener('click', (e) => {
+                const header = e.target.closest('th[data-sort]');
+                if (!header) return;
+                const newSortColumn = header.dataset.sort;
+                correlationSort.column = newSortColumn;
+                correlationSort.direction = correlationSort.direction === 'desc' ? 'asc' : 'desc';
+                sortAndRenderCorrelationTable();
+            });
+
             populateTimezoneSelector();
             updateRankLegend();
             switchPage('analysis');
