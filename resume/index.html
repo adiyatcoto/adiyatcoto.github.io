@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiyat Coto - Resume</title>
+    <!-- Import html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            /* Default Theme (Blue) */
+            --primary-color: #1e3a5f;      /* Main Headers, Company Names */
+            --accent-color: #3498db;       /* Links, Job Borders, Skills Border */
+            --secondary-accent: #2ecc71;   /* Gradients, Education Borders, Tool Border */
+            --project-accent: #e74c3c;     /* Projects Section Red */
+            --beyond-accent: #9b59b6;      /* Beyond Work Section Purple */
+            --text-color: #1a1a1a;
+            --text-secondary: #666;
+            --bg-gradient-start: #f5f7fa;
+            --bg-gradient-end: #c3cfe2;
+        }
+
+        /* Print Specific Styles - Browsers */
+        @media print {
+            @page { margin: 0; }
+            body { 
+                margin: 0; 
+                padding: 0; 
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print { display: none !important; }
+        }
+
+        /* PDF Generation Specific Styles (Applied by JS) */
+        .pdf-mode {
+            /* Force fixed width */
+            width: 800px !important;
+            min-width: 800px !important;
+            max-width: 800px !important;
+            
+            /* RESET MARGINS - CRITICAL FIX */
+            margin: 0 !important; 
+            
+            /* SYMMETRICAL PADDING: 40px Top/Bottom, 50px Left/Right */
+            padding: 40px 50px !important; 
+            
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            background: white !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Reset body to ensure no external padding shifts the capture */
+        .pdf-body-mode {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: white !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Garamond', serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            padding: 50px;
+            margin: 0 auto;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 2px;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* Floating Action Buttons Container */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+
+        /* Theme Switcher Styles */
+        .theme-options {
+            background: white;
+            padding: 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+        }
+
+        .theme-options.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .theme-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px #ddd;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .theme-toggle-btn {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: #2c3e50;
+            transform: scale(1.1);
+        }
+
+        /* PDF Button Styles */
+        .pdf-btn {
+            background-color: var(--project-accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Trebuchet MS', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pdf-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .pdf-btn:active {
+            transform: translateY(0);
+        }
+
+        .pdf-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pdf-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        
+        /* Resume Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+        }
+        
+        .header .tagline {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-weight: 500;
+        }
+        
+        .contact-info {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .contact-info a {
+            color: #2980b9;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-info a:hover {
+            color: var(--accent-color);
+        }
+        
+        .section {
+            margin-bottom: 18px;
+        }
+        
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+        }
+        
+        .summary-text {
+            font-size: 11.5px;
+            text-align: justify;
+            line-height: 1.5;
+            color: #444;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .skills-grid ul {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 10px 15px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .skills-grid li {
+            margin-left: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .tools-section {
+            font-size: 11px;
+            margin-top: 8px;
+            padding: 10px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 4px;
+            border-left: 3px solid var(--secondary-accent);
+            font-family: 'Calibri', 'Arial', sans-serif;
+            line-height: 1.5;
+        }
+        
+        .tools-section strong {
+            color: var(--primary-color);
+        }
+        
+        .job {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 4px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 3px;
+        }
+        
+        .company-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+        }
+        
+        .location {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .job-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+        
+        .job-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #34495e;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .job-dates {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .job-description {
+            font-size: 11px;
+            line-height: 1.5;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .job-description ul {
+            margin-left: 18px;
+            margin-top: 4px;
+        }
+        
+        .job-description li {
+            margin-bottom: 3px;
+        }
+        
+        .education-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 4px;
+            border-left: 4px solid var(--secondary-accent);
+        }
+        
+        .education-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        
+        .school-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+        }
+        
+        .degree {
+            font-size: 11px;
+            color: #34495e;
+            margin-top: 2px;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .education-dates {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .education-details {
+            font-size: 10px;
+            color: #555;
+            margin-top: 3px;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        /* New Project Item Styles */
+        .project-item {
+            margin-bottom: 8px;
+            padding: 8px 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 4px;
+            border-left: 4px solid var(--project-accent);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .project-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+        }
+
+        .project-subtitle {
+            font-size: 11px;
+            color: #34495e;
+            margin-top: 2px;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        /* New Company Tag for Projects */
+        .project-company {
+            font-size: 10px;
+            color: var(--project-accent);
+            font-weight: 700;
+            margin-bottom: 2px;
+            font-family: 'Trebuchet MS', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .project-dates {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-family: 'Calibri', 'Arial', sans-serif;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+        
+        .beyond-work {
+            font-size: 11px;
+            line-height: 1.5;
+            color: #444;
+            padding: 10px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 4px;
+            border-left: 3px solid var(--beyond-accent);
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        strong {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Floating Action Container -->
+    <div class="fab-container no-print">
+        <!-- Theme Options Dropdown (Hidden by default) -->
+        <div class="theme-options" id="themeOptions">
+            <div class="theme-btn" style="background: #1e3a5f" onclick="setTheme('default')" title="Classic Blue"></div>
+            <div class="theme-btn" style="background: #004d40" onclick="setTheme('teal')" title="Professional Teal"></div>
+            <div class="theme-btn" style="background: #2c3e50" onclick="setTheme('slate')" title="Modern Slate"></div>
+            <div class="theme-btn" style="background: #4a148c" onclick="setTheme('purple')" title="Royal Purple"></div>
+        </div>
+
+        <!-- Toggle Theme Menu Button -->
+        <button class="theme-toggle-btn" onclick="toggleThemeMenu()" title="Change Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+        </button>
+
+        <!-- PDF Download Button -->
+        <button class="pdf-btn" id="downloadBtn" onclick="downloadPDF()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <span id="btnText">Save as PDF</span>
+        </button>
+    </div>
+
+    <div class="container" id="resumeContent">
+    <div class="header">
+        <h1>ADIYAT COTO</h1>
+        <div class="tagline">
+            Customer Success & Technical Support Professional | 7+ Years in SaaS, B2B2C & Fintech<br>
+            L1/L2 Support • Incident Management • System Implementation • Product Support
+        </div>
+        <div class="contact-info">
+            Indonesia | +62 823 3172 2481 (WhatsApp) | <a href="mailto:coto.adiyat@gmail.com">coto.adiyat@gmail.com</a><br>
+            <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a> | 
+            <a href="https://medium.com/@coto.adiyat">medium.com/@coto.adiyat</a> | 
+            <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Professional Summary</h2>
+        <p class="summary-text">
+            Results-driven technical support professional with <strong>7+ years of experience</strong> delivering customer success across SaaS, B2B2C, Fintech, and EdTech platforms. Proven track record in <strong>technical troubleshooting, system implementation</strong>, and <strong>comprehensive user training</strong> for mission-critical environments serving SME merchants and enterprise clients. Expert in <strong>managing complex ecosystems</strong> including POS systems, payment gateways, and education ERP platforms. Skilled in driving product adoption, <strong>managing resolution times</strong>, and ensuring service continuity through structured onboarding <strong>and full-cycle support, guiding clients from initial setup to after-sales operations</strong>. Experienced in working with Sales, Account Management, Project Managers, QA, and Dev teams throughout the entire customer lifecycle.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Core Competencies</h2>
+        <div class="skills-grid">
+            <ul>
+                <li>Technical Support (L1/L2) & Advanced Troubleshooting</li>
+                <li>SaaS Platform Implementation (B2B/B2B2C)</li>
+                <li>Incident Management & Root Cause Analysis</li>
+                <li>Escalation Management & Product Upselling</li>
+                <li>System Integration (POS, Payment Gateways, ERP)</li>
+                <li>Cross-functional Collaboration (Sales, Product, Dev, QA)</li>
+                <li>Bug Replication & Regression Testing (PSR)</li>
+                <li>Stakeholder Management & Client Communication</li>
+            </ul>
+            <ul>
+                <li>Change & Release Management</li>
+                <li>Network Configuration & Multi-device Deployment</li>
+                <li>Data Migration & System Setup</li>
+                <li>SOP Development & Technical Documentation</li>
+                <li>Team Leadership & Performance Management</li>
+                <li>Training Facilitation & Knowledge Transfer</li>
+                <li>Merchant Onboarding & Product Adoption</li>
+                <li>Service Desk Operations & SLA Management</li>
+            </ul>
+        </div>
+        <div class="tools-section">
+            <strong>Technical Tools:</strong> Jira (Issue Tracking, Documentation, PSR, Regression Testing, Workflow Management), Google Workspace (Sheets: Importrange, Query, Data Validation; Slides: Knowledge Transfer Materials; Docs, Drive), Microsoft 365 (Excel, Teams, SharePoint), Kissflow (Process Management), Trello (Project Management), Slack (Team Collaboration)<br><br>
+            <strong>Domain Expertise:</strong> Software Development Life Cycle (SDLC), SaaS Technical Support, POS Systems (Moka POS), Payment Integration (GoPay, GoFood), Accounting Software (Jurnal.id), Education ERP Systems, Student Lifecycle Management, Government Funding Systems, Course Management, Third-party API Integration<br><br>
+            <strong>Technical Skills:</strong> Network Engineering (LAN/WAN), PC Troubleshooting, ERP System Modules, UAT & Production Deployment, Citrix XenApp, Multi-outlet Configuration, Remote Support Tools, Data Analytics & Visualization (Google Sheets, Looker Studio)<br><br>
+            <strong>Languages:</strong> Bahasa Indonesia (Native), English (Fluent - Written & Spoken)
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Professional Experience</h2>
+        
+        <div class="job">
+            <div class="job-header">
+                <span class="company-name">MaivenPoint</span>
+                <span class="location">Singapore (Fully Remote)</span>
+            </div>
+            <div class="job-title-row">
+                <span class="job-title">L1/L2 Support Engineer — South-East Asia (Singapore Market)</span>
+                <span class="job-dates">Feb 2024 – Dec 2024</span>
+            </div>
+            <div class="job-description">
+                <p>Delivered Level 1-2 technical support for Singapore's education sector clients, ensuring high service reliability and operational continuity for mission-critical learning management systems in a fully remote environment.</p>
+                <ul>
+                    <li>Managed end-to-end ticket lifecycle via email support, maintaining SLA compliance and customer satisfaction across multiple client accounts</li>
+                    <li>Served as Point of Contact (POC) and Incident Manager for key enterprise account, coordinating cross-functional IT incident response to minimize business disruption</li>
+                    <li>Performed Level 2 technical troubleshooting to diagnose and resolve complex functional and integration issues across various system modules</li>
+                    <li>Collaborated with R&D, QA, and Level 3 Dev teams on Product Support Replication (PSR), regression testing, and UAT/production patch deployment</li>
+                    <li>Managed bug fix tracking, change requests, and release coordination while maintaining comprehensive technical documentation in Jira and Confluence</li>
+                    <li>Conducted bi-weekly stakeholder syncs with key accounts, providing progress updates, technical clarifications, and timeline visibility on issues and releases</li>
+                    <li>Analyzed client-specific configurations including course structures, government funding schemes, and third-party integrations to deliver contextualized support</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <span class="company-name">Moka POS</span>
+                <span class="location">Surabaya, Jawa Timur (Hybrid)</span>
+            </div>
+            <div class="job-title-row">
+                <span class="job-title">Tech Support & System Implementor Lead</span>
+                <span class="job-dates">Dec 2021 – Nov 2022</span>
+            </div>
+            <div class="job-description">
+                <p>Led regional technical operations for Jawa Timur, managing onsite support teams and ensuring alignment with national service standards and business objectives.</p>
+                <ul>
+                    <li>Supervised and coached 5-member technical support team across Surabaya and Malang, improving performance metrics and KPI achievement</li>
+                    <li>Designed and implemented dashboards and internal tools to monitor team activity, optimize resource allocation, and track OKR progress</li>
+                    <li>Coordinated with Sales teams on merchant onboarding, translating technical requirements for seamless cross-functional execution</li>
+                    <li>Developed SOPs, training modules, and technical documentation to standardize implementation processes and scale best practices nationwide</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <span class="company-name">Moka POS</span>
+                <span class="location">Surabaya, Jawa Timur (Hybrid)</span>
+            </div>
+            <div class="job-title-row">
+                <span class="job-title">Sr. Tech Support & System Implementor</span>
+                <span class="job-dates">Sept 2016 – Dec 2021</span>
+            </div>
+            <div class="job-description">
+                <p>Managed end-to-end merchant onboarding from pre-sales consultation through post-sales technical support, delivering seamless POS system implementations across diverse industries.</p>
+                <ul>
+                    <li>Executed onsite and remote system setup, staff training, and data migration to prepare merchant outlets for live operations</li>
+                    <li>Designed network configurations and deployed multi-device POS systems customized to client-specific operational requirements</li>
+                    <li>Partnered with Sales for technical consultation and with Product/Support teams for issue escalation and resolution</li>
+                    <li>Drove adoption of advanced features and third-party integrations (GoPay, GoFood, Jurnal.id) to enhance client satisfaction and retention</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <span class="company-name">Vivere Group</span>
+                <span class="location">Jakarta Barat, DKI Jakarta (On-site)</span>
+            </div>
+            <div class="job-title-row">
+                <span class="job-title">Information System Intern</span>
+                <span class="job-dates">Jul 2014 – Dec 2014</span>
+            </div>
+            <div class="job-description">
+                <ul>
+                    <li>Provided daily IT support to employees and resolved technical issues across the organization</li>
+                    <li>Conducted internal research and feasibility study on Citrix XenApp 6.5 deployment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Education</h2>
+        
+        <div class="education-item">
+            <div class="education-header">
+                <div>
+                    <div class="school-name">Universitas 17 Agustus 1945 Surabaya</div>
+                    <div class="degree">Bachelor's Degree - Financial Management (Incomplete)</div>
+                </div>
+                <span class="education-dates">2015 – 2019</span>
+            </div>
+            <div class="education-details">Coursework in macroeconomics and corporate finance | Surabaya, Jawa Timur</div>
+        </div>
+
+        <div class="education-item">
+            <div class="education-header">
+                <div>
+                    <div class="school-name">SMK Negeri 7 Semarang</div>
+                    <div class="degree">Vocational Diploma - Network Engineering</div>
+                </div>
+                <span class="education-dates">2011 – 2015</span>
+            </div>
+            <div class="education-details">4-year vocational program | PC troubleshooting, LAN/WAN, network architecture | Semarang, Jawa Tengah</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Certifications</h2>
+        <div class="education-item">
+            <div class="education-header">
+                <div>
+                    <div class="school-name">Cisco Networking Academy</div>
+                    <div class="degree">CCNA Discovery: Networking for Home and Small Businesses</div>
+                </div>
+                <span class="education-dates">Feb 2014</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Key Projects</h2>
+        
+        <div class="project-item">
+            <div class="project-header">
+                <div>
+                    <div class="project-company">MaivenPoint</div>
+                    <div class="project-title">POC/Incident Manager</div>
+                    <div class="project-subtitle">Building and Construction Authority (BCA) Academy Singapore</div>
+                </div>
+                <span class="project-dates">May 2024 – Dec 2024</span>
+            </div>
+        </div>
+
+        <div class="project-item">
+            <div class="project-header">
+                <div>
+                    <div class="project-company">Moka POS</div>
+                    <div class="project-title">Contributor</div>
+                    <div class="project-subtitle">Technical Support Team: Training Material & Knowledge Resource Development</div>
+                </div>
+                <span class="project-dates">Jan 2022 – Nov 2022</span>
+            </div>
+        </div>
+
+        <div class="project-item">
+            <div class="project-header">
+                <div>
+                    <div class="project-company">Moka POS</div>
+                    <div class="project-title">Training Facilitator</div>
+                    <div class="project-subtitle">Moka Trainer for Bank Indonesia-Led MSMEs in Jawa Timur</div>
+                </div>
+                <span class="project-dates">Dec 2020</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Beyond Work</h2>
+        <p class="beyond-work">
+            Active trader in forex, stock, and cryptocurrency markets. Writes macroeconomic analysis and reflections on Medium. Develops and shares custom technical indicators via TradingView Pine Script and several personal projects on GitHub page.
+        </p>
+    </div>
+    </div>
+
+    <script>
+        // Define Theme Colors
+        const themes = {
+            default: {
+                primary: '#1e3a5f',
+                accent: '#3498db',
+                secondary: '#2ecc71',
+                project: '#e74c3c',
+                beyond: '#9b59b6',
+                bgStart: '#f5f7fa',
+                bgEnd: '#c3cfe2'
+            },
+            teal: {
+                primary: '#004d40',
+                accent: '#009688',
+                secondary: '#4db6ac',
+                project: '#ff7043',
+                beyond: '#00796b',
+                bgStart: '#e0f2f1',
+                bgEnd: '#b2dfdb'
+            },
+            slate: {
+                primary: '#2c3e50',
+                accent: '#34495e',
+                secondary: '#7f8c8d',
+                project: '#c0392b',
+                beyond: '#576574',
+                bgStart: '#ecf0f1',
+                bgEnd: '#bdc3c7'
+            },
+            purple: {
+                primary: '#4a148c',
+                accent: '#7b1fa2',
+                secondary: '#ab47bc',
+                project: '#ec407a',
+                beyond: '#8e24aa',
+                bgStart: '#f3e5f5',
+                bgEnd: '#e1bee7'
+            }
+        };
+
+        function toggleThemeMenu() {
+            document.getElementById('themeOptions').classList.toggle('active');
+        }
+
+        function setTheme(themeName) {
+            const root = document.documentElement;
+            const theme = themes[themeName];
+            
+            root.style.setProperty('--primary-color', theme.primary);
+            root.style.setProperty('--accent-color', theme.accent);
+            root.style.setProperty('--secondary-accent', theme.secondary);
+            root.style.setProperty('--project-accent', theme.project);
+            root.style.setProperty('--beyond-accent', theme.beyond);
+            root.style.setProperty('--bg-gradient-start', theme.bgStart);
+            root.style.setProperty('--bg-gradient-end', theme.bgEnd);
+            
+            // Close menu
+            document.getElementById('themeOptions').classList.remove('active');
+        }
+
+        function downloadPDF() {
+            // Select the element to be converted
+            const element = document.getElementById('resumeContent');
+            const button = document.getElementById('downloadBtn');
+            const btnText = document.getElementById('btnText');
+            
+            // Visual feedback
+            const originalText = btnText.innerText;
+            btnText.innerText = 'Formatting PDF...';
+            button.disabled = true;
+            button.style.cursor = 'wait';
+
+            // Apply PDF-specific styles
+            element.classList.add('pdf-mode');
+            document.body.classList.add('pdf-body-mode');
+
+            // --- KEY LOGIC FOR SYMMETRY & ONE PAGE ---
+            // 1. Get exact dimensions of the element with the applied padding
+            const width = 800; // Fixed width matching CSS
+            const height = element.scrollHeight; 
+
+            // PDF generation options
+            const opt = {
+                // Margins are handled by the container padding
+                margin:       0, 
+                filename:     'Adiyat_Coto_Resume_Full.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2, // High resolution
+                    useCORS: true,
+                    // FIX: Force fixed capture width and window width
+                    width: 800,
+                    windowWidth: 800,
+                    scrollY: 0,
+                    x: 0,
+                    y: 0
+                },
+                jsPDF: { 
+                    unit: 'px', 
+                    // FIX: Add +2px buffer to height to prevent "second page" overflow
+                    format: [width, height + 2], 
+                    orientation: 'portrait',
+                    hotfixes: ['px_scaling']
+                }
+            };
+
+            // Generate and Save
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Cleanup styles
+                element.classList.remove('pdf-mode');
+                document.body.classList.remove('pdf-body-mode');
+                btnText.innerText = originalText;
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+            }).catch(err => {
+                console.error('PDF Generation Error:', err);
+                // Cleanup styles even on error
+                element.classList.remove('pdf-mode');
+                document.body.classList.remove('pdf-body-mode');
+                btnText.innerText = 'Error - Try Again';
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+            });
+        }
+    </script>
+</body>
+</html>
