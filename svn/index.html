@@ -124,87 +124,9 @@
         .flash-green { color: #4ade80 !important; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
         .flash-red { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.5); }
 
-        /* Guide Modal Styles */
-        #guide-modal { transition: opacity 0.3s ease; }
-        .guide-box { background: rgba(11, 15, 25, 0.98); border: 1px solid #1e293b; backdrop-filter: blur(20px); }
-        .guide-content { font-family: 'Inter', sans-serif; color: #cbd5e1; }
-        .guide-content h1 { color: #f8fafc; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; padding-bottom: 0.5rem; }
-        .guide-content h2 { color: #60a5fa; font-size: 1.25rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
-        .guide-content h3 { color: #e2e8f0; font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #fbbf24; }
-        .guide-content p { font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem; text-align: justify; }
-        .guide-content ul { list-style: none; margin-bottom: 1.5rem; padding-left: 0; }
-        .guide-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; line-height: 1.6; }
-        .guide-content li::before { content: "•"; color: #3b82f6; position: absolute; left: 0; font-weight: bold; }
-        .concept-box { background: #1e293b; border-left: 4px solid #3b82f6; padding: 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
-        .formula-box { background: #0f172a; border: 1px solid #334155; padding: 1rem; margin: 1rem 0; font-family: 'JetBrains Mono'; font-size: 0.85rem; color: #fbbf24; text-align: center; border-radius: 6px; }
-        .example-box { background: rgba(59, 130, 246, 0.1); padding: 1rem; margin: 1rem 0; border-radius: 6px; border: 1px dashed #3b82f6; font-size: 0.9rem; }
-        .logic-box { background: #0f172a; padding: 1rem; margin: 1rem 0; border: 1px solid #475569; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #a5f3fc; }
-        .lang-btn { opacity: 0.5; transition: opacity 0.2s; }
-        .lang-btn.active { opacity: 1; font-weight: bold; color: #60a5fa; text-decoration: underline; }
-
     </style>
 </head>
 <body class="flex flex-col h-screen w-screen overflow-hidden">
-
-    <!-- Guide Modal -->
-    <div id="guide-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 md:p-10 bg-black/90 backdrop-blur-md">
-        <div class="guide-box w-full h-full max-w-5xl rounded-lg flex flex-col shadow-2xl relative overflow-hidden border border-gray-800">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-6 border-b border-gray-800 bg-[#0f172a]">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-xl">R</div>
-                    <div>
-                        <h1 class="text-xl font-bold text-white tracking-widest font-mono m-0 border-none p-0">RSA MANUAL</h1>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Reflexive Symmetrical Architecture</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="flex gap-4 text-sm font-mono">
-                        <button onclick="switchLang('id')" id="btn-id" class="lang-btn active hover:text-blue-400">BAHASA</button>
-                        <span class="text-gray-700">|</span>
-                        <button onclick="switchLang('en')" id="btn-en" class="lang-btn hover:text-blue-400">ENGLISH</button>
-                    </div>
-                    <button onclick="toggleGuide()" class="text-gray-400 hover:text-white transition p-2 hover:bg-gray-800 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Content (Scrollable) -->
-            <div class="flex-grow overflow-y-auto p-8 md:p-12 guide-content bg-[#0b0f19]">
-                <div class="max-w-3xl mx-auto">
-                    <!-- INDONESIAN CONTENT -->
-                    <div id="content-id">
-                        <h1>RSA CONFLUENCE: PANDUAN KOMPREHENSIF</h1>
-                        <p class="text-sm text-gray-400 mb-6 font-mono">Reflexive Symmetrical Architecture - The Complete Manual</p>
-                        
-                        <h2>PROLOG: MENGAPA PASAR BUKANLAH GARIS ACAK</h2>
-                        <p>Selama puluhan tahun, trader pemula melihat grafik harga sebagai sebuah garis yang bergerak naik-turun tanpa pola. Mereka mencari "sinyal" dari indikator yang tertinggal (lagging), berharap menemukan rumus ajaib untuk memprediksi masa depan. Namun pasar bukan soal prediksi—ia adalah soal struktur.</p>
-                        <p>Reflexive Symmetrical Architecture (RSA) lahir dari pemahaman mendalam bahwa pasar finansial beroperasi dalam kerangka matematika yang terukur dan simetris. Sistem ini tidak mencoba meramal kemana harga akan pergi, melainkan mengukur posisi Anda saat ini di medan perang, menghitung energi yang tersisa, dan memberikan peta navigasi berbasis probabilitas tinggi.</p>
-                        <p>Bayangkan Anda adalah pilot pesawat tempur. Anda tidak terbang secara membabi buta. Anda memiliki dashboard yang menunjukkan: ketinggian (Price), kecepatan (Velocity), bahan bakar (Energy), dan waktu tempuh (Time). RSA adalah dashboard 4 dimensi untuk trading.</p>
-                        <!-- ... (Rest of content truncated for brevity, standard RSA guide remains same) ... -->
-                        <div class="mt-8 pt-4 border-t border-gray-800 text-center text-xs text-gray-500 font-mono">
-                            <p>📜 COPYRIGHT & LICENSE</p>
-                            <p>&copy; 2025 Adiyat Coto. All Rights Reserved.</p>
-                        </div>
-                    </div>
-
-                    <!-- ENGLISH CONTENT -->
-                    <div id="content-en" class="hidden">
-                        <h1>RSA CONFLUENCE: COMPREHENSIVE GUIDE</h1>
-                        <p class="text-sm text-gray-400 mb-6 font-mono">Reflexive Symmetrical Architecture - The Complete Manual</p>
-                        <h2>PROLOGUE: WHY THE MARKET IS NOT A RANDOM LINE</h2>
-                        <p>For decades, novice traders have looked at price charts as a random line moving up and down without a pattern. They search for "signals" from lagging indicators, hoping to find a magic formula to predict the future. But the market is not about prediction—it is about structure.</p>
-                        <!-- ... (Rest of content truncated for brevity) ... -->
-                        <div class="mt-8 pt-4 border-t border-gray-800 text-center text-xs text-gray-500 font-mono">
-                            <p>📜 COPYRIGHT & LICENSE</p>
-                            <p>&copy; 2025 Adiyat Coto. All Rights Reserved.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Header -->
     <header class="flex-none bg-[#111827] border-b border-gray-800 p-3 flex justify-between items-center z-50 shadow-md">
@@ -217,11 +139,6 @@
         </div>
         
         <div class="flex items-center gap-2">
-            <button onclick="toggleGuide()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 text-xs px-3 py-1 rounded font-bold transition flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                GUIDE
-            </button>
-
             <div id="status-indicator" class="text-[10px] px-2 py-1 rounded bg-gray-800 text-gray-400 border border-gray-700 transition-all duration-300 min-w-[80px] text-center">Ready</div>
             
             <div class="relative">
@@ -350,31 +267,6 @@
     </div>
 
     <script>
-        // --- GUIDE MODAL LOGIC ---
-        function toggleGuide() {
-            const modal = document.getElementById('guide-modal');
-            modal.classList.toggle('hidden');
-        }
-
-        function switchLang(lang) {
-            const contentId = document.getElementById('content-id');
-            const contentEn = document.getElementById('content-en');
-            const btnId = document.getElementById('btn-id');
-            const btnEn = document.getElementById('btn-en');
-
-            if (lang === 'id') {
-                contentId.classList.remove('hidden');
-                contentEn.classList.add('hidden');
-                btnId.classList.add('active');
-                btnEn.classList.remove('active');
-            } else {
-                contentId.classList.add('hidden');
-                contentEn.classList.remove('hidden');
-                btnId.classList.remove('active');
-                btnEn.classList.add('active');
-            }
-        }
-
         // --- STABLE API CONFIG ---
         const VISION_API = 'https://data-api.binance.vision/api/v3';
         
@@ -418,7 +310,13 @@
             updateStatus('Syncing...');
             
             // Cleanup existing
-            if(priceSocket) { priceSocket.close(); priceSocket = null; }
+            if(priceSocket) { 
+                // CRITICAL FIX: Remove onclose listener to prevent false "Disconnected" status
+                // when switching tickers manually.
+                priceSocket.onclose = null; 
+                priceSocket.close(); 
+                priceSocket = null; 
+            }
             if(state.intervals.poll) clearInterval(state.intervals.poll);
 
             const initTouched = () => ({ set: new Set(), time: 0 });
@@ -918,12 +816,22 @@
             
             const projectedHigh = openPrice + projectedMove;
             const projectedLow = openPrice - projectedMove;
+            
+            // --- ADDED TOLERANCE LOGIC HERE ---
+            const HIT_TOLERANCE = 0.0005; // 0.05% Tolerance
 
             levels.forEach(lvl => {
                 if(isNaN(lvl.p)) return;
 
-                if(lvl.type === 'R') { if(aH >= lvl.p) state.touched[id].set.add(lvl.lbl); }
-                if(lvl.type === 'S') { if(aL <= lvl.p) state.touched[id].set.add(lvl.lbl); }
+                // Check Hit with Tolerance
+                if(lvl.type === 'R') { 
+                    // Anchor High >= Level Price (minus tolerance)
+                    if(aH >= (lvl.p * (1 - HIT_TOLERANCE))) state.touched[id].set.add(lvl.lbl); 
+                }
+                if(lvl.type === 'S') { 
+                    // Anchor Low <= Level Price (plus tolerance)
+                    if(aL <= (lvl.p * (1 + HIT_TOLERANCE))) state.touched[id].set.add(lvl.lbl); 
+                }
 
                 const isHit = state.touched[id].set.has(lvl.lbl);
                 const pctDiff = ((lvl.p - state.price) / state.price) * 100;
