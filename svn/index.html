@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Confluence (Stable Vision)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #e2e8f0; overflow: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Scrollbar Hidden but Functional */
+        .map-scroll::-webkit-scrollbar { width: 4px; background: #0f172a; }
+        .map-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+        
+        /* Meter */
+        .regime-meter-container {
+            position: relative; height: 8px;
+            background: linear-gradient(90deg, #10b981 0%, #10b981 45%, #374151 50%, #ef4444 55%, #ef4444 100%); 
+            border-radius: 4px; margin-top: 8px; overflow: hidden;
+        }
+        .regime-needle {
+            position: absolute; top: -2px; width: 4px; height: 12px;
+            background-color: white; border: 1px solid #000;
+            transform: translateX(-50%); transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        
+        /* Map Styles */
+        .map-container {
+            position: relative;
+            width: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-behavior: auto; 
+        }
+
+        .rsa-item {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            font-size: 10px;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            z-index: 20; 
+            pointer-events: none; 
+        }
+        
+        .rsa-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 1px;
+            z-index: 10; 
+            pointer-events: none;
+        }
+
+        .rsa-item:hover { z-index: 50; background-color: #1f2937; border-color: #60a5fa; cursor: crosshair; pointer-events: auto; }
+
+        /* Bias Shading Zones */
+        .bias-zone {
+            position: absolute;
+            left: 0; right: 0;
+            z-index: 0; 
+            pointer-events: none;
+            transition: top 0.2s ease-out, height 0.2s ease-out; 
+            will-change: top, height;
+        }
+        .zone-red { background: linear-gradient(to bottom, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0) 100%); }
+        .zone-green { background: linear-gradient(to top, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 100%); }
+        .zone-blue-bull { background: linear-gradient(to bottom, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0) 100%); }
+        .zone-blue-bear { background: linear-gradient(to top, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0) 100%); }
+
+        /* Tags */
+        .tag-pill { padding: 1px 4px; border-radius: 3px; font-size: 9px; font-weight: 800; text-transform: uppercase; margin-left: auto; }
+        .tag-res { color: #f87171; border: 1px solid #7f1d1d; background: #450a0a; }
+        .tag-sup { color: #34d399; border: 1px solid #064e3b; background: #022c22; }
+        .tag-trg { color: #fbbf24; border: 1px solid #78350f; background: #451a03; animation: pulse 2s infinite; }
+        .tag-trg-minor { color: #fdba74; border: 1px dashed #9a3412; background: #431407; animation: pulse 3s infinite; }
+        .tag-eq { color: #38bdf8; border: 1px solid #0c4a6e; background: #082f49; }
+        .tag-hit { color: #d1d5db; border: 1px solid #6b7280; background: #374151; margin-right: 4px;} 
+        
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        /* Glowing Status */
+        .status-glow {
+            box-shadow: 0 0 5px #10b981;
+            animation: statusPulse 2s infinite;
+        }
+        @keyframes statusPulse {
+            0% { box-shadow: 0 0 2px #10b981; border-color: #059669; }
+            50% { box-shadow: 0 0 10px #10b981; border-color: #34d399; }
+            100% { box-shadow: 0 0 2px #10b981; border-color: #059669; }
+        }
+
+        .glass-panel { background: #111827; border: 1px solid #374151; }
+        .loading-overlay { position: absolute; inset: 0; background: #0b0f19; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* Grid Column Headers */
+        /* FIXED: Z-Index 40 ensures header stays ABOVE the Price Line (Index 30) */
+        .col-header { padding: 4px; text-align: center; border-bottom: 1px solid #1f2937; font-size: 10px; font-weight: 800; z-index: 40; box-shadow: 0 4px 6px rgba(0,0,0,0.5); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; min-height: 42px; justify-content: center; background-color: #0f172a; position: relative; }
+        
+        .col-header-d { color: #60a5fa; }
+        .col-header-w { color: #c084fc; }
+        .col-header-m { color: #facc15; }
+        .col-header-q { color: #fb923c; } 
+        .col-header-s { color: #2dd4bf; } 
+        .col-header-y { color: #fb7185; } 
+        
+        .header-stats { font-size: 8px; font-family: 'JetBrains Mono', monospace; opacity: 0.8; margin-top: 2px; display: flex; gap: 4px; }
+        .stat-badge { background: rgba(0,0,0,0.3); padding: 1px 3px; rounded: 2px; cursor: help; }
+
+        /* Guide Modal Styles (Refined Narrative Layout) */
+        #guide-modal { transition: opacity 0.3s ease; }
+        .guide-box { background: rgba(11, 15, 25, 0.98); border: 1px solid #1e293b; backdrop-filter: blur(20px); }
+        
+        /* Typography for Storytelling */
+        .guide-content { font-family: 'Inter', sans-serif; color: #cbd5e1; }
+        .guide-content h1 { color: #f8fafc; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; padding-bottom: 0.5rem; }
+        .guide-content h2 { color: #60a5fa; font-size: 1.25rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+        .guide-content h3 { color: #e2e8f0; font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #fbbf24; }
+        .guide-content p { font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem; text-align: justify; }
+        .guide-content ul { list-style: none; margin-bottom: 1.5rem; padding-left: 0; }
+        .guide-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; line-height: 1.6; }
+        .guide-content li::before { content: "•"; color: #3b82f6; position: absolute; left: 0; font-weight: bold; }
+        
+        /* Highlight Boxes */
+        .concept-box { background: #1e293b; border-left: 4px solid #3b82f6; padding: 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .formula-box { background: #0f172a; border: 1px solid #334155; padding: 1rem; margin: 1rem 0; font-family: 'JetBrains Mono'; font-size: 0.85rem; color: #fbbf24; text-align: center; border-radius: 6px; }
+        .example-box { background: rgba(59, 130, 246, 0.1); padding: 1rem; margin: 1rem 0; border-radius: 6px; border: 1px dashed #3b82f6; font-size: 0.9rem; }
+        .logic-box { background: #0f172a; padding: 1rem; margin: 1rem 0; border: 1px solid #475569; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #a5f3fc; }
+
+        .lang-btn { opacity: 0.5; transition: opacity 0.2s; }
+        .lang-btn.active { opacity: 1; font-weight: bold; color: #60a5fa; text-decoration: underline; }
+
+    </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden">
+
+    <!-- Guide Modal -->
+    <div id="guide-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 md:p-10 bg-black/90 backdrop-blur-md">
+        <div class="guide-box w-full h-full max-w-5xl rounded-lg flex flex-col shadow-2xl relative overflow-hidden border border-gray-800">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-800 bg-[#0f172a]">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-xl">R</div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-widest font-mono m-0 border-none p-0">RSA MANUAL</h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Reflexive Symmetrical Architecture</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex gap-4 text-sm font-mono">
+                        <button onclick="switchLang('id')" id="btn-id" class="lang-btn active hover:text-blue-400">BAHASA</button>
+                        <span class="text-gray-700">|</span>
+                        <button onclick="switchLang('en')" id="btn-en" class="lang-btn hover:text-blue-400">ENGLISH</button>
+                    </div>
+                    <button onclick="toggleGuide()" class="text-gray-400 hover:text-white transition p-2 hover:bg-gray-800 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="flex-grow overflow-y-auto p-8 md:p-12 guide-content bg-[#0b0f19]">
+                <div class="max-w-3xl mx-auto">
+                    
+                    <!-- INDONESIAN CONTENT (UPDATED) -->
+                    <div id="content-id">
+                        <h1>RSA CONFLUENCE: PANDUAN KOMPREHENSIF</h1>
+                        <p class="text-sm text-gray-400 mb-6 font-mono">Reflexive Symmetrical Architecture - The Complete Manual</p>
+                        
+                        <h2>PROLOG: MENGAPA PASAR BUKANLAH GARIS ACAK</h2>
+                        <p>Selama puluhan tahun, trader pemula melihat grafik harga sebagai sebuah garis yang bergerak naik-turun tanpa pola. Mereka mencari "sinyal" dari indikator yang tertinggal (lagging), berharap menemukan rumus ajaib untuk memprediksi masa depan. Namun pasar bukan soal prediksi—ia adalah soal struktur.</p>
+                        <p>Reflexive Symmetrical Architecture (RSA) lahir dari pemahaman mendalam bahwa pasar finansial beroperasi dalam kerangka matematika yang terukur dan simetris. Sistem ini tidak mencoba meramal kemana harga akan pergi, melainkan mengukur posisi Anda saat ini di medan perang, menghitung energi yang tersisa, dan memberikan peta navigasi berbasis probabilitas tinggi.</p>
+                        <p>Bayangkan Anda adalah pilot pesawat tempur. Anda tidak terbang secara membabi buta. Anda memiliki dashboard yang menunjukkan: ketinggian (Price), kecepatan (Velocity), bahan bakar (Energy), dan waktu tempuh (Time). RSA adalah dashboard 4 dimensi untuk trading.</p>
+
+                        <h2>BAB I: PARADIGMA 4 DIMENSI</h2>
+                        
+                        <h3>Dimensi Pertama: HARGA (Price)</h3>
+                        <p>Harga adalah koordinat vertikal Anda di peta. Ini adalah "Di mana Anda sekarang?" Namun harga tanpa konteks adalah angka kosong. Kita perlu tiga dimensi lainnya untuk memberikan makna.</p>
+
+                        <h3>Dimensi Kedua: WAKTU (Time)</h3>
+                        <p>Waktu bukan sekadar jam yang berdetak. Dalam RSA, waktu adalah persentase dari sesi yang telah berlalu.</p>
+                        <div class="formula-box">T = (Waktu Sekarang - Waktu Pembukaan Candle) / (Waktu Penutupan Candle - Waktu Pembukaan Candle)</div>
+                        <p>Di awal sesi (T = 5%), pasar memiliki "waktu luang" yang sangat banyak untuk bergerak jauh. Di akhir sesi (T = 95%), waktu hampir habis—segala proyeksi menjadi realistis atau gugur.</p>
+                        <p><strong>Mengapa ini penting?</strong> Karena Time adalah pembagi dalam rumus proyeksi kita. Semakin kecil T (awal sesi), semakin besar angka proyeksi. Ini mencerminkan realitas psikologis pasar: di pagi hari, semua target terlihat mungkin. Menjelang penutupan, hanya target realistis yang tersisa.</p>
+
+                        <h3>Dimensi Ketiga: ENERGI (Volatility)</h3>
+                        <p>Volatilitas adalah bensin pasar. Tanpa volatilitas, harga tidak akan bergerak. Dalam RSA, kita menghitung volatilitas dengan cara yang sangat sederhana namun powerful:</p>
+                        <div class="formula-box">V = (High Saat Ini - Low Saat Ini) / Open Price</div>
+                        <div class="example-box">
+                            <strong>Contoh:</strong><br>
+                            Open Price = 100,000<br>
+                            High Saat Ini = 102,000<br>
+                            Low Saat Ini = 99,000<br>
+                            Range = 102,000 - 99,000 = 3,000<br>
+                            V = 3,000 / 100,000 = 0.03 atau 3%
+                        </div>
+                        <p>Angka 3% ini berarti pasar telah "bekerja" dengan energi sebesar 3% dari nilai awalnya. Semakin besar V, semakin besar energi yang tersedia. Tapi tunggu—energi saja tidak cukup. Kita perlu tahu apakah mesin sedang bekerja normal atau overheating.</p>
+
+                        <h3>Dimensi Keempat: RASIO EKSPANSI (R)</h3>
+                        <p>Rasio Ekspansi membandingkan kinerja hari ini dengan "memori" pasar (candle sebelumnya).</p>
+                        <div class="formula-box">R = (Range Saat Ini) / (Range Candle Sebelumnya)</div>
+                        
+                        <div class="example-box">
+                            <strong>Interpretasi:</strong>
+                            <ul class="mt-2">
+                                <li><strong>R > 100% = EKSPANSI (EXP)</strong> → Pasar sedang breakout, trending, atau volatile. Mesin bekerja melebihi kapasitas normal. Ini adalah kondisi dimana momentum kuat dan level-level jauh bisa dicapai.</li>
+                                <li><strong>R < 100% = KONTRAKSI (CTR)</strong> → Pasar sedang sideways, konsolidasi, atau lelah. Mesin bekerja di bawah normal. Dalam kondisi ini, hanya level-level dekat yang realistis.</li>
+                            </ul>
+                        </div>
+                        <p><strong>Mengapa ini revolusioner?</strong> Karena kebanyakan sistem trading hanya melihat harga. RSA melihat efisiensi mesin pasar secara real-time. Ini seperti perbedaan antara melihat speedometer (harga) vs. melihat RPM dan fuel gauge (energi & rasio).</p>
+
+                        <h2>BAB II: TITIK NOL—KONSEP ANCHOR</h2>
+                        <h3>Filosofi Jangkar (The Anchor Philosophy)</h3>
+                        <p>Dalam fisika, semua pengukuran jarak membutuhkan titik referensi. Tanpa titik nol, konsep "jauh" atau "dekat" tidak ada artinya. Dalam dunia trading, kebanyakan orang menggunakan level statis (support/resistance historis) sebagai referensi. Masalahnya: pasar tidak hidup di masa lalu.</p>
+                        <p>RSA memperkenalkan konsep Anchor (Jangkar) yang dinamis dan refleksif. Setiap sesi trading menciptakan dua titik ekstrem absolut:</p>
+                        <ul>
+                            <li><strong>Anchor High (AH)</strong> = Titik tertinggi yang pernah disentuh dalam sesi aktif</li>
+                            <li><strong>Anchor Low (AL)</strong> = Titik terendah yang pernah disentuh dalam sesi aktif</li>
+                        </ul>
+                        <p>Ini bukan sekadar High dan Low biasa. Ini adalah jejak kaki raksasa—bukti bahwa pada harga tersebut, terjadi pertempuran besar antara Bulls dan Bears, dan salah satu pihak menang sementara.</p>
+
+                        <h3>Mengapa Disebut "Anchor"?</h3>
+                        <p>Karena kedua titik ini menjadi jangkar dari semua kalkulasi level berikutnya. Semua level H1-H32 dihitung dari Anchor Low. Semua level L1-L32 dihitung dari Anchor High.</p>
+                        <ul>
+                            <li>Anchor Low adalah titik referensi untuk ekspansi Bullish.</li>
+                            <li>Anchor High adalah titik referensi untuk ekspansi Bearish.</li>
+                        </ul>
+
+                        <h3>Sifat Refleksif (Reflexive Nature)</h3>
+                        <p>Yang membuat sistem ini "Reflexive" adalah: setiap kali harga mencetak High baru atau Low baru, seluruh struktur peta akan dikalibrasi ulang secara real-time.</p>
+                        <div class="example-box">
+                            Contoh:<br>
+                            Anchor Low awal = 95,000<br>
+                            Harga bergerak turun dan mencetak Low baru di 94,000<br>
+                            Boom! Sistem langsung mengupdate: Anchor Low sekarang = 94,000<br>
+                            Semua level H1, H2, H3... hingga H32 langsung dihitung ulang dari 94,000
+                        </div>
+                        <p>Ini adalah peta yang hidup dan bernapas bersama pasar, bukan peta mati yang kaku.</p>
+
+                        <h3>Teori Lelang Pasar (Auction Market Theory)</h3>
+                        <p>Konsep Anchor berakar pada Auction Market Theory yang dipopulerkan oleh Peter Steidlmayer (Market Profile). Pasar adalah lelang terus-menerus dimana pembeli dan penjual bersaing untuk menemukan "fair value".</p>
+                        <ul>
+                            <li><strong>Anchor High</strong> = Harga dimana penjual sangat agresif sehingga mampu menghentikan rally. Ini adalah zona supply dominan.</li>
+                            <li><strong>Anchor Low</strong> = Harga dimana pembeli sangat agresif sehingga mampu menghentikan sell-off. Ini adalah zona demand dominan.</li>
+                        </ul>
+                        <p>Selama harga berada di bawah Anchor High, struktur pasar dikuasai oleh gravitasi penjual. Selama harga berada di atas Anchor Low, struktur pasar dikuasai oleh daya dorong pembeli.</p>
+
+                        <h2>BAB III: HUKUM GETARAN—HARMONIC OCTAVE</h2>
+                        <h3>Pertanyaan Fundamental: Mengapa Dibagi 8?</h3>
+                        <p>Ini adalah pertanyaan terpenting dalam memahami RSA. Mengapa range (Anchor High - Anchor Low) dibagi menjadi 8 bagian? Mengapa tidak 10 (seperti Fibonacci) atau 100 (seperti persentase biasa)? Jawabannya terletak pada Law of Vibration (Hukum Getaran) yang dipopulerkan oleh W.D. Gann, salah satu trader legendaris abad ke-20.</p>
+                        
+                        <h3>Teori Oktaf Musikal</h3>
+                        <p>Dalam musik, satu oktaf terdiri dari 8 nada: Do, Re, Mi, Fa, Sol, La, Si, Do'. Ini bukan kebetulan—ini adalah frekuensi harmonik alamiah yang ditemukan di seluruh alam semesta, dari getaran string hingga orbit planet.</p>
+                        <p>Gann menerapkan konsep ini ke pasar finansial. Ia percaya bahwa harga bergerak dalam frekuensi harmonik, bukan linear. Sebuah pergerakan harga yang "lengkap" (Full Cycle) harus melewati 8 tahap frekuensi.</p>
+                        <div class="formula-box">δ = (Anchor High - Anchor Low) / 8</div>
+                        <p>Delta adalah "langkah" harmonik—jarak antara satu frekuensi ke frekuensi berikutnya.</p>
+
+                        <h3>Mengapa 8 Lebih Superior dari 10?</h3>
+                        <p>Fibonacci menggunakan pembagian berdasarkan rasio emas (1.618). Ini bagus untuk mengukur retracement (pullback), tapi tidak untuk mengukur ekspansi (breakout).</p>
+                        <p>Pembagian 8 memberikan level-level yang simetris secara matematis dan resonan secara psikologis. Kenapa?</p>
+                        <ul>
+                            <li><strong>Level 4 (50%)</strong> = Titik tengah sempurna. Ini adalah Ekuilibrium—zona dimana Bulls dan Bears berada dalam keseimbangan. Dalam psikologi trading, 50% adalah angka ajaib. Jika harga mampu menembus 50% dari range sebelumnya, probabilitas untuk mencapai 100% (Full Cycle) meningkat drastis. Ini bukan mistis—ini adalah hasil dari market microstructure dan order flow dynamics.</li>
+                            <li><strong>Level 8 (100%)</strong> = Full Cycle. Ini adalah Measured Move—target natural dari sebuah pergerakan harga yang sehat. Jika pasar mulai dari Anchor Low dan bergerak naik, target pertama yang logis adalah Anchor High + (1 x Range) = Level H8.</li>
+                        </ul>
+
+                        <h3>Perhitungan Level H (Bullish Levels)</h3>
+                        <p>Semua level H dihitung dari Anchor Low sebagai basis:</p>
+                        <div class="logic-box">
+                            H1 = Anchor Low + (1 × δ)<br>
+                            H2 = Anchor Low + (2 × δ)<br>
+                            H3 = Anchor Low + (3 × δ)<br>
+                            H4 = Anchor Low + (4 × δ)  ← 50% Midpoint (Ekuilibrium)<br>
+                            H5 = Anchor Low + (5 × δ)<br>
+                            H6 = Anchor Low + (6 × δ)<br>
+                            H7 = Anchor Low + (7 × δ)<br>
+                            H8 = Anchor Low + (8 × δ)  ← 100% Full Cycle<br>
+                            H9 = Anchor Low + (9 × δ)<br>
+                            ...<br>
+                            H32 = Anchor Low + (32 × δ)  ← Extension Maksimal (400%)
+                        </div>
+
+                        <h3>Perhitungan Level L (Bearish Levels)</h3>
+                        <p>Semua level L dihitung dari Anchor High sebagai basis, bergerak ke bawah:</p>
+                        <div class="logic-box">
+                            L1 = Anchor High - (1 × δ)<br>
+                            L2 = Anchor High - (2 × δ)<br>
+                            L3 = Anchor High - (3 × δ)<br>
+                            L4 = Anchor High - (4 × δ)  ← 50% Midpoint<br>
+                            ...<br>
+                            L8 = Anchor High - (8 × δ)  ← 100% Full Cycle (= Anchor Low)<br>
+                            ...<br>
+                            L32 = Anchor High - (32 × δ)
+                        </div>
+                        <p>Kenapa hingga 32? Karena 32 = 4 × 8 = 400% extension. Ini adalah batas maksimal yang masih masuk akal dalam konteks volatilitas pasar normal.</p>
+
+                        <h2>BAB IV: MEKANIKA PROYEKSI 4 DIMENSI</h2>
+                        <h3>Pertanyaan Krusial: TRG atau KEY?</h3>
+                        <p>Inilah "otak" dari RSA. Bagaimana sistem memutuskan apakah sebuah level adalah:</p>
+                        <ul>
+                            <li><strong>TRG (Target)</strong> = Level yang realistis dicapai</li>
+                            <li><strong>mTRG (Minor Target)</strong> = Level antara yang bisa dicapai sebagian</li>
+                            <li><strong>KEY (Key Level)</strong> = Level yang mustahil dicapai → high probability reversal zone</li>
+                            <li><strong>SUP (Support) / RES (Resistance)</strong> = Level minor yang relevan dalam kondisi kontraksi</li>
+                        </ul>
+                        <p>Jawabannya ada pada Proyeksi Balistik 4D.</p>
+
+                        <h3>Rumus Proyeksi Jangkauan</h3>
+                        <p>Sistem melakukan kalkulasi ini setiap detik:</p>
+                        <div class="formula-box">Projected Reach = (Current Move) / T</div>
+                        <p>Dimana: Current Move = |Harga Sekarang - Open Price| dan T = Persentase waktu yang telah berlalu (0.01 hingga 1.0)</p>
+
+                        <h3>Filosofi Mendalam dari Rumus Ini</h3>
+                        <p>Ini adalah konsep yang sangat elegan:</p>
+                        <ul>
+                            <li><strong>Di awal sesi (T kecil):</strong> Pembagi kecil → Hasil proyeksi besar → Banyak level yang tampak terjangkau → Sistem lebih "optimis" → Banyak TRG muncul. Ini mencerminkan psikologi pasar nyata: Di pagi hari, trader penuh harapan. Semua target terlihat mungkin.</li>
+                            <li><strong>Di akhir sesi (T besar):</strong> Pembagi besar → Hasil proyeksi kecil → Hanya level dekat yang masih realistis → Sistem lebih "konservatif" → Banyak TRG berubah menjadi KEY. Ini juga mencerminkan realita: Menjelang penutupan, momentum melemah. Level-level jauh yang tidak tercapai akan tetap tidak tercapai.</li>
+                        </ul>
+
+                        <h3>Pengaruh Rasio Ekspansi (R) pada Proyeksi</h3>
+                        <p>Proyeksi tidak hanya dipengaruhi oleh Time, tapi juga oleh Regime (EXP vs CTR).</p>
+                        <ul>
+                            <li><strong>Dalam Mode EKSPANSI (R > 100%):</strong> Sistem memberikan "kredit tambahan" pada proyeksi. Kenapa? Karena pasar sedang dalam fase breakout/trending. Volatilitas tinggi. Momentum kuat. Level-level jauh yang dalam kondisi normal dianggap KEY, bisa menjadi TRG.</li>
+                            <li><strong>Dalam Mode KONTRAKSI (R < 100%):</strong> Sistem menjadi sangat konservatif. Hanya level-level terdekat yang diberi label TRG. Level-level jauh otomatis menjadi KEY. Level-level minor (H1, H2, L1, L2) yang biasanya diabaikan, kini mendapat perhatian sebagai SUP/RES.</li>
+                        </ul>
+
+                        <h3>Radius Energi (Energy Radius)</h3>
+                        <p>Ada satu variabel tambahan yang menentukan apakah level minor mendapat tag SUP/RES:</p>
+                        <div class="formula-box">Radius = V × 1.25</div>
+                        <p>Dimana V adalah volatilitas. Angka 1.25 memberikan sweet spot—cukup untuk menangkap level yang relevan tanpa memenuhi peta dengan label tak bermakna.</p>
+
+                        <h2>BAB V: LOGIKA KEPUTUSAN LENGKAP</h2>
+                        
+                        <h3>Decision Tree untuk Level H (Bullish Levels)</h3>
+                        
+                        <p><strong>Langkah 1: Apakah Level Sudah "Hit" (Tersentuh)?</strong></p>
+                        <div class="logic-box">
+                            IF (Anchor High >= Level Price)<br>
+                            THEN Tag = "HIT" (warna abu-abu, dicoret)<br>
+                            ELSE Lanjut ke Langkah 2
+                        </div>
+                        <p>Mengapa level yang sudah hit diabaikan? Karena dalam teori Auction Market, level yang sudah diterima (accepted) oleh pasar tidak lagi menjadi barrier. Ia menjadi bagian dari "fair value zone".</p>
+
+                        <p><strong>Langkah 2: Apakah Ini Level Mayor (Kelipatan 4)?</strong></p>
+                        <div class="logic-box">
+                            IF (Level Index % 4 == 0)  → Contoh: H4, H8, H12, H16, H20, H24, H28, H32<br>
+                            THEN Lanjut ke Langkah 3 (Status Mayor)<br>
+                            ELSE  THEN Lanjut ke Langkah 4 (Status Minor)
+                        </div>
+                        <p>Kelipatan 4 adalah "checkpoint" harmonik yang memiliki signifikansi matematis dan psikologis tertinggi.</p>
+
+                        <p><strong>Langkah 3: Logika Level Mayor</strong></p>
+                        <div class="logic-box">
+                            IF (Regime == "EXP")<br>
+                            THEN Tag = "TRG" (Target—warna kuning, pulsating)<br>
+                            ELSE IF (Level Price <= Projected High)<br>
+                            THEN Tag = "TRG"<br>
+                            ELSE  THEN Tag = "KEY" (Key Level—warna biru, static)
+                        </div>
+
+                        <p><strong>Langkah 4: Logika Level Minor</strong></p>
+                        <div class="logic-box">
+                            IF (Level Price <= Projected High) AND (Next Major Level Price > Projected High)<br>
+                            THEN Tag = "mTRG" (Minor Target—warna oranye, pulsating slow)<br>
+                            ELSE IF (Regime == "CTR") AND (Level dalam Energy Radius)<br>
+                            THEN Tag = "RES" (Resistance—warna merah muda)<br>
+                            ELSE  THEN Tag = "" (No Tag—level tidak signifikan saat ini)
+                        </div>
+                        <p><strong>Penjelasan mTRG:</strong> Ini adalah konsep unik RSA. Jika proyeksi menunjukkan "cukup bensin" untuk sampai ke H5, tapi tidak cukup untuk H8, maka H5 menjadi "rest stop" atau "checkpoint" sementara.</p>
+
+                        <h2>BAB VI: STRUKTUR MULTI-TIMEFRAME</h2>
+                        <h3>Mengapa 6 Timeframe?</h3>
+                        <p>RSA menggunakan 6 timeframe secara bersamaan:</p>
+                        <ul>
+                            <li>Daily = Noise jangka pendek, scalping zone</li>
+                            <li>Weekly = Swing trading, trend intraweek</li>
+                            <li>Monthly = Position trading, trend bulanan</li>
+                            <li>Quarterly = Seasonal patterns, trend kuartalan</li>
+                            <li>Semester = Mid-term investing, 6 bulan</li>
+                            <li>Yearly = Long-term investing, makro ekonomi</li>
+                        </ul>
+                        
+                        <h3>Konsep Confluence (Konfluensi)</h3>
+                        <p>Confluence terjadi ketika level dari berbagai timeframe bertumpuk di area yang sama. Contoh Kuat:</p>
+                        <div class="example-box">
+                            Daily H8 (TRG) = 105,000<br>
+                            Weekly L4 (KEY) = 105,200<br>
+                            Monthly RES = 104,800<br>
+                            <strong>Area 104,800-105,200 adalah ZONA KONFLIK TINGGI.</strong>
+                        </div>
+                        <p>Interpretasi: Ini adalah zona "Take Profit" yang sempurna jika Anda long, atau zona "Short Entry" yang sempurna jika Anda menunggu reversal.</p>
+
+                        <h3>Global Target (Weighted Projection)</h3>
+                        <p>Sistem menghitung target global dengan memberikan bobot pada setiap timeframe berdasarkan kepercayaan (confidence), yang ditentukan oleh seberapa jauh waktu telah berjalan (T²). Ini adalah titik gravitasi probabilitas tertinggi—dimana mayoritas timeframe "sepakat" bahwa pasar akan berakhir jika momentum saat ini dipertahankan.</p>
+
+                        <h2>BAB VII: REGIME MATRIX (STRUKTUR GLOBAL)</h2>
+                        <h3>Net Expansion vs Net Contraction</h3>
+                        <p>Sistem menghitung berapa banyak timeframe yang dalam mode EXP vs CTR.</p>
+                        <ul>
+                            <li><strong>NET EXPANSION (EXP Count >= 4):</strong> Pasar sedang breakout multi-timeframe. Trading strategy: Trend following.</li>
+                            <li><strong>NET CONTRACTION (CTR Count >= 4):</strong> Pasar sedang sideways/choppy multi-timeframe. Trading strategy: Mean reversion, range trading.</li>
+                            <li><strong>MIXED:</strong> Pasar dalam transisi. Trading strategy: Wait and see.</li>
+                        </ul>
+                        <p><strong>Regime Meter (Visual):</strong> Meter hijau-merah di interface adalah visualisasi dari voting ini.</p>
+
+                        <h2>BAB VIII: MOVING AVERAGE SEBAGAI MAGNET</h2>
+                        <h3>Mengapa SMA, Bukan EMA?</h3>
+                        <p>RSA menggunakan Simple Moving Average (SMA) karena memberikan bobot yang sama pada semua candle dalam periode. Ini mencerminkan "memori rata-rata" pasar tanpa bias terhadap harga terkini.</p>
+                        <p><strong>Fungsi sebagai "Magnet" (MAG):</strong> SMA ditandai dengan tag MAG karena ia berfungsi sebagai equilibrium dinamis. Jika harga jauh di atas SMA, kemungkinan pullback ke SMA tinggi (overextended).</p>
+
+                        <h2>BAB IX: STRATEGI TRADING DENGAN RSA</h2>
+                        
+                        <h3>Strategi 1: Breakout Trading (Mode EXP)</h3>
+                        <p>Kondisi: Global Regime = NET EXPANSION, Bullish Bias, Harga baru saja break Daily H4 (50% midpoint).<br>
+                        Entry: Buy on retest H4 setelah breakout.<br>
+                        Target: Primary Target H8 (100% Full Cycle).<br>
+                        Why This Works: Dalam mode EXP, pasar memiliki energi berlebih. Breakout H4 adalah konfirmasi struktural bahwa Bulls telah memenangkan pertempuran ekuilibrium.</p>
+
+                        <h3>Strategi 2: Reversal Trading (Mode CTR)</h3>
+                        <p>Kondisi: Global Regime = NET CONTRACTION, Harga mendekati Daily H8 yang bertumpuk dengan Weekly L4 (KEY).<br>
+                        Entry: Sell di zona confluence H8/L4, tunggu konfirmasi rejection.<br>
+                        Target: Kembali ke SMA (MAG).<br>
+                        Why This Works: Dalam mode CTR, pasar tidak memiliki energi untuk breakout level-level mayor. KEY level adalah tembok beton.</p>
+
+                        <h3>Strategi 3: Confluence Sniper</h3>
+                        <p>Kondisi: Mencari confluence zone dimana minimal 3 timeframe berbeda menunjuk ke area harga yang sama (±0.5%).<br>
+                        Why This Works: Confluence adalah manifestasi dari "consensus reality" pasar di berbagai horizon waktu. Akumulasi order di level tersebut sangat besar.</p>
+
+                        <h2>BAB X: INTERPRETASI VISUAL ZONA BIAS</h2>
+                        <h3>Zona Merah (Red Zone)</h3>
+                        <p>Lokasi: Di atas harga saat ini, dari harga ke Anchor High. Arti: "Wilayah musuh" jika Anda bullish. Gradasi merah menunjukkan tekanan jual semakin kuat semakin dekat dengan Anchor High.</p>
+                        
+                        <h3>Zona Hijau (Green Zone)</h3>
+                        <p>Lokasi: Di bawah harga saat ini, dari harga ke Anchor Low. Arti: "Zona aman" jika harga turun. Gradasi hijau menunjukkan tekanan beli semakin kuat semakin dekat dengan Anchor Low.</p>
+                        
+                        <h3>Zona Biru (Blue Zone) - The Innovation</h3>
+                        <p>Ini adalah inovasi unik RSA. Zona dari Open Price ke Harga Saat Ini. Menunjukkan "magnitude of today's battle"—seberapa jauh pasar telah bergerak dari titik netral (Open).</p>
+
+                        <h2>BAB XI: TAG SYSTEM - BAHASA PETA RSA</h2>
+                        <ul>
+                            <li><strong>Tag "HIT" (Abu-abu, Dicoret):</strong> Level sudah tersentuh. Ignore untuk entry baru.</li>
+                            <li><strong>Tag "TRG" (Kuning, Pulsating):</strong> TARGET dengan probabilitas tinggi. Pasar memiliki cukup energi dan waktu untuk sampai ke sini.</li>
+                            <li><strong>Tag "mTRG" (Oranye, Pulsating Slow):</strong> Checkpoint sementara. Pasar punya bensin sampai sini, tapi mungkin tidak cukup untuk level mayor berikutnya.</li>
+                            <li><strong>Tag "KEY" (Biru, Static):</strong> Level mustahil dicapai dalam sesi ini. High Probability Reversal Zone.</li>
+                            <li><strong>Tag "RES" / "SUP" (Merah Muda / Hijau Muda):</strong> Micro support/resistance dalam kondisi sideways (CTR) untuk scalping.</li>
+                            <li><strong>Tag "MAG" (Biru):</strong> SMA. Equilibrium dinamis.</li>
+                        </ul>
+
+                        <h2>BAB XII: FITUR-FITUR INTERFACE</h2>
+                        <p><strong>Price Line (Garis Horizontal Kuning):</strong> Menunjukkan posisi harga saat ini secara visual. Auto-scroll untuk keep line di tengah layar.</p>
+                        <p><strong>Open Price Dashed Line:</strong> Menunjukkan Open Price sesi saat ini. Jika Price Line di atas Open Line → Sesi bullish.</p>
+                        <p><strong>Re-Center Button (⌖):</strong> Tombol floating di kanan bawah. Klik untuk auto-scroll semua kolom agar Price Line berada di tengah viewport.</p>
+
+                        <h2>BAB XIII: TEKNOLOGI & ARSITEKTUR</h2>
+                        <p>Data Source: Primary menggunakan Binance Vision API (Historical klines) dan Secondary menggunakan Binance Main API (Real-time ticker).</p>
+                        <p><strong>Reflexive Update Mechanism:</strong> Setiap 1 detik, sistem re-kalkulasi semua stats (V, R, T), proyeksi, dan me-render ulang peta. Peta tidak pernah statis, ia terus beradaptasi.</p>
+
+                        <h2>BAB XIV: KELEBIHAN RSA DIBANDING SISTEM LAIN</h2>
+                        <ul>
+                            <li><strong>vs. Fibonacci:</strong> RSA menggunakan level dinamis berdasarkan Anchor yang terus update, bukan level statis.</li>
+                            <li><strong>vs. Pivot Points:</strong> RSA dihitung dari High/Low sesi SAAT INI (reflexive), bukan data kemarin.</li>
+                            <li><strong>vs. Support/Resistance Manual:</strong> RSA objektif (100% rule-based mathematics), bukan subjektif.</li>
+                        </ul>
+
+                        <h2>BAB XV: LIMITASI DAN DISCLAIMER</h2>
+                        <p><strong>Limitasi Sistem:</strong> Tidak memperhitungkan News/Events (Pure Technical). Asumsi kondisi pasar normal (bukan Black Swan). Ada lag data free (~1 detik).</p>
+                        <p><strong>Disclaimer Trading:</strong> RSA ADALAH ALAT, BUKAN JAMINAN PROFIT. Past performance tidak menjamin future results. Risk management adalah tanggung jawab trader.</p>
+
+                        <h2>BAB XVI: KESIMPULAN</h2>
+                        <p>Pasar bukan garis acak. Ia adalah struktur arsitektur yang dibangun oleh jutaan partisipan yang berinteraksi dalam framework matematika yang terukur. RSA memberikan Anda blueprint dari struktur ini.</p>
+                        <p>Gunakan RSA dengan bijak. Kombinasikan dengan risk management yang solid. Backtest hingga Anda benar-benar paham karakteristiknya. Dan yang terpenting: Respect the market.</p>
+                        
+                        <div class="mt-8 pt-4 border-t border-gray-800 text-center text-xs text-gray-500 font-mono">
+                            <p>📜 COPYRIGHT & LICENSE</p>
+                            <p>&copy; 2025 Adiyat Coto. All Rights Reserved.</p>
+                            <p>Reflexive Symmetrical Architecture (RSA) adalah intellectual property dari Adiyat Coto.</p>
+                        </div>
+                    </div>
+
+                    <!-- ENGLISH CONTENT (UPDATED TO MATCH INDONESIAN VERSION) -->
+                    <div id="content-en" class="hidden">
+                        <h1>RSA CONFLUENCE: COMPREHENSIVE GUIDE</h1>
+                        <p class="text-sm text-gray-400 mb-6 font-mono">Reflexive Symmetrical Architecture - The Complete Manual</p>
+                        
+                        <h2>PROLOGUE: WHY THE MARKET IS NOT A RANDOM LINE</h2>
+                        <p>For decades, novice traders have looked at price charts as a random line moving up and down without a pattern. They search for "signals" from lagging indicators, hoping to find a magic formula to predict the future. But the market is not about prediction—it is about structure.</p>
+                        <p>Reflexive Symmetrical Architecture (RSA) was born from a deep understanding that financial markets operate within a measurable and symmetrical mathematical framework. This system does not try to predict where the price will go, but rather measures your current position on the battlefield, calculates remaining energy, and provides a high-probability navigation map.</p>
+                        <p>Imagine you are a fighter jet pilot. You don't fly blindly. You have a dashboard showing: altitude (Price), speed (Velocity), fuel (Energy), and flight time (Time). RSA is the 4-dimensional dashboard for trading.</p>
+
+                        <h2>CHAPTER I: THE 4-DIMENSIONAL PARADIGM</h2>
+                        
+                        <h3>First Dimension: PRICE</h3>
+                        <p>Price is your vertical coordinate on the map. It is "Where are you now?" But price without context is just an empty number. We need three other dimensions to give it meaning.</p>
+
+                        <h3>Second Dimension: TIME</h3>
+                        <p>Time is not just a ticking clock. In RSA, time is the percentage of the session that has passed.</p>
+                        <div class="formula-box">T = (Current Time - Candle Open Time) / (Candle Close Time - Candle Open Time)</div>
+                        <p>At the beginning of the session (T = 5%), the market has plenty of "free time" to move far. At the end of the session (T = 95%), time is running out—all projections become realistic or expire.</p>
+                        <p><strong>Why is this important?</strong> Because Time is the divisor in our projection formula. The smaller T is (early session), the larger the projection number. This reflects the psychological reality of the market: in the morning, all targets look possible. Near the close, only realistic targets remain.</p>
+
+                        <h3>Third Dimension: ENERGY (Volatility)</h3>
+                        <p>Volatility is the market's fuel. Without volatility, price won't move. In RSA, we calculate volatility in a very simple yet powerful way:</p>
+                        <div class="formula-box">V = (Current High - Current Low) / Open Price</div>
+                        <div class="example-box">
+                            <strong>Example:</strong><br>
+                            Open Price = 100,000<br>
+                            Current High = 102,000<br>
+                            Current Low = 99,000<br>
+                            Range = 102,000 - 99,000 = 3,000<br>
+                            V = 3,000 / 100,000 = 0.03 or 3%
+                        </div>
+                        <p>This 3% figure means the market has "worked" with energy amounting to 3% of its initial value. The larger V is, the more energy is available. But wait—energy alone is not enough. We need to know if the engine is working normally or overheating.</p>
+
+                        <h3>Fourth Dimension: EXPANSION RATIO (R)</h3>
+                        <p>The Expansion Ratio compares today's performance with the market's "memory" (previous candle).</p>
+                        <div class="formula-box">R = (Current Range) / (Previous Candle Range)</div>
+                        
+                        <div class="example-box">
+                            <strong>Interpretation:</strong>
+                            <ul class="mt-2">
+                                <li><strong>R > 100% = EXPANSION (EXP)</strong> → Market is breaking out, trending, or volatile. The engine is working beyond normal capacity. This is a condition where momentum is strong and distant levels can be reached.</li>
+                                <li><strong>R < 100% = CONTRACTION (CTR)</strong> → Market is sideways, consolidating, or tired. The engine is working below normal. In this condition, only nearby levels are realistic.</li>
+                            </ul>
+                        </div>
+                        <p><strong>Why is this revolutionary?</strong> Because most trading systems only look at price. RSA looks at market engine efficiency in real-time. It's like the difference between looking at the speedometer (price) vs. looking at the RPM and fuel gauge (energy & ratio).</p>
+
+                        <h2>CHAPTER II: ZERO POINT—THE ANCHOR CONCEPT</h2>
+                        <h3>The Anchor Philosophy</h3>
+                        <p>In physics, all distance measurements require a reference point. Without a zero point, the concept of "far" or "near" is meaningless. In the trading world, most people use static levels (historical support/resistance) as references. The problem: the market doesn't live in the past.</p>
+                        <p>RSA introduces the concept of a dynamic and reflexive Anchor. Every trading session creates two absolute extreme points:</p>
+                        <ul>
+                            <li><strong>Anchor High (AH)</strong> = The highest point touched in the active session</li>
+                            <li><strong>Anchor Low (AL)</strong> = The lowest point touched in the active session</li>
+                        </ul>
+                        <p>These are not just ordinary Highs and Lows. These are giant footprints—proof that at that price, a major battle occurred between Bulls and Bears, and one side won temporarily.</p>
+
+                        <h3>Why Called "Anchor"?</h3>
+                        <p>Because these two points become the anchors for all subsequent level calculations. All H1-H32 levels are calculated from the Anchor Low. All L1-L32 levels are calculated from the Anchor High.</p>
+                        <ul>
+                            <li>Anchor Low is the reference point for Bullish expansion.</li>
+                            <li>Anchor High is the reference point for Bearish expansion.</li>
+                        </ul>
+
+                        <h3>Reflexive Nature</h3>
+                        <p>What makes this system "Reflexive" is: every time price prints a new High or new Low, the entire map structure is recalibrated in real-time.</p>
+                        <div class="example-box">
+                            Example:<br>
+                            Initial Anchor Low = 95,000<br>
+                            Price moves down and prints a new Low at 94,000<br>
+                            Boom! System immediately updates: Anchor Low is now = 94,000<br>
+                            All levels H1, H2, H3... up to H32 are immediately recalculated from 94,000
+                        </div>
+                        <p>This is a map that lives and breathes with the market, not a rigid dead map.</p>
+
+                        <h3>Auction Market Theory</h3>
+                        <p>The Anchor concept is rooted in Auction Market Theory popularized by Peter Steidlmayer (Market Profile). The market is a continuous auction where buyers and sellers compete to find "fair value".</p>
+                        <ul>
+                            <li><strong>Anchor High</strong> = Price where sellers were so aggressive they stopped the rally. This is the dominant supply zone.</li>
+                            <li><strong>Anchor Low</strong> = Price where buyers were so aggressive they stopped the sell-off. This is the dominant demand zone.</li>
+                        </ul>
+                        <p>As long as price is below Anchor High, market structure is governed by seller gravity. As long as price is above Anchor Low, market structure is governed by buyer thrust.</p>
+
+                        <h2>CHAPTER III: LAW OF VIBRATION—HARMONIC OCTAVE</h2>
+                        <h3>Fundamental Question: Why Divide by 8?</h3>
+                        <p>This is the most important question in understanding RSA. Why is the range (Anchor High - Anchor Low) divided into 8 parts? Why not 10 (like Fibonacci) or 100 (like standard percentages)? The answer lies in the Law of Vibration popularized by W.D. Gann, one of the legendary traders of the 20th century.</p>
+                        
+                        <h3>Musical Octave Theory</h3>
+                        <p>In music, an octave consists of 8 notes: Do, Re, Mi, Fa, Sol, La, Si, Do'. This is not a coincidence—it is a natural harmonic frequency found throughout the universe, from string vibrations to planetary orbits.</p>
+                        <p>Gann applied this concept to financial markets. He believed that price moves in harmonic frequencies, not linearly. A "complete" price movement (Full Cycle) must pass through 8 frequency steps.</p>
+                        <div class="formula-box">δ = (Anchor High - Anchor Low) / 8</div>
+                        <p>Delta is the harmonic "step"—the distance between one frequency to the next.</p>
+
+                        <h3>Why 8 is Superior to 10?</h3>
+                        <p>Fibonacci uses divisions based on the golden ratio (1.618). This is good for measuring retracement (pullback), but not for measuring expansion (breakout).</p>
+                        <p>Division by 8 provides levels that are mathematically symmetrical and psychologically resonant. Why?</p>
+                        <ul>
+                            <li><strong>Level 4 (50%)</strong> = Perfect midpoint. This is Equilibrium—the zone where Bulls and Bears are in balance. In trading psychology, 50% is a magic number. If price can break 50% of the previous range, the probability of reaching 100% (Full Cycle) increases drastically. This isn't mystical—it's the result of market microstructure and order flow dynamics.</li>
+                            <li><strong>Level 8 (100%)</strong> = Full Cycle. This is the Measured Move—the natural target of a healthy price movement. If the market starts from Anchor Low and moves up, the first logical target is Anchor High + (1 x Range) = Level H8.</li>
+                        </ul>
+
+                        <h3>H Level Calculation (Bullish Levels)</h3>
+                        <p>All H levels are calculated from Anchor Low as the base:</p>
+                        <div class="logic-box">
+                            H1 = Anchor Low + (1 × δ)<br>
+                            H2 = Anchor Low + (2 × δ)<br>
+                            H3 = Anchor Low + (3 × δ)<br>
+                            H4 = Anchor Low + (4 × δ)  ← 50% Midpoint (Equilibrium)<br>
+                            H5 = Anchor Low + (5 × δ)<br>
+                            H6 = Anchor Low + (6 × δ)<br>
+                            H7 = Anchor Low + (7 × δ)<br>
+                            H8 = Anchor Low + (8 × δ)  ← 100% Full Cycle<br>
+                            H9 = Anchor Low + (9 × δ)<br>
+                            ...<br>
+                            H32 = Anchor Low + (32 × δ)  ← Max Extension (400%)
+                        </div>
+
+                        <h3>L Level Calculation (Bearish Levels)</h3>
+                        <p>All L levels are calculated from Anchor High as the base, moving downwards:</p>
+                        <div class="logic-box">
+                            L1 = Anchor High - (1 × δ)<br>
+                            L2 = Anchor High - (2 × δ)<br>
+                            L3 = Anchor High - (3 × δ)<br>
+                            L4 = Anchor High - (4 × δ)  ← 50% Midpoint<br>
+                            ...<br>
+                            L8 = Anchor High - (8 × δ)  ← 100% Full Cycle (= Anchor Low)<br>
+                            ...<br>
+                            L32 = Anchor High - (32 × δ)
+                        </div>
+                        <p>Why up to 32? Because 32 = 4 × 8 = 400% extension. This is the maximum limit that is still reasonable within the context of normal market volatility.</p>
+
+                        <h2>CHAPTER IV: 4-DIMENSIONAL PROJECTION MECHANICS</h2>
+                        <h3>Crucial Question: TRG or KEY?</h3>
+                        <p>This is the "brain" of RSA. How does the system decide if a level is:</p>
+                        <ul>
+                            <li><strong>TRG (Target)</strong> = A level realistically reachable</li>
+                            <li><strong>mTRG (Minor Target)</strong> = An intermediate level partially reachable</li>
+                            <li><strong>KEY (Key Level)</strong> = A level impossible to reach → high probability reversal zone</li>
+                            <li><strong>SUP (Support) / RES (Resistance)</strong> = Minor levels relevant in contraction conditions</li>
+                        </ul>
+                        <p>The answer lies in 4D Ballistic Projection.</p>
+
+                        <h3>Reach Projection Formula</h3>
+                        <p>The system performs this calculation every second:</p>
+                        <div class="formula-box">Projected Reach = (Current Move) / T</div>
+                        <p>Where: Current Move = |Current Price - Open Price| and T = Percentage of time elapsed (0.01 to 1.0)</p>
+
+                        <h3>Deep Philosophy of This Formula</h3>
+                        <p>This is a very elegant concept:</p>
+                        <ul>
+                            <li><strong>At session start (Small T):</strong> Small divisor → Large projection result → Many levels appear reachable → System is more "optimistic" → Many TRGs appear. This reflects real market psychology: In the morning, traders are full of hope. All targets seem possible.</li>
+                            <li><strong>At session end (Large T):</strong> Large divisor → Small projection result → Only nearby levels remain realistic → System is more "conservative" → Many TRGs turn into KEYs. This also reflects reality: Near the close, momentum weakens. Distant levels not reached will likely remain unreached.</li>
+                        </ul>
+
+                        <h3>Influence of Expansion Ratio (R) on Projection</h3>
+                        <p>Projection is not only influenced by Time, but also by Regime (EXP vs CTR).</p>
+                        <ul>
+                            <li><strong>In EXPANSION Mode (R > 100%):</strong> The system gives "extra credit" to the projection. Why? Because the market is in a breakout/trending phase. High volatility. Strong momentum. Distant levels that are normally considered KEY can become TRG.</li>
+                            <li><strong>In CONTRACTION Mode (R < 100%):</strong> The system becomes very conservative. Only the nearest levels are labeled TRG. Distant levels automatically become KEY. Minor levels (H1, H2, L1, L2) usually ignored now get attention as SUP/RES.</li>
+                        </ul>
+
+                        <h3>Energy Radius</h3>
+                        <p>There is one additional variable determining if minor levels get SUP/RES tags:</p>
+                        <div class="formula-box">Radius = V × 1.25</div>
+                        <p>Where V is volatility. The figure 1.25 provides a sweet spot—enough to capture relevant levels without cluttering the map with meaningless labels.</p>
+
+                        <h2>CHAPTER V: COMPLETE DECISION LOGIC</h2>
+                        
+                        <h3>Decision Tree for H Levels (Bullish Levels)</h3>
+                        
+                        <p><strong>Step 1: Is Level "Hit" (Touched)?</strong></p>
+                        <div class="logic-box">
+                            IF (Anchor High >= Level Price)<br>
+                            THEN Tag = "HIT" (gray color, strikethrough)<br>
+                            ELSE Proceed to Step 2
+                        </div>
+                        <p>Why are hit levels ignored? Because in Auction Market theory, levels accepted by the market are no longer barriers. They become part of the "fair value zone".</p>
+
+                        <p><strong>Step 2: Is This a Major Level (Multiple of 4)?</strong></p>
+                        <div class="logic-box">
+                            IF (Level Index % 4 == 0)  → Example: H4, H8, H12, H16, H20, H24, H28, H32<br>
+                            THEN Proceed to Step 3 (Major Status)<br>
+                            ELSE  THEN Proceed to Step 4 (Minor Status)
+                        </div>
+                        <p>Multiples of 4 are harmonic "checkpoints" having highest mathematical and psychological significance.</p>
+
+                        <p><strong>Step 3: Major Level Logic</strong></p>
+                        <div class="logic-box">
+                            IF (Regime == "EXP")<br>
+                            THEN Tag = "TRG" (Target—yellow color, pulsating)<br>
+                            ELSE IF (Level Price <= Projected High)<br>
+                            THEN Tag = "TRG"<br>
+                            ELSE  THEN Tag = "KEY" (Key Level—blue color, static)
+                        </div>
+
+                        <p><strong>Step 4: Minor Level Logic</strong></p>
+                        <div class="logic-box">
+                            IF (Level Price <= Projected High) AND (Next Major Level Price > Projected High)<br>
+                            THEN Tag = "mTRG" (Minor Target—orange color, pulsating slow)<br>
+                            ELSE IF (Regime == "CTR") AND (Level in Energy Radius)<br>
+                            THEN Tag = "RES" (Resistance—pink color)<br>
+                            ELSE  THEN Tag = "" (No Tag—level not significant currently)
+                        </div>
+                        <p><strong>mTRG Explanation:</strong> This is a unique RSA concept. If projection shows "enough gas" to reach H5, but not enough for H8, then H5 becomes a "rest stop" or temporary "checkpoint".</p>
+
+                        <h2>CHAPTER VI: MULTI-TIMEFRAME STRUCTURE</h2>
+                        <h3>Why 6 Timeframes?</h3>
+                        <p>RSA uses 6 timeframes simultaneously:</p>
+                        <ul>
+                            <li>Daily = Short-term noise, scalping zone</li>
+                            <li>Weekly = Swing trading, intraweek trend</li>
+                            <li>Monthly = Position trading, monthly trend</li>
+                            <li>Quarterly = Seasonal patterns, quarterly trend</li>
+                            <li>Semester = Mid-term investing, 6 months</li>
+                            <li>Yearly = Long-term investing, macro economy</li>
+                        </ul>
+                        
+                        <h3>Confluence Concept</h3>
+                        <p>Confluence occurs when levels from various timeframes stack in the same area. Strong Example:</p>
+                        <div class="example-box">
+                            Daily H8 (TRG) = 105,000<br>
+                            Weekly L4 (KEY) = 105,200<br>
+                            Monthly RES = 104,800<br>
+                            <strong>Area 104,800-105,200 is a HIGH CONFLICT ZONE.</strong>
+                        </div>
+                        <p>Interpretation: This is a perfect "Take Profit" zone if you are long, or a perfect "Short Entry" zone if you are waiting for a reversal.</p>
+
+                        <h3>Global Target (Weighted Projection)</h3>
+                        <p>The system calculates a global target by weighting each timeframe based on confidence, determined by how much time has passed (T²). This is the highest probability gravity point—where the majority of timeframes "agree" the market will end if current momentum is maintained.</p>
+
+                        <h2>CHAPTER VII: REGIME MATRIX (GLOBAL STRUCTURE)</h2>
+                        <h3>Net Expansion vs Net Contraction</h3>
+                        <p>The system counts how many timeframes are in EXP vs CTR mode.</p>
+                        <ul>
+                            <li><strong>NET EXPANSION (EXP Count >= 4):</strong> Market is multi-timeframe breakout. Trading strategy: Trend following.</li>
+                            <li><strong>NET CONTRACTION (CTR Count >= 4):</strong> Market is multi-timeframe sideways/choppy. Trading strategy: Mean reversion, range trading.</li>
+                            <li><strong>MIXED:</strong> Market in transition. Trading strategy: Wait and see.</li>
+                        </ul>
+                        <p><strong>Regime Meter (Visual):</strong> Green-red meter on interface visualizes this voting.</p>
+
+                        <h2>CHAPTER VIII: MOVING AVERAGE AS MAGNET</h2>
+                        <h3>Why SMA, Not EMA?</h3>
+                        <p>RSA uses Simple Moving Average (SMA) because it gives equal weight to all candles in the period. This reflects the market's "average memory" without bias towards recent prices.</p>
+                        <p><strong>Function as "Magnet" (MAG):</strong> SMA is tagged MAG because it acts as dynamic equilibrium. If price is far above SMA, probability of pullback to SMA is high (overextended).</p>
+
+                        <h2>CHAPTER IX: TRADING STRATEGIES WITH RSA</h2>
+                        
+                        <h3>Strategy 1: Breakout Trading (EXP Mode)</h3>
+                        <p>Condition: Global Regime = NET EXPANSION, Bullish Bias, Price just broke Daily H4 (50% midpoint).<br>
+                        Entry: Buy on retest H4 after breakout.<br>
+                        Target: Primary Target H8 (100% Full Cycle).<br>
+                        Why This Works: In EXP mode, the market has excess energy. H4 breakout is structural confirmation that Bulls have won the equilibrium battle.</p>
+
+                        <h3>Strategy 2: Reversal Trading (CTR Mode)</h3>
+                        <p>Condition: Global Regime = NET CONTRACTION, Price approaching Daily H8 overlapping with Weekly L4 (KEY).<br>
+                        Entry: Sell in H8/L4 confluence zone, wait for rejection confirmation.<br>
+                        Target: Return to SMA (MAG).<br>
+                        Why This Works: In CTR mode, the market lacks energy to break major levels. KEY level is a concrete wall.</p>
+
+                        <h3>Strategy 3: Confluence Sniper</h3>
+                        <p>Condition: Finding confluence zone where at least 3 different timeframes point to same price area (±0.5%).<br>
+                        Why This Works: Confluence is manifestation of market "consensus reality" across time horizons. Order accumulation at that level is massive.</p>
+
+                        <h2>CHAPTER X: VISUAL INTERPRETATION OF BIAS ZONES</h2>
+                        <h3>Red Zone</h3>
+                        <p>Location: Above current price, from price to Anchor High. Meaning: "Enemy territory" if you are bullish. Red gradient shows selling pressure getting stronger closer to Anchor High.</p>
+                        
+                        <h3>Green Zone</h3>
+                        <p>Location: Below current price, from price to Anchor Low. Meaning: "Safe zone" if price drops. Green gradient shows buying pressure getting stronger closer to Anchor Low.</p>
+                        
+                        <h3>Blue Zone - The Innovation</h3>
+                        <p>This is a unique RSA innovation. Zone from Open Price to Current Price. Shows "magnitude of today's battle"—how far the market has moved from the neutral point (Open).</p>
+
+                        <h2>CHAPTER XI: TAG SYSTEM - RSA MAP LANGUAGE</h2>
+                        <ul>
+                            <li><strong>Tag "HIT" (Gray, Strikethrough):</strong> Level already touched. Ignore for new entry.</li>
+                            <li><strong>Tag "TRG" (Yellow, Pulsating):</strong> High probability TARGET. Market has enough energy and time to reach here.</li>
+                            <li><strong>Tag "mTRG" (Orange, Pulsating Slow):</strong> Temporary checkpoint. Market has gas to here, but maybe not enough for next major level.</li>
+                            <li><strong>Tag "KEY" (Blue, Static):</strong> Level impossible to reach in this session. High Probability Reversal Zone.</li>
+                            <li><strong>Tag "RES" / "SUP" (Pink / Light Green):</strong> Micro support/resistance in sideways (CTR) conditions for scalping.</li>
+                            <li><strong>Tag "MAG" (Blue):</strong> SMA. Dynamic equilibrium.</li>
+                        </ul>
+
+                        <h2>CHAPTER XII: INTERFACE FEATURES</h2>
+                        <p><strong>Price Line (Yellow Horizontal Line):</strong> Visually indicates current price position. Auto-scrolls to keep line in middle of screen.</p>
+                        <p><strong>Open Price Dashed Line:</strong> Indicates current session Open Price. If Price Line above Open Line → Bullish session.</p>
+                        <p><strong>Re-Center Button (⌖):</strong> Floating button at bottom right. Click to auto-scroll all columns to center Price Line in viewport.</p>
+
+                        <h2>CHAPTER XIII: TECHNOLOGY & ARCHITECTURE</h2>
+                        <p>Data Source: Primary uses Binance Vision API (Historical klines) and Secondary uses Binance Main API (Real-time ticker).</p>
+                        <p><strong>Reflexive Update Mechanism:</strong> Every 1 second, system recalculates all stats (V, R, T), projections, and re-renders the map. The map is never static, it constantly adapts.</p>
+
+                        <h2>CHAPTER XIV: RSA ADVANTAGES VS OTHER SYSTEMS</h2>
+                        <ul>
+                            <li><strong>vs. Fibonacci:</strong> RSA uses dynamic levels based on constantly updating Anchors, not static levels.</li>
+                            <li><strong>vs. Pivot Points:</strong> RSA calculated from CURRENT session High/Low (reflexive), not yesterday's data.</li>
+                            <li><strong>vs. Manual Support/Resistance:</strong> RSA is objective (100% rule-based mathematics), not subjective.</li>
+                        </ul>
+
+                        <h2>CHAPTER XV: LIMITATIONS AND DISCLAIMER</h2>
+                        <p><strong>System Limitations:</strong> Does not account for News/Events (Pure Technical). Assumes normal market conditions (not Black Swan). Free data lag (~1 second).</p>
+                        <p><strong>Trading Disclaimer:</strong> RSA IS A TOOL, NOT A PROFIT GUARANTEE. Past performance does not guarantee future results. Risk management is trader's responsibility.</p>
+
+                        <h2>CHAPTER XVI: CONCLUSION</h2>
+                        <p>The market is not a random line. It is an architectural structure built by millions of participants interacting within a measurable mathematical framework. RSA gives you the blueprint of this structure.</p>
+                        <p>Use RSA wisely. Combine with solid risk management. Backtest until you truly understand its characteristics. And most importantly: Respect the market.</p>
+                        
+                        <div class="mt-8 pt-4 border-t border-gray-800 text-center text-xs text-gray-500 font-mono">
+                            <p>📜 COPYRIGHT & LICENSE</p>
+                            <p>&copy; 2025 Adiyat Coto. All Rights Reserved.</p>
+                            <p>Reflexive Symmetrical Architecture (RSA) is intellectual property of Adiyat Coto.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 mb-4 flex justify-center">
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent w-full max-w-md"></div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 bg-[#0f172a] border-t border-gray-800 text-center flex flex-col md:flex-row justify-between items-center px-10 gap-2">
+                <span class="text-[10px] text-gray-500 font-mono tracking-widest">POWERED BY STABLE VISION NODE</span>
+                <span class="text-[10px] text-blue-500 font-mono tracking-widest font-bold">&copy; 2025 ADIYAT COTO. ALL RIGHTS RESERVED.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="flex-none bg-[#111827] border-b border-gray-800 p-3 flex justify-between items-center z-50 shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold text-white">R</div>
+            <div>
+                <h1 class="text-sm font-bold text-white tracking-wide">RSA <span class="text-blue-500">CONFLUENCE</span></h1>
+                <p class="text-[10px] text-gray-400">Stable Vision Node (Pro)</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <!-- Guide Button -->
+            <button onclick="toggleGuide()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 text-xs px-3 py-1 rounded font-bold transition flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                GUIDE
+            </button>
+
+            <div id="status-indicator" class="text-[10px] px-2 py-1 rounded bg-gray-800 text-gray-400 border border-gray-700 transition-all duration-300">Ready</div>
+            
+            <div class="relative">
+                <input type="text" id="coin-input" list="tickers" value="BTCUSDT" class="bg-gray-900 border border-gray-700 text-white text-xs px-2 py-1 rounded w-24 text-center uppercase font-bold focus:border-blue-500 outline-none transition-colors" onkeydown="if(event.key === 'Enter') loadData()">
+                <datalist id="tickers">
+                    <option value="BTCUSDT">
+                    <option value="ETHUSDT">
+                    <option value="SOLUSDT">
+                    <option value="XRPUSDT">
+                    <option value="BNBUSDT">
+                    <option value="DOGEUSDT">
+                    <option value="ADAUSDT">
+                    <option value="AVAXUSDT">
+                    <option value="LINKUSDT">
+                    <option value="LTCUSDT">
+                </datalist>
+            </div>
+            
+            <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded font-bold transition">LOAD</button>
+        </div>
+    </header>
+
+    <!-- Top Bar: Stats (AGGREGATED) -->
+    <div class="flex-none grid grid-cols-12 gap-1 bg-[#0b0f19] p-2 border-b border-gray-800 z-40">
+        <div class="col-span-12 md:col-span-4 glass-panel p-2 rounded flex flex-col justify-center">
+            <div class="flex justify-between items-end mb-1">
+                <span class="text-[10px] text-gray-400 uppercase font-bold">Global Structure Matrix</span>
+                <span id="regime-text" class="text-[10px] font-bold text-white">---</span>
+            </div>
+            <div class="regime-meter-container">
+                <div id="regime-needle" class="regime-needle" style="left: 50%"></div>
+            </div>
+        </div>
+        <div class="col-span-6 md:col-span-4 glass-panel p-2 rounded flex flex-col justify-center">
+            <!-- AGGREGATE DISPLAY -->
+            <div class="flex justify-between text-[10px]">
+                <span class="text-gray-500">Avg Vol / Ratio</span>
+                <span id="vol-text" class="font-mono text-white">---</span>
+            </div>
+            <div class="flex justify-between text-[10px] mt-1">
+                <span class="text-gray-500 font-bold">Global Target</span>
+                <span id="radius-text" class="font-mono font-bold">---</span>
+            </div>
+        </div>
+        <div class="col-span-6 md:col-span-4 glass-panel p-2 rounded flex items-center justify-between">
+            <span class="text-[10px] text-gray-500 font-bold uppercase">Price</span>
+            <!-- UPDATED PRICE STYLE: Larger, Bolder, Yellow, Glowing -->
+            <span id="price-text" class="text-3xl font-mono font-black text-yellow-400 tracking-tight drop-shadow-[0_0_10px_rgba(250,204,21,0.4)]">---</span>
+        </div>
+    </div>
+
+    <!-- MAIN MAP AREA -->
+    <div class="flex-grow relative overflow-hidden bg-black w-full h-full flex flex-col">
+        
+        <div id="loading-screen" class="loading-overlay hidden">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
+            <p class="text-xs text-gray-400 animate-pulse">Fetching from Vision Node...</p>
+        </div>
+
+        <!-- Horizontal Scroll Container -->
+        <div class="flex-grow overflow-x-auto overflow-y-hidden relative">
+            <!-- Grid with min-width -->
+            <div class="grid grid-cols-6 divide-x divide-gray-800 h-full min-w-[1000px] relative">
+                
+                <!-- DAILY -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-d" class="col-header col-header-d">
+                        <span>DAILY</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-d" class="map-scroll map-container flex-grow"><div id="world-d" class="relative w-full"></div></div>
+                </div>
+                
+                <!-- WEEKLY -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-w" class="col-header col-header-w">
+                        <span>WEEKLY</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-w" class="map-scroll map-container flex-grow"><div id="world-w" class="relative w-full"></div></div>
+                </div>
+                
+                <!-- MONTHLY -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-m" class="col-header col-header-m">
+                        <span>MONTHLY</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-m" class="map-scroll map-container flex-grow"><div id="world-m" class="relative w-full"></div></div>
+                </div>
+
+                <!-- QUARTERLY -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-q" class="col-header col-header-q">
+                        <span>QUARTER</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-q" class="map-scroll map-container flex-grow"><div id="world-q" class="relative w-full"></div></div>
+                </div>
+
+                <!-- SEMESTER -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-s" class="col-header col-header-s">
+                        <span>SEMESTER</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-s" class="map-scroll map-container flex-grow"><div id="world-s" class="relative w-full"></div></div>
+                </div>
+
+                <!-- YEARLY -->
+                <div class="relative flex flex-col h-full overflow-hidden">
+                    <div id="header-y" class="col-header col-header-y">
+                        <span>YEARLY</span>
+                        <div class="header-stats">Loading...</div>
+                    </div>
+                    <div id="scroll-y" class="map-scroll map-container flex-grow"><div id="world-y" class="relative w-full"></div></div>
+                </div>
+
+                <!-- Center Line -->
+                <div id="cp-line" class="absolute left-0 right-0 h-[1px] bg-yellow-500 z-30 pointer-events-none opacity-80 shadow-[0_0_8px_#eab308]" style="top: 0px;"></div>
+                <div id="cp-label" class="absolute left-2 -translate-y-1/2 bg-yellow-900/90 text-yellow-200 text-[9px] px-2 py-0.5 rounded z-30 border border-yellow-500/50 font-bold" style="top: 0px;">CURRENT PRICE</div>
+
+            </div>
+        </div>
+
+        <!-- Recenter Fab -->
+        <button onclick="centerMap(true)" class="absolute bottom-6 right-6 bg-blue-600 hover:bg-blue-500 text-white rounded-full w-10 h-10 shadow-lg flex items-center justify-center z-50 transition-transform active:scale-95 group cursor-pointer" title="Re-Center">
+            <span class="text-lg">⌖</span>
+        </button>
+
+    </div>
+
+    <script>
+        // --- GUIDE MODAL LOGIC ---
+        function toggleGuide() {
+            const modal = document.getElementById('guide-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function switchLang(lang) {
+            const contentId = document.getElementById('content-id');
+            const contentEn = document.getElementById('content-en');
+            const btnId = document.getElementById('btn-id');
+            const btnEn = document.getElementById('btn-en');
+
+            if (lang === 'id') {
+                contentId.classList.remove('hidden');
+                contentEn.classList.add('hidden');
+                btnId.classList.add('active');
+                btnEn.classList.remove('active');
+            } else {
+                contentId.classList.add('hidden');
+                contentEn.classList.remove('hidden');
+                btnId.classList.remove('active');
+                btnEn.classList.add('active');
+            }
+        }
+
+        // --- STABLE API CONFIG ---
+        const VISION_API = 'https://data-api.binance.vision/api/v3';
+        
+        const APIS = {
+            ticker: 'https://api1.binance.com/api/v3', 
+            klines: VISION_API 
+        };
+
+        const CONFIG = {
+            symbol: 'BTCUSDT',
+            scale: 60, 
+            virtualHeight: 40000,
+            centerOffset: 20000
+        };
+
+        let state = {
+            price: 0,
+            intervals: {},
+            klines: { d: [], w: [], m: [], q: [], s: [], y: [] },
+            stats: {}, 
+            touched: { 
+                d: { set: new Set(), time: 0 }, 
+                w: { set: new Set(), time: 0 }, 
+                m: { set: new Set(), time: 0 },
+                q: { set: new Set(), time: 0 }, 
+                s: { set: new Set(), time: 0 }, 
+                y: { set: new Set(), time: 0 }
+            }
+        };
+        
+        let isSyncing = false;
+
+        // --- CORE FUNCTIONS ---
+        
+        async function loadData() {
+            const input = document.getElementById('coin-input').value.toUpperCase();
+            if(input) CONFIG.symbol = input;
+            
+            showLoading(true);
+            updateStatus('Initializing...');
+            
+            const initTouched = () => ({ set: new Set(), time: 0 });
+            state.touched = { d: initTouched(), w: initTouched(), m: initTouched(), q: initTouched(), s: initTouched(), y: initTouched() };
+            
+            ['d','w','m','q','s','y'].forEach(id => document.getElementById(`world-${id}`).innerHTML = '');
+
+            try {
+                const tickerRes = await fetch(`${APIS.ticker}/ticker/24hr?symbol=${CONFIG.symbol}`);
+                if(!tickerRes.ok) throw new Error('Ticker Fetch Failed');
+                const ticker = await tickerRes.json();
+                state.price = parseFloat(ticker.lastPrice);
+                document.getElementById('price-text').textContent = formatPrice(state.price);
+                
+                const results = await Promise.allSettled([
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1d&limit=400`),
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1w&limit=100`),
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1M&limit=240`)
+                ]);
+
+                if (results[0].status === 'fulfilled' && results[0].value.ok) {
+                    const dData = await results[0].value.json();
+                    if(Array.isArray(dData) && dData.length > 5) {
+                        state.klines.d = dData;
+                        state.stats.d = calculateRegime(dData, 1); 
+                        // Note: updateTopBar now handled by aggregation logic
+                    } else renderError('d', 'Invalid Data Format');
+                } else renderError('d', 'Daily Data Failed');
+
+                if (results[1].status === 'fulfilled' && results[1].value.ok) {
+                    state.klines.w = await results[1].value.json();
+                    state.stats.w = calculateRegime(state.klines.w, 7); 
+                } else renderError('w', 'Weekly Data Failed');
+
+                if (results[2].status === 'fulfilled' && results[2].value.ok) {
+                    const mData = await results[2].value.json();
+                    state.klines.m = mData;
+                    state.stats.m = calculateRegime(mData, 30); 
+                    
+                    state.klines.q = buildAggregateTF(mData, 3); 
+                    state.stats.q = calculateRegime(state.klines.q, 90);
+
+                    state.klines.s = buildAggregateTF(mData, 6); 
+                    state.stats.s = calculateRegime(state.klines.s, 180);
+
+                    state.klines.y = buildAggregateTF(mData, 12);
+                    state.stats.y = calculateRegime(state.klines.y, 365);
+
+                } else renderError('m', 'Monthly Data Failed');
+
+                updateGlobalConfluence();
+                renderAllMaps();
+
+                showLoading(false);
+                updateStatus('Live');
+                
+                setTimeout(() => centerMap(true), 100);
+                setTimeout(() => centerMap(true), 500); 
+                
+                if(state.intervals.poll) clearInterval(state.intervals.poll);
+                state.intervals.poll = setInterval(updatePriceOnly, 1000);
+
+            } catch(e) {
+                console.error(e);
+                showLoading(false);
+                updateStatus('Connection Error');
+                // MODIFIED ERROR ALERT
+                alert('Connection Error.\n\nJika data tidak muncul, kemungkinan koneksi ke Binance diblokir oleh ISP.\n\nSaran: Coba gunakan VPN.');
+            }
+        }
+
+        // --- CALCULATION LOGIC ---
+
+        function calculateRegime(klines) {
+            if(!klines || klines.length < 2) return { vol: 0, radius: 0, regime: 'NEUTRAL', regimeColor: 'text-gray-400', ratio: 1, timeProgress: 0, elapsedHours: 0, totalHours: 0 };
+
+            const t0 = klines[klines.length - 1];
+            const t1 = klines[klines.length - 2];
+
+            const t0_H = parseFloat(t0[2]);
+            const t0_L = parseFloat(t0[3]);
+            const t0_Open = parseFloat(t0[1]);
+            const t0_Range = t0_H - t0_L;
+
+            const t1_H = parseFloat(t1[2]);
+            const t1_L = parseFloat(t1[3]);
+            const t1_Range = Math.abs(t1_H - t1_L); 
+
+            const vol = t0_Open > 0 ? (t0_Range / t0_Open) : 0;
+            const ratio = t1_Range > 0 ? (t0_Range / t1_Range) : 1.0;
+
+            let regime = 'CTR';
+            let regimeColor = 'text-green-400';
+            if (ratio > 1.0) {
+                regime = 'EXP';
+                regimeColor = 'text-red-400';
+            }
+
+            const openTime = t0[0];
+            const closeTime = t0[6]; 
+            const now = Date.now();
+            let timeProgress = (now - openTime) / (closeTime - openTime);
+            timeProgress = Math.max(0.01, Math.min(1.0, timeProgress)); 
+
+            // Calculate precise hours for display and logic
+            const totalMs = closeTime - openTime;
+            const elapsedMs = now - openTime;
+            const totalHours = Math.max(1, Math.round(totalMs / 3600000));
+            const elapsedHours = Math.max(0, Math.round(elapsedMs / 3600000));
+
+            const radius = vol * 1.25;
+
+            return { 
+                vol: vol, 
+                radius: radius, 
+                regime: regime, 
+                regimeColor: regimeColor,
+                ratio: ratio,
+                timeProgress: timeProgress,
+                elapsedHours: elapsedHours,
+                totalHours: totalHours,
+                // Helper data for global aggregation
+                open: t0_Open,
+                currentMove: Math.abs(state.price - t0_Open)
+            };
+        }
+
+        // --- GLOBAL CONFLUENCE LOGIC (INTELLIGENCE) ---
+        function updateGlobalConfluence() {
+            if (!state.stats.d) return;
+
+            const tfs = ['d', 'w', 'm', 'q', 's', 'y'];
+            const statsArr = tfs.map(k => state.stats[k]).filter(Boolean);
+            
+            // 1. Regime Voting
+            const expCount = statsArr.filter(s => s.regime === 'EXP').length;
+            const ctrCount = statsArr.filter(s => s.regime === 'CTR').length;
+            
+            // 2. Bias Voting (Price vs Open)
+            let bullVotes = 0;
+            let bearVotes = 0;
+            let projectedSum = 0;
+            let weightSum = 0;
+            
+            let avgVol = 0;
+            let avgRatio = 0;
+
+            statsArr.forEach(s => {
+                const isBull = state.price >= s.open;
+                if (isBull) bullVotes++; else bearVotes++;
+                
+                avgVol += s.vol;
+                avgRatio += s.ratio;
+
+                // 3. Weighted Target Logic
+                const safeT = Math.max(0.01, s.timeProgress);
+                const projMove = s.currentMove / safeT;
+                const projTarget = isBull ? (s.open + projMove) : (s.open - projMove);
+                
+                const w = Math.pow(safeT, 2); 
+                
+                projectedSum += projTarget * w;
+                weightSum += w;
+            });
+
+            const globalTarget = weightSum > 0 ? (projectedSum / weightSum) : 0;
+            avgVol /= statsArr.length;
+            avgRatio /= statsArr.length;
+
+            // -- UI Updates --
+
+            // 1. Structure Matrix (Regime)
+            let regimeText = 'MIXED';
+            let regimeColor = 'text-yellow-400';
+            let meterVal = 0.5;
+
+            if (expCount >= 4) {
+                regimeText = `NET EXPANSION (${expCount}/6)`;
+                regimeColor = 'text-red-400';
+                meterVal = 0.8;
+            } else if (ctrCount >= 4) {
+                regimeText = `NET CONTRACTION (${ctrCount}/6)`;
+                regimeColor = 'text-green-400';
+                meterVal = 0.2;
+            }
+
+            const biasText = bullVotes > bearVotes ? `BULLISH (${bullVotes}/6)` : `BEARISH (${bearVotes}/6)`;
+            const biasColor = bullVotes > bearVotes ? 'text-green-400' : 'text-red-400';
+
+            // Top Left Panel
+            document.getElementById('regime-text').innerHTML = `${regimeText} <span class="${biasColor} ml-2">${biasText}</span>`;
+            document.getElementById('regime-text').className = `text-[10px] font-bold ${regimeColor}`;
+            document.getElementById('regime-needle').style.left = `${meterVal * 100}%`;
+
+            // Top Middle Panel (Aggregated Intel with Target %)
+            const volStr = (avgVol * 100).toFixed(2) + '%';
+            const ratioStr = (avgRatio * 100).toFixed(0) + '%';
+            const targetStr = formatPrice(globalTarget);
+            
+            // Calculate distance % from current price to global target
+            const distPct = ((globalTarget - state.price) / state.price) * 100;
+            const distSign = distPct > 0 ? '+' : '';
+            const distStr = `(${distSign}${distPct.toFixed(2)}%)`;
+            
+            const targetEl = document.getElementById('radius-text');
+            targetEl.textContent = `${targetStr} ${distStr}`;
+            
+            // Visual Confirmation of 2-Way Analysis
+            if (globalTarget >= state.price) {
+                targetEl.className = 'font-mono text-green-400 font-bold'; // Bullish Target
+                targetEl.innerHTML += ' <span class="text-[9px]">▲</span>';
+            } else {
+                targetEl.className = 'font-mono text-red-400 font-bold'; // Bearish Target
+                targetEl.innerHTML += ' <span class="text-[9px]">▼</span>';
+            }
+
+            document.getElementById('vol-text').textContent = `${volStr} / ${ratioStr}`;
+        }
+
+        function updateColumnHeader(id, stats, label, smaLabel) {
+            const el = document.getElementById(`header-${id}`);
+            if(!el || !stats) return;
+            const timePct = (stats.timeProgress * 100).toFixed(2);
+            
+            el.innerHTML = `
+                <span>${label} <span class="text-[9px] opacity-70 ml-1 text-yellow-200">${smaLabel}</span></span>
+                <div class="header-stats">
+                    <span class="stat-badge text-gray-300">V:${(stats.vol*100).toFixed(2)}%</span>
+                    <span class="stat-badge text-blue-300">R:${(stats.ratio*100).toFixed(0)}%</span>
+                    <span class="stat-badge text-purple-300" title="Elapsed: ${stats.elapsedHours}h / ${stats.totalHours}h">T:${timePct}%</span>
+                    <span class="stat-badge ${stats.regimeColor}">${stats.regime}</span>
+                </div>
+            `;
+        }
+
+        function buildAggregateTF(monthlyKlines, monthsPerCandle) {
+            if(!monthlyKlines || monthlyKlines.length === 0) return [];
+            
+            const result = [];
+            let currentBin = null;
+
+            for(let i = 0; i < monthlyKlines.length; i++) {
+                const k = monthlyKlines[i];
+                const date = new Date(k[0]);
+                const month = date.getUTCMonth(); 
+                
+                const isStart = (month % monthsPerCandle) === 0;
+
+                if (isStart) {
+                    if (currentBin) result.push(finalizeBin(currentBin));
+                    currentBin = createNewBin(k, monthsPerCandle);
+                } else {
+                    if (!currentBin) currentBin = createNewBin(k, monthsPerCandle); 
+                    else updateBin(currentBin, k);
+                }
+            }
+            if (currentBin) result.push(finalizeBin(currentBin));
+
+            return result;
+        }
+
+        function createNewBin(k, months) {
+            const openTime = k[0];
+            const d = new Date(openTime);
+            d.setUTCMonth(d.getUTCMonth() + months); 
+            const theoreticCloseTime = d.getTime() - 1; 
+
+            return {
+                openTime: openTime,
+                open: k[1], 
+                high: parseFloat(k[2]),
+                low: parseFloat(k[3]),
+                close: k[4],
+                closeTime: theoreticCloseTime 
+            };
+        }
+
+        function updateBin(bin, k) {
+            bin.high = Math.max(bin.high, parseFloat(k[2]));
+            bin.low = Math.min(bin.low, parseFloat(k[3]));
+            bin.close = k[4];
+        }
+
+        function finalizeBin(bin) {
+            return [
+                bin.openTime,
+                bin.open,
+                bin.high.toString(),
+                bin.low.toString(),
+                bin.close,
+                0,
+                bin.closeTime 
+            ];
+        }
+
+        async function updatePriceOnly() {
+            try {
+                const res = await fetch(`${APIS.ticker}/price?symbol=${CONFIG.symbol}`);
+                const data = await res.json();
+                state.price = parseFloat(data.price);
+                document.getElementById('price-text').textContent = formatPrice(state.price);
+                
+                updatePriceLine();
+
+                checkAndUpdateKlines('d', state.klines.d);
+                checkAndUpdateKlines('w', state.klines.w);
+                checkAndUpdateKlines('m', state.klines.m);
+
+                if(state.klines.m.length > 0) {
+                    state.klines.q = buildAggregateTF(state.klines.m, 3);
+                    state.klines.s = buildAggregateTF(state.klines.m, 6);
+                    state.klines.y = buildAggregateTF(state.klines.m, 12);
+                }
+                
+                state.stats.d = calculateRegime(state.klines.d);
+                state.stats.w = calculateRegime(state.klines.w);
+                state.stats.m = calculateRegime(state.klines.m);
+                state.stats.q = calculateRegime(state.klines.q);
+                state.stats.s = calculateRegime(state.klines.s);
+                state.stats.y = calculateRegime(state.klines.y);
+
+                updateGlobalConfluence();
+                renderAllMaps();
+
+            } catch(e) { console.log('Poll skip', e); }
+        }
+
+        function renderAllMaps() {
+            if(!state.klines.d || state.klines.d.length === 0) return;
+
+            const mmD = calculateSMA(state.klines.d, 1);    
+            const mmW = calculateSMA(state.klines.d, 7);    
+            const mmM = calculateSMA(state.klines.d, 30);   
+            const mmQ = calculateSMA(state.klines.d, 90);   
+            const mmS = calculateSMA(state.klines.d, 180);  
+            const mmY = calculateSMA(state.klines.d, 365);  
+
+            if(state.klines.d.length) { updateColumnHeader('d', state.stats.d, 'DAILY', '(SMA 1D)'); renderMap('d', state.klines.d, state.stats.d, mmD, 'SMA'); }
+            if(state.klines.w.length) { updateColumnHeader('w', state.stats.w, 'WEEKLY', '(SMA 7D)'); renderMap('w', state.klines.w, state.stats.w, mmW, 'SMA'); }
+            if(state.klines.m.length) { updateColumnHeader('m', state.stats.m, 'MONTHLY', '(SMA 30D)'); renderMap('m', state.klines.m, state.stats.m, mmM, 'SMA'); }
+            if(state.klines.q.length) { updateColumnHeader('q', state.stats.q, 'QUARTER', '(SMA 90D)'); renderMap('q', state.klines.q, state.stats.q, mmQ, 'SMA'); }
+            if(state.klines.s.length) { updateColumnHeader('s', state.stats.s, 'SEMESTER', '(SMA 180D)'); renderMap('s', state.klines.s, state.stats.s, mmS, 'SMA'); }
+            if(state.klines.y.length) { updateColumnHeader('y', state.stats.y, 'YEARLY', '(SMA 365D)'); renderMap('y', state.klines.y, state.stats.y, mmY, 'SMA'); }
+        }
+
+        function calculateSMA(klines, period) {
+            if (!klines || klines.length < period) return null;
+            const slice = klines.slice(klines.length - period, klines.length);
+            const sum = slice.reduce((acc, k) => {
+                const h = parseFloat(k[2]);
+                const l = parseFloat(k[3]);
+                return acc + ((h + l) / 2); 
+            }, 0);
+            return sum / period;
+        }
+
+        function checkAndUpdateKlines(type, klines) {
+            if(!klines || klines.length === 0) return;
+            const lastK = klines[klines.length - 1];
+            let h = parseFloat(lastK[2]);
+            let l = parseFloat(lastK[3]);
+            if(state.price > h) { lastK[2] = state.price.toString(); }
+            if(state.price < l) { lastK[3] = state.price.toString(); }
+            lastK[4] = state.price.toString();
+        }
+
+        function renderMap(id, klines, stats, customMM, mmLabel) {
+            const container = document.getElementById(`world-${id}`);
+            const oldItems = container.querySelectorAll('.rsa-item, .rsa-line');
+            oldItems.forEach(el => el.remove());
+            container.style.height = `${CONFIG.virtualHeight}px`;
+
+            if(!klines || klines.length < 2) return;
+
+            const prev = klines[klines.length - 2];
+            const pH = parseFloat(prev[2]);
+            const pL = parseFloat(prev[3]);
+            const Vu = pH - pL;
+            const step = Vu * 0.125;
+            
+            const curr = klines[klines.length - 1];
+            const currOpenTime = curr[0];
+
+            if (state.touched[id].time !== currOpenTime) {
+                state.touched[id].set.clear();
+                state.touched[id].time = currOpenTime;
+            }
+            
+            const currH = parseFloat(curr[2]);
+            const currL = parseFloat(curr[3]);
+            const aH = Math.max(currH, state.price); 
+            const aL = Math.min(currL, state.price); 
+            const openPrice = parseFloat(curr[1]); 
+
+            const priceY = CONFIG.centerOffset; 
+            const pctDiffAH = ((aH - state.price) / state.price) * 100;
+            const topPosAH = CONFIG.centerOffset - (pctDiffAH * CONFIG.scale);
+            const pctDiffAL = ((aL - state.price) / state.price) * 100;
+            const topPosAL = CONFIG.centerOffset - (pctDiffAL * CONFIG.scale);
+
+            updateZone(container, 'red', topPosAH, priceY - topPosAH);
+            updateZone(container, 'green', priceY, topPosAL - priceY);
+
+            const pctDiffOpen = ((openPrice - state.price) / state.price) * 100;
+            const topPosOpen = CONFIG.centerOffset - (pctDiffOpen * CONFIG.scale);
+            const isBull = state.price >= openPrice;
+            updateBlueZone(container, isBull, priceY, topPosOpen);
+
+            createLine(container, topPosOpen, 'dashed', 'rgba(234, 179, 8, 0.7)');
+            
+            const openLabel = document.createElement('div');
+            openLabel.className = 'rsa-item';
+            openLabel.style.top = `${topPosOpen}px`;
+            openLabel.style.zIndex = '25';
+            const diffPct = ((state.price - openPrice) / openPrice) * 100;
+            const diffSign = diffPct > 0 ? '+' : '';
+            openLabel.innerHTML = `<span class="text-[9px] text-yellow-200 font-mono tracking-widest ml-1 bg-black/60 px-1 rounded border border-yellow-900/50">OPEN: ${formatPrice(openPrice)} (${diffSign}${diffPct.toFixed(2)}%)</span>`;
+            container.appendChild(openLabel);
+
+            const levels = [];
+            for(let i=1; i<=32; i++) levels.push({ p: aL + (i*step), lbl: `H${i}`, type: 'R', idx: i });
+            for(let i=1; i<=32; i++) levels.push({ p: aH - (i*step), lbl: `L${i}`, type: 'S', idx: i });
+            
+            if(customMM !== null) { levels.push({ p: customMM, lbl: mmLabel || 'SMA', type: 'EQ_MM' }); }
+            
+            const rsaEq = (aH+aL)/2;
+            levels.push({ p: rsaEq, lbl: 'RSA', type: 'EQ_RSA' });
+            levels.push({ p: aH, lbl: 'AH', type: 'ANCHOR' });
+            levels.push({ p: aL, lbl: 'AL', type: 'ANCHOR' });
+
+            const currentRadius = stats ? stats.radius : 0.01; 
+            const currentRegime = stats ? stats.regime : 'NEUTRAL';
+
+            const currentMove = Math.abs(state.price - openPrice);
+            const safeTime = Math.max(0.01, stats.timeProgress);
+            const projectedMove = currentMove / safeTime;
+            
+            const projectedHigh = openPrice + projectedMove;
+            const projectedLow = openPrice - projectedMove;
+
+            levels.forEach(lvl => {
+                if(isNaN(lvl.p)) return;
+
+                if(lvl.type === 'R') { if(aH >= lvl.p) state.touched[id].set.add(lvl.lbl); }
+                if(lvl.type === 'S') { if(aL <= lvl.p) state.touched[id].set.add(lvl.lbl); }
+
+                const isHit = state.touched[id].set.has(lvl.lbl);
+                const pctDiff = ((lvl.p - state.price) / state.price) * 100;
+                const offsetPx = pctDiff * CONFIG.scale;
+                const topPos = CONFIG.centerOffset - offsetPx;
+
+                if(topPos < 0 || topPos > CONFIG.virtualHeight) return;
+
+                let tag = '';
+                if (isHit) { tag = '<span class="tag-pill tag-hit">HIT</span>'; }
+
+                const distAbs = Math.abs(pctDiff/100);
+                const isClose = distAbs < currentRadius; 
+
+                if(lvl.type === 'R' || lvl.type === 'S') {
+                    if(!isHit) { 
+                        let isTarget = false;
+                        let isReachable = false;
+
+                        if (lvl.type === 'R' && isBull && lvl.p <= projectedHigh) isReachable = true;
+                        if (lvl.type === 'S' && !isBull && lvl.p >= projectedLow) isReachable = true;
+
+                        let nextMajorIdx = Math.ceil(lvl.idx / 4) * 4;
+                        let isNextMajorReachable = false;
+                        
+                        if (lvl.idx % 4 !== 0) {
+                            if (lvl.type === 'R') {
+                                const nextMajP = aL + (nextMajorIdx * step);
+                                if (isBull && nextMajP <= projectedHigh) isNextMajorReachable = true;
+                            } else if (lvl.type === 'S') {
+                                const nextMajP = aH - (nextMajorIdx * step);
+                                if (!isBull && nextMajP >= projectedLow) isNextMajorReachable = true;
+                            }
+                        }
+                        
+                        if (currentRegime === 'EXP') isNextMajorReachable = true;
+
+                        if(lvl.idx % 4 === 0) {
+                            if(currentRegime === 'EXP') {
+                                if (lvl.type === 'R' && isBull) isTarget = true;
+                                if (lvl.type === 'S' && !isBull) isTarget = true;
+                            } else {
+                                if (isReachable) isTarget = true;
+                            }
+
+                            if (isTarget) tag = '<span class="tag-pill tag-trg">TRG</span>';
+                            else tag = '<span class="tag-pill tag-eq">KEY</span>';
+                        
+                        } else {
+                            if (isReachable && !isNextMajorReachable) {
+                                tag = '<span class="tag-pill tag-trg-minor">mTRG</span>';
+                            } else if (currentRegime === 'CTR' && isClose) { // FIXED: Restored && isClose to prevent label flooding
+                                tag = lvl.type === 'R' ? '<span class="tag-pill tag-res">RES</span>' : '<span class="tag-pill tag-sup">SUP</span>';
+                            }
+                        }
+                    }
+                } else if (lvl.type === 'EQ_MM') {
+                    tag = '<span class="tag-pill tag-eq">MAG</span>';
+                }
+
+                if(lvl.type === 'ANCHOR') {
+                    createLine(container, topPos, 'dashed', 'rgba(255,255,255,0.5)');
+                } else if((lvl.idx % 4 === 0) && (lvl.type === 'R' || lvl.type === 'S')) {
+                    createLine(container, topPos, 'solid', 'rgba(255,255,255,0.1)');
+                }
+
+                const el = document.createElement('div');
+                el.className = 'rsa-item';
+                el.style.top = `${topPos}px`;
+                
+                let txtColor = 'text-gray-500';
+                if(lvl.type === 'R') txtColor = 'text-red-400';
+                if(lvl.type === 'S') txtColor = 'text-green-400';
+                if(lvl.type.includes('EQ')) { txtColor = 'text-blue-300 font-bold'; el.style.backgroundColor = 'rgba(59,130,246,0.1)'; }
+                if(lvl.type === 'ANCHOR') { txtColor = 'text-gray-300 font-bold'; }
+                if((lvl.idx % 4 === 0) && (lvl.type === 'R' || lvl.type === 'S')) { txtColor += ' font-bold'; }
+                
+                if(isHit) {
+                    txtColor = 'text-gray-600 line-through';
+                    el.style.opacity = '0.6';
+                }
+
+                el.innerHTML = `
+                    <span class="${txtColor} w-8">${lvl.lbl}</span>
+                    <span class="font-mono text-gray-300 ml-2 ${isHit ? 'text-gray-500' : ''}">${formatPrice(lvl.p)}</span>
+                    ${tag}
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function createLine(container, top, style, color) {
+            const line = document.createElement('div');
+            line.className = 'rsa-line';
+            line.style.top = `${top}px`;
+            line.style.borderTop = `1px ${style} ${color}`;
+            container.appendChild(line);
+        }
+
+        function updateZone(container, type, top, height) {
+            let zone = container.querySelector(`.zone-${type}`);
+            if (!zone) {
+                zone = document.createElement('div');
+                zone.className = `bias-zone zone-${type}`;
+                container.appendChild(zone);
+            }
+            if (height < 0) { top = top + height; height = Math.abs(height); }
+            zone.style.top = `${top}px`;
+            zone.style.height = `${Math.max(0, height)}px`;
+        }
+
+        function updateBlueZone(container, isBull, priceY, topPosOpen) {
+            let zone = container.querySelector(`.zone-blue`);
+            if (!zone) {
+                zone = document.createElement('div');
+                zone.classList.add('bias-zone', 'zone-blue'); 
+                container.appendChild(zone);
+            }
+            if (isBull) {
+                zone.className = 'bias-zone zone-blue zone-blue-bull';
+                zone.style.top = `${priceY}px`;
+                zone.style.height = `${Math.abs(topPosOpen - priceY)}px`;
+            } else {
+                zone.className = 'bias-zone zone-blue zone-blue-bear';
+                zone.style.top = `${topPosOpen}px`;
+                zone.style.height = `${Math.abs(priceY - topPosOpen)}px`;
+            }
+        }
+
+        function renderError(id, msg) {
+            const c = document.getElementById(`world-${id}`);
+            c.innerHTML = `<div class="absolute top-[20000px] w-full text-center text-red-500 text-xs mt-4 transform -translate-y-1/2">${msg}</div>`;
+        }
+
+        function centerMap(force) {
+            const d = document.getElementById('scroll-d');
+            if(!d) return;
+            const viewportH = d.clientHeight || 500; 
+            const target = CONFIG.centerOffset - (viewportH / 2);
+            
+            ['d','w','m','q','s','y'].forEach(id => {
+                const el = document.getElementById(`scroll-${id}`);
+                if(el) el.scrollTop = target;
+            });
+            updatePriceLine();
+        }
+
+        function updatePriceLine() {
+            const scrollers = ['scroll-d', 'scroll-w', 'scroll-m', 'scroll-q', 'scroll-s', 'scroll-y'];
+            let activeScroller = null;
+            for (const id of scrollers) {
+                const el = document.getElementById(id);
+                if (el) { activeScroller = el; break; }
+            }
+            if(!activeScroller) return;
+            
+            // --- FIX ALIGNMENT ISSUE ---
+            // Calculate the offset of the scroll container relative to the main parent.
+            // This accounts for the Column Header height which pushes the content down.
+            const lineElement = document.getElementById('cp-line');
+            if (!lineElement) return;
+            
+            const parent = lineElement.parentElement; 
+            const parentRect = parent.getBoundingClientRect();
+            const scrollerRect = activeScroller.getBoundingClientRect();
+            
+            // precise offset from top of black box to top of scroll area
+            const headerOffset = scrollerRect.top - parentRect.top; 
+
+            const scrollTop = activeScroller.scrollTop;
+            
+            // Virtual Y (20000) minus Scroll = Position inside Scroll Area
+            // PLUS headerOffset to position it correctly relative to the Parent Container
+            const viewportY = (CONFIG.centerOffset - scrollTop) + headerOffset;
+            
+            const label = document.getElementById('cp-label');
+            if(lineElement) lineElement.style.top = `${viewportY}px`;
+            if(label) label.style.top = `${viewportY}px`;
+        }
+
+        const scrolls = ['scroll-d', 'scroll-w', 'scroll-m', 'scroll-q', 'scroll-s', 'scroll-y'];
+        scrolls.forEach(id => {
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.addEventListener('scroll', () => {
+                const top = el.scrollTop;
+                scrolls.forEach(otherId => {
+                    if(otherId !== id) {
+                        const other = document.getElementById(otherId);
+                        if(other) other.scrollTop = top;
+                    }
+                });
+                requestAnimationFrame(updatePriceLine);
+            });
+        });
+        
+        window.addEventListener('resize', () => {
+             requestAnimationFrame(updatePriceLine);
+             centerMap(false);
+        });
+
+        function showLoading(show) { 
+            const overlay = document.getElementById('loading-screen');
+            overlay.classList.toggle('hidden', !show);
+            const status = document.getElementById('status-indicator');
+            if(show) {
+                status.classList.remove('text-gray-400', 'bg-gray-800', 'status-glow');
+                status.classList.add('text-yellow-400', 'bg-yellow-900/30');
+                status.textContent = 'Loading...';
+            }
+        }
+
+        function updateStatus(msg) { 
+            const status = document.getElementById('status-indicator');
+            status.textContent = msg;
+            
+            if (msg === 'Live') {
+                status.classList.remove('text-gray-400', 'bg-gray-800', 'text-yellow-400', 'bg-yellow-900/30');
+                status.classList.add('text-green-400', 'bg-green-900/30', 'status-glow', 'border-green-600');
+            } else {
+                status.classList.remove('status-glow', 'border-green-600', 'text-green-400', 'bg-green-900/30');
+                status.classList.add('text-gray-400', 'bg-gray-800');
+            }
+        }
+        
+        function formatPrice(p) { return p < 10 ? p.toFixed(4) : p.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+        
+        // --- NEW FUNCTION: Fetch Top 100 Coins ---
+        async function fetchTopCoins() {
+            try {
+                const res = await fetch(`${APIS.ticker}/ticker/24hr`);
+                if (!res.ok) return; // Fail silently, user will type manually
+                const data = await res.json();
+                
+                // Filter USDT pairs, sort by volume
+                const top100 = data
+                    .filter(t => t.symbol.endsWith('USDT'))
+                    .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                    .slice(0, 100);
+                
+                const dataList = document.getElementById('tickers');
+                dataList.innerHTML = '';
+                top100.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.symbol;
+                    dataList.appendChild(opt);
+                });
+            } catch (e) {
+                console.log('Failed to fetch top coins', e);
+            }
+        }
+
+        // Initialize
+        loadData();
+        fetchTopCoins();
+
+    </script>
+</body>
+</html>
