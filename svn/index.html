@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSA Confluence (Live Tick Stream)</title>
+    <title>RSA Confluence (Live Tick Stream + Flow + Target)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,6 +123,139 @@
         /* Tick Flash Animation */
         .flash-green { color: #4ade80 !important; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
         .flash-red { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.5); }
+
+        /* --- NEW: FOOTPRINT HUD STYLES --- */
+        #footprint-hud {
+            position: absolute;
+            left: 0; 
+            right: 0;
+            height: 0px; /* Position reference only */
+            z-index: 35; /* Above lines, below headers */
+            pointer-events: none;
+            transition: top 0.05s linear;
+        }
+
+        .fp-container {
+            position: absolute;
+            left: 60px; /* Offset from label */
+            top: -50px; /* Center vertically relative to line */
+            width: 200px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.9;
+        }
+
+        .fp-row {
+            display: flex;
+            align-items: center;
+            height: 6px;
+            margin-bottom: 1px;
+        }
+
+        .fp-bar-buy { background: #4ade80; height: 4px; border-radius: 0 2px 2px 0; box-shadow: 0 0 4px rgba(74, 222, 128, 0.4); }
+        .fp-bar-sell { background: #f87171; height: 4px; border-radius: 2px 0 0 2px; margin-left: auto; box-shadow: 0 0 4px rgba(248, 113, 113, 0.4); }
+        
+        .fp-center-line { width: 1px; height: 100%; background: rgba(255,255,255,0.1); margin: 0 2px; }
+
+        .delta-meter {
+            position: absolute;
+            left: 60px; 
+            bottom: -20px;
+            font-size: 8px; /* Slightly smaller */
+            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 4px;
+            border-radius: 2px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+
+        /* NEW: PROJECTION TARGET */
+        .fp-target-box {
+            position: absolute;
+            left: 270px; /* Right of bars */
+            top: -8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: none;
+        }
+        
+        .fp-target-pill {
+            display: flex;
+            align-items: center;
+            gap: 4px; /* Reduced gap */
+            padding: 2px 6px; /* Reduced padding */
+            border-radius: 3px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #374151;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .fp-arrow { font-size: 10px; margin-right: -1px; }
+        .fp-target-price { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; letter-spacing: -0.5px; }
+        .fp-strength { font-size: 8px; font-weight: 700; padding: 1px 3px; border-radius: 2px; color: #111827; }
+
+        /* --- NEW: MICRO-STRUCTURE PULSE (ABUSE DETECTOR) --- */
+        .fp-micro-box {
+            position: absolute;
+            left: 270px;
+            top: 28px; 
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            pointer-events: none;
+        }
+        
+        .fp-pulse-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fp-pulse-pill {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid #4b5563;
+            font-size: 8px; /* Smaller font */
+            font-weight: 700;
+            color: #9ca3af;
+        }
+        
+        .pulse-active { animation: pulseRed 1s infinite; border-color: #f87171; color: #fecaca; }
+        .pulse-active-bull { animation: pulseGreen 1s infinite; border-color: #4ade80; color: #bbf7d0; } /* NEW GREEN */
+        .pulse-absorb { animation: pulseOrange 2s infinite; border-color: #fbbf24; color: #fef3c7; }
+        
+        /* NEW: HISTORY TIMELINE (BARCODE) */
+        .mm-timeline {
+            display: flex;
+            gap: 1px;
+            height: 4px;
+            width: 100px;
+            margin-top: 2px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .mm-tick { flex: 1; height: 100%; opacity: 0.8; }
+        .mm-tick-s { background-color: #4b5563; } /* Stalking (Gray) */
+        .mm-tick-h { background-color: #fbbf24; box-shadow: 0 0 2px #fbbf24; } /* Hunting (Yellow) */
+        
+        /* SPLIT RUNNING COLORS */
+        .mm-tick-r-bear { background-color: #f87171; box-shadow: 0 0 2px #f87171; } /* Bear Running (Red) */
+        .mm-tick-r-bull { background-color: #4ade80; box-shadow: 0 0 2px #4ade80; } /* Bull Running (Green) */
+
+        @keyframes pulseRed { 0% { background: rgba(185, 28, 28, 0.2); } 50% { background: rgba(185, 28, 28, 0.6); } 100% { background: rgba(185, 28, 28, 0.2); } }
+        @keyframes pulseOrange { 0% { background: rgba(180, 83, 9, 0.2); } 50% { background: rgba(180, 83, 9, 0.5); } 100% { background: rgba(180, 83, 9, 0.2); } }
+        @keyframes pulseGreen { 0% { background: rgba(22, 163, 74, 0.2); } 50% { background: rgba(22, 163, 74, 0.6); } 100% { background: rgba(22, 163, 74, 0.2); } }
 
     </style>
 </head>
@@ -252,9 +385,43 @@
                     <div id="scroll-y" class="map-scroll map-container flex-grow"><div id="world-y" class="relative w-full"></div></div>
                 </div>
 
-                <!-- Center Line -->
-                <div id="cp-line" class="absolute left-0 right-0 h-[1px] bg-yellow-500 z-30 pointer-events-none opacity-80 shadow-[0_0_8px_#eab308] transition-all duration-75" style="top: 0px;"></div>
+                <!-- Center Line & HUD -->
+                <div id="cp-line" class="absolute left-0 right-0 h-[1px] bg-yellow-500 z-30 pointer-events-none opacity-80 shadow-[0_0_8px_eab308] transition-all duration-75" style="top: 0px;"></div>
                 <div id="cp-label" class="absolute left-2 -translate-y-1/2 bg-yellow-900/90 text-yellow-200 text-[9px] px-2 py-0.5 rounded z-30 border border-yellow-500/50 font-bold transition-all duration-75" style="top: 0px;">LIVE</div>
+
+                <!-- NEW: Footprint HUD Container attached to price line logic -->
+                <div id="footprint-hud" style="top: 0px;">
+                    <div id="fp-visuals" class="fp-container">
+                        <!-- Bars injected via JS -->
+                    </div>
+                    <div id="fp-delta" class="delta-meter text-gray-400">WAITING FLOW...</div>
+                    
+                    <!-- NEW: Price Target Box -->
+                    <div id="fp-target" class="fp-target-box hidden">
+                        <div class="text-[8px] text-gray-400 mb-0.5 tracking-widest uppercase font-bold">Flow Target (1m)</div>
+                        <div id="fp-target-pill" class="fp-target-pill">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+
+                    <!-- NEW: Micro-Structure Abuse Detector -->
+                    <div id="fp-micro" class="fp-micro-box hidden">
+                        <div class="fp-pulse-row">
+                            <div id="fp-speed-pill" class="fp-pulse-pill" title="Tick Velocity (Speed)">
+                                <span class="text-[8px]">SPD</span>
+                                <span id="fp-speed-val" class="font-mono">0/s</span>
+                            </div>
+                            <div id="fp-status-pill" class="fp-pulse-pill" title="Micro-Structure Status">
+                                <span id="fp-status-val">STALKING</span>
+                            </div>
+                        </div>
+                        <!-- NEW: BEHAVIOR TIMELINE (60s) -->
+                        <div id="mm-timeline" class="mm-timeline" title="MM Behavior History (60s)">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
         </div>
@@ -295,6 +462,14 @@
                 q: { set: new Set(), time: 0 }, 
                 s: { set: new Set(), time: 0 }, 
                 y: { set: new Set(), time: 0 }
+            },
+            flow: [],
+            // NEW: Micro-Structure Abuse Metrics
+            micro: {
+                ticks: 0,
+                startPrice: 0,
+                startTime: 0,
+                history: [] // Stores 'S', 'H', 'Rb', 'Rs' codes for last 60s
             }
         };
         
@@ -311,13 +486,15 @@
             
             // Cleanup existing
             if(priceSocket) { 
-                // CRITICAL FIX: Remove onclose listener to prevent false "Disconnected" status
-                // when switching tickers manually.
                 priceSocket.onclose = null; 
                 priceSocket.close(); 
                 priceSocket = null; 
             }
             if(state.intervals.poll) clearInterval(state.intervals.poll);
+            if(state.intervals.micro) clearInterval(state.intervals.micro); // Clean up micro timer
+
+            state.flow = []; // Reset flow buffer
+            state.micro.history = []; // Reset history
 
             const initTouched = () => ({ set: new Set(), time: 0 });
             state.touched = { d: initTouched(), w: initTouched(), m: initTouched(), q: initTouched(), s: initTouched(), y: initTouched() };
@@ -383,6 +560,11 @@
                 // But don't fetch HTTP price anymore, use state.price from WS
                 state.intervals.poll = setInterval(syncStructure, 1000);
 
+                // Start Micro-Structure Pulse (1s interval)
+                state.intervals.micro = setInterval(updateMicroStructure, 1000);
+                state.micro.startTime = Date.now();
+                state.micro.startPrice = state.price;
+
             } catch(e) {
                 console.error(e);
                 showLoading(false);
@@ -408,13 +590,28 @@
             
             priceSocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                const newPrice = parseFloat(data.p); // 'p' is price in trade stream
+                const newPrice = parseFloat(data.p);
+                const qty = parseFloat(data.q);
+                const time = data.T; // Trade time
+                const isBuyerMaker = data.m; // true = Sell Aggression, false = Buy Aggression
                 
-                // 1. Update State
+                // 1. Update Price State
                 state.prevPrice = state.price;
                 state.price = newPrice;
+
+                // 2. Add to Flow Buffer
+                state.flow.push({ p: newPrice, q: qty, t: time, m: isBuyerMaker });
                 
-                // 2. High Frequency Visual Updates (Lightweight)
+                // 3. Increment Micro Tick Counter for Speed calculation
+                state.micro.ticks++;
+
+                // 4. Prune old trades (> 60s)
+                const cutoff = Date.now() - 60000;
+                while(state.flow.length > 0 && state.flow[0].t < cutoff) {
+                    state.flow.shift();
+                }
+                
+                // 5. High Frequency Visual Updates (Lightweight)
                 updatePriceVisuals();
             };
             
@@ -448,6 +645,221 @@
 
             // B. Update Line Position Immediately
             updatePriceLine();
+
+            // C. Render Footprint HUD (New)
+            renderFootprint();
+        }
+
+        // --- NEW: MICRO-STRUCTURE ABUSE DETECTION ---
+        function updateMicroStructure() {
+            const el = document.getElementById('fp-micro');
+            const speedEl = document.getElementById('fp-speed-val');
+            const statusEl = document.getElementById('fp-status-val');
+            const statusPill = document.getElementById('fp-status-pill');
+            const timelineEl = document.getElementById('mm-timeline');
+            
+            if (!el) return;
+
+            // 1. Calculate Tick Velocity (Ticks Per Second)
+            const tps = state.micro.ticks;
+            speedEl.textContent = `${tps}/s`;
+            
+            // 2. Calculate Efficiency (Price Move / Effort)
+            // If Price Move is Low but TPS is High -> ABUSE (Absorption)
+            const priceDiff = state.price - state.micro.startPrice; // Signed Difference for direction
+            const priceMove = Math.abs(priceDiff);
+            const volatility = state.price * 0.0001; // 0.01% standard volatility
+            
+            let status = 'STALKING'; // Default: Quiet
+            let statusCode = 'S'; // Stalking
+            let colorClass = 'text-gray-400 border-gray-600';
+            let animation = '';
+
+            // --- ABUSE LOGIC "Just Below Detection" ---
+            
+            // Case A: High Speed, Low Movement (ABSORPTION / ABUSE)
+            // Ticks > 15/s (Arbitrary high for example) but Price moved < 0.01%
+            if (tps > 8 && priceMove < volatility) {
+                status = 'HUNTING'; // Abuse Detected
+                statusCode = 'H';
+                colorClass = 'text-yellow-200 border-yellow-500 bg-yellow-900/50';
+                animation = 'pulse-absorb';
+            } 
+            // Case B: High Speed, High Movement (BREAKOUT)
+            else if (tps > 8 && priceMove >= volatility) {
+                if (priceDiff > 0) {
+                    // BULL RUNNING
+                    status = 'RUNNING'; 
+                    statusCode = 'Rb'; // Running Bull
+                    colorClass = 'text-green-200 border-green-500 bg-green-900/50'; // Green Style
+                    animation = 'pulse-active-bull'; // Green Pulse
+                } else {
+                    // BEAR RUNNING
+                    status = 'RUNNING'; 
+                    statusCode = 'Rs'; // Running Sell/Bear
+                    colorClass = 'text-red-200 border-red-500 bg-red-900/50'; // Red Style
+                    animation = 'pulse-active'; // Red Pulse
+                }
+            }
+            // Case C: Low Speed (Noise)
+            else {
+                status = 'STALKING';
+                statusCode = 'S';
+                colorClass = 'text-gray-400 border-gray-600';
+                animation = '';
+            }
+
+            // Render Status
+            el.classList.remove('hidden');
+            statusEl.textContent = status;
+            statusPill.className = `fp-pulse-pill ${colorClass} ${animation}`;
+
+            // --- RENDER HISTORY TIMELINE (NEW) ---
+            // Push to history
+            state.micro.history.push(statusCode);
+            if(state.micro.history.length > 60) state.micro.history.shift(); // Keep last 60s
+
+            // Render Barcode
+            let timelineHTML = '';
+            state.micro.history.forEach(code => {
+                let tickClass = 'mm-tick-s';
+                if(code === 'H') tickClass = 'mm-tick-h';
+                if(code === 'Rs') tickClass = 'mm-tick-r-bear'; // Red
+                if(code === 'Rb') tickClass = 'mm-tick-r-bull'; // Green
+                timelineHTML += `<div class="mm-tick ${tickClass}"></div>`;
+            });
+            timelineEl.innerHTML = timelineHTML;
+
+            // Reset Micro Counters for next second
+            state.micro.ticks = 0;
+            state.micro.startPrice = state.price;
+        }
+
+
+        // --- NEW: FOOTPRINT RENDERER & PREDICTION ---
+        function renderFootprint() {
+            const container = document.getElementById('fp-visuals');
+            const deltaEl = document.getElementById('fp-delta');
+            const targetContainer = document.getElementById('fp-target');
+            const targetPill = document.getElementById('fp-target-pill');
+            
+            if(!container) return;
+
+            // Bucket Logic: Group trades by price level relative to current price
+            // We want to see +/- 0.05% range around price
+            const bucketSize = state.price * 0.0001; // 0.01% buckets
+            const buckets = {};
+            let maxVol = 0;
+            let netDelta = 0;
+            let totalBuy = 0;
+            let totalSell = 0;
+
+            state.flow.forEach(tx => {
+                // Round price to nearest bucket
+                const bPrice = Math.round(tx.p / bucketSize) * bucketSize;
+                const key = bPrice.toFixed(2);
+                
+                if(!buckets[key]) buckets[key] = { buy: 0, sell: 0 };
+                
+                if (tx.m) { 
+                    // Maker was buyer -> Taker was SELLER
+                    buckets[key].sell += tx.q;
+                    totalSell += tx.q;
+                    netDelta -= tx.q;
+                } else {
+                    // Maker was seller -> Taker was BUYER
+                    buckets[key].buy += tx.q;
+                    totalBuy += tx.q;
+                    netDelta += tx.q;
+                }
+                
+                const vol = buckets[key].buy + buckets[key].sell;
+                if(vol > maxVol) maxVol = vol;
+            });
+
+            const totalVol = totalBuy + totalSell;
+
+            // Update Delta Label
+            if(state.flow.length === 0 || totalVol === 0) {
+                deltaEl.textContent = "WAITING FLOW...";
+                deltaEl.className = "delta-meter text-gray-500";
+                container.innerHTML = '';
+                targetContainer.classList.add('hidden');
+                return;
+            } else {
+                targetContainer.classList.remove('hidden');
+            }
+
+            const deltaSign = netDelta > 0 ? '+' : '';
+            deltaEl.innerHTML = `FLOW(60s): <span class="${netDelta > 0 ? 'text-green-400' : 'text-red-400'}">${deltaSign}${netDelta.toFixed(2)}</span>`;
+            
+            // --- NEW: MOMENTUM TARGET PROJECTION ---
+            // Logic: 
+            // 1. Calculate Imbalance % (Abs Delta / Total Vol)
+            // 2. Volatility Base = 0.05% (Scalp)
+            // 3. Move = Imbalance * Volatility
+            
+            const imbalancePct = Math.abs(netDelta) / totalVol; // 0.0 to 1.0
+            const strength = Math.round(imbalancePct * 100);
+            
+            // Dynamic volatility range based on strength (Max 0.1% move for extreme imbalance)
+            const projectedMovePct = 0.0005 + (0.0005 * imbalancePct); 
+            const priceMove = state.price * projectedMovePct;
+            
+            let targetPrice = 0;
+            let arrow = '';
+            let colorClass = '';
+            let strengthBg = '';
+            let label = '';
+
+            if (netDelta > 0) {
+                targetPrice = state.price + priceMove;
+                arrow = '▲';
+                colorClass = 'text-green-400';
+                strengthBg = 'bg-green-400';
+                label = 'BULL';
+            } else {
+                targetPrice = state.price - priceMove;
+                arrow = '▼';
+                colorClass = 'text-red-400';
+                strengthBg = 'bg-red-400';
+                label = 'BEAR';
+            }
+
+            targetPill.innerHTML = `
+                <span class="fp-arrow ${colorClass}">${arrow}</span>
+                <span class="fp-target-price ${colorClass}">${formatPrice(targetPrice)}</span>
+                <span class="fp-strength ${strengthBg}">${label} ${strength}%</span>
+            `;
+
+            // --- END NEW LOGIC ---
+
+            // Generate HTML for bars
+            const keys = Object.keys(buckets).sort((a,b) => parseFloat(b) - parseFloat(a));
+            const relevantKeys = keys.filter(k => Math.abs(parseFloat(k) - state.price) < (state.price * 0.002));
+
+            let html = '';
+            relevantKeys.forEach(k => {
+                const b = buckets[k];
+                const buyW = (b.buy / maxVol) * 80; // Max 80px width
+                const sellW = (b.sell / maxVol) * 80;
+                
+                const isCurrent = Math.abs(parseFloat(k) - state.price) < bucketSize;
+                const opacity = isCurrent ? '1.0' : '0.6';
+
+                html += `
+                    <div class="fp-row" style="opacity: ${opacity}">
+                        <div style="flex:1; display:flex;">
+                            <div class="fp-bar-sell" style="width: ${sellW}px;"></div>
+                        </div>
+                        <div class="fp-center-line"></div>
+                        <div style="flex:1; display:flex;">
+                            <div class="fp-bar-buy" style="width: ${buyW}px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
         // --- CALCULATION LOGIC ---
@@ -990,6 +1402,7 @@
             
             // Calculate the offset of the scroll container relative to the main parent.
             const lineElement = document.getElementById('cp-line');
+            const hudElement = document.getElementById('footprint-hud');
             if (!lineElement) return;
             
             const parent = lineElement.parentElement; 
@@ -1004,6 +1417,9 @@
             const label = document.getElementById('cp-label');
             if(lineElement) lineElement.style.top = `${viewportY}px`;
             if(label) label.style.top = `${viewportY}px`;
+            
+            // Sync HUD position with Price Line
+            if(hudElement) hudElement.style.top = `${viewportY}px`;
         }
 
         const scrolls = ['scroll-d', 'scroll-w', 'scroll-m', 'scroll-q', 'scroll-s', 'scroll-y'];
