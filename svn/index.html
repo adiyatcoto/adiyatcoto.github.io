@@ -495,6 +495,13 @@
 
             state.flow = []; // Reset flow buffer
             state.micro.history = []; // Reset history
+            
+            // Force clear visual container to prevent ghosting
+            const fpContainer = document.getElementById('fp-visuals');
+            if(fpContainer) fpContainer.innerHTML = '';
+            const deltaEl = document.getElementById('fp-delta');
+            if(deltaEl) deltaEl.textContent = "WAITING FLOW...";
+
 
             const initTouched = () => ({ set: new Set(), time: 0 });
             state.touched = { d: initTouched(), w: initTouched(), m: initTouched(), q: initTouched(), s: initTouched(), y: initTouched() };
@@ -757,7 +764,11 @@
             state.flow.forEach(tx => {
                 // Round price to nearest bucket
                 const bPrice = Math.round(tx.p / bucketSize) * bucketSize;
-                const key = bPrice.toFixed(2);
+                
+                // --- FIX: USE HIGHER PRECISION FOR KEYS ---
+                // Previously: toFixed(2) caused collapse on low-value coins (XRP, ADA)
+                // Now: toFixed(5) handles sub-penny assets correctly
+                const key = bPrice.toFixed(5);
                 
                 if(!buckets[key]) buckets[key] = { buy: 0, sell: 0 };
                 
