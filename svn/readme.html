@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Confluence: Master Technical Specification</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="RSA Confluence: Master Technical Specification">
+    <meta name="description" content="An advanced algorithmic trading tool featuring real-time market structure forensics, probabilistic AI, and dynamic visualization systems.">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rsa-confluence.vercel.app/"> <!-- Ganti dengan URL asli Anda nanti -->
+    <meta property="og:title" content="RSA Confluence: Master Technical Specification">
+    <meta property="og:description" content="An advanced algorithmic trading tool featuring real-time market structure forensics, probabilistic AI, and dynamic visualization systems.">
+    <!-- Placeholder Image yang Elegan (Gelap & Profesional) -->
+    <meta property="og:image" content="https://placehold.co/1200x630/0f172a/ffffff?text=RSA+CONFLUENCE%0ATechnical+Specification+v10.0">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://rsa-confluence.vercel.app/">
+    <meta property="twitter:title" content="RSA Confluence: Master Technical Specification">
+    <meta property="twitter:description" content="An advanced algorithmic trading tool featuring real-time market structure forensics, probabilistic AI, and dynamic visualization systems.">
+    <meta property="twitter:image" content="https://placehold.co/1200x630/0f172a/ffffff?text=RSA+CONFLUENCE%0ATechnical+Specification+v10.0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        paper: {
+                            bg: '#fdfbf7',     
+                            card: '#ffffff',   
+                            border: '#e2e8f0', 
+                        },
+                        ink: {
+                            900: '#0f172a',    
+                            600: '#475569',    
+                            400: '#94a3b8',    
+                        },
+                    },
+                    boxShadow: {
+                        'paper': '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06)',
+                        'lifted': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Mermaid JS -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                darkMode: false,
+                background: '#ffffff',
+                primaryColor: '#f8fafc',     
+                primaryTextColor: '#0f172a', 
+                primaryBorderColor: '#cbd5e1', 
+                lineColor: '#475569',        
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#ffffff',
+                fontFamily: 'Inter'
+            },
+            flowchart: { curve: 'linear' } 
+        });
+    </script>
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            background-color: #fdfbf7; 
+            color: #1e293b;
+            line-height: 1.7;
+        }
+
+        .paper-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .paper-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #94a3b8;
+        }
+        
+        .diagram-container {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .content-container {
+            padding: 1.5rem;
+        }
+
+        .formula-box {
+            background: #f8fafc; 
+            border-left: 3px solid #0f172a; 
+            padding: 1rem 1.5rem;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1em;
+            margin: 1rem 0;
+        }
+
+        .classic-table th {
+            border-bottom: 2px solid #0f172a;
+            font-family: 'Playfair Display', serif;
+            color: #0f172a;
+            letter-spacing: 0.05em;
+        }
+        .classic-table td { border-bottom: 1px solid #e2e8f0; }
+        .classic-table tr:last-child td { border-bottom: 1px solid #0f172a; }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.85em;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 0.5rem;
+        }
+        .section-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.25rem; color: #0f172a; }
+        .section-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.875rem; color: #0f172a; }
+
+        .logic-title { font-family: 'Playfair Display', serif; font-weight: 700; color: #1e293b; display: block; margin-bottom: 0.5rem; }
+        
+        .tag-pill-demo { font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; display: inline-block; text-transform: uppercase; }
+        
+        /* Logic Step Styles */
+        .logic-step {
+            border-left: 1px solid #cbd5e1;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .logic-step:last-child { margin-bottom: 0; }
+        
+        /* Section Divider */
+        .phase-divider {
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .phase-divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        .phase-label {
+            background: #fdfbf7;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 10;
+            color: #94a3b8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-16 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-24 text-center border-b-4 border-double border-slate-900 pb-12">
+        <div class="inline-block mb-4 px-3 py-1 bg-slate-900 text-white text-[10px] font-mono tracking-[0.2em] uppercase">
+            Official Documentation
+        </div>
+        <h1 class="text-6xl md:text-7xl font-serif font-bold text-slate-900 mb-4 tracking-tight">
+            RSA Confluence.
+        </h1>
+        <p class="text-xl font-serif italic text-slate-600 max-w-2xl mx-auto">
+            A comprehensive technical specification covering algorithmic market structure analysis, probabilistic logic, and real-time visualization systems.
+        </p>
+    </header>
+
+    <!-- PHASE 1: FOUNDATION -->
+    <div class="phase-divider"><span class="phase-label">Phase I: Foundation</span></div>
+
+    <!-- 01. SYSTEM ARCHITECTURE -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">01.</span>
+            <h2 class="section-title">High-Level Architecture</h2>
+        </div>
+        
+        <div class="paper-card">
+            <div class="diagram-container">
+                <div class="mermaid">
+                flowchart LR
+                    subgraph Data_Layer ["Binance API Layer"]
+                        A["REST API"] -->|"Historical Data"| B("Init State")
+                        C["WebSocket"] -->|"Live Stream"| D("Real-time Processor")
+                    end
+
+                    subgraph Logic_Layer ["Core Logic Engine"]
+                        B --> E{"Regime Physics"}
+                        D --> G["Micro-Structure"]
+                        D --> H["Footprint & Profile"]
+                        E --> F["Confluence Engine"]
+                        F --> I["Synthesis Engine"]
+                        G --> I
+                    end
+
+                    subgraph UI_Layer ["Visualization Layer"]
+                        E -.-> J["Map Grid Render"]
+                        F -.-> K["HUD Alignment"]
+                        G -.-> L["Seismograph Canvas"]
+                        I -.-> N["AI Narrative Panel"]
+                    end
+
+                    style Data_Layer fill:#f8fafc,stroke:#334155,stroke-dasharray: 5 5
+                    style Logic_Layer fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+                    style UI_Layer fill:#f0fdf4,stroke:#16a34a
+                </div>
+            </div>
+            <div class="content-container bg-slate-50 border-t border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-slate-700">
+                    <div>
+                        <strong class="block text-slate-900 mb-1">Unidirectional Data Flow</strong>
+                        <p>Data flows strictly from left to right. The UI layer never modifies the Logic Layer directly; it only renders the current <span class="code-block">state</span> object. This ensures data integrity and prevents race conditions.</p>
+                    </div>
+                    <div>
+                        <strong class="block text-slate-900 mb-1">Latency Constraints</strong>
+                        <p>The system is designed for a &lt;50ms loop. WebSocket ticks are buffered and processed in chunks every 1000ms for heavy logic, while visual updates (Price Line) run at 60Hz (16ms) via <span class="code-block">requestAnimationFrame</span>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02. INITIALIZATION & DISCOVERY -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">02.</span>
+            <h2 class="section-title">Initialization & Asset Discovery</h2>
+        </div>
+
+        <div class="paper-card">
+            <div class="diagram-container">
+                <div class="mermaid">
+                flowchart TD
+                    Start(("App Start")) --> FetchTickers["Fetch All Tickers (API)"]
+                    FetchTickers --> Filter["Filter: Symbol EndsWith 'USDT'"]
+                    Filter --> Sort["Sort By: QuoteVolume (Liquidity)"]
+                    Sort --> Slice["Slice: Top 100 Coins"]
+                    Slice --> Populate["Populate Datalist UI"]
+                    Populate --> AutoLoad["Auto-Load Default (BTCUSDT)"]
+                    
+                    AutoLoad --> FetchKlines["Fetch Historical Klines"]
+                    FetchKlines --> CalcRegime["Calculate Regime & Grid"]
+                    CalcRegime --> StartStream["Connect WebSocket"]
+                    
+                    style Sort fill:#fef9c3,stroke:#ca8a04
+                    style StartStream fill:#dcfce7,stroke:#16a34a
+                </div>
+            </div>
+            <div class="content-container">
+                <p class="text-sm text-slate-600">
+                    The <strong>Asset Discovery Protocol</strong> ensures the system only tracks high-liquidity assets. It fetches the entire market, filters for USDT pairs, and sorts by 24h Volume to present the top 100 "Valid" trading pairs to the user automatically.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03. FORENSIC STATE MANAGEMENT -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">03.</span>
+            <h2 class="section-title">Forensic State Architecture</h2>
+        </div>
+
+        <!-- 3.1 Data Pipeline -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="paper-card p-6">
+                <span class="logic-title">Data Pipeline Flow</span>
+                <div class="diagram-container">
+                    <div class="mermaid">
+                    sequenceDiagram
+                        participant WS as WebSocket
+                        participant Buffer as Circular Buffer
+                        participant Engine as Logic Engine
+                        participant UI as DOM/Canvas
+                        
+                        WS->>Buffer: Push Raw Tick (Price, Vol)
+                        Buffer->>Buffer: Prune Old Data (>60s)
+                        
+                        loop Every 1000ms
+                            Engine->>Buffer: Fetch Aggregates (TPS, Delta)
+                            Engine->>Engine: Run Classification (Hunt/Run)
+                            Engine->>UI: Update Stats & Charts
+                        end
+                        
+                        loop Every 60Hz (RAF)
+                            UI->>UI: Render Seismograph
+                            UI->>UI: Update Price Line
+                        end
+                    </div>
+                </div>
+            </div>
+
+            <div class="paper-card p-6">
+                <span class="logic-title">Memory & State Management</span>
+                <p class="text-sm text-slate-600 mb-4">
+                    The <span class="code-block">state</span> object acts as the brain, managing raw streams and derived intelligence.
+                </p>
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-3 border border-slate-200 rounded">
+                        <span class="text-xs font-bold uppercase text-slate-500">Flow Buffer</span>
+                        <p class="text-xs font-mono text-slate-700 mt-1">state.flow[]</p>
+                        <p class="text-xs text-slate-600 mt-1">A rolling buffer storing exactly 60 seconds of trades. Old trades are pruned (<span class="code-block">shift()</span>) to prevent memory leaks. This allows for precise "Last 60s" analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.2 The Data Refinery -->
+        <div class="paper-card p-6">
+            <span class="logic-title">The Timeframe Synthesizer (Aggregation Loop)</span>
+            <p class="text-sm text-slate-600 mb-4">
+                How the script creates synthetic timeframes (Quarterly/Yearly) from limited Monthly data.
+            </p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                flowchart LR
+                    Start["Raw Monthly Klines"] --> Init["Set Bin Size (e.g., 3 for Q)"]
+                    Init --> Loop["Loop Monthly Data"]
+                    
+                    Loop --> CheckMod{"Index % Bin == 0?"}
+                    
+                    CheckMod -- "Yes (Start New)" --> NewBin["Create New Bin"]
+                    CheckMod -- "No (Merge)" --> MergeBin["Update Bin High/Low"]
+                    
+                    NewBin --> Store["Push Prev Bin to Result"]
+                    MergeBin --> Continue["Continue Loop"]
+                    Store --> Continue
+                    
+                    Continue --> End["Final Synthetic Klines"]
+                    
+                    style Loop fill:#e0f2fe,stroke:#0284c7
+                    style NewBin fill:#dcfce7,stroke:#16a34a
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHASE 2: THE LOGIC ENGINE -->
+    <div class="phase-divider"><span class="phase-label">Phase II: The Logic Engine</span></div>
+
+    <!-- 04. THE TACTICIAN (Micro-Forensics) -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">04.</span>
+            <h2 class="section-title">The Tactician (Micro-Forensics)</h2>
+        </div>
+
+        <p class="text-slate-600 mb-8 max-w-3xl font-serif italic">
+            This module processes raw ticks to classify Market Maker intent. It distinguishes between noise, traps (hunting), and genuine momentum (running).
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Visual Flow -->
+            <div class="lg:col-span-2 paper-card">
+                <div class="diagram-container">
+                    <div class="mermaid">
+                    flowchart TD
+                        Start(("New Tick")) --> CalcSpeed{"Speed > 5 TPS?"}
+                        
+                        CalcSpeed -- "No" --> Stalking["STALKING (Idle)"]
+                        CalcSpeed -- "Yes" --> CalcVol{"Price Move < Threshold?"}
+                        
+                        CalcVol -- "Yes" --> Hunting["HUNTING (Trap)"]
+                        CalcVol -- "No" --> CalcDelta{"Delta Divergence?"}
+                        
+                        CalcDelta -- "Price Up + Net Sell" --> AbsBull["ABSORPTION (Bull)"]
+                        CalcDelta -- "Price Down + Net Buy" --> AbsBear["ABSORPTION (Bear)"]
+                        
+                        CalcDelta -- "Sync Direction" --> Run["RUNNING (Momentum)"]
+
+                        style Hunting fill:#fef9c3,stroke:#d97706
+                        style AbsBull fill:#f3e8ff,stroke:#7c3aed
+                        style AbsBear fill:#f3e8ff,stroke:#7c3aed
+                        style Run fill:#dcfce7,stroke:#16a34a
+                        style Stalking fill:#f1f5f9,stroke:#64748b
+                    </div>
+                </div>
+                <!-- Detailed Descriptions -->
+                <div class="content-container">
+                    <div class="space-y-6">
+                        <div class="logic-step">
+                            <h5 class="font-serif font-bold text-slate-900">1. STALKING (Idle State)</h5>
+                            <p class="text-sm text-slate-600 mt-1">
+                                <span class="code-block">TPS ≤ 5</span>. Market is dormant. The algorithmic noise filter is active to prevent false signals during low-liquidity periods.
+                            </p>
+                        </div>
+                        <div class="logic-step">
+                            <h5 class="font-serif font-bold text-slate-900">2. HUNTING (Liquidity Trap)</h5>
+                            <p class="text-sm text-slate-600 mt-1">
+                                <span class="code-block">TPS > 5</span> AND <span class="code-block">PriceMove < Threshold</span>. 
+                                High velocity but zero displacement. This indicates a war between Limit Orders and Market Orders at a fixed price. Often precedes a "Stop Hunt" where MMs probe for liquidity clusters without committing to a trend.
+                            </p>
+                        </div>
+                        <div class="logic-step">
+                            <h5 class="font-serif font-bold text-slate-900">3. ABSORPTION (Hidden Walls)</h5>
+                            <p class="text-sm text-slate-600 mt-1">
+                                <span class="code-block">TPS > 5</span> AND <span class="code-block">Divergence</span>.
+                                <br><strong>Bull Absorp:</strong> Price rises despite Net Selling (Aggressive sellers are hitting a passive buy wall).
+                                <br><strong>Bear Absorp:</strong> Price falls despite Net Buying (Aggressive buyers are hitting a passive sell wall).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Logic -->
+            <div class="paper-card p-8 bg-slate-50 border-l-4 border-l-slate-900">
+                <h3 class="font-bold text-slate-900 mb-4">Threshold Formulas</h3>
+                <div class="mb-6">
+                    <span class="text-xs font-bold uppercase text-slate-500">Efficiency Floor</span>
+                    <div class="formula-box">$$ T = P \times 0.00002 $$</div>
+                    <p class="text-xs text-slate-600 italic">Filters out 0.002% noise. Movement below this with high volume indicates Limit Order layering.</p>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-500">Aggression (Delta)</span>
+                    <div class="formula-box">$$ \Delta = \sum V_{buy} - \sum V_{sell} $$</div>
+                    <p class="text-xs text-slate-600 italic">Positive Delta = Buyer Aggression (Takers). Negative Delta = Seller Aggression (Takers).</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 05. MICRO-MOMENTUM CALCULUS -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">05.</span>
+            <h2 class="section-title">Micro-Momentum Calculus (The HUD)</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="paper-card p-6">
+                <span class="logic-title p-6 pb-0">Footprint Aggregation Flow</span>
+                <div class="diagram-container border-0">
+                    <div class="mermaid">
+                    flowchart TD
+                        Tick["Incoming Trade"] --> BucketKey["Calc Bucket Key (Floor 0.01%)"]
+                        BucketKey --> CheckBucket{"Bucket Exists?"}
+                        CheckBucket -- "No" --> Create["Init Bucket {Buy:0, Sell:0}"]
+                        CheckBucket -- "Yes" --> Update["Update Buy/Sell Vol"]
+                        
+                        Create --> Update
+                        Update --> CalcDelta["Update Net Delta"]
+                        CalcDelta --> Render["Update HUD DOM"]
+                        
+                        style Update fill:#f0f9ff,stroke:#0284c7
+                    </div>
+                </div>
+                <div class="content-container bg-slate-50">
+                    <div class="formula-box mt-0">$$ Bucket_{key} = \lfloor \frac{Price}{0.0001} \rfloor \times 0.0001 $$</div>
+                    <p class="text-xs text-slate-600 italic mt-2">Groups high-frequency ticks into actionable 0.01% price clusters.</p>
+                </div>
+            </div>
+
+            <div class="paper-card p-6">
+                <span class="logic-title">Flow Target Projection (1m)</span>
+                <p class="text-sm text-slate-600 mb-4">
+                    The logic driving the "Target Pill" on the HUD. It projects a minimum move based on order flow imbalance.
+                </p>
+                <div class="bg-slate-50 p-4 border border-slate-200 rounded mb-4">
+                    <span class="text-xs font-bold uppercase text-slate-500">Imbalance Ratio</span>
+                    <div class="font-mono text-sm text-slate-800 my-1">$$ I_{\%} = \frac{|NetDelta|}{TotalVolume} $$</div>
+                </div>
+                <div class="formula-box">$$ P_{proj} = 0.0005 + (0.0005 \times I_{\%}) $$</div>
+                <p class="text-xs text-slate-600 italic">
+                    Base Move (0.05%) + Bonus Move (up to 0.05% based on Imbalance).
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 06. THE STRATEGIST (Global Matrix) -->
+    <section class="mb-24">
+         <div class="section-header">
+            <span class="section-num">06.</span>
+            <h2 class="section-title">The Strategist (Global Matrix)</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="paper-card">
+                <div class="diagram-container">
+                    <div class="mermaid">
+                    flowchart TD
+                        Inputs["Timeframes: D, W, M, Q, S, Y"]
+                        Weights["Apply Weights: x1.0 -> x3.5"]
+                        Logic{"Price > Open?"}
+                        
+                        Inputs --> Logic
+                        Logic -- "Yes" --> Pos["+ Score"]
+                        Logic -- "No" --> Neg["- Score"]
+                        
+                        Pos & Neg --> Sum("Weighted Sum")
+                        Sum --> Norm("Normalize -1.0 to 1.0")
+                        Norm --> Output["Global Alignment Score"]
+                        
+                        style Output fill:#0f172a,color:#fff
+                    </div>
+                </div>
+                <div class="content-container text-sm text-slate-600">
+                    <p class="mb-4">
+                        The <strong>Global Alignment Score</strong> is a normalized value between -1.0 (Full Bear) and +1.0 (Full Bull). It is calculated by aggregating the directional bias of 6 distinct timeframes.
+                    </p>
+                    <p>
+                        A higher weight is assigned to higher timeframes (Yearly > Daily) to respect the "Dominant Trend" theory. A Score > 0.6 indicates a <strong>Full Confluence</strong> event, unlocking aggressive targets.
+                    </p>
+                </div>
+            </div>
+
+            <div class="paper-card p-0 overflow-hidden">
+                <table class="w-full text-sm classic-table">
+                    <thead class="bg-slate-50">
+                        <tr><th class="p-4 pl-6">TF</th><th class="p-4">Weight</th><th class="p-4 pr-6 text-right">Role</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-4 pl-6 font-mono">Daily</td><td>1.0</td><td class="p-4 pr-6 text-right italic text-slate-500">Entry / Noise</td></tr>
+                        <tr><td class="p-4 pl-6 font-mono">Weekly</td><td>1.5</td><td class="p-4 pr-6 text-right italic text-slate-500">Local Trend</td></tr>
+                        <tr><td class="p-4 pl-6 font-mono">Monthly</td><td>2.0</td><td class="p-4 pr-6 text-right italic text-slate-500">Structure</td></tr>
+                        <tr><td class="p-4 pl-6 font-mono">Quarterly</td><td>2.5</td><td class="p-4 pr-6 text-right italic text-slate-500">Institutional</td></tr>
+                        <tr><td class="p-4 pl-6 font-mono font-bold bg-yellow-50">Yearly</td><td class="bg-yellow-50 font-bold">3.5</td><td class="bg-yellow-50 p-4 pr-6 text-right font-bold text-slate-900">Secular Trend</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 07. REGIME PHYSICS & RENDERING -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">07.</span>
+            <h2 class="section-title">Regime Physics & Rendering</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="paper-card">
+                <span class="logic-title p-6 pb-0">Regime Determination</span>
+                <div class="diagram-container border-0">
+                    <div class="mermaid">
+                    flowchart LR
+                        A["Current Range"] --> C{"Ratio = Curr / Prev"}
+                        B["Prev Range"] --> C
+                        
+                        C -- "> 1.0" --> Exp["EXPANSION"]
+                        C -- "<= 1.0" --> Ctr["CONTRACTION"]
+                        
+                        Exp --> D["Unlock Targets"]
+                        Ctr --> E["Tighten Keys"]
+                        
+                        style Exp fill:#fee2e2,stroke:#b91c1c
+                        style Ctr fill:#dcfce7,stroke:#15803d
+                    </div>
+                </div>
+                <div class="content-container bg-slate-50">
+                    <div class="formula-box mt-0">$$ V_{proj} = \frac{|P - P_{open}|}{T_{\%}} $$</div>
+                    <p class="text-sm text-slate-600 mt-2">
+                        <strong>Velocity Projection Logic:</strong> <br>
+                        If the market covers 50% of the distance in only 10% of the time ($T_{\%}$), the projected velocity ($V_{proj}$) explodes, pushing Targets further out. This adapts the grid to market speed.
+                    </p>
+                </div>
+            </div>
+
+            <div class="paper-card">
+                <span class="logic-title p-6 pb-0">Seismograph Rendering</span>
+                <div class="diagram-container border-0">
+                    <div class="mermaid">
+                    flowchart TD
+                        Raw["Raw Volume"] --> Log["Apply ln(Vol + 1)"]
+                        Log --> Scale["Scale to Canvas Height"]
+                        Scale --> Draw["Draw Bar"]
+                        Draw --> Overlay["Overlay DNA Color"]
+                    </div>
+                </div>
+                <div class="content-container bg-slate-50">
+                    <div class="formula-box mt-0">$$ Y = \frac{\ln(Vol + 1)}{\ln(Max + 1)} \times H_{canvas} $$</div>
+                    <p class="text-sm text-slate-600 mt-2">
+                        <strong>Why Logarithmic?</strong> <br>
+                        Whale volume can be 1000x retail volume. On a linear scale, retail activity would be invisible (flatline). Logarithmic scaling compresses the peaks, allowing both "Stalking" (small) and "Running" (huge) phases to be analyzed visually.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHASE 3: THE MAP & GRID SYSTEM -->
+    <div class="phase-divider"><span class="phase-label">Phase III: The Map & Grid</span></div>
+
+    <!-- 08. MAP VIEW SPECIFICATIONS -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">08.</span>
+            <h2 class="section-title">Map View (The Grid)</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="paper-card">
+                <span class="logic-title p-6 pb-0">Fractal Grid Generation</span>
+                <div class="diagram-container border-0">
+                    <div class="mermaid">
+                    flowchart TD
+                        PrevRange["Previous Candle Range"] --> Div["Divide by 8"]
+                        Div --> Vu["Volatility Unit (Vu)"]
+                        Vu --> Loop["Loop 1 to 32"]
+                        Loop --> Gen["H[n] = Low + (n*Vu)"]
+                    </div>
+                </div>
+                <div class="content-container bg-slate-50">
+                    <div class="formula-box mt-0">$$ V_u = \text{Range}_{prev} \times 0.125 $$</div>
+                    <p class="text-sm text-slate-600 mt-2">
+                        Grid lines (H1-H32 and L1-L32) are not arbitrary. They are calculated based on the previous candle's volatility, creating a "breathable" map. Every 8 levels represent 100% of the previous range.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="paper-card p-6">
+                <span class="logic-title">Hit Detection & Virtualization</span>
+                <p class="text-sm text-slate-600 mb-4">
+                    The map exists in a <strong>40,000px virtual container</strong> to accommodate massive price ranges.
+                </p>
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-4 border border-slate-200 rounded">
+                        <span class="text-xs font-bold uppercase text-slate-500">Hit Window (Tolerance)</span>
+                        <div class="font-mono text-sm text-slate-800 mt-1">± 0.05%</div>
+                        <p class="text-xs text-slate-500 italic mt-1">A level is considered "HIT" if price enters this window, preventing "front-running" visual errors.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 border border-slate-200 rounded">
+                        <span class="text-xs font-bold uppercase text-slate-500">Center Offset Logic</span>
+                        <div class="font-mono text-sm text-slate-800 mt-1">Top = 20,000px - (PriceDiff * Scale)</div>
+                        <p class="text-xs text-slate-500 italic mt-1">Keeps the current price pinned to the screen center while the grid moves around it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 09. LEVEL TAXONOMY -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">09.</span>
+            <h2 class="section-title">Level Taxonomy & Math</h2>
+        </div>
+
+        <div class="paper-card p-6">
+            <span class="logic-title">Anchor Dynamics</span>
+            <div class="diagram-container">
+                <div class="mermaid">
+                flowchart LR
+                    Price("Live Price") --> CheckAH{"> Anchor High?"}
+                    Price --> CheckAL{"< Anchor Low?"}
+                    
+                    CheckAH -- "Yes" --> ExpandAH["AH = Price"]
+                    CheckAL -- "Yes" --> ExpandAL["AL = Price"]
+                    
+                    ExpandAH --> Recalc["Recalculate Grid"]
+                    ExpandAL --> Recalc
+                </div>
+            </div>
+            <div class="content-container">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-3 border border-slate-200">
+                        <strong>AH (Anchor High)</strong>: <span class="font-mono text-xs">$$ \max(Candle_{High}, Price_{Current}) $$</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 border border-slate-200">
+                        <strong>AL (Anchor Low)</strong>: <span class="font-mono text-xs">$$ \min(Candle_{Low}, Price_{Current}) $$</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="paper-card p-6 border-t-4 border-t-blue-600">
+                <strong class="block mb-2">RSA (Equilibrium)</strong>
+                <div class="formula-box text-center text-sm">$$ \frac{AH + AL}{2} $$</div>
+                <p class="text-xs text-slate-600 italic">The geometric center. Structurally Bullish above, Bearish below.</p>
+            </div>
+            <div class="paper-card p-6 border-t-4 border-t-yellow-500">
+                <strong class="block mb-2">SMA (Lagging)</strong>
+                <div class="formula-box text-center text-sm">$$ \frac{\sum P}{n} $$</div>
+                <p class="text-xs text-slate-600 italic">Injected for confluence. 1D SMA on Daily Map, 7D SMA on Weekly.</p>
+            </div>
+            <div class="paper-card p-6 border-t-4 border-t-purple-600">
+                <strong class="block mb-2">EQ_MM (VWAP)</strong>
+                <div class="formula-box text-center text-sm">$$ \frac{\sum (P \cdot V)}{\sum V} $$</div>
+                <p class="text-xs text-slate-600 italic">Volume Weighted Average Price. The "fair value" for institutions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. DYNAMIC TAGGING -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">10.</span>
+            <h2 class="section-title">Dynamic Level Tagging</h2>
+        </div>
+
+        <div class="paper-card">
+            <div class="diagram-container">
+                <div class="mermaid">
+                flowchart TD
+                    Lvl["Level Object"] --> IsMajor{"Index % 4 == 0?"}
+                    
+                    IsMajor -- "Yes" --> CheckRegime{"Regime State?"}
+                    CheckRegime -- "EXPANSION" --> TagTRG["Tag: TRG"]
+                    CheckRegime -- "CONTRACTION" --> TagKEY["Tag: KEY"]
+                    
+                    IsMajor -- "No" --> IsClose{"Distance < Radius?"}
+                    IsClose -- "Yes" --> TagSupRes["Tag: SUP / RES"]
+                    IsClose -- "No" --> NoTag(("Empty"))
+                    
+                    style TagTRG fill:#451a03,stroke:#fbbf24,color:#fff
+                    style TagKEY fill:#082f49,stroke:#38bdf8,color:#fff
+                </div>
+            </div>
+            
+            <div class="content-container grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="tag-pill-demo bg-yellow-900/90 text-yellow-400 border border-yellow-600">TRG</span>
+                        <span class="font-bold text-sm text-slate-900">TARGET</span>
+                    </div>
+                    <p class="text-xs text-slate-600">
+                        <strong>Condition:</strong> Major Level + Expansion Mode.<br>
+                        <strong>Meaning:</strong> High-probability destination. The system predicts price will "magnetize" to this level due to velocity.
+                    </p>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="tag-pill-demo bg-sky-900 text-sky-400 border border-sky-600">KEY</span>
+                        <span class="font-bold text-sm text-slate-900">KEY LEVEL</span>
+                    </div>
+                    <p class="text-xs text-slate-600">
+                        <strong>Condition:</strong> Major Level + Contraction Mode.<br>
+                        <strong>Meaning:</strong> Structural spine. Price often oscillates around these levels during accumulation phases.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHASE 4: INTELLIGENCE & SYNTHESIS -->
+    <div class="phase-divider"><span class="phase-label">Phase IV: Intelligence</span></div>
+
+    <!-- 11. COGNITIVE AI -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">11.</span>
+            <h2 class="section-title">Cognitive AI Architecture</h2>
+        </div>
+
+        <div class="paper-card p-6">
+            <span class="logic-title">The Memory Model (Inertia)</span>
+            <div class="diagram-container mb-4">
+                <div class="mermaid">
+                flowchart LR
+                    Input("New Sentiment Bias") --> Calc
+                    Old("Previous Score") --> Calc
+                    
+                    Calc["Weighted Avg"]
+                    Calc -->|"95% Old + 5% New"| Output("New Score")
+                    
+                    Output --> Loop["Store for Next Tick"]
+                    Loop -.-> Old
+                </div>
+            </div>
+            <div class="formula-box">$$ S_{new} = (S_{old} \times 0.95) + (Bias_{current} \times 0.05) $$</div>
+            <p class="text-sm text-slate-600 mt-4">
+                <strong>Why Inertia?</strong><br>
+                Human psychology and market sentiment do not flip instantly. A sudden crash takes time to shift global sentiment from Bullish to Bearish. The decay factor (0.95) mimics this viscosity, preventing the AI from being "bipolar" or flickering signals during high-frequency noise.
+            </p>
+        </div>
+    </section>
+
+    <!-- 12. SYNTHESIS ENGINE -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">12.</span>
+            <h2 class="section-title">Synthesis Engine (Narrative)</h2>
+        </div>
+
+        <div class="paper-card p-6">
+            <span class="logic-title mb-4">Narrative Generation Logic</span>
+            <div class="diagram-container mb-6">
+                <div class="mermaid">
+                flowchart LR
+                    Macro["Macro Bias (Memory)"] --> Synthesis
+                    Micro["Micro Event (Last 60s)"] --> Synthesis
+                    
+                    Synthesis{"Lookup Table"}
+                    
+                    Synthesis -- "Bull Bias + Sell Run" --> Pullback["Narrative: Pullback Opportunity"]
+                    Synthesis -- "Bear Bias + Buy Run" --> Relief["Narrative: Relief Rally"]
+                    Synthesis -- "Any Bias + Hunting" --> Trap["Narrative: Liquidity Trap"]
+                    
+                    style Synthesis fill:#f1f5f9,stroke:#334155,stroke-width:2px
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-green-50 border border-green-200 rounded">
+                    <strong class="text-green-800 text-xs uppercase">Scenario A: The Dip</strong>
+                    <div class="text-xs font-mono text-slate-500 mt-1 mb-2">Condition: Bias > 0.3 AND Micro == 'RunSell'</div>
+                    <p class="font-serif italic text-slate-700">"Pullback detected in Uptrend. Buyers likely defending lower support."</p>
+                </div>
+                <div class="p-4 bg-red-50 border border-red-200 rounded">
+                    <strong class="text-red-800 text-xs uppercase">Scenario B: The Rip</strong>
+                    <div class="text-xs font-mono text-slate-500 mt-1 mb-2">Condition: Bias < -0.3 AND Micro == 'RunBuy'</div>
+                    <p class="font-serif italic text-slate-700">"Relief Rally. Sellers likely reloading at local resistance."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHASE 5: UX & SYSTEM HARDENING -->
+    <div class="phase-divider"><span class="phase-label">Phase V: Operations</span></div>
+
+    <!-- 13. VISUAL SEMIOTICS -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">13.</span>
+            <h2 class="section-title">Visual Semiotics</h2>
+        </div>
+        
+        <div class="paper-card p-0 overflow-hidden">
+            <div class="p-6 bg-slate-50 border-b border-slate-200">
+                <div class="diagram-container border-0 bg-transparent p-0">
+                    <div class="mermaid">
+                    flowchart TD
+                        Event{"Market Event"}
+                        Event -- "Danger / Caution" --> Yellow["Yellow: HUNTING"]
+                        Event -- "Hidden / Depth" --> Purple["Purple: ABSORPTION"]
+                        Event -- "Go / Safe" --> Green["Green: BULL RUN"]
+                        Event -- "Stop / Blood" --> Red["Red: BEAR RUN"]
+                        
+                        style Yellow fill:#facc15,stroke:#a16207
+                        style Purple fill:#c084fc,stroke:#7e22ce
+                        style Green fill:#4ade80,stroke:#15803d
+                        style Red fill:#f87171,stroke:#b91c1c
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                <div class="p-6 bg-yellow-50/50">
+                    <div class="w-8 h-8 bg-yellow-400 rounded-full mb-4 shadow-sm border border-yellow-500"></div>
+                    <h4 class="font-bold text-slate-900 text-sm uppercase mb-2">Yellow (Hunting)</h4>
+                    <p class="text-xs text-slate-600"><strong>Meaning:</strong> Volatility without direction. Trap zone.</p>
+                </div>
+                <div class="p-6 bg-purple-50/50">
+                    <div class="w-8 h-8 bg-purple-500 rounded-full mb-4 shadow-sm border border-purple-600"></div>
+                    <h4 class="font-bold text-slate-900 text-sm uppercase mb-2">Purple (Absorption)</h4>
+                    <p class="text-xs text-slate-600"><strong>Meaning:</strong> Institutional "Deep Pockets" intervention.</p>
+                </div>
+                <div class="p-6 bg-green-50/50">
+                    <div class="w-8 h-8 bg-green-500 rounded-full mb-4 shadow-sm border border-green-600"></div>
+                    <h4 class="font-bold text-slate-900 text-sm uppercase mb-2">Green (Bull Run)</h4>
+                    <p class="text-xs text-slate-600"><strong>Meaning:</strong> Synchronized upward flow.</p>
+                </div>
+                <div class="p-6 bg-red-50/50">
+                    <div class="w-8 h-8 bg-red-500 rounded-full mb-4 shadow-sm border border-red-600"></div>
+                    <h4 class="font-bold text-slate-900 text-sm uppercase mb-2">Red (Bear Run)</h4>
+                    <p class="text-xs text-slate-600"><strong>Meaning:</strong> Synchronized liquidation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 14. INTERACTION PROTOCOLS -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">14.</span>
+            <h2 class="section-title">Interaction Protocols</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="paper-card p-6">
+                <span class="logic-title">Mouse Interactions</span>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li><strong>Hover (Grid):</strong> Displays exact price and distance % from current price.</li>
+                    <li><strong>Click (Re-Center FAB):</strong> Snaps the viewport back to the absolute center offset (20,000px).</li>
+                    <li><strong>Scroll (Map):</strong> Manual navigation through the 40,000px vertical space. Physics-based smooth scrolling enabled.</li>
+                </ul>
+            </div>
+            <div class="paper-card p-6">
+                <span class="logic-title">Keyboard Inputs</span>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li><strong>Enter (Input Field):</strong> Triggers <span class="code-block">loadData()</span> to fetch new ticker data.</li>
+                    <li><strong>Escape (Global):</strong> Can be bound to clear active tooltips or reset view.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 15. SYSTEM RESILIENCE -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">15.</span>
+            <h2 class="section-title">System Resilience</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="paper-card p-6">
+                <span class="logic-title">Socket Failover State Machine</span>
+                <div class="diagram-container mb-4">
+                    <div class="mermaid">
+                    stateDiagram-v2
+                        [*] --> Primary
+                        Primary --> Error : Connection Lost
+                        Error --> Fallback : Retry > 3x
+                        Fallback --> Primary : Health Check OK
+                        Fallback --> Critical : All Failed
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="resilience-badge bg-green-100 text-green-800 border border-green-200">PRIMARY</span>
+                        <span class="font-mono text-xs text-slate-700">wss://stream.binance.com:9443</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="resilience-badge bg-yellow-100 text-yellow-800 border border-yellow-200">FALLBACK</span>
+                        <span class="font-mono text-xs text-slate-700">wss://data-stream.binance.vision</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="paper-card p-6">
+                <span class="logic-title">Visual Throttling (Backpressure)</span>
+                <p class="text-sm text-slate-600 mb-4">Decoupling Data Rate from Frame Rate prevents browser freezing during volatility spikes.</p>
+                <div class="bg-slate-50 p-4 border border-slate-200 rounded">
+                    <code class="code-block block mb-2">
+                        if (!visualUpdatePending) {<br>
+                        &nbsp;&nbsp;requestAnimationFrame(updateUI);<br>
+                        &nbsp;&nbsp;visualUpdatePending = true;<br>
+                        }
+                    </code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 16. IMPLEMENTATION CONSTANTS -->
+    <section class="mb-24">
+        <div class="section-header">
+            <span class="section-num">16.</span>
+            <h2 class="section-title">Implementation Constants & Utilities</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="paper-card p-6 border-t-4 border-t-slate-800">
+                <strong class="block mb-2">Hybrid API Strategy</strong>
+                <p class="text-xs text-slate-600 mb-2">Dual-endpoint architecture for stability.</p>
+                <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                    <li><strong>Ticker:</strong> api1.binance.com (Fast)</li>
+                    <li><strong>Klines:</strong> binance.vision (Stable/Hist)</li>
+                </ul>
+            </div>
+            <div class="paper-card p-6 border-t-4 border-t-slate-800">
+                <strong class="block mb-2">Data Horizon Limits</strong>
+                <p class="text-xs text-slate-600 mb-2">Hard-coded fetch limits.</p>
+                <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                    <li><strong>Daily:</strong> 400 Days</li>
+                    <li><strong>Weekly:</strong> 100 Weeks</li>
+                    <li><strong>Monthly:</strong> 240 Months</li>
+                </ul>
+            </div>
+            <div class="paper-card p-6 border-t-4 border-t-slate-800">
+                <strong class="block mb-2">Visual Micro-Polish</strong>
+                <p class="text-xs text-slate-600 mb-2">Aesthetic constants.</p>
+                <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                    <li><strong>Scale:</strong> 60px per 1% Price Move</li>
+                    <li><strong>Flash:</strong> 150ms duration</li>
+                    <li><strong>Reflection:</strong> 0.3 Opacity (Seismo)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- APPENDIX: LEXICON -->
+    <section class="mb-24">
+        <div class="section-header">
+            <h2 class="section-title text-slate-500">Appendix: System Lexicon</h2>
+        </div>
+        
+        <div class="paper-card overflow-hidden">
+            <table class="w-full text-sm classic-table">
+                <thead class="bg-slate-50">
+                    <tr><th class="p-4 pl-6 w-32">Term</th><th class="p-4">Definition</th></tr>
+                </thead>
+                <tbody class="text-slate-600">
+                    <tr><td class="p-4 pl-6 font-bold font-mono">TPS</td><td>Ticks Per Second. A measure of market velocity and activity density.</td></tr>
+                    <tr><td class="p-4 pl-6 font-bold font-mono">V_u</td><td>Volatility Unit. The base atomic unit for grid generation ($Range \times 0.125$).</td></tr>
+                    <tr><td class="p-4 pl-6 font-bold font-mono">AH / AL</td><td>Anchor High / Anchor Low. The dynamic bounds of the current timeframe's structure.</td></tr>
+                    <tr><td class="p-4 pl-6 font-bold font-mono">TRG</td><td>Target Level. A projected destination active during Expansion regimes.</td></tr>
+                    <tr><td class="p-4 pl-6 font-bold font-mono">RSA</td><td>Relative Structural Average. The geometric equilibrium of the current range.</td></tr>
+                    <tr><td class="p-4 pl-6 font-bold font-mono">Bias Decay</td><td>The algorithmic inertia applied to AI sentiment to prevent signal flickering.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-20 pt-10 pb-20 text-center border-t border-double border-slate-300">
+        <div class="w-16 h-1 bg-slate-900 mx-auto mb-6"></div>
+        <p class="text-slate-900 font-serif font-bold text-xl mb-2">RSA Confluence</p>
+        <p class="text-slate-500 text-xs font-mono tracking-widest uppercase">
+            Copyright © 2025 Adiyat Coto • Official Release
+        </p>
+    </footer>
+
+</body>
+</html>
