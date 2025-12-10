@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Confluence (Probabilistic AI)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #e2e8f0; overflow: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Scrollbar Hidden but Functional */
+        .map-scroll::-webkit-scrollbar { width: 4px; background: #0f172a; }
+        .map-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+        
+        /* Map Styles */
+        .map-container {
+            position: relative;
+            width: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-behavior: auto; 
+        }
+
+        .rsa-item {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            font-size: 10px;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            z-index: 20; 
+            pointer-events: none; 
+        }
+        
+        .rsa-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 1px;
+            z-index: 10; 
+            pointer-events: none;
+        }
+
+        .rsa-item:hover { z-index: 50; background-color: #1f2937; border-color: #60a5fa; cursor: crosshair; pointer-events: auto; }
+
+        /* Bias Shading Zones */
+        .bias-zone {
+            position: absolute;
+            left: 0; right: 0;
+            z-index: 0; 
+            pointer-events: none;
+            transition: top 0.2s ease-out, height 0.2s ease-out; 
+            will-change: top, height;
+        }
+        .zone-red { background: linear-gradient(to bottom, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); }
+        .zone-green { background: linear-gradient(to top, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0) 100%); }
+        .zone-blue-bull { background: linear-gradient(to bottom, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 100%); }
+        .zone-blue-bear { background: linear-gradient(to top, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 100%); }
+
+        /* Tags */
+        .tag-pill { padding: 1px 4px; border-radius: 3px; font-size: 9px; font-weight: 800; text-transform: uppercase; margin-left: auto; }
+        .tag-res { color: #f87171; border: 1px solid #7f1d1d; background: #450a0a; }
+        .tag-sup { color: #34d399; border: 1px solid #064e3b; background: #022c22; }
+        .tag-trg { color: #fbbf24; border: 1px solid #78350f; background: #451a03; animation: pulse 2s infinite; }
+        .tag-trg-minor { color: #fdba74; border: 1px dashed #9a3412; background: #431407; animation: pulse 3s infinite; }
+        .tag-eq { color: #38bdf8; border: 1px solid #0c4a6e; background: #082f49; }
+        .tag-hit { color: #d1d5db; border: 1px solid #6b7280; background: #374151; margin-right: 4px;} 
+        
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        /* Glowing Status */
+        .status-glow {
+            box-shadow: 0 0 5px #10b981;
+            animation: statusPulse 0.5s infinite; 
+        }
+        @keyframes statusPulse {
+            0% { box-shadow: 0 0 2px #10b981; border-color: #059669; }
+            50% { box-shadow: 0 0 8px #10b981; border-color: #34d399; }
+            100% { box-shadow: 0 0 2px #10b981; border-color: #059669; }
+        }
+
+        .glass-panel { background: #111827; border: 1px solid #374151; }
+        .loading-overlay { position: absolute; inset: 0; background: #0b0f19; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* Grid Column Headers */
+        .col-header { padding: 4px; text-align: center; border-bottom: 1px solid #1f2937; font-size: 10px; font-weight: 800; z-index: 40; box-shadow: 0 4px 6px rgba(0,0,0,0.5); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; min-height: 42px; justify-content: center; background-color: #0f172a; position: relative; }
+        
+        .col-header-d { color: #60a5fa; }
+        .col-header-w { color: #c084fc; }
+        .col-header-m { color: #facc15; }
+        .col-header-q { color: #fb923c; } 
+        .col-header-s { color: #2dd4bf; } 
+        .col-header-y { color: #fb7185; } 
+        
+        .header-stats { font-size: 8px; font-family: 'JetBrains Mono', monospace; opacity: 0.8; margin-top: 2px; display: flex; gap: 4px; }
+        .stat-badge { background: rgba(0,0,0,0.3); padding: 1px 3px; rounded: 2px; cursor: help; }
+
+        /* Price Line Animation */
+        #cp-line { transition: top 0.05s linear; } 
+        #cp-label { transition: top 0.05s linear; }
+        
+        /* Tick Flash Animation */
+        .flash-green { color: #4ade80 !important; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+        .flash-red { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.5); }
+
+        /* --- FOOTPRINT HUD STYLES --- */
+        #footprint-hud {
+            position: absolute;
+            left: 0; 
+            right: 0;
+            height: 0px; 
+            z-index: 35; 
+            pointer-events: none;
+            transition: top 0.05s linear;
+        }
+
+        .fp-container {
+            position: absolute;
+            left: 60px; 
+            top: -50px; 
+            width: 200px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.9;
+        }
+
+        .fp-row {
+            display: flex;
+            align-items: center;
+            height: 6px;
+            margin-bottom: 1px;
+        }
+
+        .fp-bar-buy { background: #4ade80; height: 4px; border-radius: 0 2px 2px 0; box-shadow: 0 0 4px rgba(74, 222, 128, 0.4); }
+        .fp-bar-sell { background: #f87171; height: 4px; border-radius: 2px 0 0 2px; margin-left: auto; box-shadow: 0 0 4px rgba(248, 113, 113, 0.4); }
+        
+        .fp-center-line { width: 1px; height: 100%; background: rgba(255,255,255,0.1); margin: 0 2px; }
+
+        .delta-meter {
+            position: absolute;
+            left: 60px; 
+            bottom: -20px;
+            font-size: 8px; 
+            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 4px;
+            border-radius: 2px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+
+        /* PROJECTION TARGET */
+        .fp-target-box {
+            position: absolute;
+            left: 270px; 
+            top: -8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: none;
+        }
+        
+        .fp-target-pill {
+            display: flex;
+            align-items: center;
+            gap: 4px; 
+            padding: 2px 6px; 
+            border-radius: 3px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #374151;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .fp-arrow { font-size: 10px; margin-right: -1px; }
+        .fp-target-price { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; letter-spacing: -0.5px; }
+        .fp-strength { font-size: 8px; font-weight: 700; padding: 1px 3px; border-radius: 2px; color: #111827; }
+
+        /* MICRO-STRUCTURE PULSE (ABUSE DETECTOR) */
+        .fp-micro-box {
+            position: absolute;
+            left: 270px;
+            top: 28px; 
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            pointer-events: none;
+        }
+        
+        .fp-pulse-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fp-pulse-pill {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid #4b5563;
+            font-size: 8px; 
+            font-weight: 700;
+            color: #9ca3af;
+        }
+        
+        .pulse-active { animation: pulseRed 1s infinite; border-color: #f87171; color: #fecaca; }
+        .pulse-active-bull { animation: pulseGreen 1s infinite; border-color: #4ade80; color: #bbf7d0; } 
+        .pulse-absorb { animation: pulseOrange 2s infinite; border-color: #fbbf24; color: #fef3c7; }
+        .pulse-diverge { animation: pulsePurple 1s infinite; border-color: #c084fc; color: #e9d5ff; } 
+        
+        /* SEISMOGRAPH SPECIFIC STYLES */
+        #seismo-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0f19;
+        }
+        
+        .nav-btn {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .nav-btn.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #60a5fa;
+        }
+        .nav-btn.inactive {
+            background-color: #1f2937;
+            color: #9ca3af;
+            border-color: #374151;
+        }
+        .nav-btn:hover {
+            opacity: 0.8;
+        }
+
+        .mm-profile-row {
+            display: none; 
+        }
+
+        /* --- RESTORED BARCODE TIMELINE --- */
+        .mm-timeline {
+            display: flex;
+            gap: 1px;
+            height: 4px;
+            width: 100px;
+            margin-top: 2px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .mm-tick { flex: 1; height: 100%; opacity: 0.8; }
+        .mm-tick-s { background-color: #4b5563; } /* Stalking (Gray) */
+        .mm-tick-h { background-color: #fbbf24; box-shadow: 0 0 2px #fbbf24; } /* Hunting (Yellow) */
+        .mm-tick-r-bear { background-color: #f87171; box-shadow: 0 0 2px #f87171; } /* Bear Running (Red) */
+        .mm-tick-r-bull { background-color: #4ade80; box-shadow: 0 0 2px #4ade80; } /* Bull Running (Green) */
+        .mm-tick-abs { background-color: #c084fc; box-shadow: 0 0 2px #c084fc; } /* Purple */
+
+        @keyframes pulseRed { 0% { background: rgba(185, 28, 28, 0.2); } 50% { background: rgba(185, 28, 28, 0.6); } 100% { background: rgba(185, 28, 28, 0.2); } }
+        @keyframes pulseOrange { 0% { background: rgba(180, 83, 9, 0.2); } 50% { background: rgba(180, 83, 9, 0.5); } 100% { background: rgba(180, 83, 9, 0.2); } }
+        @keyframes pulseGreen { 0% { background: rgba(22, 163, 74, 0.2); } 50% { background: rgba(22, 163, 74, 0.6); } 100% { background: rgba(22, 163, 74, 0.2); } }
+        @keyframes pulsePurple { 0% { background: rgba(147, 51, 234, 0.2); } 50% { background: rgba(147, 51, 234, 0.6); } 100% { background: rgba(147, 51, 234, 0.2); } }
+
+        /* SCENARIO BARS */
+        .scenario-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; font-size: 9px; }
+        .scenario-bar-bg { width: 60px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .scenario-bar-fill { height: 100%; transition: width 0.5s ease; }
+
+        /* Typewriter Effect for Narrative */
+        .narrative-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #94a3b8;
+            border-left: 2px solid #3b82f6;
+            padding-left: 8px;
+            margin-bottom: 8px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="flex-none bg-[#111827] border-b border-gray-800 p-3 flex justify-between items-center z-50 shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold text-white">R</div>
+            <div>
+                <h1 class="text-sm font-bold text-white tracking-wide">RSA <span class="text-blue-500">CONFLUENCE</span></h1>
+                <p class="text-[10px] text-gray-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live WebSocket Stream</p>
+            </div>
+        </div>
+        
+        <!-- View Toggle & Connectivity -->
+        <div class="flex items-center gap-4">
+            
+            <!-- View Switcher -->
+            <div class="flex bg-gray-900 p-1 rounded border border-gray-700">
+                <button id="btn-view-map" onclick="switchView('map')" class="nav-btn active">MAP VIEW</button>
+                <button id="btn-view-seismo" onclick="switchView('seismo')" class="nav-btn inactive ml-1">SEISMO VIEW</button>
+            </div>
+
+            <div class="flex items-center gap-2 border-l border-gray-700 pl-4">
+                <div id="status-indicator" class="text-[10px] px-2 py-1 rounded bg-gray-800 text-gray-400 border border-gray-700 transition-all duration-300 min-w-[80px] text-center">Ready</div>
+                
+                <div class="relative">
+                    <input type="text" id="coin-input" list="tickers" value="BTCUSDT" class="bg-gray-900 border border-gray-700 text-white text-xs px-2 py-1 rounded w-24 text-center uppercase font-bold focus:border-blue-500 outline-none transition-colors" onkeydown="if(event.key === 'Enter') loadData()">
+                    <datalist id="tickers">
+                        <option value="BTCUSDT">
+                        <option value="ETHUSDT">
+                        <option value="SOLUSDT">
+                        <option value="XRPUSDT">
+                        <option value="BNBUSDT">
+                    </datalist>
+                </div>
+                
+                <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded font-bold transition">CONNECT</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Top Bar: Stats (AGGREGATED & INTELLIGENT) -->
+    <div class="flex-none grid grid-cols-12 gap-1 bg-[#0b0f19] p-2 border-b border-gray-800 z-40">
+        <!-- PANEL 1: GLOBAL ALIGNMENT (The Compass) -->
+        <div class="col-span-12 md:col-span-5 glass-panel p-2 rounded flex flex-col justify-center">
+            <div class="flex justify-between items-end mb-1">
+                <div class="flex flex-col">
+                    <span class="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Global Alignment</span>
+                    <span id="global-alignment-text" class="text-[10px] font-bold text-white mt-0.5">ANALYZING...</span>
+                </div>
+                <div class="text-right">
+                     <span id="global-score-text" class="text-[9px] font-mono text-gray-400">0.0</span>
+                </div>
+            </div>
+            <!-- Multi-colored Meter representing TF conflict -->
+            <div class="relative h-1.5 bg-gray-800 rounded-full overflow-hidden mt-1">
+                 <!-- We will use JS to paint this bar based on weighted votes -->
+                 <div id="global-alignment-bar" class="absolute left-0 top-0 bottom-0 bg-gray-600 transition-all duration-500" style="width: 50%"></div>
+                 <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white opacity-50"></div> <!-- Center Marker -->
+            </div>
+        </div>
+
+        <!-- PANEL 2: STRUCTURAL INSIGHT (The Strategist) -->
+        <div class="col-span-6 md:col-span-4 glass-panel p-2 rounded flex flex-col justify-center">
+            <span class="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Macro Insight</span>
+            <div id="global-insight-text" class="text-[10px] text-gray-300 leading-tight">
+                Waiting for structure sync...
+            </div>
+            <div class="flex justify-between items-center mt-1">
+                 <span class="text-[8px] text-gray-500">Target:</span>
+                 <span id="radius-text" class="font-mono text-[9px] font-bold text-white">---</span>
+            </div>
+        </div>
+
+        <!-- PANEL 3: PRICE (Unchanged) -->
+        <div class="col-span-6 md:col-span-3 glass-panel p-2 rounded flex items-center justify-between">
+            <span class="text-[9px] text-gray-500 font-bold uppercase">Live</span>
+            <span id="price-text" class="text-2xl font-mono font-black text-yellow-400 tracking-tight drop-shadow-[0_0_10px_rgba(250,204,21,0.4)]">---</span>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-grow relative overflow-hidden bg-black w-full h-full flex flex-col">
+        
+        <div id="loading-screen" class="loading-overlay hidden">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
+            <p class="text-xs text-gray-400 animate-pulse">Initializing Stream...</p>
+        </div>
+
+        <!-- VIEW 1: MAP GRID (Existing) -->
+        <div id="view-map" class="flex-grow flex flex-col overflow-hidden h-full relative">
+            <div class="flex-grow overflow-x-auto overflow-y-hidden relative">
+                <!-- Grid with min-width -->
+                <div class="grid grid-cols-6 divide-x divide-gray-800 h-full min-w-[1000px] relative">
+                    
+                    <!-- DAILY -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-d" class="col-header col-header-d">
+                            <span>DAILY</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-d" class="map-scroll map-container flex-grow"><div id="world-d" class="relative w-full"></div></div>
+                    </div>
+                    
+                    <!-- WEEKLY -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-w" class="col-header col-header-w">
+                            <span>WEEKLY</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-w" class="map-scroll map-container flex-grow"><div id="world-w" class="relative w-full"></div></div>
+                    </div>
+                    
+                    <!-- MONTHLY -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-m" class="col-header col-header-m">
+                            <span>MONTHLY</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-m" class="map-scroll map-container flex-grow"><div id="world-m" class="relative w-full"></div></div>
+                    </div>
+
+                    <!-- QUARTERLY -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-q" class="col-header col-header-q">
+                            <span>QUARTER</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-q" class="map-scroll map-container flex-grow"><div id="world-q" class="relative w-full"></div></div>
+                    </div>
+
+                    <!-- SEMESTER -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-s" class="col-header col-header-s">
+                            <span>SEMESTER</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-s" class="map-scroll map-container flex-grow"><div id="world-s" class="relative w-full"></div></div>
+                    </div>
+
+                    <!-- YEARLY -->
+                    <div class="relative flex flex-col h-full overflow-hidden">
+                        <div id="header-y" class="col-header col-header-y">
+                            <span>YEARLY</span>
+                            <div class="header-stats">Loading...</div>
+                        </div>
+                        <div id="scroll-y" class="map-scroll map-container flex-grow"><div id="world-y" class="relative w-full"></div></div>
+                    </div>
+
+                    <!-- Center Line & HUD -->
+                    <div id="cp-line" class="absolute left-0 right-0 h-[1px] bg-yellow-500 z-30 pointer-events-none opacity-80 shadow-[0_0_8px_eab308] transition-all duration-75" style="top: 0px;"></div>
+                    <div id="cp-label" class="absolute left-2 -translate-y-1/2 bg-yellow-900/90 text-yellow-200 text-[9px] px-2 py-0.5 rounded z-30 border border-yellow-500/50 font-bold transition-all duration-75" style="top: 0px;">LIVE</div>
+
+                    <!-- Footprint HUD Container attached to price line logic -->
+                    <div id="footprint-hud" style="top: 0px;">
+                        <div id="fp-visuals" class="fp-container">
+                            <!-- Bars injected via JS -->
+                        </div>
+                        <div id="fp-delta" class="delta-meter text-gray-400">WAITING FLOW...</div>
+                        
+                        <!-- Price Target Box -->
+                        <div id="fp-target" class="fp-target-box hidden">
+                            <div class="text-[8px] text-gray-400 mb-0.5 tracking-widest uppercase font-bold">Flow Target (1m)</div>
+                            <div id="fp-target-pill" class="fp-target-pill">
+                                <!-- Injected JS -->
+                            </div>
+                        </div>
+
+                        <!-- Micro-Structure Abuse Detector -->
+                        <div id="fp-micro" class="fp-micro-box hidden">
+                            <div class="fp-pulse-row">
+                                <div id="fp-speed-pill" class="fp-pulse-pill" title="Tick Velocity (Speed)">
+                                    <span class="text-[8px]">SPD</span>
+                                    <span id="fp-speed-val" class="font-mono">0/s</span>
+                                </div>
+                                <div id="fp-status-pill" class="fp-pulse-pill" title="Micro-Structure Status">
+                                    <span id="fp-status-val">STALKING</span>
+                                </div>
+                            </div>
+                            <!-- RESTORED: BEHAVIOR TIMELINE (60s) -->
+                            <div id="mm-timeline" class="mm-timeline" title="MM Behavior History (60s)">
+                                <!-- Injected JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Recenter Fab -->
+            <button onclick="centerMap(true)" class="absolute bottom-6 right-6 bg-blue-600 hover:bg-blue-500 text-white rounded-full w-10 h-10 shadow-lg flex items-center justify-center z-50 transition-transform active:scale-95 group cursor-pointer" title="Re-Center">
+                <span class="text-lg">⌖</span>
+            </button>
+        </div>
+
+        <!-- VIEW 2: SEISMOGRAPH (New) -->
+        <div id="view-seismo" class="flex-grow hidden relative bg-[#0b0f19] flex flex-col">
+            <!-- MM INTEL PANEL -->
+            <!-- WIDENED PANEL: Changed w-72 to w-80 -->
+            <div class="absolute top-2 left-2 z-10 bg-black/90 p-3 rounded-lg border border-gray-700 backdrop-blur-md w-80 shadow-2xl">
+                <h3 class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-3 border-b border-gray-800 pb-2 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> PROBABILISTIC AI</span>
+                    <span class="text-[9px] text-gray-500">SYNTHESIS ENGINE</span>
+                </h3>
+                
+                <!-- LIVE CONTEXT SECTION -->
+                <div class="mb-3 bg-gray-900/80 p-2 rounded border border-gray-700 relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-1">
+                         <div class="flex flex-col">
+                            <span class="text-[9px] text-gray-400 uppercase tracking-wider">Current Action</span>
+                            <span id="intel-live-status" class="text-[10px] font-bold text-gray-500 mt-0.5">WAITING...</span>
+                         </div>
+                         <div class="text-right">
+                            <span class="text-[9px] text-gray-400 uppercase tracking-wider">Tick Vol</span>
+                            <div id="intel-live-vol" class="text-[10px] font-mono text-gray-300">0</div>
+                         </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span id="intel-live-price" class="text-2xl font-mono font-black text-white tracking-tight">---</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5">
+                    <!-- SECTION 1: MACRO CONTEXT -->
+                    <div class="border-b border-gray-800 pb-2 mb-2">
+                        <div class="text-[9px] text-gray-500 uppercase tracking-wider mb-1 font-bold">1. MACRO NARRATIVE (CONTEXT)</div>
+                        
+                        <!-- NARRATIVE TEXT BOX -->
+                        <div id="macro-narrative" class="narrative-box">
+                            Initializing Brain...
+                        </div>
+
+                        <!-- NEW: MM TACTICAL INTENT -->
+                        <div class="mt-2 mb-2 p-1.5 bg-blue-900/20 border border-blue-800/50 rounded">
+                            <div class="text-[8px] text-blue-400 uppercase tracking-wider font-bold mb-0.5">MM TACTICAL INTENT (INSTITUTIONAL)</div>
+                            <div id="mm-intent-text" class="text-[10px] text-gray-300 font-mono leading-tight">Analyzing Order Flow...</div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span class="text-gray-400">Dominant Structure</span>
+                            <div class="flex items-center gap-2">
+                                <span id="macro-dom-val" class="font-bold text-gray-300">--</span>
+                                <div class="w-16 h-1.5 bg-gray-800 rounded overflow-hidden">
+                                    <div id="macro-dom-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: MICRO SCENARIOS -->
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase tracking-wider mb-2 font-bold flex justify-between">
+                            <span>2. PROBABILISTIC OUTCOME (NEXT MOVE)</span>
+                            <span class="text-[8px] opacity-60">CONFIDENCE %</span>
+                        </div>
+                        
+                        <div id="scenario-list" class="flex flex-col gap-1">
+                            <div class="text-[10px] text-gray-600 text-center py-2">Waiting for more data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Canvas -->
+            <canvas id="seismo-canvas"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        // --- STABLE API CONFIG ---
+        const VISION_API = 'https://data-api.binance.vision/api/v3';
+        
+        const APIS = {
+            ticker: 'https://api1.binance.com/api/v3', 
+            klines: VISION_API 
+        };
+
+        const CONFIG = {
+            symbol: 'BTCUSDT',
+            scale: 60, 
+            virtualHeight: 40000,
+            centerOffset: 20000
+        };
+
+        let state = {
+            price: 0,
+            prevPrice: 0, 
+            intervals: {},
+            klines: { d: [], w: [], m: [], q: [], s: [], y: [] },
+            stats: {}, 
+            touched: { 
+                d: { set: new Set(), time: 0 }, 
+                w: { set: new Set(), time: 0 }, 
+                m: { set: new Set(), time: 0 },
+                q: { set: new Set(), time: 0 }, 
+                s: { set: new Set(), time: 0 }, 
+                y: { set: new Set(), time: 0 }
+            },
+            flow: [],
+            // Micro-Structure Metrics
+            micro: {
+                ticks: 0,
+                startPrice: 0,
+                startTime: 0,
+                currentSecVol: 0, 
+                currentSecDelta: 0, 
+                history: [], 
+                seismoHistory: [], // Full history for canvas and logic
+                stats: { hunting: 0, running: 0, stalking: 0, absorb: 0, total: 0, maxSpeed: 0 }
+            },
+            // MM Footprint Profile
+            mmProfile: {},
+            // MEMORY (The Brain)
+            memory: {
+                macroScore: 0, // Running average of trend (-1 to 1)
+                volatilityScore: 0, // Running average of vol
+                lastSignificantEvent: null, // "TRAP", "BREAKOUT", etc.
+                narrativeBuffer: [], // For smoothing text transitions
+                decayFactor: 0.95 // Memory decay
+            }
+        };
+        
+        let priceSocket = null;
+        let visualUpdatePending = false; 
+        
+        // Seismograph Variables
+        let seismoCanvas, seismoCtx;
+        let animationFrameId;
+
+        // --- CORE FUNCTIONS ---
+        
+        async function loadData() {
+            const input = document.getElementById('coin-input').value.toUpperCase();
+            if(input) CONFIG.symbol = input;
+            
+            showLoading(true);
+            updateStatus('Syncing...');
+            
+            // Cleanup existing
+            if(priceSocket) { 
+                priceSocket.onclose = null; 
+                priceSocket.close(); 
+                priceSocket = null; 
+            }
+            if(state.intervals.poll) clearInterval(state.intervals.poll);
+            if(state.intervals.micro) clearInterval(state.intervals.micro); 
+
+            state.flow = []; 
+            state.micro.history = []; 
+            state.mmProfile = {}; 
+            state.micro.currentSecVol = 0;
+            state.micro.currentSecDelta = 0;
+            state.micro.seismoHistory = [];
+            state.micro.stats = { hunting: 0, running: 0, stalking: 0, absorb: 0, total: 0, maxSpeed: 0 };
+            
+            const fpContainer = document.getElementById('fp-visuals');
+            if(fpContainer) fpContainer.innerHTML = '';
+            const deltaEl = document.getElementById('fp-delta');
+            if(deltaEl) deltaEl.textContent = "WAITING FLOW...";
+
+            const initTouched = () => ({ set: new Set(), time: 0 });
+            state.touched = { d: initTouched(), w: initTouched(), m: initTouched(), q: initTouched(), s: initTouched(), y: initTouched() };
+            
+            ['d','w','m','q','s','y'].forEach(id => document.getElementById(`world-${id}`).innerHTML = '');
+
+            try {
+                // Initial Fetch
+                const tickerRes = await fetch(`${APIS.ticker}/ticker/24hr?symbol=${CONFIG.symbol}`);
+                if(!tickerRes.ok) throw new Error('Ticker Fetch Failed');
+                const ticker = await tickerRes.json();
+                state.price = parseFloat(ticker.lastPrice);
+                state.prevPrice = state.price;
+                document.getElementById('price-text').textContent = formatPrice(state.price);
+                
+                const results = await Promise.allSettled([
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1d&limit=400`),
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1w&limit=100`),
+                    fetch(`${APIS.klines}/klines?symbol=${CONFIG.symbol}&interval=1M&limit=240`)
+                ]);
+
+                if (results[0].status === 'fulfilled' && results[0].value.ok) {
+                    const dData = await results[0].value.json();
+                    if(Array.isArray(dData) && dData.length > 5) {
+                        state.klines.d = dData;
+                        state.stats.d = calculateRegime(dData, 1); 
+                    } else renderError('d', 'Invalid Data Format');
+                } else renderError('d', 'Daily Data Failed');
+
+                if (results[1].status === 'fulfilled' && results[1].value.ok) {
+                    state.klines.w = await results[1].value.json();
+                    state.stats.w = calculateRegime(state.klines.w, 7); 
+                } else renderError('w', 'Weekly Data Failed');
+
+                if (results[2].status === 'fulfilled' && results[2].value.ok) {
+                    const mData = await results[2].value.json();
+                    state.klines.m = mData;
+                    state.stats.m = calculateRegime(mData, 30); 
+                    state.klines.q = buildAggregateTF(mData, 3); 
+                    state.stats.q = calculateRegime(state.klines.q, 90);
+                    state.klines.s = buildAggregateTF(mData, 6); 
+                    state.stats.s = calculateRegime(state.klines.s, 180);
+                    state.klines.y = buildAggregateTF(mData, 12);
+                    state.stats.y = calculateRegime(state.klines.y, 365);
+                } else renderError('m', 'Monthly Data Failed');
+
+                updateGlobalConfluence();
+                renderAllMaps();
+
+                showLoading(false);
+                setTimeout(() => centerMap(true), 100);
+                setTimeout(() => centerMap(true), 500); 
+                
+                startStream(CONFIG.symbol);
+                state.intervals.poll = setInterval(syncStructure, 1000);
+                state.intervals.micro = setInterval(updateMicroStructure, 1000);
+                state.micro.startTime = Date.now();
+                state.micro.startPrice = state.price;
+
+                initSeismograph();
+
+            } catch(e) {
+                console.error(e);
+                showLoading(false);
+                updateStatus('Error');
+                alert('Connection Error.\n\nJika data tidak muncul, kemungkinan koneksi ke Binance diblokir oleh ISP.\n\nSaran: Coba gunakan VPN.');
+            }
+        }
+
+        // --- VIEW SWITCHING LOGIC ---
+        function switchView(viewName) {
+            const mapBtn = document.getElementById('btn-view-map');
+            const seismoBtn = document.getElementById('btn-view-seismo');
+            const mapView = document.getElementById('view-map');
+            const seismoView = document.getElementById('view-seismo');
+
+            if (viewName === 'map') {
+                mapView.classList.remove('hidden');
+                seismoView.classList.add('hidden');
+                mapBtn.classList.add('active');
+                mapBtn.classList.remove('inactive');
+                seismoBtn.classList.add('inactive');
+                seismoBtn.classList.remove('active');
+                setTimeout(() => centerMap(false), 50);
+            } else {
+                mapView.classList.add('hidden');
+                seismoView.classList.remove('hidden');
+                seismoBtn.classList.add('active');
+                seismoBtn.classList.remove('inactive');
+                mapBtn.classList.add('inactive');
+                mapBtn.classList.remove('active');
+                resizeSeismoCanvas();
+            }
+        }
+
+        // --- SEISMOGRAPH VISUALIZATION (REDESIGNED) ---
+        function initSeismograph() {
+            seismoCanvas = document.getElementById('seismo-canvas');
+            seismoCtx = seismoCanvas.getContext('2d');
+            window.addEventListener('resize', resizeSeismoCanvas);
+            resizeSeismoCanvas();
+            animateSeismograph();
+        }
+
+        function resizeSeismoCanvas() {
+            if(!seismoCanvas) return;
+            const parent = seismoCanvas.parentElement;
+            seismoCanvas.width = parent.clientWidth;
+            seismoCanvas.height = parent.clientHeight;
+        }
+
+        function animateSeismograph() {
+            if (!seismoCanvas || document.getElementById('view-seismo').classList.contains('hidden')) {
+                animationFrameId = requestAnimationFrame(animateSeismograph);
+                return;
+            }
+
+            const ctx = seismoCtx;
+            const w = seismoCanvas.width;
+            const h = seismoCanvas.height;
+            const history = state.micro.seismoHistory;
+
+            // Clear
+            ctx.fillStyle = '#0b0f19';
+            ctx.fillRect(0, 0, w, h);
+
+            // Split Layout
+            const graphH = h * 0.75;
+            const barH_Base = h * 0.75; // Baseline for bars
+            const barcodeY = h * 0.8;
+            const barcodeH = h * 0.15;
+
+            // Draw Divider
+            ctx.strokeStyle = '#1f2937';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, barcodeY - 5);
+            ctx.lineTo(w, barcodeY - 5);
+            ctx.stroke();
+
+            // Config
+            const barWidth = 4;
+            const gap = 1;
+            const totalBarWidth = barWidth + gap;
+            const maxBars = Math.ceil(w / totalBarWidth);
+
+            // Draw Bars (Right to Left)
+            const visibleData = history.slice(-maxBars);
+            
+            // Find max volume for scaling
+            let maxVol = 1; 
+            visibleData.forEach(d => { if(d.vol > maxVol) maxVol = d.vol; });
+
+            // --- LAYER 1: BARS & DNA (BACKGROUND) ---
+            for (let i = visibleData.length - 1; i >= 0; i--) {
+                const d = visibleData[i];
+                const x = w - ((visibleData.length - i) * totalBarWidth);
+                
+                // Color Logic
+                let color = '#4b5563'; // Stalking
+                if (d.type === 'H') color = '#fbbf24';
+                if (d.type === 'Rb') color = '#4ade80';
+                if (d.type === 'Rs') color = '#f87171';
+                if (d.type === 'Ab' || d.type === 'As') color = '#c084fc';
+
+                // Bar
+                const barHeight = (Math.log(d.vol + 1) / Math.log(maxVol + 1)) * (graphH * 0.8);
+                
+                ctx.fillStyle = color;
+                ctx.fillRect(x, barH_Base - barHeight, barWidth, barHeight);
+                
+                // Reflection
+                ctx.globalAlpha = 0.3;
+                ctx.fillRect(x, barH_Base, barWidth, barHeight * 0.2);
+                ctx.globalAlpha = 1.0;
+
+                // DNA Barcode
+                ctx.fillStyle = color;
+                ctx.fillRect(x, barcodeY, barWidth + 0.5, barcodeH); 
+            }
+
+            // --- LAYER 2: LABELS & PRICE BOXES (FOREGROUND / ON TOP) ---
+            let lastLabelX = -100; // Track label position to avoid overlap
+
+            for (let i = visibleData.length - 1; i >= 0; i--) {
+                const d = visibleData[i];
+                const x = w - ((visibleData.length - i) * totalBarWidth);
+                const barHeight = (Math.log(d.vol + 1) / Math.log(maxVol + 1)) * (graphH * 0.8);
+                
+                // Color Logic again for labels
+                let color = '#4b5563'; 
+                if (d.type === 'H') color = '#fbbf24';
+                if (d.type === 'Rb') color = '#4ade80';
+                if (d.type === 'Rs') color = '#f87171';
+                if (d.type === 'Ab' || d.type === 'As') color = '#c084fc';
+
+                const isActivity = barHeight > 2; 
+                const hasSpace = (x - lastLabelX) > 50 || lastLabelX === -100; 
+
+                if (isActivity && hasSpace) {
+                    lastLabelX = x;
+                    
+                    // Draw Line pointer
+                    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    ctx.setLineDash([2, 2]);
+                    ctx.beginPath();
+                    ctx.moveTo(x + barWidth/2, barH_Base - barHeight - 5);
+                    ctx.lineTo(x + barWidth/2, barH_Base - barHeight - 20);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Draw Price Box
+                    const priceTxt = formatPrice(d.price);
+                    let typeTxt = d.type;
+                    
+                    if (d.type === 'S') typeTxt = 'STALK';
+                    if (d.type === 'H') typeTxt = 'HUNT';
+                    if (d.type === 'Rb') typeTxt = 'RUN(B)';
+                    if (d.type === 'Rs') typeTxt = 'RUN(S)';
+                    if (d.type === 'Ab' || d.type === 'As') typeTxt = 'ABSORB';
+
+                    ctx.font = 'bold 10px JetBrains Mono';
+                    const txtW = ctx.measureText(priceTxt).width;
+                    const boxW = txtW + 10;
+                    const boxH = 24;
+                    
+                    let boxX = x - (boxW/2);
+                    if (boxX + boxW > w) boxX = w - boxW - 4;
+                    if (boxX < 0) boxX = 4;
+
+                    const boxY = barH_Base - barHeight - 44;
+
+                    // Box Background (Flat, no glow)
+                    ctx.fillStyle = 'rgba(11, 15, 25, 0.95)'; // Increased opacity
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.roundRect(boxX, boxY, boxW, boxH, 4);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Price Text
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(priceTxt, boxX + (boxW/2), boxY + 10);
+                    
+                    // Type Text
+                    ctx.font = 'bold 8px Inter';
+                    ctx.fillStyle = color;
+                    ctx.fillText(typeTxt, boxX + (boxW/2), boxY + 20);
+                }
+            }
+            // End Layer 2 Loop
+            
+            // Draw "Live" Marker
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(w - 2, 0, 2, h);
+
+            animationFrameId = requestAnimationFrame(animateSeismograph);
+        }
+
+
+        // --- WEBSOCKET LOGIC (THE HEART OF REALTIME) ---
+        function startStream(symbol) {
+            updateStatus('Connecting...');
+            
+            // Primary and Fallback URLs
+            // Fallback: binance.vision (Public data stream, often more accessible)
+            const wsUrl1 = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`;
+            const wsUrl2 = `wss://data-stream.binance.vision/ws/${symbol.toLowerCase()}@trade`;
+            
+            function connect(url, isFallback) {
+                if(priceSocket) { priceSocket.close(); }
+                
+                priceSocket = new WebSocket(url);
+                
+                priceSocket.onopen = () => {
+                    updateStatus(isFallback ? 'Live (Backup)' : 'Live Stream');
+                    document.getElementById('status-indicator').classList.add('status-glow');
+                };
+                
+                priceSocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    const newPrice = parseFloat(data.p);
+                    const qty = parseFloat(data.q);
+                    const time = data.T; // Trade time
+                    const isBuyerMaker = data.m; // true = Sell Aggression, false = Buy Aggression
+                    
+                    // 1. Update Price State
+                    state.prevPrice = state.price;
+                    state.price = newPrice;
+
+                    // 2. Add to Flow Buffer
+                    state.flow.push({ p: newPrice, q: qty, t: time, m: isBuyerMaker });
+                    
+                    // 3. Increment Micro Tick Counters
+                    state.micro.ticks++;
+                    state.micro.currentSecVol += qty; // Accumulate volume
+                    
+                    // 4. Update Current Delta (For Absorption)
+                    if (isBuyerMaker) {
+                        state.micro.currentSecDelta -= qty; // Seller Aggression
+                    } else {
+                        state.micro.currentSecDelta += qty; // Buyer Aggression
+                    }
+
+                    // 5. Prune old trades (> 60s)
+                    const cutoff = Date.now() - 60000;
+                    while(state.flow.length > 0 && state.flow[0].t < cutoff) {
+                        state.flow.shift();
+                    }
+                    
+                    // 6. High Frequency Visual Updates (Lightweight)
+                    triggerVisualUpdate();
+                };
+                
+                priceSocket.onerror = (err) => {
+                    console.error("WS Error", err);
+                    updateStatus('WS Error');
+                };
+                
+                priceSocket.onclose = (event) => {
+                    if(!isFallback) {
+                        console.log("Primary WS failed, trying fallback...");
+                        connect(wsUrl2, true);
+                    } else {
+                        updateStatus('Disconnected');
+                        // If fallback also fails, likely a network block (VPN needed)
+                        if(event.code !== 1000) {
+                            console.log("All WS attempts failed.");
+                        }
+                    }
+                };
+            }
+
+            // Start with primary
+            connect(wsUrl1, false);
+        }
+
+        // Throttled Visual Update to prevent stack overflow and high CPU usage
+        function triggerVisualUpdate() {
+            if (!visualUpdatePending) {
+                visualUpdatePending = true;
+                requestAnimationFrame(() => {
+                    updatePriceVisuals();
+                    visualUpdatePending = false;
+                });
+            }
+        }
+
+        // Lightweight function run on EVERY tick (Throttled)
+        function updatePriceVisuals() {
+            // A. Update Text & Flash Color
+            const priceEl = document.getElementById('price-text');
+            if (priceEl) {
+                priceEl.textContent = formatPrice(state.price);
+                
+                if (state.price > state.prevPrice) {
+                    priceEl.classList.remove('text-yellow-400', 'flash-red');
+                    priceEl.classList.add('flash-green');
+                    setTimeout(() => { priceEl.classList.remove('flash-green'); priceEl.classList.add('text-yellow-400'); }, 150);
+                } else if (state.price < state.prevPrice) {
+                    priceEl.classList.remove('text-yellow-400', 'flash-green');
+                    priceEl.classList.add('flash-red');
+                    setTimeout(() => { priceEl.classList.remove('flash-red'); priceEl.classList.add('text-yellow-400'); }, 150);
+                }
+            }
+
+            // B. Update Line Position Immediately
+            updatePriceLine();
+
+            // C. Render Footprint HUD (New)
+            renderFootprint();
+        }
+
+        // --- NEW: MICRO-STRUCTURE ABUSE DETECTION & MM PROFILE ---
+        function updateMicroStructure() {
+            const el = document.getElementById('fp-micro');
+            const speedEl = document.getElementById('fp-speed-val');
+            const statusEl = document.getElementById('fp-status-val');
+            const statusPill = document.getElementById('fp-status-pill');
+            // RESTORED: Timeline Element
+            const timelineEl = document.getElementById('mm-timeline');
+            
+            if (!el) return;
+
+            // 1. Calculate Tick Velocity (Ticks Per Second)
+            const tps = state.micro.ticks;
+            speedEl.textContent = `${tps}/s`;
+            
+            // 2. Calculate Efficiency (Price Move / Effort)
+            const priceDiff = state.price - state.micro.startPrice; 
+            const priceMove = Math.abs(priceDiff);
+            const delta = state.micro.currentSecDelta;
+            
+            // Lower threshold to catch more movement: 0.002% (2 basis points) instead of 0.01%
+            const volatility = state.price * 0.00002; 
+            
+            let status = 'STALKING'; 
+            let statusCode = 'S'; 
+            let colorClass = 'text-gray-400 border-gray-600';
+            let animation = '';
+            let detailedStatus = 'STALKING'; // For Live Panel
+
+            // --- ABUSE LOGIC ---
+            // Lower TPS threshold to 5 to catch moderate aggression
+            if (tps > 5 && priceMove < volatility) {
+                status = 'HUNTING'; 
+                statusCode = 'H';
+                colorClass = 'text-yellow-200 border-yellow-500 bg-yellow-900/50';
+                animation = 'pulse-absorb';
+                state.micro.stats.hunting++;
+                detailedStatus = 'HUNTING';
+            } 
+            else if (tps > 5 && priceMove >= volatility) {
+                // --- NEW: ABSORPTION LOGIC (Divergence) ---
+                if (priceDiff > 0 && delta < 0) {
+                    // Price Up BUT Net Selling -> Hidden Buying (Absorption)
+                    status = 'ABSORPTION';
+                    statusCode = 'Ab'; // Absorption Bullish
+                    colorClass = 'text-purple-200 border-purple-500 bg-purple-900/50';
+                    animation = 'pulse-diverge';
+                    state.micro.stats.absorb++;
+                    detailedStatus = 'ABSORP (BULL)';
+                } else if (priceDiff < 0 && delta > 0) {
+                    // Price Down BUT Net Buying -> Hidden Selling (Absorption)
+                    status = 'ABSORPTION';
+                    statusCode = 'As'; // Absorption Bearish
+                    colorClass = 'text-purple-200 border-purple-500 bg-purple-900/50';
+                    animation = 'pulse-diverge';
+                    state.micro.stats.absorb++;
+                    detailedStatus = 'ABSORP (BEAR)';
+                } else if (priceDiff > 0) {
+                    status = 'RUNNING'; 
+                    statusCode = 'Rb'; 
+                    colorClass = 'text-green-200 border-green-500 bg-green-900/50'; 
+                    animation = 'pulse-active-bull'; 
+                    state.micro.stats.running++;
+                    detailedStatus = 'RUNNING (BULL)';
+                } else {
+                    status = 'RUNNING'; 
+                    statusCode = 'Rs'; 
+                    colorClass = 'text-red-200 border-red-500 bg-red-900/50'; 
+                    animation = 'pulse-active'; 
+                    state.micro.stats.running++;
+                    detailedStatus = 'RUNNING (BEAR)';
+                }
+            }
+            else {
+                status = 'STALKING';
+                statusCode = 'S';
+                colorClass = 'text-gray-400 border-gray-600';
+                animation = '';
+                state.micro.stats.stalking++;
+                detailedStatus = 'STALKING';
+            }
+            
+            state.micro.stats.total++;
+            if (tps > state.micro.stats.maxSpeed) state.micro.stats.maxSpeed = tps;
+
+            // Render Status
+            el.classList.remove('hidden');
+            statusEl.textContent = status;
+            statusPill.className = `fp-pulse-pill ${colorClass} ${animation}`;
+
+            // --- UPDATE LIVE PANEL ---
+            updateLiveIntel(detailedStatus, colorClass, state.price, state.micro.currentSecVol, delta);
+
+            // --- INTEL UPDATE (Every 1s) ---
+            updateMMIntel();
+
+            // --- SAVE TO SEISMO HISTORY (NEW) ---
+            // Push current second's data to history for Seismograph rendering
+            state.micro.seismoHistory.push({
+                type: statusCode,
+                vol: state.micro.currentSecVol, // Magnitude
+                price: state.price, // Price at this moment
+                time: Date.now()
+            });
+            // Keep history limited (e.g., last 300 seconds / 5 mins)
+            if (state.micro.seismoHistory.length > 1000) {
+                state.micro.seismoHistory.shift();
+            }
+
+            // --- RENDER HISTORY TIMELINE (RESTORED MAP VIEW BARCODE) ---
+            // Update the timeline HTML just like before
+            state.micro.history.push(statusCode);
+            if(state.micro.history.length > 60) state.micro.history.shift(); 
+
+            let timelineHTML = '';
+            state.micro.history.forEach(code => {
+                let tickClass = 'mm-tick-s';
+                if(code === 'H') tickClass = 'mm-tick-h';
+                if(code === 'Rs') tickClass = 'mm-tick-r-bear'; 
+                if(code === 'Rb') tickClass = 'mm-tick-r-bull';
+                if(code === 'Ab' || code === 'As') tickClass = 'mm-tick-abs'; 
+                timelineHTML += `<div class="mm-tick ${tickClass}"></div>`;
+            });
+            if(timelineEl) timelineEl.innerHTML = timelineHTML;
+
+            // --- PERSIST TO MM PROFILE (Ghost Bars on Map) ---
+            const bucketSize = state.price * 0.0002; // coarser bucket for profile (0.02%)
+            const pKey = (Math.floor(state.price / bucketSize) * bucketSize).toFixed(5);
+            
+            if (!state.mmProfile[pKey]) state.mmProfile[pKey] = { s: 0, h: 0, rb: 0, rs: 0, abs: 0, total: 0 };
+            
+            const vol = state.micro.currentSecVol;
+            
+            if (statusCode === 'S') state.mmProfile[pKey].s += vol;
+            else if (statusCode === 'H') state.mmProfile[pKey].h += vol;
+            else if (statusCode === 'Rb') state.mmProfile[pKey].rb += vol;
+            else if (statusCode === 'Rs') state.mmProfile[pKey].rs += vol;
+            else if (statusCode === 'Ab' || statusCode === 'As') state.mmProfile[pKey].abs += vol;
+            
+            state.mmProfile[pKey].total += vol;
+
+            // Render the MM Profile on the map (Daily map usually)
+            renderMMProfile('d');
+
+            // Reset Micro Counters for next second
+            state.micro.ticks = 0;
+            state.micro.currentSecVol = 0;
+            state.micro.currentSecDelta = 0;
+            state.micro.startPrice = state.price;
+        }
+
+        // --- NEW: LIVE INTEL UPDATE ---
+        function updateLiveIntel(status, colorClass, price, vol, delta) {
+            const priceEl = document.getElementById('intel-live-price');
+            const statusEl = document.getElementById('intel-live-status');
+            const volEl = document.getElementById('intel-live-vol');
+            
+            if (priceEl) priceEl.textContent = formatPrice(price);
+            if (statusEl) {
+                statusEl.textContent = status;
+                // Parse color from colorClass (which has text-x border-y bg-z)
+                // We want a solid badge style for this panel
+                // Map colorClass to a simple color style
+                let bgClass = 'text-gray-500';
+                if (status.includes('HUNT')) bgClass = 'text-yellow-400';
+                else if (status.includes('RUN') && status.includes('BULL')) bgClass = 'text-green-400';
+                else if (status.includes('RUN') && status.includes('BEAR')) bgClass = 'text-red-400';
+                else if (status.includes('ABSORP')) bgClass = 'text-purple-400';
+                
+                statusEl.className = `text-[10px] font-bold mt-0.5 ${bgClass}`;
+            }
+            if (volEl) volEl.textContent = `${vol.toFixed(2)}`;
+        }
+
+        // --- THE BRAIN: ADVANCED INTEL (GLOBAL SCREEN CONTEXT & PROBABILISTIC) ---
+        // This function now replaces "analyzeAdvancedIntent" with a smarter Synthesis Engine
+        function updateMMIntel() {
+            // Use full available history (1000+ ticks)
+            const fullHistory = state.micro.seismoHistory;
+            if (fullHistory.length < 10) return;
+
+            // --- 1. MEMORY DECAY & CONTEXT BUILDING ---
+            // Calculate a rolling score for Trend and Volatility
+            // This prevents "flippant" (plin-plan) behavior.
+            
+            let currentTrendBias = 0; // -1 (Bear) to 1 (Bull)
+            let currentVolStress = 0; // 0 to 1
+            
+            // Calculate moving averages over the last 60 seconds
+            const recentHistory = fullHistory.slice(-60);
+            
+            // Calculate VWAP-like structure for the last minute
+            const startP = recentHistory[0].price;
+            const endP = recentHistory[recentHistory.length - 1].price;
+            const priceChangePct = (endP - startP) / startP;
+            
+            // Bias Calculation
+            if (priceChangePct > 0.0005) currentTrendBias = 1; // Strong Bull
+            else if (priceChangePct > 0.0001) currentTrendBias = 0.5; // Weak Bull
+            else if (priceChangePct < -0.0005) currentTrendBias = -1; // Strong Bear
+            else if (priceChangePct < -0.0001) currentTrendBias = -0.5; // Weak Bear
+            
+            // Update Memory with Decay (Inertia)
+            // New Score = (Old Score * Decay) + (New Score * (1-Decay))
+            state.memory.macroScore = (state.memory.macroScore * state.memory.decayFactor) + (currentTrendBias * (1 - state.memory.decayFactor));
+            
+            // Normalize memory score
+            const mScore = state.memory.macroScore;
+            
+            // --- 2. MACRO NARRATIVE CONSTRUCTION ---
+            let trendText = "NEUTRAL";
+            let trendClass = "text-gray-400";
+            let structureText = "Consolidation";
+            let narrative = "";
+
+            if (mScore > 0.4) { trendText = "BULLISH TREND"; trendClass = "text-green-400"; }
+            else if (mScore > 0.1) { trendText = "WEAK UPTREND"; trendClass = "text-green-300"; }
+            else if (mScore < -0.4) { trendText = "BEARISH TREND"; trendClass = "text-red-400"; }
+            else if (mScore < -0.1) { trendText = "WEAK DOWNTREND"; trendClass = "text-red-300"; }
+            else { trendText = "RANGE / CHOP"; trendClass = "text-yellow-400"; }
+
+            // Determine Structure based on Volatility + Trend
+            // Calculate Volatility of recent ticks
+            let volSum = 0;
+            recentHistory.forEach(h => volSum += h.vol);
+            const avgVol = volSum / recentHistory.length;
+            
+            if (avgVol > 5 && Math.abs(mScore) < 0.2) structureText = "High Volatility Chop (Fight)";
+            else if (avgVol < 1 && Math.abs(mScore) < 0.2) structureText = "Low Volatility (Awaiting Liquidity)";
+            else if (mScore > 0.3) structureText = "Buyers in Control";
+            else if (mScore < -0.3) structureText = "Sellers in Control";
+
+            // --- 3. GENERATE SEMANTIC NARRATIVE (The "Sentence") ---
+            // Combines Macro (Memory) + Micro (Latest Tick)
+            const latest = recentHistory[recentHistory.length - 1];
+            
+            if (mScore > 0.3) {
+                // Macro Bullish
+                if (latest.type === 'Rs') narrative = "Pullback detected in Uptrend. Buyers likely defending lower support.";
+                else if (latest.type === 'Rb') narrative = "Trend Extension. Buyers pushing higher highs.";
+                else if (latest.type === 'H') narrative = "Hunting Liquidity during Uptrend. Potential Stop Hunt before continuation.";
+                else if (latest.type === 'Ab') narrative = "Hidden Buying (Absorption) supporting the trend.";
+                else narrative = "Uptrend Intact. Waiting for next impulse.";
+            } else if (mScore < -0.3) {
+                // Macro Bearish
+                if (latest.type === 'Rb') narrative = "Relief Rally in Downtrend. Sellers likely reloading at resistance.";
+                else if (latest.type === 'Rs') narrative = "Trend Extension. Sellers pushing lower lows.";
+                else if (latest.type === 'H') narrative = "Hunting Liquidity during Downtrend. Shakeout before drop.";
+                else if (latest.type === 'As') narrative = "Hidden Selling (Absorption) capping the price.";
+                else narrative = "Downtrend Intact. Selling pressure remains.";
+            } else {
+                // Range
+                if (latest.type.includes('R')) narrative = "Ping-pong action inside Range. No clear direction yet.";
+                else if (latest.type.includes('A')) narrative = "Accumulation/Distribution activity detected inside Range.";
+                else narrative = "Market is deciding. Monitoring for Breakout.";
+            }
+
+            // --- NEW: MM TACTICAL INTENT (POINTER TO MM ACTIONS) ---
+            // Count specific MM events in recent history
+            const mmStats = {
+                absorption: recentHistory.filter(h => h.type === 'Ab' || h.type === 'As').length,
+                hunting: recentHistory.filter(h => h.type === 'H').length,
+                running: recentHistory.filter(h => h.type.includes('R')).length
+            };
+
+            let mmIntent = "Neutral / Providing Liquidity";
+            if (mmStats.absorption > 2) {
+                mmIntent = "INSTITUTIONAL ABSORPTION. MMs are passively filling large limit orders against the crowd.";
+            } else if (mmStats.hunting > 2) {
+                // Determine direction of hunt based on price drift during the hunting phase
+                const startHuntP = recentHistory[0].price;
+                const endHuntP = recentHistory[recentHistory.length-1].price;
+                const huntDir = endHuntP < startHuntP ? "LONG STOPS (Shakeout Dip)" : "SHORT STOPS (Upside Probe)";
+                
+                mmIntent = `LIQUIDITY HUNTING. MMs are probing levels to trigger ${huntDir}.`;
+            } else if (mmStats.running > 5) {
+                mmIntent = "MOMENTUM IGNITION. MMs are aggressively taking liquidity to push price (Gap Expansion).";
+            } else if (avgVol < 1) {
+                mmIntent = "ORDER BOOK THINNING. MMs have widened spreads, expecting volatility or lacking interest.";
+            }
+
+            // Update DOM
+            const domValEl = document.getElementById('macro-dom-val');
+            const domBar = document.getElementById('macro-dom-bar');
+            const narrativeBox = document.getElementById('macro-narrative');
+            const mmIntentBox = document.getElementById('mm-intent-text');
+
+            if(narrativeBox) narrativeBox.textContent = `> ${narrative}`;
+            if(mmIntentBox) mmIntentBox.textContent = mmIntent;
+            
+            // Visual Bar for Buyers vs Sellers (derived from Memory Score to be smoother)
+            // Map -1..1 to 0..100
+            const domPct = Math.round(((mScore + 1) / 2) * 100);
+            if(domValEl) {
+                domValEl.textContent = `${trendText} (${domPct}%)`;
+                domValEl.className = `font-bold ${trendClass}`;
+            }
+            if(domBar) {
+                domBar.style.width = `${domPct}%`;
+                domBar.className = `h-full transition-all duration-300 ${mScore > 0 ? 'bg-green-500' : (mScore < 0 ? 'bg-red-500' : 'bg-yellow-500')}`;
+            }
+
+            // --- 4. PROBABILISTIC SCENARIOS (MICRO) ---
+            // Generate contextual options based on "Who is trapped?" logic
+            let scenarios = [];
+            
+            // Helper booleans
+            const isBull = mScore > 0.2;
+            const isBear = mScore < -0.2;
+            const highVol = avgVol > 3;
+
+            // Scenario 1: Continuation
+            if (isBull) {
+                scenarios.push({ 
+                    name: "BULLISH CONTINUATION (Buyers Strong)", 
+                    pct: 60 + (mScore * 20), 
+                    color: "bg-green-500" 
+                });
+                scenarios.push({ 
+                    name: "BEAR TRAP (Short Squeeze)", 
+                    pct: 30, 
+                    color: "bg-purple-500" 
+                });
+            } else if (isBear) {
+                scenarios.push({ 
+                    name: "BEARISH CONTINUATION (Sellers Strong)", 
+                    pct: 60 + (Math.abs(mScore) * 20), 
+                    color: "bg-red-500" 
+                });
+                 scenarios.push({ 
+                    name: "BULL TRAP (Longs Squeezed)", 
+                    pct: 30, 
+                    color: "bg-purple-500" 
+                });
+            } else {
+                scenarios.push({ name: "RANGE ROTATION (Mean Reversion)", pct: 55, color: "bg-yellow-500" });
+                scenarios.push({ name: "BREAKOUT PENDING (Volatility Ignition)", pct: 45, color: "bg-orange-500" });
+            }
+
+            // Normalize Percentages
+            const totalPct = scenarios.reduce((acc, curr) => acc + curr.pct, 0);
+            scenarios = scenarios.map(s => ({
+                ...s,
+                pct: Math.round((s.pct / totalPct) * 100)
+            })).sort((a,b) => b.pct - a.pct);
+
+            // Render Scenarios
+            const listEl = document.getElementById('scenario-list');
+            if(listEl && scenarios.length > 0) {
+                let html = '';
+                scenarios.slice(0, 3).forEach(sc => { // Show top 3
+                    html += `
+                        <div class="mb-1">
+                            <div class="scenario-row text-gray-300">
+                                <span>${sc.name}</span>
+                                <span class="font-mono font-bold">${sc.pct}%</span>
+                            </div>
+                            <div class="scenario-bar-bg">
+                                <div class="scenario-bar-fill ${sc.color}" style="width: ${sc.pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+            }
+        }
+
+        // --- NEW: MM PROFILE RENDERER (DISABLED FOR MAP AS REQUESTED) ---
+        function renderMMProfile(mapId) {
+             // Function body kept empty or minimal to satisfy structure but disable rendering
+             /*
+            const container = document.getElementById(`world-${mapId}`);
+            if (!container) return;
+            // ... (code removed to clean up map view) ...
+            */
+        }
+
+
+        // --- NEW: FOOTPRINT RENDERER & PREDICTION ---
+        function renderFootprint() {
+            const container = document.getElementById('fp-visuals');
+            const deltaEl = document.getElementById('fp-delta');
+            const targetContainer = document.getElementById('fp-target');
+            const targetPill = document.getElementById('fp-target-pill');
+            
+            if(!container) return;
+
+            // Bucket Logic: Group trades by price level relative to current price
+            // We want to see +/- 0.05% range around price
+            const bucketSize = state.price * 0.0001; // 0.01% buckets
+            const buckets = {};
+            let maxVol = 0;
+            let netDelta = 0;
+            let totalBuy = 0;
+            let totalSell = 0;
+
+            state.flow.forEach(tx => {
+                // Round price to nearest bucket
+                const bPrice = Math.round(tx.p / bucketSize) * bucketSize;
+                const key = bPrice.toFixed(5);
+                
+                if(!buckets[key]) buckets[key] = { buy: 0, sell: 0 };
+                
+                if (tx.m) { 
+                    // Maker was buyer -> Taker was SELLER
+                    buckets[key].sell += tx.q;
+                    totalSell += tx.q;
+                    netDelta -= tx.q;
+                } else {
+                    // Maker was seller -> Taker was BUYER
+                    buckets[key].buy += tx.q;
+                    totalBuy += tx.q;
+                    netDelta += tx.q;
+                }
+                
+                const vol = buckets[key].buy + buckets[key].sell;
+                if(vol > maxVol) maxVol = vol;
+            });
+
+            const totalVol = totalBuy + totalSell;
+
+            // Update Delta Label
+            if(state.flow.length === 0 || totalVol === 0) {
+                deltaEl.textContent = "WAITING FLOW...";
+                deltaEl.className = "delta-meter text-gray-500";
+                container.innerHTML = '';
+                targetContainer.classList.add('hidden');
+                return;
+            } else {
+                targetContainer.classList.remove('hidden');
+            }
+
+            const deltaSign = netDelta > 0 ? '+' : '';
+            deltaEl.innerHTML = `FLOW(60s): <span class="${netDelta > 0 ? 'text-green-400' : 'text-red-400'}">${deltaSign}${netDelta.toFixed(2)}</span>`;
+            
+            // --- NEW: MOMENTUM TARGET PROJECTION ---
+            const imbalancePct = Math.abs(netDelta) / totalVol; // 0.0 to 1.0
+            const strength = Math.round(imbalancePct * 100);
+            const projectedMovePct = 0.0005 + (0.0005 * imbalancePct); 
+            const priceMove = state.price * projectedMovePct;
+            
+            let targetPrice = 0;
+            let arrow = '';
+            let colorClass = '';
+            let strengthBg = '';
+            let label = '';
+
+            if (netDelta > 0) {
+                targetPrice = state.price + priceMove;
+                arrow = '▲';
+                colorClass = 'text-green-400';
+                strengthBg = 'bg-green-400';
+                label = 'BULL';
+            } else {
+                targetPrice = state.price - priceMove;
+                arrow = '▼';
+                colorClass = 'text-red-400';
+                strengthBg = 'bg-red-400';
+                label = 'BEAR';
+            }
+
+            targetPill.innerHTML = `
+                <span class="fp-arrow ${colorClass}">${arrow}</span>
+                <span class="fp-target-price ${colorClass}">${formatPrice(targetPrice)}</span>
+                <span class="fp-strength ${strengthBg}">${label} ${strength}%</span>
+            `;
+
+            // Generate HTML for bars
+            const keys = Object.keys(buckets).sort((a,b) => parseFloat(b) - parseFloat(a));
+            const relevantKeys = keys.filter(k => Math.abs(parseFloat(k) - state.price) < (state.price * 0.002));
+
+            let html = '';
+            relevantKeys.forEach(k => {
+                const b = buckets[k];
+                const buyW = (b.buy / maxVol) * 80; // Max 80px width
+                const sellW = (b.sell / maxVol) * 80;
+                
+                const isCurrent = Math.abs(parseFloat(k) - state.price) < bucketSize;
+                const opacity = isCurrent ? '1.0' : '0.6';
+
+                html += `
+                    <div class="fp-row" style="opacity: ${opacity}">
+                        <div style="flex:1; display:flex;">
+                            <div class="fp-bar-sell" style="width: ${sellW}px;"></div>
+                        </div>
+                        <div class="fp-center-line"></div>
+                        <div style="flex:1; display:flex;">
+                            <div class="fp-bar-buy" style="width: ${buyW}px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // --- CALCULATION LOGIC ---
+
+        function calculateRegime(klines) {
+            if(!klines || klines.length < 2) return { vol: 0, radius: 0, regime: 'NEUTRAL', regimeColor: 'text-gray-400', ratio: 1, timeProgress: 0, elapsedHours: 0, totalHours: 0 };
+
+            const t0 = klines[klines.length - 1];
+            const t1 = klines[klines.length - 2];
+
+            const t0_H = parseFloat(t0[2]);
+            const t0_L = parseFloat(t0[3]);
+            const t0_Open = parseFloat(t0[1]);
+            const t0_Range = t0_H - t0_L;
+
+            const t1_H = parseFloat(t1[2]);
+            const t1_L = parseFloat(t1[3]);
+            const t1_Range = Math.abs(t1_H - t1_L); 
+
+            const vol = t0_Open > 0 ? (t0_Range / t0_Open) : 0;
+            const ratio = t1_Range > 0 ? (t0_Range / t1_Range) : 1.0;
+
+            let regime = 'CTR';
+            let regimeColor = 'text-green-400';
+            if (ratio > 1.0) {
+                regime = 'EXP';
+                regimeColor = 'text-red-400';
+            }
+
+            const openTime = t0[0];
+            const closeTime = t0[6]; 
+            const now = Date.now();
+            let timeProgress = (now - openTime) / (closeTime - openTime);
+            timeProgress = Math.max(0.01, Math.min(1.0, timeProgress)); 
+
+            // Calculate precise hours for display and logic
+            const totalMs = closeTime - openTime;
+            const elapsedMs = now - openTime;
+            const totalHours = Math.max(1, Math.round(totalMs / 3600000));
+            const elapsedHours = Math.max(0, Math.round(elapsedMs / 3600000));
+
+            const radius = vol * 1.25;
+
+            return { 
+                vol: vol, 
+                radius: radius, 
+                regime: regime, 
+                regimeColor: regimeColor,
+                ratio: ratio,
+                timeProgress: timeProgress,
+                elapsedHours: elapsedHours,
+                totalHours: totalHours,
+                // Helper data for global aggregation
+                open: t0_Open,
+                currentMove: Math.abs(state.price - t0_Open)
+            };
+        }
+
+        // --- GLOBAL CONFLUENCE LOGIC (INTELLIGENCE - UPGRADED) ---
+        function updateGlobalConfluence() {
+            if (!state.stats.d) return;
+
+            const tfs = ['d', 'w', 'm', 'q', 's', 'y'];
+            const statsArr = tfs.map(k => state.stats[k]).filter(Boolean);
+            
+            // 1. Weighted Alignment Score (The "Compass")
+            // Weights: Higher TF = More Significance
+            const weights = { d: 1, w: 1.5, m: 2, q: 2.5, s: 3, y: 3.5 };
+            let totalWeight = 0;
+            let alignScore = 0; // -1 (Full Bear) to 1 (Full Bull)
+            
+            // 2. Regime Complexity
+            let weightedExp = 0;
+            let weightedCtr = 0;
+            
+            // 3. Global Target Projection
+            let projectedSum = 0;
+            let projWeightSum = 0;
+            
+            let avgVol = 0;
+            let avgRatio = 0;
+
+            tfs.forEach(tf => {
+                const s = state.stats[tf];
+                if(!s) return;
+                
+                const w = weights[tf] || 1;
+                totalWeight += w;
+                
+                // Alignment Score Calculation
+                const isBull = state.price >= s.open;
+                const score = isBull ? 1 : -1;
+                alignScore += (score * w);
+                
+                // Regime Score
+                if (s.regime === 'EXP') weightedExp += w;
+                else weightedCtr += w;
+                
+                avgVol += s.vol;
+                avgRatio += s.ratio;
+
+                // Projection
+                const safeT = Math.max(0.01, s.timeProgress);
+                const projMove = s.currentMove / safeT;
+                const projTarget = isBull ? (s.open + projMove) : (s.open - projMove);
+                
+                const wProj = Math.pow(safeT, 2); 
+                projectedSum += projTarget * wProj;
+                projWeightSum += wProj;
+            });
+
+            // Final Normalization
+            const finalScore = totalWeight > 0 ? (alignScore / totalWeight) : 0; // Range -1 to 1
+            const regimeBias = totalWeight > 0 ? (weightedExp - weightedCtr) / totalWeight : 0; // >0 Exp, <0 Ctr
+            
+            const globalTarget = projWeightSum > 0 ? (projectedSum / projWeightSum) : 0;
+            avgVol /= statsArr.length;
+            avgRatio /= statsArr.length;
+
+            // --- UI UPDATE: PANEL 1 (ALIGNMENT) ---
+            const scoreText = finalScore.toFixed(2);
+            let alignLabel = "NEUTRAL";
+            let barColor = "bg-gray-500";
+            
+            if (finalScore > 0.6) { alignLabel = "FULL BULL ALIGNMENT"; barColor = "bg-green-500"; }
+            else if (finalScore > 0.2) { alignLabel = "BULLISH (CONFLICT)"; barColor = "bg-green-400"; }
+            else if (finalScore < -0.6) { alignLabel = "FULL BEAR ALIGNMENT"; barColor = "bg-red-500"; }
+            else if (finalScore < -0.2) { alignLabel = "BEARISH (CONFLICT)"; barColor = "bg-red-400"; }
+            else { alignLabel = "RANGE / CHOPPY"; barColor = "bg-yellow-500"; }
+
+            // Map score (-1 to 1) to Width (0% to 100%)
+            // 0 -> 50%, -1 -> 0%, 1 -> 100%
+            const barWidth = ((finalScore + 1) / 2) * 100;
+
+            document.getElementById('global-alignment-text').textContent = alignLabel;
+            document.getElementById('global-score-text').textContent = `SCORE: ${scoreText}`;
+            
+            const alignBar = document.getElementById('global-alignment-bar');
+            alignBar.style.width = `${barWidth}%`;
+            alignBar.className = `absolute left-0 top-0 bottom-0 transition-all duration-500 ${barColor}`;
+
+            // --- UI UPDATE: PANEL 2 (INSIGHT NARRATIVE) ---
+            // Construct sentence based on Score + Regime + Volatility
+            let insight = "";
+            const isHighVol = avgVol > 0.5; // Context dependent, simplistic check
+            
+            if (finalScore > 0.5) {
+                if (regimeBias > 0.2) insight = "Multi-Timeframe Breakout. Expansion phase supports strong uptrend.";
+                else insight = "Trend Consolidating. High probability of continuation after pullback.";
+            } else if (finalScore < -0.5) {
+                if (regimeBias > 0.2) insight = "Multi-Timeframe Breakdown. Expansion phase accelerating losses.";
+                else insight = "Bearish Grind. Sellers controlling resistance levels.";
+            } else {
+                // Conflict Zone
+                if (state.price > state.klines.m[state.klines.m.length-1][1]) { // Monthly Bullish?
+                     insight = "Macro Bullish but Daily Weakness. Buying Dip opportunity.";
+                } else {
+                     insight = "Macro Bearish with Daily Rally. Selling Rip opportunity.";
+                }
+            }
+            
+            // Add Volatility Context
+            if (avgRatio > 1.5) insight += " (Market Overextended)";
+            else if (avgRatio < 0.5) insight += " (Market Dormant)";
+
+            document.getElementById('global-insight-text').textContent = insight;
+
+            // Target Text
+            const distPct = ((globalTarget - state.price) / state.price) * 100;
+            const distSign = distPct > 0 ? '+' : '';
+            const targetEl = document.getElementById('radius-text');
+            targetEl.textContent = `${formatPrice(globalTarget)} (${distSign}${distPct.toFixed(2)}%)`;
+            
+            if (globalTarget >= state.price) targetEl.className = 'font-mono text-[9px] font-bold text-green-400';
+            else targetEl.className = 'font-mono text-[9px] font-bold text-red-400';
+        }
+
+        function updateColumnHeader(id, stats, label, smaLabel) {
+            const el = document.getElementById(`header-${id}`);
+            if(!el || !stats) return;
+            const timePct = (stats.timeProgress * 100).toFixed(2);
+            
+            el.innerHTML = `
+                <span>${label} <span class="text-[9px] opacity-70 ml-1 text-yellow-200">${smaLabel}</span></span>
+                <div class="header-stats">
+                    <span class="stat-badge text-gray-300">V:${(stats.vol*100).toFixed(2)}%</span>
+                    <span class="stat-badge text-blue-300">R:${(stats.ratio*100).toFixed(0)}%</span>
+                    <span class="stat-badge text-purple-300" title="Elapsed: ${stats.elapsedHours}h / ${stats.totalHours}h">T:${timePct}%</span>
+                    <span class="stat-badge ${stats.regimeColor}">${stats.regime}</span>
+                </div>
+            `;
+        }
+
+        function buildAggregateTF(monthlyKlines, monthsPerCandle) {
+            if(!monthlyKlines || monthlyKlines.length === 0) return [];
+            
+            const result = [];
+            let currentBin = null;
+
+            for(let i = 0; i < monthlyKlines.length; i++) {
+                const k = monthlyKlines[i];
+                const date = new Date(k[0]);
+                const month = date.getUTCMonth(); 
+                
+                const isStart = (month % monthsPerCandle) === 0;
+
+                if (isStart) {
+                    if (currentBin) result.push(finalizeBin(currentBin));
+                    currentBin = createNewBin(k, monthsPerCandle);
+                } else {
+                    if (!currentBin) currentBin = createNewBin(k, monthsPerCandle); 
+                    else updateBin(currentBin, k);
+                }
+            }
+            if (currentBin) result.push(finalizeBin(currentBin));
+
+            return result;
+        }
+
+        function createNewBin(k, months) {
+            const openTime = k[0];
+            const d = new Date(openTime);
+            d.setUTCMonth(d.getUTCMonth() + months); 
+            const theoreticCloseTime = d.getTime() - 1; 
+
+            return {
+                openTime: openTime,
+                open: k[1], 
+                high: parseFloat(k[2]),
+                low: parseFloat(k[3]),
+                close: k[4],
+                closeTime: theoreticCloseTime 
+            };
+        }
+
+        function updateBin(bin, k) {
+            bin.high = Math.max(bin.high, parseFloat(k[2]));
+            bin.low = Math.min(bin.low, parseFloat(k[3]));
+            bin.close = k[4];
+        }
+
+        function finalizeBin(bin) {
+            return [
+                bin.openTime,
+                bin.open,
+                bin.high.toString(),
+                bin.low.toString(),
+                bin.close,
+                0,
+                bin.closeTime 
+            ];
+        }
+
+        // Heavy operation: re-render map DOM, update candle high/low, recalc anchors
+        // We run this less frequently (1s) than the Price Update (Tick)
+        async function syncStructure() {
+            try {
+                // Update Klines in memory with latest price from WS
+                checkAndUpdateKlines('d', state.klines.d);
+                checkAndUpdateKlines('w', state.klines.w);
+                checkAndUpdateKlines('m', state.klines.m);
+
+                if(state.klines.m.length > 0) {
+                    state.klines.q = buildAggregateTF(state.klines.m, 3);
+                    state.klines.s = buildAggregateTF(state.klines.m, 6);
+                    state.klines.y = buildAggregateTF(state.klines.m, 12);
+                }
+                
+                state.stats.d = calculateRegime(state.klines.d);
+                state.stats.w = calculateRegime(state.klines.w);
+                state.stats.m = calculateRegime(state.klines.m);
+                state.stats.q = calculateRegime(state.klines.q);
+                state.stats.s = calculateRegime(state.klines.s);
+                state.stats.y = calculateRegime(state.klines.y);
+
+                updateGlobalConfluence();
+                renderAllMaps();
+                
+                // Re-render MM Profile on daily map during sync
+                renderMMProfile('d');
+
+            } catch(e) { console.log('Sync skip', e); }
+        }
+
+        function renderAllMaps() {
+            if(!state.klines.d || state.klines.d.length === 0) return;
+
+            const mmD = calculateSMA(state.klines.d, 1);    
+            const mmW = calculateSMA(state.klines.d, 7);    
+            const mmM = calculateSMA(state.klines.d, 30);   
+            const mmQ = calculateSMA(state.klines.d, 90);   
+            const mmS = calculateSMA(state.klines.d, 180);  
+            const mmY = calculateSMA(state.klines.d, 365);  
+
+            if(state.klines.d.length) { updateColumnHeader('d', state.stats.d, 'DAILY (MM PROFILE)', '(SMA 1D)'); renderMap('d', state.klines.d, state.stats.d, mmD, 'SMA'); }
+            if(state.klines.w.length) { updateColumnHeader('w', state.stats.w, 'WEEKLY', '(SMA 7D)'); renderMap('w', state.klines.w, state.stats.w, mmW, 'SMA'); }
+            if(state.klines.m.length) { updateColumnHeader('m', state.stats.m, 'MONTHLY', '(SMA 30D)'); renderMap('m', state.klines.m, state.stats.m, mmM, 'SMA'); }
+            if(state.klines.q.length) { updateColumnHeader('q', state.stats.q, 'QUARTER', '(SMA 90D)'); renderMap('q', state.klines.q, state.stats.q, mmQ, 'SMA'); }
+            if(state.klines.s.length) { updateColumnHeader('s', state.stats.s, 'SEMESTER', '(SMA 180D)'); renderMap('s', state.klines.s, state.stats.s, mmS, 'SMA'); }
+            if(state.klines.y.length) { updateColumnHeader('y', state.stats.y, 'YEARLY', '(SMA 365D)'); renderMap('y', state.klines.y, state.stats.y, mmY, 'SMA'); }
+        }
+
+        function calculateSMA(klines, period) {
+            if (!klines || klines.length < period) return null;
+            const slice = klines.slice(klines.length - period, klines.length);
+            const sum = slice.reduce((acc, k) => {
+                const h = parseFloat(k[2]);
+                const l = parseFloat(k[3]);
+                return acc + ((h + l) / 2); 
+            }, 0);
+            return sum / period;
+        }
+
+        function checkAndUpdateKlines(type, klines) {
+            if(!klines || klines.length === 0) return;
+            const lastK = klines[klines.length - 1];
+            let h = parseFloat(lastK[2]);
+            let l = parseFloat(lastK[3]);
+            
+            // Update current candle high/low based on realtime price
+            if(state.price > h) { lastK[2] = state.price.toString(); }
+            if(state.price < l) { lastK[3] = state.price.toString(); }
+            lastK[4] = state.price.toString();
+        }
+
+        function renderMap(id, klines, stats, customMM, mmLabel) {
+            const container = document.getElementById(`world-${id}`);
+            const oldItems = container.querySelectorAll('.rsa-item, .rsa-line');
+            oldItems.forEach(el => el.remove());
+            
+            container.style.height = `${CONFIG.virtualHeight}px`;
+
+            if(!klines || klines.length < 2) return;
+
+            const prev = klines[klines.length - 2];
+            const pH = parseFloat(prev[2]);
+            const pL = parseFloat(prev[3]);
+            const Vu = pH - pL;
+            const step = Vu * 0.125;
+            
+            const curr = klines[klines.length - 1];
+            const currOpenTime = curr[0];
+
+            if (state.touched[id].time !== currOpenTime) {
+                state.touched[id].set.clear();
+                state.touched[id].time = currOpenTime;
+            }
+            
+            const currH = parseFloat(curr[2]);
+            const currL = parseFloat(curr[3]);
+            const aH = Math.max(currH, state.price); 
+            const aL = Math.min(currL, state.price); 
+            const openPrice = parseFloat(curr[1]); 
+
+            const priceY = CONFIG.centerOffset; 
+            const pctDiffAH = ((aH - state.price) / state.price) * 100;
+            const topPosAH = CONFIG.centerOffset - (pctDiffAH * CONFIG.scale);
+            const pctDiffAL = ((aL - state.price) / state.price) * 100;
+            const topPosAL = CONFIG.centerOffset - (pctDiffAL * CONFIG.scale);
+
+            updateZone(container, 'red', topPosAH, priceY - topPosAH);
+            updateZone(container, 'green', priceY, topPosAL - priceY);
+
+            const pctDiffOpen = ((openPrice - state.price) / state.price) * 100;
+            const topPosOpen = CONFIG.centerOffset - (pctDiffOpen * CONFIG.scale);
+            const isBull = state.price >= openPrice;
+            updateBlueZone(container, isBull, priceY, topPosOpen);
+
+            createLine(container, topPosOpen, 'dashed', 'rgba(234, 179, 8, 0.7)');
+            
+            const openLabel = document.createElement('div');
+            openLabel.className = 'rsa-item';
+            openLabel.style.top = `${topPosOpen}px`;
+            openLabel.style.zIndex = '25';
+            const diffPct = ((state.price - openPrice) / openPrice) * 100;
+            const diffSign = diffPct > 0 ? '+' : '';
+            openLabel.innerHTML = `<span class="text-[9px] text-yellow-200 font-mono tracking-widest ml-1 bg-black/60 px-1 rounded border border-yellow-900/50">OPEN: ${formatPrice(openPrice)} (${diffSign}${diffPct.toFixed(2)}%)</span>`;
+            container.appendChild(openLabel);
+
+            const levels = [];
+            for(let i=1; i<=32; i++) levels.push({ p: aL + (i*step), lbl: `H${i}`, type: 'R', idx: i });
+            for(let i=1; i<=32; i++) levels.push({ p: aH - (i*step), lbl: `L${i}`, type: 'S', idx: i });
+            
+            if(customMM !== null) { levels.push({ p: customMM, lbl: mmLabel || 'SMA', type: 'EQ_MM' }); }
+            
+            const rsaEq = (aH+aL)/2;
+            levels.push({ p: rsaEq, lbl: 'RSA', type: 'EQ_RSA' });
+            levels.push({ p: aH, lbl: 'AH', type: 'ANCHOR' });
+            levels.push({ p: aL, lbl: 'AL', type: 'ANCHOR' });
+
+            const currentRadius = stats ? stats.radius : 0.01; 
+            const currentRegime = stats ? stats.regime : 'NEUTRAL';
+
+            const currentMove = Math.abs(state.price - openPrice);
+            const safeTime = Math.max(0.01, stats.timeProgress);
+            const projectedMove = currentMove / safeTime;
+            
+            const projectedHigh = openPrice + projectedMove;
+            const projectedLow = openPrice - projectedMove;
+            
+            // --- ADDED TOLERANCE LOGIC HERE ---
+            const HIT_TOLERANCE = 0.0005; // 0.05% Tolerance
+
+            levels.forEach(lvl => {
+                if(isNaN(lvl.p)) return;
+
+                // Check Hit with Tolerance
+                if(lvl.type === 'R') { 
+                    // Anchor High >= Level Price (minus tolerance)
+                    if(aH >= (lvl.p * (1 - HIT_TOLERANCE))) state.touched[id].set.add(lvl.lbl); 
+                }
+                if(lvl.type === 'S') { 
+                    // Anchor Low <= Level Price (plus tolerance)
+                    if(aL <= (lvl.p * (1 + HIT_TOLERANCE))) state.touched[id].set.add(lvl.lbl); 
+                }
+
+                const isHit = state.touched[id].set.has(lvl.lbl);
+                const pctDiff = ((lvl.p - state.price) / state.price) * 100;
+                const offsetPx = pctDiff * CONFIG.scale;
+                const topPos = CONFIG.centerOffset - offsetPx;
+
+                if(topPos < 0 || topPos > CONFIG.virtualHeight) return;
+
+                let tag = '';
+                if (isHit) { tag = '<span class="tag-pill tag-hit">HIT</span>'; }
+
+                const distAbs = Math.abs(pctDiff/100);
+                const isClose = distAbs < currentRadius; 
+
+                if(lvl.type === 'R' || lvl.type === 'S') {
+                    if(!isHit) { 
+                        let isTarget = false;
+                        let isReachable = false;
+
+                        if (lvl.type === 'R' && isBull && lvl.p <= projectedHigh) isReachable = true;
+                        if (lvl.type === 'S' && !isBull && lvl.p >= projectedLow) isReachable = true;
+
+                        let nextMajorIdx = Math.ceil(lvl.idx / 4) * 4;
+                        let isNextMajorReachable = false;
+                        
+                        if (lvl.idx % 4 !== 0) {
+                            if (lvl.type === 'R') {
+                                const nextMajP = aL + (nextMajorIdx * step);
+                                if (isBull && nextMajP <= projectedHigh) isNextMajorReachable = true;
+                            } else if (lvl.type === 'S') {
+                                const nextMajP = aH - (nextMajorIdx * step);
+                                if (!isBull && nextMajP >= projectedLow) isNextMajorReachable = true;
+                            }
+                        }
+                        
+                        if (currentRegime === 'EXP') isNextMajorReachable = true;
+
+                        if(lvl.idx % 4 === 0) {
+                            if(currentRegime === 'EXP') {
+                                if (lvl.type === 'R' && isBull) isTarget = true;
+                                if (lvl.type === 'S' && !isBull) isTarget = true;
+                            } else {
+                                if (isReachable) isTarget = true;
+                            }
+
+                            if (isTarget) tag = '<span class="tag-pill tag-trg">TRG</span>';
+                            else tag = '<span class="tag-pill tag-eq">KEY</span>';
+                        
+                        } else {
+                            if (isReachable && !isNextMajorReachable) {
+                                tag = '<span class="tag-pill tag-trg-minor">mTRG</span>';
+                            } else if (currentRegime === 'CTR' && isClose) {
+                                tag = lvl.type === 'R' ? '<span class="tag-pill tag-res">RES</span>' : '<span class="tag-pill tag-sup">SUP</span>';
+                            }
+                        }
+                    }
+                } else if (lvl.type === 'EQ_MM') {
+                    tag = '<span class="tag-pill tag-eq">MAG</span>';
+                }
+
+                if(lvl.type === 'ANCHOR') {
+                    createLine(container, topPos, 'dashed', 'rgba(255,255,255,0.5)');
+                } else if((lvl.idx % 4 === 0) && (lvl.type === 'R' || lvl.type === 'S')) {
+                    createLine(container, topPos, 'solid', 'rgba(255,255,255,0.1)');
+                }
+
+                const el = document.createElement('div');
+                el.className = 'rsa-item';
+                el.style.top = `${topPos}px`;
+                
+                let txtColor = 'text-gray-500';
+                if(lvl.type === 'R') txtColor = 'text-red-400';
+                if(lvl.type === 'S') txtColor = 'text-green-400';
+                if(lvl.type.includes('EQ')) { txtColor = 'text-blue-300 font-bold'; el.style.backgroundColor = 'rgba(59,130,246,0.1)'; }
+                if(lvl.type === 'ANCHOR') { txtColor = 'text-gray-300 font-bold'; }
+                if((lvl.idx % 4 === 0) && (lvl.type === 'R' || lvl.type === 'S')) { txtColor += ' font-bold'; }
+                
+                if(isHit) {
+                    txtColor = 'text-gray-600 line-through';
+                    el.style.opacity = '0.6';
+                }
+
+                el.innerHTML = `
+                    <span class="${txtColor} w-8">${lvl.lbl}</span>
+                    <span class="font-mono text-gray-300 ml-2 ${isHit ? 'text-gray-500' : ''}">${formatPrice(lvl.p)}</span>
+                    ${tag}
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function createLine(container, top, style, color) {
+            const line = document.createElement('div');
+            line.className = 'rsa-line';
+            line.style.top = `${top}px`;
+            line.style.borderTop = `1px ${style} ${color}`;
+            container.appendChild(line);
+        }
+
+        function updateZone(container, type, top, height) {
+            let zone = container.querySelector(`.zone-${type}`);
+            if (!zone) {
+                zone = document.createElement('div');
+                zone.className = `bias-zone zone-${type}`;
+                container.appendChild(zone);
+            }
+            if (height < 0) { top = top + height; height = Math.abs(height); }
+            zone.style.top = `${top}px`;
+            zone.style.height = `${Math.max(0, height)}px`;
+        }
+
+        function updateBlueZone(container, isBull, priceY, topPosOpen) {
+            let zone = container.querySelector(`.zone-blue`);
+            if (!zone) {
+                zone = document.createElement('div');
+                zone.classList.add('bias-zone', 'zone-blue'); 
+                container.appendChild(zone);
+            }
+            if (isBull) {
+                zone.className = 'bias-zone zone-blue zone-blue-bull';
+                zone.style.top = `${priceY}px`;
+                zone.style.height = `${Math.abs(topPosOpen - priceY)}px`;
+            } else {
+                zone.className = 'bias-zone zone-blue zone-blue-bear';
+                zone.style.top = `${topPosOpen}px`;
+                zone.style.height = `${Math.abs(priceY - topPosOpen)}px`;
+            }
+        }
+
+        function renderError(id, msg) {
+            const c = document.getElementById(`world-${id}`);
+            c.innerHTML = `<div class="absolute top-[20000px] w-full text-center text-red-500 text-xs mt-4 transform -translate-y-1/2">${msg}</div>`;
+        }
+
+        function centerMap(force) {
+            const d = document.getElementById('scroll-d');
+            if(!d) return;
+            const viewportH = d.clientHeight || 500; 
+            const target = CONFIG.centerOffset - (viewportH / 2);
+            
+            ['d','w','m','q','s','y'].forEach(id => {
+                const el = document.getElementById(`scroll-${id}`);
+                if(el) el.scrollTop = target;
+            });
+            updatePriceLine();
+        }
+
+        function updatePriceLine() {
+            const scrollers = ['scroll-d', 'scroll-w', 'scroll-m', 'scroll-q', 'scroll-s', 'scroll-y'];
+            let activeScroller = null;
+            for (const id of scrollers) {
+                const el = document.getElementById(id);
+                if (el) { activeScroller = el; break; }
+            }
+            if(!activeScroller) return;
+            
+            // Calculate the offset of the scroll container relative to the main parent.
+            const lineElement = document.getElementById('cp-line');
+            const hudElement = document.getElementById('footprint-hud');
+            if (!lineElement) return;
+            
+            const parent = lineElement.parentElement; 
+            const parentRect = parent.getBoundingClientRect();
+            const scrollerRect = activeScroller.getBoundingClientRect();
+            
+            const headerOffset = scrollerRect.top - parentRect.top; 
+
+            const scrollTop = activeScroller.scrollTop;
+            const viewportY = (CONFIG.centerOffset - scrollTop) + headerOffset;
+            
+            const label = document.getElementById('cp-label');
+            if(lineElement) lineElement.style.top = `${viewportY}px`;
+            if(label) label.style.top = `${viewportY}px`;
+            
+            // Sync HUD position with Price Line
+            if(hudElement) hudElement.style.top = `${viewportY}px`;
+        }
+
+        const scrolls = ['scroll-d', 'scroll-w', 'scroll-m', 'scroll-q', 'scroll-s', 'scroll-y'];
+        scrolls.forEach(id => {
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.addEventListener('scroll', () => {
+                const top = el.scrollTop;
+                scrolls.forEach(otherId => {
+                    if(otherId !== id) {
+                        const other = document.getElementById(otherId);
+                        if(other) other.scrollTop = top;
+                    }
+                });
+                // Using requestAnimationFrame to sync with screen refresh rate
+                requestAnimationFrame(updatePriceLine);
+            });
+        });
+        
+        window.addEventListener('resize', () => {
+             requestAnimationFrame(updatePriceLine);
+             centerMap(false);
+        });
+
+        function showLoading(show) { 
+            const overlay = document.getElementById('loading-screen');
+            overlay.classList.toggle('hidden', !show);
+            const status = document.getElementById('status-indicator');
+            if(show) {
+                status.classList.remove('text-gray-400', 'bg-gray-800', 'status-glow');
+                status.classList.add('text-yellow-400', 'bg-yellow-900/30');
+                status.textContent = 'Loading...';
+            }
+        }
+
+        function updateStatus(msg) { 
+            const status = document.getElementById('status-indicator');
+            status.textContent = msg;
+            
+            if (msg.includes('Stream') || msg === 'Live') {
+                status.classList.remove('text-gray-400', 'bg-gray-800', 'text-yellow-400', 'bg-yellow-900/30', 'text-red-400', 'bg-red-900/30');
+                status.classList.add('text-green-400', 'bg-green-900/30', 'status-glow', 'border-green-600');
+            } else if (msg.includes('Error') || msg === 'Disconnected') {
+                status.classList.remove('status-glow', 'border-green-600', 'text-green-400', 'bg-green-900/30', 'text-yellow-400', 'bg-yellow-900/30');
+                status.classList.add('text-red-400', 'bg-red-900/30');
+            } else {
+                status.classList.remove('status-glow', 'border-green-600', 'text-green-400', 'bg-green-900/30', 'text-red-400', 'bg-red-900/30');
+                status.classList.add('text-yellow-400', 'bg-yellow-900/30');
+            }
+        }
+        
+        function formatPrice(p) { return p < 10 ? p.toFixed(4) : p.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+        
+        // --- NEW FUNCTION: Fetch Top 100 Coins ---
+        async function fetchTopCoins() {
+            try {
+                const res = await fetch(`${APIS.ticker}/ticker/24hr`);
+                if (!res.ok) return; 
+                const data = await res.json();
+                
+                const top100 = data
+                    .filter(t => t.symbol.endsWith('USDT'))
+                    .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                    .slice(0, 100);
+                
+                const dataList = document.getElementById('tickers');
+                dataList.innerHTML = '';
+                top100.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.symbol;
+                    dataList.appendChild(opt);
+                });
+            } catch (e) {
+                console.log('Failed to fetch top coins', e);
+            }
+        }
+
+        // Initialize
+        loadData();
+        fetchTopCoins();
+
+    </script>
+</body>
+</html>
