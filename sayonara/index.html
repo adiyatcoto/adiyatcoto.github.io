@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sayonara</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #000000 100%);
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .space {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(0.5px);
+        }
+        
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255,255,255,0.8);
+        }
+        
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 2px;
+            height: 2px;
+            width: 100px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+        }
+        
+        .nebula {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(50px);
+            animation: nebulaDrift 30s ease-in-out infinite;
+        }
+        
+        @keyframes nebulaDrift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -20px) scale(1.1); }
+        }
+        
+        .lyrics-container {
+            position: fixed;
+            bottom: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+        
+        .lyrics {
+            font-size: clamp(20px, 5vw, 36px);
+            color: white;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8),
+                         0 0 40px rgba(255,255,255,0.5),
+                         2px 2px 10px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .lyrics-container {
+                bottom: 8vh;
+                width: 95%;
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .lyrics-container {
+                bottom: 10vh;
+            }
+            
+            .lyrics {
+                line-height: 1.5;
+            }
+        }
+        
+        .lyrics.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="space" id="space"></div>
+    
+    <div class="lyrics-container">
+        <div class="lyrics" id="lyrics"></div>
+    </div>
+    
+    <audio id="audio" loop autoplay>
+        <source src="sayonara.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        const space = document.getElementById('space');
+        const audio = document.getElementById('audio');
+        const lyricsDisplay = document.getElementById('lyrics');
+        const numStars = 200;
+        
+        const lyricsData = [
+            { time: 0, text: "♪ ♪ ♪" }, // Intro instrumental panjang
+            { time: 27, text: "Sayonara, sweet memories" },
+            { time: 33, text: "It's goodbye..." },
+            { time: 38, text: "Sayonara, don't look back" },
+            { time: 43, text: "Don't ask why..." },
+            { time: 48, text: "The time to come, will come" },
+            { time: 53, text: "And you will go, alone" },
+            { time: 59, text: "Keep to your heart..." },
+            { time: 65, text: "Sayonara..." },
+            { time: 77, text: "And so my friend" },
+            { time: 79, text: "Now it must end" },
+            { time: 82, text: "Now you are grown" },
+            { time: 87, text: "I can't stay on" },
+            { time: 90, text: "Think of the memories, we've known" },
+            { time: 97, text: "Carefully feeling your way" },
+            { time: 102, text: "You're getting stronger each day" },
+            { time: 108, text: "How can I find words to say" },
+            { time: 113, text: "I'll miss you..." },
+            { time: 118, text: "Sayonara, sweet memories" },
+            { time: 124, text: "It's goodbye..." },
+            { time: 129, text: "Sayonara, don't look back" },
+            { time: 135, text: "Don't ask why..." },
+            { time: 139, text: "The time to come, will come" },
+            { time: 145, text: "And you will go, alone" },
+            { time: 150, text: "Keep to your heart..." },
+            { time: 157, text: "Sayonara..." },
+            { time: 168, text: "♪ ♪ ♪" },
+            { time: 188, text: "Carefully feeling your way" },
+            { time: 193, text: "You're getting stronger each day" },
+            { time: 199, text: "How can I find words to say" },
+            { time: 204, text: "I'll miss you..." },
+            { time: 209, text: "Sayonara, sweet memories" },
+            { time: 214, text: "It's goodbye..." },
+            { time: 220, text: "Sayonara, don't look back" },
+            { time: 225, text: "Don't ask why..." },
+            { time: 230, text: "The time to come, will come" },
+            { time: 236, text: "And you will go, alone" },
+            { time: 241, text: "Keep to your heart..." },
+            { time: 248, text: "Sayonara..." },
+            { time: 259, text: "Sayonara..." },
+            { time: 269, text: "The time to come, will come" },
+            { time: 274, text: "And you will go, alone" },
+            { time: 280, text: "Keep to your heart..." },
+            { time: 286, text: "Sayonara..." },
+            { time: 297, text: "Sayonara..." },
+            { time: 307, text: "♪ ♪ ♪" } // Fade out panjang
+        ];
+        
+        let currentLyricIndex = -1;
+        
+        // Try to autoplay, with fallback for browser restrictions
+        audio.play().catch(() => {
+            // If autoplay fails, play on first user interaction
+            const startAudio = () => {
+                audio.play();
+                document.removeEventListener('click', startAudio);
+                document.removeEventListener('touchstart', startAudio);
+                document.removeEventListener('keydown', startAudio);
+            };
+            document.addEventListener('click', startAudio);
+            document.addEventListener('touchstart', startAudio);
+            document.addEventListener('keydown', startAudio);
+        });
+        
+        // Create nebula clouds
+        const nebulaColors = ['#4a148c', '#1a237e', '#0d47a1', '#006064'];
+        for (let i = 0; i < 3; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'nebula';
+            nebula.style.left = Math.random() * 100 + '%';
+            nebula.style.top = Math.random() * 100 + '%';
+            nebula.style.background = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+            nebula.style.animationDelay = Math.random() * 10 + 's';
+            space.appendChild(nebula);
+        }
+        
+        // Star color temperatures
+        const starColors = [
+            { color: '#9bb0ff', temp: 'hot' },
+            { color: '#aabfff', temp: 'hot' },
+            { color: '#cad7ff', temp: 'medium' },
+            { color: '#f8f7ff', temp: 'medium' },
+            { color: '#fff4ea', temp: 'medium' },
+            { color: '#ffd2a1', temp: 'cool' },
+            { color: '#ffcc6f', temp: 'cool' }
+        ];
+        
+        // Create stars
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            const colorData = starColors[Math.floor(Math.random() * starColors.length)];
+            const size = Math.random() * 2.5 + 0.5;
+            const brightness = Math.random();
+            
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.background = colorData.color;
+            
+            space.appendChild(star);
+            animateStar(star, brightness, size, colorData.color);
+        }
+        
+        function animateStar(star, brightness, size, color) {
+            const twinkleSpeed = 1000 + Math.random() * 3000;
+            const glowIntensity = brightness * 15;
+            
+            function updateGlow() {
+                const randomFactor = 0.5 + Math.random() * 0.5;
+                const currentGlow = glowIntensity * randomFactor;
+                const currentOpacity = 0.4 + brightness * 0.6 * randomFactor;
+                
+                star.style.boxShadow = `
+                    0 0 ${currentGlow}px ${currentGlow * 0.3}px ${color},
+                    0 0 ${currentGlow * 0.5}px ${currentGlow * 0.2}px rgba(255,255,255,${currentOpacity * 0.5})
+                `;
+                star.style.opacity = currentOpacity;
+                
+                setTimeout(updateGlow, twinkleSpeed + Math.random() * 1000);
+            }
+            
+            updateGlow();
+        }
+        
+        // Shooting stars
+        function createShootingStar() {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight * 0.5;
+            const angle = 30 + Math.random() * 30;
+            const distance = 200 + Math.random() * 400;
+            const duration = 0.5 + Math.random() * 1.5;
+            
+            shootingStar.style.left = startX + 'px';
+            shootingStar.style.top = startY + 'px';
+            
+            space.appendChild(shootingStar);
+            
+            const endX = startX + distance * Math.cos(angle * Math.PI / 180);
+            const endY = startY + distance * Math.sin(angle * Math.PI / 180);
+            
+            shootingStar.animate([
+                { transform: 'translate(0, 0) rotate(45deg)', opacity: 0 },
+                { transform: 'translate(0, 0) rotate(45deg)', opacity: 1, offset: 0.1 },
+                { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(45deg)`, opacity: 0 }
+            ], {
+                duration: duration * 1000,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            }).onfinish = () => shootingStar.remove();
+        }
+        
+        function scheduleShootingStar() {
+            createShootingStar();
+            setTimeout(scheduleShootingStar, 3000 + Math.random() * 8000);
+        }
+        
+        scheduleShootingStar();
+        
+        // Pulsars
+        for (let i = 0; i < 5; i++) {
+            const pulsar = document.createElement('div');
+            pulsar.className = 'star';
+            const size = Math.random() * 3 + 2;
+            
+            pulsar.style.width = size + 'px';
+            pulsar.style.height = size + 'px';
+            pulsar.style.left = Math.random() * 100 + '%';
+            pulsar.style.top = Math.random() * 100 + '%';
+            pulsar.style.background = '#aabfff';
+            
+            space.appendChild(pulsar);
+            
+            function pulsate() {
+                const intensity = 10 + Math.random() * 20;
+                pulsar.style.boxShadow = `
+                    0 0 ${intensity}px ${intensity * 0.5}px #aabfff,
+                    0 0 ${intensity * 2}px ${intensity}px rgba(170,191,255,0.3)
+                `;
+                setTimeout(pulsate, 100 + Math.random() * 200);
+            }
+            
+            pulsate();
+        }
+        
+        // Update lyrics based on audio time
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            
+            for (let i = 0; i < lyricsData.length; i++) {
+                if (currentTime >= lyricsData[i].time && 
+                    (i === lyricsData.length - 1 || currentTime < lyricsData[i + 1].time)) {
+                    if (currentLyricIndex !== i) {
+                        currentLyricIndex = i;
+                        lyricsDisplay.classList.remove('active');
+                        
+                        setTimeout(() => {
+                            lyricsDisplay.textContent = lyricsData[i].text;
+                            lyricsDisplay.classList.add('active');
+                        }, 200);
+                    }
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
