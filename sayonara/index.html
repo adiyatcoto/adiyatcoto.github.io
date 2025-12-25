@@ -2,32 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Sayonara</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             overflow: hidden;
             background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #000000 100%);
+            /* dvh handles mobile address bars better than vh */
             height: 100vh;
+            height: 100dvh; 
+            width: 100vw;
             font-family: 'Arial', sans-serif;
+            touch-action: none; /* Prevents scrolling on mobile */
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: default; /* Hide hand cursor */
         }
         
         .space {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
         
         .star {
             position: absolute;
             border-radius: 50%;
             filter: blur(0.5px);
+            will-change: opacity, transform; /* Performance optimization */
         }
         
         .shooting-star {
@@ -37,6 +51,8 @@
             background: white;
             border-radius: 50%;
             box-shadow: 0 0 10px 2px rgba(255,255,255,0.8);
+            pointer-events: none;
+            z-index: 2;
         }
         
         .shooting-star::before {
@@ -57,6 +73,7 @@
             opacity: 0.1;
             filter: blur(50px);
             animation: nebulaDrift 30s ease-in-out infinite;
+            pointer-events: none;
         }
         
         @keyframes nebulaDrift {
@@ -66,7 +83,7 @@
         
         .lyrics-container {
             position: fixed;
-            bottom: 5vh;
+            bottom: 15%; /* Improved for mobile readability */
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -74,42 +91,35 @@
             max-width: 800px;
             z-index: 1000;
             padding: 0 20px;
+            pointer-events: none; /* Lets clicks pass through to stars if needed */
         }
         
         .lyrics {
-            font-size: clamp(20px, 5vw, 36px);
+            font-size: clamp(20px, 6vw, 32px); /* Responsive font scaling */
             color: white;
-            text-shadow: 0 0 20px rgba(255,255,255,0.8),
-                         0 0 40px rgba(255,255,255,0.5),
-                         2px 2px 10px rgba(0,0,0,0.8);
+            text-shadow: 0 0 10px rgba(255,255,255,0.8),
+                         0 0 20px rgba(255,255,255,0.5),
+                         2px 2px 5px rgba(0,0,0,0.8);
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.5s ease;
-            line-height: 1.6;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            line-height: 1.4;
             font-weight: 500;
-        }
-        
-        @media (max-width: 768px) {
-            .lyrics-container {
-                bottom: 8vh;
-                width: 95%;
-                padding: 0 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .lyrics-container {
-                bottom: 10vh;
-            }
-            
-            .lyrics {
-                line-height: 1.5;
-            }
+            letter-spacing: 0.5px;
         }
         
         .lyrics.active {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .lyrics-container {
+                bottom: 20%;
+            }
+            .shooting-star::before {
+                width: 60px; /* Shorter tail on mobile */
+            }
         }
     </style>
 </head>
@@ -120,225 +130,295 @@
         <div class="lyrics" id="lyrics"></div>
     </div>
     
-    <audio id="audio" loop autoplay>
+    <!-- Added playsinline for better iOS handling -->
+    <audio id="audio" loop playsinline preload="auto">
         <source src="sayonara.mp3" type="audio/mpeg">
     </audio>
     
     <script>
-        const space = document.getElementById('space');
-        const audio = document.getElementById('audio');
-        const lyricsDisplay = document.getElementById('lyrics');
-        const numStars = 200;
-        
-        const lyricsData = [
-            { time: 0, text: "♪ ♪ ♪" }, // Intro instrumental panjang
-            { time: 27, text: "Sayonara, sweet memories" },
-            { time: 33, text: "It's goodbye..." },
-            { time: 38, text: "Sayonara, don't look back" },
-            { time: 43, text: "Don't ask why..." },
-            { time: 48, text: "The time to come, will come" },
-            { time: 53, text: "And you will go, alone" },
-            { time: 59, text: "Keep to your heart..." },
-            { time: 65, text: "Sayonara..." },
-            { time: 77, text: "And so my friend" },
-            { time: 79, text: "Now it must end" },
-            { time: 82, text: "Now you are grown" },
-            { time: 87, text: "I can't stay on" },
-            { time: 90, text: "Think of the memories, we've known" },
-            { time: 97, text: "Carefully feeling your way" },
-            { time: 102, text: "You're getting stronger each day" },
-            { time: 108, text: "How can I find words to say" },
-            { time: 113, text: "I'll miss you..." },
-            { time: 118, text: "Sayonara, sweet memories" },
-            { time: 124, text: "It's goodbye..." },
-            { time: 129, text: "Sayonara, don't look back" },
-            { time: 135, text: "Don't ask why..." },
-            { time: 139, text: "The time to come, will come" },
-            { time: 145, text: "And you will go, alone" },
-            { time: 150, text: "Keep to your heart..." },
-            { time: 157, text: "Sayonara..." },
-            { time: 168, text: "♪ ♪ ♪" },
-            { time: 188, text: "Carefully feeling your way" },
-            { time: 193, text: "You're getting stronger each day" },
-            { time: 199, text: "How can I find words to say" },
-            { time: 204, text: "I'll miss you..." },
-            { time: 209, text: "Sayonara, sweet memories" },
-            { time: 214, text: "It's goodbye..." },
-            { time: 220, text: "Sayonara, don't look back" },
-            { time: 225, text: "Don't ask why..." },
-            { time: 230, text: "The time to come, will come" },
-            { time: 236, text: "And you will go, alone" },
-            { time: 241, text: "Keep to your heart..." },
-            { time: 248, text: "Sayonara..." },
-            { time: 259, text: "Sayonara..." },
-            { time: 269, text: "The time to come, will come" },
-            { time: 274, text: "And you will go, alone" },
-            { time: 280, text: "Keep to your heart..." },
-            { time: 286, text: "Sayonara..." },
-            { time: 297, text: "Sayonara..." },
-            { time: 307, text: "♪ ♪ ♪" } // Fade out panjang
-        ];
-        
-        let currentLyricIndex = -1;
-        
-        // Try to autoplay, with fallback for browser restrictions
-        audio.play().catch(() => {
-            // If autoplay fails, play on first user interaction
-            const startAudio = () => {
-                audio.play();
-                document.removeEventListener('click', startAudio);
-                document.removeEventListener('touchstart', startAudio);
-                document.removeEventListener('keydown', startAudio);
-            };
-            document.addEventListener('click', startAudio);
-            document.addEventListener('touchstart', startAudio);
-            document.addEventListener('keydown', startAudio);
-        });
-        
-        // Create nebula clouds
-        const nebulaColors = ['#4a148c', '#1a237e', '#0d47a1', '#006064'];
-        for (let i = 0; i < 3; i++) {
-            const nebula = document.createElement('div');
-            nebula.className = 'nebula';
-            nebula.style.left = Math.random() * 100 + '%';
-            nebula.style.top = Math.random() * 100 + '%';
-            nebula.style.background = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
-            nebula.style.animationDelay = Math.random() * 10 + 's';
-            space.appendChild(nebula);
-        }
-        
-        // Star color temperatures
-        const starColors = [
-            { color: '#9bb0ff', temp: 'hot' },
-            { color: '#aabfff', temp: 'hot' },
-            { color: '#cad7ff', temp: 'medium' },
-            { color: '#f8f7ff', temp: 'medium' },
-            { color: '#fff4ea', temp: 'medium' },
-            { color: '#ffd2a1', temp: 'cool' },
-            { color: '#ffcc6f', temp: 'cool' }
-        ];
-        
-        // Create stars
-        for (let i = 0; i < numStars; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
+        document.addEventListener('DOMContentLoaded', () => {
+            const space = document.getElementById('space');
+            const audio = document.getElementById('audio');
+            const lyricsDisplay = document.getElementById('lyrics');
             
-            const colorData = starColors[Math.floor(Math.random() * starColors.length)];
-            const size = Math.random() * 2.5 + 0.5;
-            const brightness = Math.random();
+            // Adjust star count based on screen size for performance
+            const isMobile = window.innerWidth < 768;
+            const numStars = isMobile ? 100 : 200; 
             
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.background = colorData.color;
+            let currentLyricIndex = -1;
+            let audioStarted = false;
+
+            const lyricsData = [
+                { time: 0, text: "♪ ♪ ♪" },
+                { time: 27, text: "Sayonara, sweet memories" },
+                { time: 33, text: "It's goodbye..." },
+                { time: 38, text: "Sayonara, don't look back" },
+                { time: 43, text: "Don't ask why..." },
+                { time: 48, text: "The time to come, will come" },
+                { time: 53, text: "And you will go, alone" },
+                { time: 59, text: "Keep to your heart..." },
+                { time: 65, text: "Sayonara..." },
+                { time: 77, text: "And so my friend" },
+                { time: 79, text: "Now it must end" },
+                { time: 82, text: "Now you are grown" },
+                { time: 87, text: "I can't stay on" },
+                { time: 90, text: "Think of the memories, we've known" },
+                { time: 97, text: "Carefully feeling your way" },
+                { time: 102, text: "You're getting stronger each day" },
+                { time: 108, text: "How can I find words to say" },
+                { time: 113, text: "I'll miss you..." },
+                { time: 118, text: "Sayonara, sweet memories" },
+                { time: 124, text: "It's goodbye..." },
+                { time: 129, text: "Sayonara, don't look back" },
+                { time: 135, text: "Don't ask why..." },
+                { time: 139, text: "The time to come, will come" },
+                { time: 145, text: "And you will go, alone" },
+                { time: 150, text: "Keep to your heart..." },
+                { time: 157, text: "Sayonara..." },
+                { time: 168, text: "♪ ♪ ♪" },
+                { time: 188, text: "Carefully feeling your way" },
+                { time: 193, text: "You're getting stronger each day" },
+                { time: 199, text: "How can I find words to say" },
+                { time: 204, text: "I'll miss you..." },
+                { time: 209, text: "Sayonara, sweet memories" },
+                { time: 214, text: "It's goodbye..." },
+                { time: 220, text: "Sayonara, don't look back" },
+                { time: 225, text: "Don't ask why..." },
+                { time: 230, text: "The time to come, will come" },
+                { time: 236, text: "And you will go, alone" },
+                { time: 241, text: "Keep to your heart..." },
+                { time: 248, text: "Sayonara..." },
+                { time: 259, text: "Sayonara..." },
+                { time: 269, text: "The time to come, will come" },
+                { time: 274, text: "And you will go, alone" },
+                { time: 280, text: "Keep to your heart..." },
+                { time: 286, text: "Sayonara..." },
+                { time: 297, text: "Sayonara..." },
+                { time: 307, text: "♪ ♪ ♪" }
+            ];
             
-            space.appendChild(star);
-            animateStar(star, brightness, size, colorData.color);
-        }
-        
-        function animateStar(star, brightness, size, color) {
-            const twinkleSpeed = 1000 + Math.random() * 3000;
-            const glowIntensity = brightness * 15;
-            
-            function updateGlow() {
-                const randomFactor = 0.5 + Math.random() * 0.5;
-                const currentGlow = glowIntensity * randomFactor;
-                const currentOpacity = 0.4 + brightness * 0.6 * randomFactor;
-                
-                star.style.boxShadow = `
-                    0 0 ${currentGlow}px ${currentGlow * 0.3}px ${color},
-                    0 0 ${currentGlow * 0.5}px ${currentGlow * 0.2}px rgba(255,255,255,${currentOpacity * 0.5})
-                `;
-                star.style.opacity = currentOpacity;
-                
-                setTimeout(updateGlow, twinkleSpeed + Math.random() * 1000);
+            // --- Initialization Logic ---
+            function startVisuals() {
+                createNebulas();
+                createStars();
+                scheduleShootingStar();
+                createPulsars();
             }
-            
-            updateGlow();
-        }
-        
-        // Shooting stars
-        function createShootingStar() {
-            const shootingStar = document.createElement('div');
-            shootingStar.className = 'shooting-star';
-            
-            const startX = Math.random() * window.innerWidth;
-            const startY = Math.random() * window.innerHeight * 0.5;
-            const angle = 30 + Math.random() * 30;
-            const distance = 200 + Math.random() * 400;
-            const duration = 0.5 + Math.random() * 1.5;
-            
-            shootingStar.style.left = startX + 'px';
-            shootingStar.style.top = startY + 'px';
-            
-            space.appendChild(shootingStar);
-            
-            const endX = startX + distance * Math.cos(angle * Math.PI / 180);
-            const endY = startY + distance * Math.sin(angle * Math.PI / 180);
-            
-            shootingStar.animate([
-                { transform: 'translate(0, 0) rotate(45deg)', opacity: 0 },
-                { transform: 'translate(0, 0) rotate(45deg)', opacity: 1, offset: 0.1 },
-                { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(45deg)`, opacity: 0 }
-            ], {
-                duration: duration * 1000,
-                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-            }).onfinish = () => shootingStar.remove();
-        }
-        
-        function scheduleShootingStar() {
-            createShootingStar();
-            setTimeout(scheduleShootingStar, 3000 + Math.random() * 8000);
-        }
-        
-        scheduleShootingStar();
-        
-        // Pulsars
-        for (let i = 0; i < 5; i++) {
-            const pulsar = document.createElement('div');
-            pulsar.className = 'star';
-            const size = Math.random() * 3 + 2;
-            
-            pulsar.style.width = size + 'px';
-            pulsar.style.height = size + 'px';
-            pulsar.style.left = Math.random() * 100 + '%';
-            pulsar.style.top = Math.random() * 100 + '%';
-            pulsar.style.background = '#aabfff';
-            
-            space.appendChild(pulsar);
-            
-            function pulsate() {
-                const intensity = 10 + Math.random() * 20;
-                pulsar.style.boxShadow = `
-                    0 0 ${intensity}px ${intensity * 0.5}px #aabfff,
-                    0 0 ${intensity * 2}px ${intensity}px rgba(170,191,255,0.3)
-                `;
-                setTimeout(pulsate, 100 + Math.random() * 200);
+
+            function tryPlayAudio() {
+                // Attempt to play immediately
+                audio.play().then(() => {
+                    audioStarted = true;
+                }).catch((e) => {
+                    console.log("Autoplay blocked, waiting for interaction");
+                    // If blocked, wait for ANY interaction on the document
+                    const enableAudio = () => {
+                        audio.play();
+                        audioStarted = true;
+                        // Remove listeners once audio starts
+                        document.removeEventListener('click', enableAudio);
+                        document.removeEventListener('touchstart', enableAudio);
+                        document.removeEventListener('keydown', enableAudio);
+                    };
+                    
+                    document.addEventListener('click', enableAudio);
+                    document.addEventListener('touchstart', enableAudio);
+                    document.addEventListener('keydown', enableAudio);
+                });
             }
+
+            // Start immediately
+            startVisuals();
+            tryPlayAudio();
             
-            pulsate();
-        }
-        
-        // Update lyrics based on audio time
-        audio.addEventListener('timeupdate', () => {
-            const currentTime = audio.currentTime;
-            
-            for (let i = 0; i < lyricsData.length; i++) {
-                if (currentTime >= lyricsData[i].time && 
-                    (i === lyricsData.length - 1 || currentTime < lyricsData[i + 1].time)) {
-                    if (currentLyricIndex !== i) {
-                        currentLyricIndex = i;
-                        lyricsDisplay.classList.remove('active');
-                        
-                        setTimeout(() => {
-                            lyricsDisplay.textContent = lyricsData[i].text;
-                            lyricsDisplay.classList.add('active');
-                        }, 200);
-                    }
-                    break;
+            // --- Visuals ---
+
+            function createNebulas() {
+                const nebulaColors = ['#4a148c', '#1a237e', '#0d47a1', '#006064'];
+                // Reduce nebula count on mobile
+                const count = isMobile ? 2 : 3;
+                
+                for (let i = 0; i < count; i++) {
+                    const nebula = document.createElement('div');
+                    nebula.className = 'nebula';
+                    nebula.style.left = Math.random() * 100 + '%';
+                    nebula.style.top = Math.random() * 100 + '%';
+                    nebula.style.background = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+                    nebula.style.animationDelay = Math.random() * 10 + 's';
+                    space.appendChild(nebula);
                 }
             }
+            
+            function createStars() {
+                const starColors = [
+                    { color: '#9bb0ff', temp: 'hot' },
+                    { color: '#aabfff', temp: 'hot' },
+                    { color: '#cad7ff', temp: 'medium' },
+                    { color: '#f8f7ff', temp: 'medium' },
+                    { color: '#fff4ea', temp: 'medium' },
+                    { color: '#ffd2a1', temp: 'cool' },
+                    { color: '#ffcc6f', temp: 'cool' }
+                ];
+                
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    
+                    const colorData = starColors[Math.floor(Math.random() * starColors.length)];
+                    const size = Math.random() * (isMobile ? 2 : 2.5) + 0.5;
+                    const brightness = Math.random();
+                    
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.background = colorData.color;
+                    
+                    space.appendChild(star);
+                    
+                    // Don't animate every single star on mobile to save battery
+                    if (!isMobile || Math.random() > 0.5) {
+                        animateStar(star, brightness, size, colorData.color);
+                    } else {
+                        star.style.opacity = brightness; // Static stars for performance
+                    }
+                }
+            }
+            
+            function animateStar(star, brightness, size, color) {
+                const twinkleSpeed = 1000 + Math.random() * 3000;
+                const glowIntensity = brightness * 15;
+                
+                function updateGlow() {
+                    if (!document.body.contains(star)) return; // Cleanup check
+                    
+                    const randomFactor = 0.5 + Math.random() * 0.5;
+                    const currentGlow = glowIntensity * randomFactor;
+                    const currentOpacity = 0.4 + brightness * 0.6 * randomFactor;
+                    
+                    // Simpler shadow for mobile
+                    if (isMobile) {
+                         star.style.boxShadow = `0 0 ${currentGlow * 0.5}px ${color}`;
+                    } else {
+                        star.style.boxShadow = `
+                            0 0 ${currentGlow}px ${currentGlow * 0.3}px ${color},
+                            0 0 ${currentGlow * 0.5}px ${currentGlow * 0.2}px rgba(255,255,255,${currentOpacity * 0.5})
+                        `;
+                    }
+                    star.style.opacity = currentOpacity;
+                    
+                    setTimeout(updateGlow, twinkleSpeed + Math.random() * 1000);
+                }
+                
+                updateGlow();
+            }
+            
+            function createShootingStar() {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight * 0.5;
+                const angle = 30 + Math.random() * 30;
+                // Shorter distance on mobile
+                const distance = (isMobile ? 150 : 200) + Math.random() * 400;
+                const duration = 0.5 + Math.random() * 1.5;
+                
+                shootingStar.style.left = startX + 'px';
+                shootingStar.style.top = startY + 'px';
+                
+                space.appendChild(shootingStar);
+                
+                const endX = startX + distance * Math.cos(angle * Math.PI / 180);
+                const endY = startY + distance * Math.sin(angle * Math.PI / 180);
+                
+                // Web Animations API (Better performance than standard JS loop)
+                const animation = shootingStar.animate([
+                    { transform: 'translate(0, 0) rotate(45deg)', opacity: 0 },
+                    { transform: 'translate(0, 0) rotate(45deg)', opacity: 1, offset: 0.1 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(45deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+                
+                animation.onfinish = () => shootingStar.remove();
+            }
+            
+            function scheduleShootingStar() {
+                createShootingStar();
+                // Less frequent shooting stars on mobile
+                const delay = isMobile ? (4000 + Math.random() * 10000) : (3000 + Math.random() * 8000);
+                setTimeout(scheduleShootingStar, delay);
+            }
+            
+            function createPulsars() {
+                const count = isMobile ? 2 : 5;
+                for (let i = 0; i < count; i++) {
+                    const pulsar = document.createElement('div');
+                    pulsar.className = 'star';
+                    const size = Math.random() * 3 + 2;
+                    
+                    pulsar.style.width = size + 'px';
+                    pulsar.style.height = size + 'px';
+                    pulsar.style.left = Math.random() * 100 + '%';
+                    pulsar.style.top = Math.random() * 100 + '%';
+                    pulsar.style.background = '#aabfff';
+                    
+                    space.appendChild(pulsar);
+                    
+                    function pulsate() {
+                        if (!document.body.contains(pulsar)) return;
+                        const intensity = 10 + Math.random() * 20;
+                        pulsar.style.boxShadow = `
+                            0 0 ${intensity}px ${intensity * 0.5}px #aabfff,
+                            0 0 ${intensity * 2}px ${intensity}px rgba(170,191,255,0.3)
+                        `;
+                        setTimeout(pulsate, 100 + Math.random() * 200);
+                    }
+                    pulsate();
+                }
+            }
+
+            // --- Lyrics Logic ---
+            
+            audio.addEventListener('timeupdate', () => {
+                const currentTime = audio.currentTime;
+                
+                // Reset index if we looped back to start
+                if (currentTime < 1 && currentLyricIndex > lyricsData.length - 2) {
+                    currentLyricIndex = -1;
+                    lyricsDisplay.classList.remove('active');
+                }
+                
+                for (let i = 0; i < lyricsData.length; i++) {
+                    // Check if current time matches lyric time window
+                    if (currentTime >= lyricsData[i].time && 
+                        (i === lyricsData.length - 1 || currentTime < lyricsData[i + 1].time)) {
+                        
+                        if (currentLyricIndex !== i) {
+                            currentLyricIndex = i;
+                            lyricsDisplay.classList.remove('active');
+                            
+                            setTimeout(() => {
+                                lyricsDisplay.textContent = lyricsData[i].text;
+                                lyricsDisplay.classList.add('active');
+                            }, 200); // Wait for fade out
+                        }
+                        break;
+                    }
+                }
+            });
+
+            // Handle resize events (rotation on tablets/phones)
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    // Optional: recreate stars on significant resize if needed
+                    // For now, CSS % positioning handles most of it
+                }, 200);
+            });
         });
     </script>
 </body>
