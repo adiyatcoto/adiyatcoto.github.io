@@ -20,6 +20,7 @@
         --dim: #707070;
         --vital: #3B82F6; 
         --border: rgba(0,0,0,0.06);
+        --nav-bg: rgba(252, 252, 252, 0.7);
     }
 
     [data-theme="dark"] {
@@ -27,6 +28,7 @@
         --paper: #050505;
         --dim: #888888;
         --border: rgba(255,255,255,0.08);
+        --nav-bg: rgba(5, 5, 5, 0.8);
     }
 
     body {
@@ -44,29 +46,103 @@
         letter-spacing: -0.04em;
     }
 
-    /* Minimalist Navigation */
+    /* Minimalist Navigation with Blur */
     .nav {
         position: fixed;
         top: 0; left: 0; width: 100%;
-        padding: 2.5rem;
+        padding: 1.2rem 2.5rem;
         display: flex; justify-content: space-between; align-items: center;
-        z-index: 1000;
-        mix-blend-mode: difference;
+        z-index: 2000; 
+        background: var(--nav-bg);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--border);
+        transition: background 0.4s ease;
     }
 
     .logo {
         font-weight: 700;
         font-size: 1.2rem;
         text-decoration: none;
-        color: #fff; 
+        color: var(--ink); 
+        transition: color 0.4s ease;
+        z-index: 2100;
     }
 
-    .theme-trigger {
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        z-index: 2100;
+    }
+
+    .theme-trigger, .menu-trigger {
         cursor: pointer;
         background: none;
         border: none;
-        color: #fff;
+        color: var(--ink);
         padding: 8px;
+        transition: color 0.4s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .menu-trigger {
+        display: none; /* Hidden on desktop */
+    }
+
+    /* Desktop Navigation List */
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: var(--ink);
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: color 0.4s ease;
+    }
+
+    .nav-links a:hover {
+        color: var(--vital);
+    }
+
+    /* Mobile Menu Overlay */
+    .mobile-menu {
+        position: fixed;
+        top: 0; right: -100%;
+        width: 100%; height: 100vh;
+        background: var(--paper);
+        z-index: 1500; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .mobile-menu.active {
+        right: 0;
+    }
+
+    .mobile-menu a {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .mobile-menu a:hover {
+        color: var(--vital);
     }
 
     /* Hero Section - The Persona */
@@ -212,10 +288,16 @@
         font-size: 0.9rem;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 968px) {
+        .nav { padding: 1rem 1.5rem; }
+        .nav-links { display: none; }
+        .menu-trigger { display: flex; }
         .dual-context { grid-template-columns: 1fr; gap: 4rem; }
-        .hero h1 { font-size: 4rem; }
+        .hero h1 { font-size: 3.5rem; }
         .hero p { font-size: 1.1rem; }
+        .section { padding: 5rem 1.5rem; }
+        .grid-personal { grid-template-columns: 1fr !important; gap: 3rem !important; }
+        .sticky-header { position: relative !important; top: 0 !important; }
     }
 </style>
 </head>
@@ -223,18 +305,41 @@
 
 <nav class="nav">
     <a href="#home" class="logo">Adiyat Coto</a>
-    <button class="theme-trigger" onclick="toggleTheme()"><i data-lucide="sun"></i></button>
+    <div class="nav-right">
+        <ul class="nav-links">
+            <li><a href="#person">About</a></li>
+            <li><a href="#projects">The Works</a></li>
+            <li><a href="/pine_script/">Pine Script</a></li>
+            <li><a href="/books/">Books</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="theme-trigger" onclick="toggleTheme()" aria-label="Toggle Theme">
+            <i data-lucide="sun" id="theme-icon"></i>
+        </button>
+        <button class="menu-trigger" onclick="toggleMenu()" aria-label="Toggle Menu">
+            <i data-lucide="menu" id="menu-icon"></i>
+        </button>
+    </div>
 </nav>
 
+<!-- Mobile Overlay Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#person" onclick="toggleMenu()">About</a>
+    <a href="#projects" onclick="toggleMenu()">The Works</a>
+    <a href="/pine_script/">Pine Script</a>
+    <a href="/books/">Books</a>
+    <a href="#contact" onclick="toggleMenu()">Contact</a>
+</div>
+
 <section id="home" class="hero">
-    <div class="hero-label">A Journal</div>
+    <div class="hero-label">Welcome.</div>
     <h1>Order in chaos.<br>Rhythm in noise.</h1>
     <p>I’ve spent the last seven years making sure things work when they shouldn't, and the last decade wondering why the world moves in waves. I spend my days bridging gaps for others and my nights mapping the hidden lines of the market.</p>
 </section>
 
 <section id="person" class="section" style="border-top: 1px solid var(--border);">
     <div class="grid-personal" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem;">
-        <div style="position: sticky; top: 8rem; height: fit-content;">
+        <div class="sticky-header" style="position: sticky; top: 8rem; height: fit-content;">
             <h2 class="section-title">The Human</h2>
             <p style="color:var(--dim); font-style: italic;">"Observation is my primary mode of existence."</p>
         </div>
@@ -243,7 +348,7 @@
             
             <p>I am a person who values <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">quiet responsibility</span>. My background isn't just in software; it's rooted in the physical reality of Network Engineering and PC troubleshooting. I started by figuring out how to make machines talk to each other through LAN/WAN configurations, and that grew into a lifelong obsession with the "invisible pipes" of our world.</p>
 
-            <p>I find a strange sort of peace in high-pressure situations, not because I enjoy the stress, but because I enjoy the process of deconstructing a crisis into a solvable puzzle. Whether I'm diving into an error log or configuring a complex implementation, I see it as an act of restoring balance.</p>
+            <p>I find a strange sort of peace in high-pressure situations, not because I enjoy the stress, but because I enjoy the process of deconstructing a crisis into a solvable puzzle. There is a deep satisfaction in being the steady hand when systems start to shake.</p>
 
             <p>I see myself as a student of <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">Balance</span>. My life is an ongoing experiment in finding the equilibrium between rigid technical logic and the fluid, often messy nature of human emotion. I believe that the best systems aren't the ones with the most features, but the ones that respect the human time and peace of mind they are meant to serve.</p>
         </div>
@@ -281,19 +386,19 @@
 
 <section id="journal" class="section" style="border-top: 1px solid var(--border);">
     <div class="grid-personal" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem;">
-        <div style="position: sticky; top: 8rem; height: fit-content;">
+        <div class="sticky-header" style="position: sticky; top: 8rem; height: fit-content;">
             <h2 class="section-title">The Journal</h2>
-            <p style="color:var(--dim); font-style: italic;">"Documenting the search for structural meaning."</p>
+            <p style="color:var(--dim); font-style: italic;">"Auditing the intersection of logic and belief."</p>
         </div>
         <div class="biography" style="font-size: 1.1rem; line-height: 1.8; color: var(--dim);">
-            <p>I write because I need to see my thoughts rendered in black and white. My journal is where my technical experience meets a much deeper inquiry into the systems that govern us—not just digital ones, but philosophical and economic ones.</p>
+            <p>I write because the world often feels too complex to process in silence. It is my way of auditing my own existence. My journal is where the rigid discipline of my professional life—fixing systems that others have given up on—meets a much heavier, quieter inquiry: <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">How does the world actually breathe?</span></p>
             
-            <p>I often find myself caught in the tension between <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">Sense-Certainty</span> and <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">Absolute Knowledge</span>. My study of Hegel’s <i>Phenomenology of Spirit</i> isn't just academic; it’s a way for me to understand the journey of consciousness as it tries to find its footing in a complex world. I see that same journey in the markets—a collective mind moving from the noise of the moment to the clarity of the macro trend.</p>
+            <p>Lately, I've been tracing the <i>Archaeology of Narrative Perspective</i>, trying to uncover the hidden layers of how we see ourselves through the dialectic of Eastern subjectivity. This led me deep into Hegel’s <i>Phenomenology of Spirit</i>—not as an academic exercise, but as a survival manual for understanding the journey of consciousness from simple sense-certainty to absolute knowledge. I see this same path in the markets: they are <i>Binary Information Processing Systems</i> where the noise of a thousand trades eventually collapses into the clarity of a structural move.</p>
 
-            <p>Whether I'm exploring the <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">foundations of a new global monetary system</span>—rethinking how commodities like gold or energy can be tokenized on-chain—or detailing the logic of a new technical analyzer, I am always looking for the "Bird’s Eye View." My writing is a record of a person who absorbs everything—every failure, every pattern, every philosophical question—and tries to anchor it into something true.</p>
+            <p>I find myself caught in <i>Implosive Cosmology</i>—a paradigm where science, consciousness, and existential meaning part of the same sacred dance. Whether I'm analyzing the <i>Mathematical Inevitability of Zero</i> in global systems or architecting a <i>Post-Fiat World</i> through tokenized real-world assets like gold or energy, I am always searching for the coordinates of being.</p>
 
             <p style="margin-top: 2rem;">
-                <a href="https://medium.com/@coto.adiyat" target="_blank" style="color: var(--vital); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--vital);">Read the full journal on Medium ↗</a>
+                <a href="https://medium.com/@coto.adiyat" target="_blank" style="color: var(--vital); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--vital);">Explore the archive on Medium ↗</a>
             </p>
         </div>
     </div>
@@ -327,6 +432,13 @@
             <p class="card-summary">A simple, high-fidelity window into the core rhythm of the crypto market. Just a clean way to track what’s actually happening.</p>
         </a>
 
+        <!-- Pine Script -->
+        <a href="/pine_script/" class="card" target="_blank">
+            <span class="card-meta">Shared Logic</span>
+            <h3 class="card-title">Pine Script Collections</h3>
+            <p class="card-summary">A gathering of the scripts and indicators I’ve built over the years. It’s where I share the logic I use to see the market more clearly.</p>
+        </a>
+
         <!-- RSA Theory -->
         <a href="/rsa/" class="card" target="_blank">
             <span class="card-meta">Theoretical Architecture</span>
@@ -334,11 +446,39 @@
             <p class="card-summary">A whitepaper and interactive demo where I explore the geometry of trading. It’s my foundational thinking on spatial mapping.</p>
         </a>
 
+        <!-- COP TAH Pivot -->
+        <a href="/coptah/" class="card" target="_blank">
+            <span class="card-meta">Predictive Levels</span>
+            <h3 class="card-title">COP TAH Pivot</h3>
+            <p class="card-summary">A novel pivot-based calculation system that incorporates opening dynamics to create responsive support and resistance.</p>
+        </a>
+
         <!-- Bias Analyzer -->
         <a href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" class="card" target="_blank">
             <span class="card-meta">Technical Insight</span>
             <h3 class="card-title">Bias Analyzer</h3>
             <p class="card-summary">A tool I developed in Pine Script to help identify when the market is shifting its structure across different timeframes.</p>
+        </a>
+
+        <!-- Digital Shelf -->
+        <a href="/books/" class="card" target="_blank">
+            <span class="card-meta">References</span>
+            <h3 class="card-title">The Digital Shelf</h3>
+            <p class="card-summary">A collection of the books I love.</p>
+        </a>
+
+        <!-- PULZR -->
+        <a href="/pulzr/" class="card" target="_blank">
+            <span class="card-meta">Generative Visuals</span>
+            <h3 class="card-title">PULZR Audioverse</h3>
+            <p class="card-summary">An exploration into dynamic 3D environments synchronized with audio streams. Mapping sound into a visual landscape.</p>
+        </a>
+
+        <!-- Clock -->
+        <a href="/clock/" class="card" target="_blank">
+            <span class="card-meta">Temporal Cycles</span>
+            <h3 class="card-title">Nested Time</h3>
+            <p class="card-summary">An interactive artwork visualizing time as a series of concentric, nested rings—from millenniums down to the pulse of a second.</p>
         </a>
 
         <!-- Voice from Zero Point -->
@@ -350,7 +490,7 @@
     </div>
 </section>
 
-<section id="contact" class="footer">
+<section id="contact" class="footer" style="border-top: 1px solid var(--border);">
     <div class="hero-label">Want to connect?</div>
     <a href="mailto:coto.adiyat@gmail.com" class="contact-link">Drop me a line.</a>
     
@@ -361,41 +501,59 @@
     </div>
 
     <p style="margin-top: 6rem; color: var(--dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;">
-        © 2026 Adiyat Coto
+        © 2025 Adiyat Coto — Just looking for the rhythm.
     </p>
 </section>
 
 <script>
-    // Theme Toggle Logic
     function toggleTheme() {
         const body = document.body;
         const current = body.getAttribute('data-theme');
         const next = current === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', next);
         const icon = next === 'dark' ? 'sun' : 'moon';
-        document.querySelector('.theme-trigger').innerHTML = `<i data-lucide="${icon}"></i>`;
+        document.getElementById('theme-icon').setAttribute('data-lucide', icon);
         lucide.createIcons();
         localStorage.setItem('theme-personal', next);
     }
 
-    // Smooth Scroll
+    function toggleMenu() {
+        const menu = document.getElementById('mobileMenu');
+        const icon = document.getElementById('menu-icon');
+        const isActive = menu.classList.toggle('active');
+        icon.setAttribute('data-lucide', isActive ? 'x' : 'menu');
+        
+        // Prevent background scrolling when menu is open
+        document.body.style.overflow = isActive ? 'hidden' : 'auto';
+        
+        lucide.createIcons();
+    }
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                window.scrollTo({
-                    top: target.offsetTop,
-                    behavior: 'smooth'
-                });
+            const targetId = this.getAttribute('href');
+            if(targetId.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(targetId);
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            // Close mobile menu if open
+            if(document.getElementById('mobileMenu').classList.contains('active')) {
+                toggleMenu();
             }
         });
     });
 
-    // Init
     document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('theme-personal') || 'dark';
         document.body.setAttribute('data-theme', saved);
+        const icon = saved === 'dark' ? 'sun' : 'moon';
+        document.getElementById('theme-icon').setAttribute('data-lucide', icon);
         lucide.createIcons();
     });
 </script>
