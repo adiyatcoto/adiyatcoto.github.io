@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Recursive Engine - Web Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0b0e11;
+            color: #d1d4dc;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .chart-container {
+            background-color: #131722;
+            border: 1px solid #2a2e39;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        input::placeholder { color: #4a4f5d; }
+        
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #363a45;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .zoom-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 8px;
+            color: #4a4f5d;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-4 overflow-x-hidden">
+
+    <!-- Header & Controls -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-[#131722] p-4 rounded-lg border border-[#2a2e39]">
+        <div class="flex flex-col">
+            <h1 class="text-xl font-bold text-white uppercase tracking-wider">Crypto Recursive Engine <span class="text-blue-500">v2.6</span></h1>
+            <div class="flex items-center gap-3 mt-1">
+                <p class="text-[10px] text-gray-500 mono" id="cycle-info">Cycle: 2022-2025</p>
+                <div class="h-3 w-[1px] bg-gray-700"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] mono text-gray-400">MODE:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="modeLabel" class="text-[10px] mono text-blue-400 font-bold uppercase">Atomic Day</span>
+                </div>
+                <div class="h-3 w-[1px] bg-gray-700"></div>
+                <span class="text-[9px] text-gray-600 uppercase mono italic">Scroll to Zoom · Drag to Pan</span>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <div class="relative">
+                <input type="text" id="tickerInput" list="tickerList" placeholder="Ex: BTCUSDT" class="bg-[#1e222d] border border-[#363a45] px-4 py-2 rounded text-white mono focus:outline-none focus:border-blue-500 w-40">
+                <datalist id="tickerList"></datalist>
+            </div>
+            <button onclick="changeTicker()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold transition uppercase">LOAD</button>
+        </div>
+        <div class="text-right">
+            <div id="livePrice" class="text-2xl font-bold text-[#26a69a] mono">--.---</div>
+            <div id="currentTime" class="text-xs text-gray-400 mono">--:--:--</div>
+        </div>
+    </div>
+
+    <!-- Dashboard Table -->
+    <div class="bg-[#131722] rounded-lg border border-[#2a2e39] overflow-hidden mb-6">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm mono">
+                <thead class="bg-[#1e222d] text-gray-400 border-b border-[#2a2e39]">
+                    <tr>
+                        <th class="p-3">LVL</th>
+                        <th class="p-3">REF. DURATION</th>
+                        <th class="p-3">TIME PROG.</th>
+                        <th class="p-3">EXPIRES AT (EXPIRY)</th>
+                        <th class="p-3">EQUILIBRIUM</th>
+                        <th class="p-3">DELTA TO EQ</th>
+                        <th class="p-3">REMAINING UP/DOWN (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="statsTableBody">
+                    <tr><td colspan="7" class="p-4 text-center text-gray-500 italic">Initializing data... Please wait.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[900px]">
+        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-0">
+            <div class="text-[10px] font-bold mb-1 ml-1 text-gray-400 uppercase" id="title-0">Window 1</div>
+            <canvas id="chart-0"></canvas>
+            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+        </div>
+        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-1">
+            <div class="text-[10px] font-bold mb-1 ml-1 text-gray-400 uppercase" id="title-1">Window 2</div>
+            <canvas id="chart-1"></canvas>
+            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+        </div>
+        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-2">
+            <div class="text-[10px] font-bold mb-1 ml-1 text-gray-400 uppercase" id="title-2">Window 3</div>
+            <canvas id="chart-2"></canvas>
+            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+        </div>
+        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-3">
+            <div class="text-[10px] font-bold mb-1 ml-1 text-gray-400 uppercase" id="title-3">Window 4</div>
+            <canvas id="chart-3"></canvas>
+            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+        </div>
+    </div>
+
+    <!-- Footer Copyright -->
+    <footer class="mt-auto py-8 text-center border-t border-[#2a2e39] bg-[#0b0e11] mt-8">
+        <p class="text-xs text-gray-500 mono uppercase tracking-widest">
+            Copyright <a href="https://adiyatcoto.github.io" target="_blank" class="hover:text-blue-500 transition underline">adiyatcoto.github.io</a> 
+            <span class="mx-2">|</span> Adiyat Coto 2025
+        </p>
+    </footer>
+
+    <script>
+        // --- GLOBAL CONFIGURATION ---
+        let currentSymbol = "BTCUSDT";
+        let livePrice = 0;
+        let historicalData = [];
+        let avgCaps = {};
+        let activeStats = {};
+        let histories = [[], [], [], []];
+        let isCalendarMode = false;
+        
+        let chartStates = [
+            { viewLimit: 100, offset: 0, isDragging: false, lastX: 0 },
+            { viewLimit: 200, offset: 0, isDragging: false, lastX: 0 },
+            { viewLimit: 104, offset: 0, isDragging: false, lastX: 0 },
+            { viewLimit: 48,  offset: 0, isDragging: false, lastX: 0 }
+        ];
+        
+        const TIMEFRAME_MAP = {
+            1: "730-DAYS", 2: "365-DAYS", 3: "182-DAYS", 4: "91-DAYS",
+            5: "45-DAYS", 6: "22-DAYS", 7: "11-DAYS", 8: "5-DAYS",
+            9: "2-DAYS", 10: "1-DAY", 11: "INTRADAY"
+        };
+
+        const CALENDAR_LABELS = {
+            1: "2-YEARLY", 2: "YEARLY", 3: "SEMESTER", 4: "QUARTER",
+            5: "1.5-MONTH", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS",
+            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
+        };
+
+        const WINDOW_CONFIGS = [
+            { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10], title: "WINDOW 1: Micro (L8-L10)" },
+            { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],  title: "WINDOW 2: Intermediate (L5-L7)" },
+            { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],  title: "WINDOW 3: Macro (L2-L4)" },
+            { id: 3, interval: "1M", limit: 48,  levels: [1],       title: "WINDOW 4: Global Cycle (L1)" }
+        ];
+
+        // --- HELPER FUNCTIONS ---
+        function formatPrice(price, isDelta = false) {
+            if (price === undefined || price === null) return "--";
+            const absP = Math.abs(price);
+            const sign = isDelta && price > 0 ? "+" : "";
+            let decimals = 2;
+            if (absP === 0) decimals = 2;
+            else if (absP < 0.0001) decimals = 8;
+            else if (absP < 0.01) decimals = 6;
+            else if (absP < 1) decimals = 4;
+            else if (absP < 100) decimals = 3;
+
+            return sign + price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        async function fetchBinance(endpoint, params) {
+            const url = new URL(`https://api.binance.com/api/v3/${endpoint}`);
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Access Failed");
+                return await res.json();
+            } catch (e) { 
+                console.error("API Error:", e);
+                return null; 
+            }
+        }
+
+        async function loadSymbolSuggestions() {
+            const data = await fetchBinance('exchangeInfo', {});
+            if (data && data.symbols) {
+                const datalist = document.getElementById('tickerList');
+                datalist.innerHTML = "";
+                const symbols = data.symbols
+                    .filter(s => s.quoteAsset === 'USDT' && s.status === 'TRADING')
+                    .map(s => s.symbol)
+                    .sort();
+                symbols.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s;
+                    datalist.appendChild(option);
+                });
+            }
+        }
+
+        async function fetchFullHistory(symbol) {
+            let all = [];
+            let currentStart = new Date('2022-01-01').getTime();
+            const now = Date.now();
+            
+            while (currentStart < now) {
+                const data = await fetchBinance('klines', { symbol, interval: '1d', startTime: currentStart, limit: 1000 });
+                if (!data || !Array.isArray(data)) {
+                    alert("Connection Issues or Invalid Ticker. Please try using a VPN to access the Binance API if problems persist.");
+                    break;
+                }
+                if (data.length === 0) break;
+                all = all.concat(data);
+                currentStart = data[data.length - 1][0] + 1;
+                if (data.length < 1000) break;
+            }
+            return all.map(d => ({
+                ot: new Date(d[0]),
+                o: parseFloat(d[1]), h: parseFloat(d[2]), l: parseFloat(d[3]), c: parseFloat(d[4])
+            }));
+        }
+
+        function getAtomicIntervals(start, end, maxLevel) {
+            let intervals = {};
+            for(let i=0; i<=maxLevel; i++) intervals[i] = [];
+            function divide(s, e, lvl) {
+                if (lvl > maxLevel) return;
+                let days = Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24));
+                if (days <= 1) {
+                    intervals[lvl].push([s, e], [s, e]);
+                    divide(s, e, lvl + 1); divide(s, e, lvl + 1);
+                    return;
+                }
+                let mid = new Date(s.getTime() + Math.floor(days/2) * 24 * 60 * 60 * 1000);
+                intervals[lvl].push([s, mid], [mid, e]);
+                divide(s, mid, lvl + 1); divide(mid, e, lvl + 1);
+            }
+            divide(start, end, 1);
+            return intervals;
+        }
+
+        function getCalendarIntervals(start, end, maxLevel) {
+            let intervals = {};
+            for(let i=0; i<=maxLevel; i++) intervals[i] = [];
+            intervals[1].push([new Date(2022, 0, 1), new Date(2024, 0, 1)]);
+            intervals[1].push([new Date(2024, 0, 1), new Date(2026, 0, 1)]);
+            for(let y=2022; y<=2025; y++) intervals[2].push([new Date(y, 0, 1), new Date(y+1, 0, 1)]);
+            intervals[2].forEach(([s, e]) => {
+                let mid = new Date(s.getFullYear(), 6, 1);
+                intervals[3].push([s, mid], [mid, e]);
+            });
+            intervals[3].forEach(([s, e]) => {
+                let mid = new Date(s.getTime() + (e.getTime() - s.getTime()) / 2);
+                mid.setHours(0,0,0,0);
+                intervals[4].push([s, mid], [mid, e]);
+            });
+            function fillRecursive(lvl) {
+                if (lvl > maxLevel) return;
+                intervals[lvl-1].forEach(([s, e]) => {
+                    let diff = e.getTime() - s.getTime();
+                    let mid = new Date(s.getTime() + Math.floor(diff / (2 * 86400000)) * 86400000);
+                    intervals[lvl].push([s, mid], [mid, e]);
+                });
+                fillRecursive(lvl + 1);
+            }
+            fillRecursive(5);
+            return intervals;
+        }
+
+        async function initData() {
+            historicalData = await fetchFullHistory(currentSymbol);
+            if (historicalData.length === 0) return;
+
+            const now = new Date();
+            const cycleIdx = Math.floor((now.getFullYear() - 2022) / 4);
+            const cycleStartYear = 2022 + (cycleIdx * 4);
+            const startActive = new Date(cycleStartYear, 0, 1);
+            const endActive = new Date(cycleStartYear + 4, 0, 1);
+
+            const refIntervals = isCalendarMode ? getCalendarIntervals(new Date(2022, 0, 1), new Date(2026, 0, 1), 11) : getAtomicIntervals(new Date(2022, 0, 1), new Date(2026, 0, 1), 11);
+
+            for (let lvl = 1; lvl <= 11; lvl++) {
+                let ups = [], downs = [];
+                refIntervals[lvl].forEach(([s, e]) => {
+                    const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
+                    if (mask.length > 0) {
+                        const open = mask[0].o;
+                        const hh = Math.max(...mask.map(m => m.h));
+                        const ll = Math.min(...mask.map(m => m.l));
+                        ups.push(((hh - open) / open) * 100);
+                        downs.push(((open - ll) / open) * 100);
+                    }
+                });
+                avgCaps[lvl] = { u: ups.length ? ups.reduce((a,b)=>a+b)/ups.length : 0, d: downs.length ? downs.reduce((a,b)=>a+b)/downs.length : 0 };
+            }
+
+            const activeIntervals = isCalendarMode ? getCalendarIntervals(startActive, endActive, 11) : getAtomicIntervals(startActive, endActive, 11);
+            activeStats = {};
+            for (let lvl = 1; lvl <= 11; lvl++) {
+                activeStats[lvl] = activeIntervals[lvl].map(([s, e]) => {
+                    const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
+                    return { start: s, end: e, open: mask.length ? mask[0].o : null, hh: null, ll: null };
+                });
+            }
+
+            for (let cfg of WINDOW_CONFIGS) {
+                const res = await fetchBinance('klines', { symbol: currentSymbol, interval: cfg.interval, limit: cfg.limit });
+                if(res) {
+                    histories[cfg.id] = res.map(d => [new Date(d[0]), parseFloat(d[1]), parseFloat(d[2]), parseFloat(d[3]), parseFloat(d[4])]);
+                    document.getElementById(`title-${cfg.id}`).innerText = cfg.title;
+                    chartStates[cfg.id].viewLimit = Math.min(histories[cfg.id].length, 100);
+                    chartStates[cfg.id].offset = 0;
+                }
+            }
+        }
+
+        // --- INTERACTION LOGIC ---
+        function initInteractions() {
+            WINDOW_CONFIGS.forEach(cfg => {
+                const canvas = document.getElementById(`chart-${cfg.id}`);
+                
+                canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const state = chartStates[cfg.id];
+                    const delta = e.deltaY > 0 ? 1.1 : 0.9;
+                    state.viewLimit = Math.max(10, Math.min(histories[cfg.id].length, Math.round(state.viewLimit * delta)));
+                    renderCharts();
+                }, { passive: false });
+
+                canvas.addEventListener('mousedown', (e) => {
+                    chartStates[cfg.id].isDragging = true;
+                    chartStates[cfg.id].lastX = e.clientX;
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    const state = chartStates[cfg.id];
+                    if (!state.isDragging) return;
+                    const dx = e.clientX - state.lastX;
+                    if (Math.abs(dx) > 2) {
+                        const ohlc = histories[cfg.id];
+                        const candleWidthPixels = canvas.clientWidth / state.viewLimit;
+                        const shift = Math.round(dx / candleWidthPixels);
+                        if (shift !== 0) {
+                            state.offset = Math.max(0, Math.min(ohlc.length - state.viewLimit, state.offset + shift));
+                            state.lastX = e.clientX;
+                            renderCharts();
+                        }
+                    }
+                });
+
+                window.addEventListener('mouseup', () => {
+                    chartStates[cfg.id].isDragging = false;
+                });
+            });
+        }
+
+        // --- DRAWING ENGINE ---
+        function renderCharts() {
+            const now = new Date();
+            WINDOW_CONFIGS.forEach(cfg => {
+                const canvas = document.getElementById(`chart-${cfg.id}`);
+                const ctx = canvas.getContext('2d', { alpha: false });
+                const fullOhlc = histories[cfg.id];
+                if (!fullOhlc || !fullOhlc.length) return;
+
+                const state = chartStates[cfg.id];
+                const endSlice = fullOhlc.length - state.offset;
+                const startSlice = Math.max(0, endSlice - state.viewLimit);
+                const ohlc = fullOhlc.slice(startSlice, endSlice);
+
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight - 20;
+
+                const paddingRight = 240; 
+                const chartW = canvas.width - paddingRight;
+                const chartH = canvas.height - 40;
+
+                let visiblePrices = ohlc.flatMap(o => [o[2], o[3]]);
+                cfg.levels.forEach(lvl => {
+                    const phase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
+                    if (phase && phase.open !== null) {
+                        const caps = avgCaps[lvl];
+                        visiblePrices.push(phase.open * (1 + caps.u/100));
+                        visiblePrices.push(phase.open * (1 - caps.d/100));
+                    }
+                });
+
+                const vMax = Math.max(...visiblePrices);
+                const vMin = Math.min(...visiblePrices);
+                const range = vMax - vMin;
+                const yScale = chartH / (range * 1.05);
+                const yOffset = vMin - (range * 0.025);
+
+                const getX = (i) => (i / ohlc.length) * chartW;
+                const getY = (p) => chartH - (p - yOffset) * yScale + 20;
+
+                ctx.fillStyle = '#131722';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Grid
+                ctx.strokeStyle = '#1f222d';
+                ctx.lineWidth = 1;
+                for(let i=0; i<=5; i++) {
+                    const y = 20 + (i/5)*chartH;
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartW, y); ctx.stroke();
+                }
+
+                // Label anti-collision tracking
+                let priceLabels = [];
+
+                cfg.levels.forEach(lvl => {
+                    const caps = avgCaps[lvl];
+                    const activePhase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
+                    
+                    activeStats[lvl]?.forEach(ph => {
+                        const visibleStart = ohlc[0][0];
+                        const visibleEnd = ohlc[ohlc.length-1][0];
+                        if (ph.end < visibleStart || ph.start > visibleEnd || ph.open === null) return;
+                        
+                        const c = ph.open * (1 + caps.u/100);
+                        const f = ph.open * (1 - caps.d/100);
+                        const m = (c+f)/2;
+
+                        const sIdx = ohlc.findIndex(o => o[0] >= ph.start);
+                        const eIdx = ohlc.findIndex(o => o[0] >= ph.end);
+                        const x1 = sIdx === -1 ? 0 : getX(sIdx);
+                        const x2 = eIdx === -1 ? chartW : getX(eIdx);
+                        
+                        const boxCandleIdx = eIdx === -1 ? ohlc.length-1 : Math.max(0, eIdx-1);
+                        const isBull = ohlc[boxCandleIdx][4] >= ph.open;
+                        ctx.fillStyle = isBull ? 'rgba(38, 166, 154, 0.05)' : 'rgba(239, 83, 80, 0.05)';
+                        ctx.fillRect(x1, getY(c), x2-x1, getY(f) - getY(c));
+
+                        if (ph === activePhase) {
+                            const phaseCandles = fullOhlc.filter(o => o[0] >= ph.start && o[0] < ph.end);
+                            const phaseHigh = Math.max(...phaseCandles.map(o => o[2]), livePrice);
+                            const phaseLow = Math.min(...phaseCandles.map(o => o[3]), livePrice);
+                            
+                            const isCT = phaseHigh >= c;
+                            const isFT = phaseLow <= f;
+                            const desc = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
+
+                            // Penempatan awal label harga (Y asli)
+                            priceLabels.push({ y: getY(c), text: `L${lvl} ${desc} CEIL: $${formatPrice(c)} ${isCT ? '[TOUCHED]' : ''}`, color: isCT ? '#ffffff' : '#ef5350' });
+                            priceLabels.push({ y: getY(f), text: `L${lvl} ${desc} FLOR: $${formatPrice(f)} ${isFT ? '[TOUCHED]' : ''}`, color: isFT ? '#ffffff' : '#26a69a' });
+                            priceLabels.push({ y: getY(m), text: `L${lvl} EQ: $${formatPrice(m)}`, color: 'rgba(255, 255, 0, 0.8)' });
+
+                            ctx.setLineDash([5, 5]);
+                            ctx.strokeStyle = isCT ? '#ffffff' : '#ef5350';
+                            ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(canvas.width, getY(c)); ctx.stroke();
+                            
+                            ctx.strokeStyle = isFT ? '#ffffff' : '#26a69a';
+                            ctx.beginPath(); ctx.moveTo(x1, getY(f)); ctx.lineTo(canvas.width, getY(f)); ctx.stroke();
+
+                            ctx.setLineDash([2, 2]);
+                            ctx.strokeStyle = 'rgba(255, 255, 0, 0.6)';
+                            ctx.beginPath(); ctx.moveTo(x1, getY(m)); ctx.lineTo(chartW + 30, getY(m)); ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+                    });
+                });
+
+                // ANTI-COLLISION ALGORITHM
+                priceLabels.sort((a, b) => a.y - b.y);
+                const minGap = 13;
+                for (let i = 1; i < priceLabels.length; i++) {
+                    if (priceLabels[i].y - priceLabels[i-1].y < minGap) {
+                        priceLabels[i].y = priceLabels[i-1].y + minGap;
+                    }
+                }
+
+                // DRAW LABELS ON TOP OF LINE
+                ctx.font = 'bold 9px JetBrains Mono';
+                priceLabels.forEach(lb => {
+                    ctx.fillStyle = lb.color;
+                    // Menggunakan offset -4 agar teks melayang di atas garis (On Top of Line)
+                    ctx.fillText(lb.text, chartW + 5, lb.y - 4); 
+                });
+
+                // Candles
+                const candleW = (chartW / ohlc.length) * 0.7;
+                ohlc.forEach((d, i) => {
+                    const [t, o, h, l, c] = d;
+                    const color = c >= o ? '#26a69a' : '#ef5350';
+                    ctx.strokeStyle = color; ctx.fillStyle = color;
+                    const x = getX(i);
+                    ctx.beginPath(); ctx.moveTo(x, getY(h)); ctx.lineTo(x, getY(l)); ctx.stroke();
+                    ctx.fillRect(x - candleW/2, getY(Math.max(o,c)), candleW, Math.abs(getY(o) - getY(c)) || 1);
+                });
+
+                // Live Price
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(chartW, getY(livePrice)); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#363a45';
+                ctx.fillRect(chartW + 2, getY(livePrice) - 10, 80, 20);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 10px JetBrains Mono';
+                ctx.fillText(formatPrice(livePrice), chartW + 8, getY(livePrice) + 4);
+            });
+        }
+
+        function updateStatsTable() {
+            const now = new Date();
+            const tbody = document.getElementById('statsTableBody');
+            let html = "";
+            for (let lvl = 1; lvl <= 11; lvl++) {
+                const phase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
+                if (!phase || phase.open === null) continue;
+                
+                const caps = avgCaps[lvl];
+                const c = phase.open * (1 + caps.u/100);
+                const f = phase.open * (1 - caps.d/100);
+                const m = (c + f) / 2;
+                const prog = ((now - phase.start) / (phase.end - phase.start)) * 100;
+                const label = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
+                html += `
+                    <tr class="border-b border-[#1e222d] hover:bg-[#1e222d] transition">
+                        <td class="p-3 text-blue-400">L${lvl}</td>
+                        <td class="p-3 font-semibold">${label}</td>
+                        <td class="p-3">
+                            <div class="w-24 bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width: ${prog}%"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-500">${prog.toFixed(1)}%</span>
+                        </td>
+                        <td class="p-3 text-xs text-gray-400">${phase.end.toLocaleString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                        <td class="p-3 text-yellow-500">${formatPrice(m)}</td>
+                        <td class="p-3 ${livePrice - m >= 0 ? 'text-[#26a69a]' : 'text-[#ef5350]'}">${formatPrice(livePrice - m, true)}</td>
+                        <td class="p-3 text-[11px] text-gray-300">U: ${((c - livePrice) / livePrice * 100).toFixed(2)}% | D: ${((livePrice - f) / livePrice * 100).toFixed(2)}%</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        async function loop() {
+            const priceData = await fetchBinance('ticker/price', { symbol: currentSymbol });
+            if (priceData && priceData.price) {
+                livePrice = parseFloat(priceData.price);
+                document.getElementById('livePrice').innerText = formatPrice(livePrice);
+            }
+            document.getElementById('currentTime').innerText = new Date().toLocaleTimeString('en-US');
+            histories.forEach(h => {
+                if (h && h.length) {
+                    const l = h[h.length - 1];
+                    l[2] = Math.max(l[2], livePrice); l[3] = Math.min(l[3], livePrice); l[4] = livePrice;
+                }
+            });
+            updateStatsTable();
+            renderCharts();
+        }
+
+        async function toggleMode() {
+            isCalendarMode = document.getElementById('modeToggle').checked;
+            document.getElementById('modeLabel').innerText = isCalendarMode ? "Calendar" : "Atomic Day";
+            document.getElementById('statsTableBody').innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500 italic">Switching mode...</td></tr>`;
+            await initData();
+        }
+
+        async function changeTicker() {
+            const input = document.getElementById('tickerInput').value.trim().toUpperCase();
+            if (input) { currentSymbol = input; await initData(); }
+        }
+
+        window.onload = async () => {
+            await loadSymbolSuggestions();
+            await initData();
+            initInteractions();
+            setInterval(loop, 1000);
+            window.addEventListener('resize', renderCharts);
+        };
+    </script>
+</body>
+</html>
