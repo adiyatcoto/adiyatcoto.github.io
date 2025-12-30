@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Recursive Engine - Web Edition</title>
+    <title>RSA Recursive Engine - GMT+0 UTC (v2.7.1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -30,7 +30,6 @@
         }
         input::placeholder { color: #4a4f5d; }
         
-        /* Toggle Switch Styling */
         .switch {
             position: relative;
             display: inline-block;
@@ -85,12 +84,11 @@
 </head>
 <body class="p-4 overflow-x-hidden">
 
-    <!-- Header & Controls -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-[#131722] p-4 rounded-lg border border-[#2a2e39]">
         <div class="flex flex-col">
-            <h1 class="text-xl font-bold text-white uppercase tracking-wider">Crypto Recursive Engine <span class="text-blue-500">v2.7</span></h1>
+            <h1 class="text-xl font-bold text-white uppercase tracking-wider">RSA Recursive Engine <span class="text-blue-500">v2.7.1</span></h1>
             <div class="flex items-center gap-3 mt-1">
-                <p class="text-[10px] text-gray-500 mono" id="cycle-info">Cycle: 2022-2025</p>
+                <p class="text-[10px] text-gray-500 mono" id="cycle-info">Cycle: 2022-2025 (UTC)</p>
                 <div class="h-3 w-[1px] bg-gray-700"></div>
                 <div class="flex items-center gap-2">
                     <span class="text-[10px] mono text-gray-400">MODE:</span>
@@ -113,11 +111,10 @@
         </div>
         <div class="text-right">
             <div id="livePrice" class="text-2xl font-bold text-[#26a69a] mono">--.---</div>
-            <div id="currentTime" class="text-xs text-gray-400 mono">--:--:--</div>
+            <div id="currentTime" class="text-[11px] text-blue-400 font-bold mono uppercase tracking-tighter">-- --- ----, --:--:-- UTC</div>
         </div>
     </div>
 
-    <!-- Dashboard Table -->
     <div class="bg-[#131722] rounded-lg border border-[#2a2e39] overflow-hidden mb-6">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm mono">
@@ -126,7 +123,7 @@
                         <th class="p-3">LVL</th>
                         <th class="p-3">REF. DURATION</th>
                         <th class="p-3">TIME PROG.</th>
-                        <th class="p-3">EXPIRES AT (EXPIRY)</th>
+                        <th class="p-3">EXPIRES AT (UTC)</th>
                         <th class="p-3">EQUILIBRIUM</th>
                         <th class="p-3">DELTA TO EQ</th>
                         <th class="p-3">REMAINING UP/DOWN (%)</th>
@@ -139,7 +136,6 @@
         </div>
     </div>
 
-    <!-- Chart Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[900px]">
         <div class="chart-container rounded-lg p-2 flex flex-col" id="container-0">
             <div class="flex justify-between items-center mb-1 px-1">
@@ -187,7 +183,6 @@
         </div>
     </div>
 
-    <!-- Footer Copyright -->
     <footer class="mt-auto py-8 text-center border-t border-[#2a2e39] bg-[#0b0e11] mt-8">
         <p class="text-xs text-gray-500 mono uppercase tracking-widest">
             Copyright <a href="https://adiyatcoto.github.io" target="_blank" class="hover:text-blue-500 transition underline">adiyatcoto.github.io</a> 
@@ -215,20 +210,21 @@
         const TIMEFRAME_MAP = {
             1: "730-DAYS", 2: "365-DAYS", 3: "182-DAYS", 4: "91-DAYS",
             5: "45-DAYS", 6: "22-DAYS", 7: "11-DAYS", 8: "5-DAYS",
-            9: "2-DAYS", 10: "1-DAY", 11: "INTRADAY"
+            9: "2-DAYS", 10: "1-DAY", 11: "INTRADAY (12 HOURS)"
         };
 
         const CALENDAR_LABELS = {
             1: "2-YEARLY", 2: "YEARLY", 3: "SEMESTER", 4: "QUARTER",
             5: "1.5-MONTH", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS",
-            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
+            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY (12 HOURS)"
         };
 
         const WINDOW_CONFIGS = [
-            { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10], title: "WINDOW 1: Micro (L8-L10)" },
-            { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],  title: "WINDOW 2: Intermediate (L5-L7)" },
-            { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],  title: "WINDOW 3: Macro (L2-L4)" },
-            { id: 3, interval: "1M", limit: 48,  levels: [1],       title: "WINDOW 4: Global Cycle (L1)" }
+            // Perubahan: Menambahkan L11 ke dalam Window 1
+            { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10, 11], title: "WINDOW 1: Micro (L8-L11)" },
+            { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],      title: "WINDOW 2: Intermediate (L5-L7)" },
+            { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],      title: "WINDOW 3: Macro (L2-L4)" },
+            { id: 3, interval: "1M", limit: 48,  levels: [1],           title: "WINDOW 4: Global Cycle (L1)" }
         ];
 
         // --- HELPER FUNCTIONS ---
@@ -278,7 +274,7 @@
 
         async function fetchFullHistory(symbol) {
             let all = [];
-            let currentStart = new Date('2022-01-01').getTime();
+            let currentStart = Date.UTC(2022, 0, 1);
             const now = Date.now();
             
             while (currentStart < now) {
@@ -317,16 +313,16 @@
         function getCalendarIntervals(start, end, maxLevel) {
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
-            intervals[1].push([new Date(2022, 0, 1), new Date(2024, 0, 1)]);
-            intervals[1].push([new Date(2024, 0, 1), new Date(2026, 0, 1)]);
-            for(let y=2022; y<=2025; y++) intervals[2].push([new Date(y, 0, 1), new Date(y+1, 0, 1)]);
+            intervals[1].push([new Date(Date.UTC(2022, 0, 1)), new Date(Date.UTC(2024, 0, 1))]);
+            intervals[1].push([new Date(Date.UTC(2024, 0, 1)), new Date(Date.UTC(2026, 0, 1))]);
+            for(let y=2022; y<=2025; y++) intervals[2].push([new Date(Date.UTC(y, 0, 1)), new Date(Date.UTC(y+1, 0, 1))]);
             intervals[2].forEach(([s, e]) => {
-                let mid = new Date(s.getFullYear(), 6, 1);
+                let mid = new Date(Date.UTC(s.getUTCFullYear(), 6, 1));
                 intervals[3].push([s, mid], [mid, e]);
             });
             intervals[3].forEach(([s, e]) => {
                 let mid = new Date(s.getTime() + (e.getTime() - s.getTime()) / 2);
-                mid.setHours(0,0,0,0);
+                mid.setUTCHours(0,0,0,0);
                 intervals[4].push([s, mid], [mid, e]);
             });
             function fillRecursive(lvl) {
@@ -347,12 +343,14 @@
             if (historicalData.length === 0) return;
 
             const now = new Date();
-            const cycleIdx = Math.floor((now.getFullYear() - 2022) / 4);
+            const cycleIdx = Math.floor((now.getUTCFullYear() - 2022) / 4);
             const cycleStartYear = 2022 + (cycleIdx * 4);
-            const startActive = new Date(cycleStartYear, 0, 1);
-            const endActive = new Date(cycleStartYear + 4, 0, 1);
+            const startActive = new Date(Date.UTC(cycleStartYear, 0, 1));
+            const endActive = new Date(Date.UTC(cycleStartYear + 4, 0, 1));
+            const refStart = new Date(Date.UTC(2022, 0, 1));
+            const refEnd = new Date(Date.UTC(2026, 0, 1));
 
-            const refIntervals = isCalendarMode ? getCalendarIntervals(new Date(2022, 0, 1), new Date(2026, 0, 1), 11) : getAtomicIntervals(new Date(2022, 0, 1), new Date(2026, 0, 1), 11);
+            const refIntervals = isCalendarMode ? getCalendarIntervals(refStart, refEnd, 11) : getAtomicIntervals(refStart, refEnd, 11);
 
             for (let lvl = 1; lvl <= 11; lvl++) {
                 let ups = [], downs = [];
@@ -401,7 +399,6 @@
         function initInteractions() {
             WINDOW_CONFIGS.forEach(cfg => {
                 const canvas = document.getElementById(`chart-${cfg.id}`);
-                
                 canvas.addEventListener('wheel', (e) => {
                     e.preventDefault();
                     const state = chartStates[cfg.id];
@@ -409,12 +406,10 @@
                     state.viewLimit = Math.max(10, Math.min(histories[cfg.id].length, Math.round(state.viewLimit * delta)));
                     renderCharts();
                 }, { passive: false });
-
                 canvas.addEventListener('mousedown', (e) => {
                     chartStates[cfg.id].isDragging = true;
                     chartStates[cfg.id].lastX = e.clientX;
                 });
-
                 window.addEventListener('mousemove', (e) => {
                     const state = chartStates[cfg.id];
                     if (!state.isDragging) return;
@@ -430,14 +425,10 @@
                         }
                     }
                 });
-
-                window.addEventListener('mouseup', () => {
-                    chartStates[cfg.id].isDragging = false;
-                });
+                window.addEventListener('mouseup', () => { chartStates[cfg.id].isDragging = false; });
             });
         }
 
-        // --- DRAWING ENGINE ---
         function renderCharts() {
             const now = new Date();
             WINDOW_CONFIGS.forEach(cfg => {
@@ -472,7 +463,6 @@
                 const vMax = Math.max(...visiblePrices);
                 const vMin = Math.min(...visiblePrices);
                 
-                // Y-Scale Function (Linear vs Log)
                 let getY;
                 if (state.isLog) {
                     const logMax = Math.log(vMax);
@@ -493,7 +483,6 @@
                 ctx.fillStyle = '#131722';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Grid
                 ctx.strokeStyle = '#1f222d';
                 ctx.lineWidth = 1;
                 for(let i=0; i<=5; i++) {
@@ -542,10 +531,8 @@
                             ctx.setLineDash([5, 5]);
                             ctx.strokeStyle = isCT ? '#ffffff' : '#ef5350';
                             ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(canvas.width, getY(c)); ctx.stroke();
-                            
                             ctx.strokeStyle = isFT ? '#ffffff' : '#26a69a';
                             ctx.beginPath(); ctx.moveTo(x1, getY(f)); ctx.lineTo(canvas.width, getY(f)); ctx.stroke();
-
                             ctx.setLineDash([2, 2]);
                             ctx.strokeStyle = 'rgba(255, 255, 0, 0.6)';
                             ctx.beginPath(); ctx.moveTo(x1, getY(m)); ctx.lineTo(chartW + 30, getY(m)); ctx.stroke();
@@ -554,13 +541,10 @@
                     });
                 });
 
-                // Anti-collision for price labels
                 priceLabels.sort((a, b) => a.y - b.y);
                 const minGap = 13;
                 for (let i = 1; i < priceLabels.length; i++) {
-                    if (priceLabels[i].y - priceLabels[i-1].y < minGap) {
-                        priceLabels[i].y = priceLabels[i-1].y + minGap;
-                    }
+                    if (priceLabels[i].y - priceLabels[i-1].y < minGap) priceLabels[i].y = priceLabels[i-1].y + minGap;
                 }
 
                 ctx.font = 'bold 9px JetBrains Mono';
@@ -569,7 +553,6 @@
                     ctx.fillText(lb.text, chartW + 5, lb.y - 4); 
                 });
 
-                // Candles
                 const candleW = Math.max(1, (chartW / ohlc.length) * 0.7);
                 ohlc.forEach((d, i) => {
                     const [t, o, h, l, c] = d;
@@ -580,7 +563,6 @@
                     ctx.fillRect(x - candleW/2, getY(Math.max(o,c)), candleW, Math.abs(getY(o) - getY(c)) || 1);
                 });
 
-                // Live Price Line
                 ctx.strokeStyle = 'rgba(255,255,255,0.8)';
                 ctx.setLineDash([2, 2]);
                 ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(chartW, getY(livePrice)); ctx.stroke();
@@ -607,6 +589,13 @@
                 const m = (c + f) / 2;
                 const prog = ((now - phase.start) / (phase.end - phase.start)) * 100;
                 const label = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
+                
+                const expiryStr = phase.end.toLocaleString('en-US', { 
+                    weekday: 'short', day: '2-digit', month: 'short', 
+                    year: 'numeric', hour: '2-digit', minute: '2-digit', 
+                    timeZone: 'UTC', hour12: false 
+                });
+
                 html += `
                     <tr class="border-b border-[#1e222d] hover:bg-[#1e222d] transition">
                         <td class="p-3 text-blue-400">L${lvl}</td>
@@ -617,7 +606,7 @@
                             </div>
                             <span class="text-[10px] text-gray-500">${prog.toFixed(1)}%</span>
                         </td>
-                        <td class="p-3 text-xs text-gray-400">${phase.end.toLocaleString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                        <td class="p-3 text-xs text-gray-400">${expiryStr}</td>
                         <td class="p-3 text-yellow-500">${formatPrice(m)}</td>
                         <td class="p-3 ${livePrice - m >= 0 ? 'text-[#26a69a]' : 'text-[#ef5350]'}">${formatPrice(livePrice - m, true)}</td>
                         <td class="p-3 text-[11px] text-gray-300">U: ${((c - livePrice) / livePrice * 100).toFixed(2)}% | D: ${((livePrice - f) / livePrice * 100).toFixed(2)}%</td>
@@ -633,7 +622,20 @@
                 livePrice = parseFloat(priceData.price);
                 document.getElementById('livePrice').innerText = formatPrice(livePrice);
             }
-            document.getElementById('currentTime').innerText = new Date().toLocaleTimeString('en-US');
+            
+            const now = new Date();
+            const utcString = now.toLocaleString('en-GB', { 
+                timeZone: 'UTC', 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false 
+            });
+            document.getElementById('currentTime').innerText = utcString + " UTC";
+
             histories.forEach(h => {
                 if (h && h.length) {
                     const l = h[h.length - 1];
