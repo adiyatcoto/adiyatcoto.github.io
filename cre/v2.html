@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSA Recursive Engine - GMT+0 UTC (v2.8.1 - Logic Fix)</title>
+    <title>RSA Recursive Engine - GMT+0 UTC (v2.8.0 - L0 Enabled)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -86,7 +86,7 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-[#131722] p-4 rounded-lg border border-[#2a2e39]">
         <div class="flex flex-col">
-            <h1 class="text-xl font-bold text-white uppercase tracking-wider">RSA Recursive Engine <span class="text-blue-500">v2.8.1</span></h1>
+            <h1 class="text-xl font-bold text-white uppercase tracking-wider">RSA Recursive Engine <span class="text-blue-500">v2.8.0</span></h1>
             <div class="flex items-center gap-3 mt-1">
                 <p class="text-[10px] text-gray-500 mono" id="cycle-info">Cycle: 2022-2025 (UTC)</p>
                 <div class="h-3 w-[1px] bg-gray-700"></div>
@@ -226,7 +226,7 @@
             { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10, 11], title: "WINDOW 1: Micro (L8-L11)" },
             { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],      title: "WINDOW 2: Intermediate (L5-L7)" },
             { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],      title: "WINDOW 3: Macro (L2-L4)" },
-            { id: 3, interval: "1M", limit: 96,  levels: [0, 1],         title: "WINDOW 4: Global (L0-L1)" } 
+            { id: 3, interval: "1M", limit: 96,  levels: [0, 1],         title: "WINDOW 4: Global (L0-L1)" } // Added L0
         ];
 
         // --- HELPER FUNCTIONS ---
@@ -276,7 +276,7 @@
 
         async function fetchFullHistory(symbol) {
             let all = [];
-            // We still need 2018 data for L0, but L1-11 will ignore it during calc
+            // UPDATED: Start from 2018 to capture the full previous L0 cycle
             let currentStart = Date.UTC(2018, 0, 1);
             const now = Date.now();
             
@@ -297,7 +297,9 @@
         function getAtomicIntervals(start, end, maxLevel) {
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
-            intervals[0].push([start, end]); // L0 is full range
+            
+            // L0 is explicitly the full range provided (e.g., 2018-2022)
+            intervals[0].push([start, end]);
 
             function divide(s, e, lvl) {
                 if (lvl > maxLevel) return;
@@ -311,36 +313,51 @@
                 intervals[lvl].push([s, mid], [mid, e]);
                 divide(s, mid, lvl + 1); divide(mid, e, lvl + 1);
             }
+            // Recursive split starts at Level 1 (splitting L0 into two L1s)
             divide(start, end, 1);
             return intervals;
         }
 
         function getCalendarIntervals(start, end, maxLevel) {
+            // Dynamic generation based on start/end to support both 2018-2022 and 2022-2026 blocks
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
+            
+            // Level 0: The Full 4 Years
             intervals[0].push([start, end]);
 
+            // Level 1: 2-Yearly Split
             let midPoint = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
-            if (midPoint.getUTCMonth() !== 0 || midPoint.getUTCDate() !== 1) {
-                // Ensure alignment for 2-year split
+            // Align to year boundary if close
+            if (midPoint.getUTCMonth() === 0 && midPoint.getUTCDate() === 1) {
+                // Good
+            } else {
+                // Force align to Jan 1st of mid year for clean calendar logic
                 midPoint = new Date(Date.UTC(start.getUTCFullYear() + 2, 0, 1));
             }
             intervals[1].push([start, midPoint]);
             intervals[1].push([midPoint, end]);
 
+            // Level 2: Yearly
             intervals[1].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear() + 1, 0, 1));
                 intervals[2].push([s, mid], [mid, e]);
             });
+
+            // Level 3: Semester (6 Month)
             intervals[2].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear(), 6, 1));
                 intervals[3].push([s, mid], [mid, e]);
             });
+
+            // Level 4: Quarter (3 Month)
             intervals[3].forEach(([s, e]) => {
                 let mid = new Date(s.getTime() + (e.getTime() - s.getTime()) / 2);
                 mid.setUTCHours(0,0,0,0);
                 intervals[4].push([s, mid], [mid, e]);
             });
+
+            // Recursive fill for L5+
             function fillRecursive(lvl) {
                 if (lvl > maxLevel) return;
                 intervals[lvl-1].forEach(([s, e]) => {
@@ -362,39 +379,21 @@
             const cycleIdx = Math.floor((now.getUTCFullYear() - 2022) / 4);
             const cycleStartYear = 2022 + (cycleIdx * 4); // 2022
             
-            // 1. Definisikan Range Waktu Aktif
+            // ACTIVE CYCLE: 2022 - 2026
             const startActive = new Date(Date.UTC(cycleStartYear, 0, 1));
             const endActive = new Date(Date.UTC(cycleStartYear + 4, 0, 1));
             
-            // 2. Definisikan Reference Range TERPISAH
-            // L0 Reference: 2018-2022 (Previous Cycle)
-            const refStartL0 = new Date(Date.UTC(cycleStartYear - 4, 0, 1)); 
-            const refEndL0 = new Date(Date.UTC(cycleStartYear, 0, 1));
+            // REFERENCE CYCLE: 2018 - 2022 (Used to calculate Caps/Volatility for L0 prediction)
+            const refStart = new Date(Date.UTC(cycleStartYear - 4, 0, 1)); // 2018
+            const refEnd = new Date(Date.UTC(cycleStartYear, 0, 1)); // 2022
 
-            // L1-L11 Reference: 2022-2026 (Current Cycle - Restoration of old logic)
-            const refStartStd = new Date(Date.UTC(cycleStartYear, 0, 1));
-            const refEndStd = new Date(Date.UTC(cycleStartYear + 4, 0, 1));
+            const refIntervals = isCalendarMode ? getCalendarIntervals(refStart, refEnd, 11) : getAtomicIntervals(refStart, refEnd, 11);
 
-            // Generate Intervals untuk Referensi
-            let refIntervalsL0, refIntervalsStd;
-            if (isCalendarMode) {
-                refIntervalsL0 = getCalendarIntervals(refStartL0, refEndL0, 11);
-                refIntervalsStd = getCalendarIntervals(refStartStd, refEndStd, 11);
-            } else {
-                refIntervalsL0 = getAtomicIntervals(refStartL0, refEndL0, 11);
-                refIntervalsStd = getAtomicIntervals(refStartStd, refEndStd, 11);
-            }
-
-            // Calculate Averages (Split Logic)
+            // Calculate Averages from Reference Cycle (2018-2022)
+            // UPDATED: Loop starts from 0
             for (let lvl = 0; lvl <= 11; lvl++) {
                 let ups = [], downs = [];
-                
-                // PENTING: Pilih interval referensi berdasarkan Level
-                const targetIntervals = (lvl === 0) ? refIntervalsL0[lvl] : refIntervalsStd[lvl];
-
-                targetIntervals.forEach(([s, e]) => {
-                    // Hanya ambil data historis yang sudah closed (sebelum sekarang)
-                    // Untuk L1-L11 yang pakai current cycle, ini penting agar tidak menghitung "masa depan"
+                refIntervals[lvl].forEach(([s, e]) => {
                     const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
                     if (mask.length > 0) {
                         const open = mask[0].o;
@@ -404,8 +403,9 @@
                         downs.push(((open - ll) / open) * 100);
                     }
                 });
-
+                // If L0 reference data is missing (e.g. coin didn't exist in 2018), fallback to 0 or estimates
                 if (ups.length === 0 && lvl === 0) {
+                    // Fallback logic for young coins: use L1 aggregate * 1.5 roughly
                     avgCaps[lvl] = { u: 0, d: 0 }; 
                 } else {
                     avgCaps[lvl] = { u: ups.length ? ups.reduce((a,b)=>a+b)/ups.length : 0, d: downs.length ? downs.reduce((a,b)=>a+b)/downs.length : 0 };
@@ -624,7 +624,7 @@
             const now = new Date();
             const tbody = document.getElementById('statsTableBody');
             let html = "";
-            for (let lvl = 0; lvl <= 11; lvl++) {
+            for (let lvl = 0; lvl <= 11; lvl++) { // Updated to include L0
                 const phase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
                 if (!phase || phase.open === null) continue;
                 
@@ -641,6 +641,7 @@
                     timeZone: 'UTC', hour12: false 
                 });
 
+                // Styling specific for L0 to make it stand out slightly
                 const rowClass = lvl === 0 ? "border-b border-blue-900 bg-[#0f1b2d] hover:bg-[#1a2b42]" : "border-b border-[#1e222d] hover:bg-[#1e222d]";
                 const lvlClass = lvl === 0 ? "text-white font-bold" : "text-blue-400";
 
