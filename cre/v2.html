@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSA Engine - PRO (v2.9.24)</title>
+    <title>RSA Engine - PRO (v2.9.31)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -331,7 +331,7 @@
                     <span id="latencyValue" class="text-blue-400">CALCULATING...</span>
                 </div>
                 <div class="w-px h-3 bg-gray-700"></div>
-                <span class="opacity-50">v2.9.24-stable</span>
+                <span class="opacity-50">v2.9.31-stable</span>
             </div>
         </div>
     </footer>
@@ -347,7 +347,7 @@
         let isCalendarMode = false;
         
         let fixedCycleAnchorPrice = null;
-        let wasOffline = false; // Tracks if we were previously offline
+        let wasOffline = false; 
 
         let chartStates = [
             { viewLimit: 100, offset: 0, isDragging: false, lastX: 0, isLog: false },
@@ -357,17 +357,17 @@
         ];
         
         const TIMEFRAME_MAP = {
-            0: "4-YEARS",
-            1: "2-YEARS", 2: "YEARLY", 3: "6-MONTHS", 4: "3-MONTHS", 
-            5: "1.5-MO", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS", 
-            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
+            0: "(CYCLE)",
+            1: "(HALF)", 2: "(QRTR)", 3: "(OCT)", 4: "(HEX)", 
+            5: "(32nd)", 6: "(64th)", 7: "(128th)", 8: "(256th)", 
+            9: "(512th)", 10: "(1024th)", 11: "(2048th)"
         };
 
         const CALENDAR_LABELS = {
             0: "4-YEARLY",
             1: "2-YEARLY", 2: "YEARLY", 3: "SEMESTER", 4: "QUARTER", 
-            5: "1.5-MO", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS", 
-            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
+            5: "1.5-MO", 6: "WEEKLY", 7: "3.5-DAY", 8: "1-DAY", 
+            9: "12-HOUR", 10: "6-HOUR", 11: "3-HOUR"
         };
 
         const WINDOW_CONFIGS = [
@@ -380,7 +380,7 @@
         // --- LOADING UX ---
         const loadingMessages = [
             { t: "HANDSHAKE", s: "Establishing secure connection..." },
-            { t: "DEEP QUERY", s: "Retrieving 2018-2026 dataset..." },
+            { t: "DEEP QUERY", s: "Retrieving dataset..." },
             { t: "CALIBRATION", s: "Aligning volatility structures..." },
             { t: "RENDERING", s: "Generating visualization layers..." }
         ];
@@ -425,7 +425,6 @@
             return sign + price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
         }
 
-        // --- REAL-TIME CONNECTION MONITOR (HEADER & FOOTER) ---
         function updateConnectionUI(isConnected, latency) {
             const container = document.getElementById('statusContainer');
             const ping = document.getElementById('statusPing');
@@ -435,42 +434,30 @@
             const headerWarn = document.getElementById('headerWarning');
 
             if (isConnected) {
-                // Success State
                 headerWarn.classList.add('hidden'); 
-
                 container.classList.remove('border-red-500/30', 'bg-red-900/10');
                 container.classList.add('border-white/5', 'bg-black/30');
-                
                 ping.classList.remove('hidden');
                 dot.classList.remove('bg-red-500');
                 dot.classList.add('bg-emerald-500');
-                
                 text.classList.remove('text-red-500');
                 text.classList.add('text-emerald-500');
                 text.innerText = "SYSTEM OPERATIONAL";
-
                 let latColor = 'text-emerald-400';
                 if(latency > 300) latColor = 'text-yellow-400';
                 if(latency > 800) latColor = 'text-red-400';
-                
                 latText.className = latColor;
                 latText.innerText = latency + "ms";
             } else {
-                // Failure State
                 headerWarn.classList.remove('hidden'); 
-
                 container.classList.remove('border-red-500/30', 'bg-red-900/10');
                 container.classList.add('border-red-500/30', 'bg-red-900/10');
-                
                 ping.classList.add('hidden');
                 dot.classList.remove('bg-emerald-500');
                 dot.classList.add('bg-red-500');
-                
                 text.classList.remove('text-emerald-500');
                 text.classList.add('text-red-500');
-                
                 text.innerText = "API UNREACHABLE • CHECK NETWORK / VPN";
-
                 latText.className = "text-red-500 font-bold";
                 latText.innerText = "OFFLINE";
             }
@@ -508,9 +495,8 @@
 
         async function fetchFullHistory(symbol) {
             let all = [];
-            let currentStart = Date.UTC(2018, 0, 1); 
+            let currentStart = Date.UTC(2021, 0, 1); 
             const now = Date.now();
-            
             while (currentStart < now) {
                 const data = await fetchBinance('klines', { symbol, interval: '1d', startTime: currentStart, limit: 1000 });
                 if (!data || !Array.isArray(data)) break;
@@ -528,64 +514,101 @@
         function getAtomicIntervals(start, end, maxLevel) {
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
-            intervals[0].push([start, end]);
-
-            function divide(s, e, lvl) {
+            intervals[0].push([start, end]); 
+            function split(s, e, lvl) {
                 if (lvl > maxLevel) return;
-                let diff = e.getTime() - s.getTime();
-                if (diff < 60000) { intervals[lvl].push([s, e]); return; }
-                let mid = new Date(s.getTime() + Math.floor(diff / 2));
+                const midTime = s.getTime() + (e.getTime() - s.getTime()) / 2;
+                const mid = new Date(midTime);
                 intervals[lvl].push([s, mid], [mid, e]);
-                divide(s, mid, lvl + 1); divide(mid, e, lvl + 1);
+                split(s, mid, lvl + 1);
+                split(mid, e, lvl + 1);
             }
-            divide(start, end, 1);
+            split(start, end, 1);
             return intervals;
         }
 
         function getCalendarIntervals(start, end, maxLevel) {
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
+            
             intervals[0].push([start, end]);
-
-            let midPoint = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
-            if (midPoint.getUTCMonth() !== 0 || midPoint.getUTCDate() !== 1) {
-                midPoint = new Date(Date.UTC(start.getUTCFullYear() + 2, 0, 1));
-            }
-            intervals[1].push([start, midPoint]);
-            intervals[1].push([midPoint, end]);
+            let mid1 = new Date(Date.UTC(start.getUTCFullYear() + 2, 0, 1));
+            intervals[1].push([start, mid1], [mid1, end]);
 
             intervals[1].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear() + 1, 0, 1));
                 intervals[2].push([s, mid], [mid, e]);
             });
+
             intervals[2].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear(), 6, 1));
                 intervals[3].push([s, mid], [mid, e]);
             });
+
             intervals[3].forEach(([s, e]) => {
-                let mid = new Date(s.getTime() + (e.getTime() - s.getTime()) / 2);
-                mid.setUTCHours(0,0,0,0);
+                let midMonth = s.getUTCMonth() + 3;
+                let mid = new Date(Date.UTC(s.getUTCFullYear(), midMonth, 1));
                 intervals[4].push([s, mid], [mid, e]);
             });
 
-            function fillRecursive(lvl) {
-                if (lvl > maxLevel) return;
-                intervals[lvl-1].forEach(([s, e]) => {
-                    let diff = e.getTime() - s.getTime();
-                    let mid;
-                    if (diff > 86400000) {
-                        mid = new Date(s.getTime() + Math.floor(diff / (2 * 86400000)) * 86400000);
-                    } else {
-                        mid = new Date(s.getTime() + Math.floor(diff / 2));
-                    }
-                    if (mid.getTime() === s.getTime() && diff > 1000) {
-                        mid = new Date(s.getTime() + Math.floor(diff/2));
-                    }
-                    intervals[lvl].push([s, mid], [mid, e]);
-                });
-                fillRecursive(lvl + 1);
+            intervals[4].forEach(([s, e]) => {
+                let diff = e.getTime() - s.getTime();
+                let mid = new Date(s.getTime() + Math.floor(diff/2));
+                intervals[5].push([s, mid], [mid, e]);
+            });
+
+            // L6 (Weekly) - Strict
+            let currWeek = new Date(end.getTime());
+            let day = currWeek.getUTCDay(); 
+            let diffToMon = day === 0 ? -6 : 1 - day; 
+            currWeek.setUTCDate(currWeek.getUTCDate() + diffToMon);
+            currWeek.setUTCHours(0,0,0,0);
+            if (currWeek > end) currWeek.setUTCDate(currWeek.getUTCDate() - 7);
+
+            let tempW = new Date(currWeek.getTime() + (7 * 24 * 3600 * 1000)); 
+            while(tempW > start) {
+                let s = new Date(tempW.getTime() - (7 * 24 * 3600 * 1000));
+                let effectiveStart = s < start ? new Date(start) : s;
+                let effectiveEnd = tempW > end ? new Date(end) : tempW;
+                if(effectiveStart < effectiveEnd) intervals[6].unshift([effectiveStart, effectiveEnd]);
+                tempW = s;
             }
-            fillRecursive(5);
+
+            // L7 (3.5 Days)
+            intervals[6].forEach(([s, e]) => {
+                let midTime = s.getTime() + (e.getTime() - s.getTime()) / 2;
+                let mid = new Date(midTime);
+                intervals[7].push([s, mid], [mid, e]);
+            });
+
+            // L8 (Daily)
+            let currDay = new Date(end.getTime());
+            currDay.setUTCHours(0,0,0,0);
+            if (currDay < end) currDay.setUTCDate(currDay.getUTCDate() + 1); 
+            const OneDay = 24 * 3600 * 1000;
+            while(currDay > start) {
+                let s = new Date(currDay.getTime() - OneDay);
+                let effectiveStart = s < start ? new Date(start) : s;
+                let effectiveEnd = currDay > end ? new Date(end) : currDay;
+                if(effectiveStart < effectiveEnd) intervals[8].unshift([effectiveStart, effectiveEnd]);
+                currDay = s;
+            }
+
+            // L9-L11 (Intraday)
+            const SubDayConfigs = [{ l: 9, h: 12 }, { l: 10, h: 6 }, { l: 11, h: 3 }];
+            SubDayConfigs.forEach(cfg => {
+                let dur = cfg.h * 3600 * 1000;
+                let curr = new Date(end.getTime());
+                let rem = curr.getUTCHours() % cfg.h;
+                curr.setUTCHours(curr.getUTCHours() - rem + cfg.h, 0, 0, 0);
+                while(curr > start) {
+                    let s = new Date(curr.getTime() - dur);
+                    let effectiveStart = s < start ? new Date(start) : s;
+                    let effectiveEnd = curr > end ? new Date(end) : curr;
+                    if (effectiveStart < effectiveEnd) intervals[cfg.l].unshift([effectiveStart, effectiveEnd]);
+                    curr = s;
+                }
+            });
             return intervals;
         }
 
@@ -593,7 +616,6 @@
             let ups = [];
             let downs = [];
             let count = 0;
-
             intervals.forEach(([s, e]) => {
                 const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
                 if (mask.length > 0) {
@@ -611,29 +633,36 @@
         async function initData() {
             startLoadingSequence();
             
-            historicalData = await fetchFullHistory(currentSymbol);
-            if (historicalData.length === 0) {
-                 stopLoadingSequence();
-                 return;
-            }
+            // --- FIX 1: Parallel Fetching ---
+            const pDaily = fetchFullHistory(currentSymbol);
+            const pWindows = Promise.all(WINDOW_CONFIGS.map(cfg => 
+                fetchBinance('klines', { symbol: currentSymbol, interval: cfg.interval, limit: cfg.limit })
+            ));
+
+            const [dailyData, windowData] = await Promise.all([pDaily, pWindows]);
+            historicalData = dailyData || [];
+            
+            if (historicalData.length === 0) { stopLoadingSequence(); return; }
+
+            windowData.forEach((res, i) => {
+                if(res) {
+                    histories[i] = res.map(d => [new Date(d[0]), parseFloat(d[1]), parseFloat(d[2]), parseFloat(d[3]), parseFloat(d[4])]);
+                    document.getElementById(`title-${i}`).innerText = WINDOW_CONFIGS[i].title;
+                    chartStates[i].viewLimit = Math.min(histories[i].length, 100);
+                    chartStates[i].offset = 0;
+                }
+            });
 
             const now = new Date();
-            const cycleIdx = Math.floor((now.getUTCFullYear() - 2022) / 4);
-            const cycleStartYear = 2022 + (cycleIdx * 4); 
-            
-            document.getElementById('cycle-info').innerText = `${cycleStartYear}-${cycleStartYear + 4}`;
+            const cycleIdx = Math.floor((now.getUTCFullYear() - 2018) / 4);
+            const cycleStartYear = 2018 + (cycleIdx * 4); 
+            document.getElementById('cycle-info').innerText = `${cycleStartYear}-${cycleStartYear + 3}`;
             
             const startActive = new Date(Date.UTC(cycleStartYear, 0, 1));
             const endActive = new Date(Date.UTC(cycleStartYear + 4, 0, 1));
 
             try {
-                const anchorKlines = await fetchBinance('klines', { 
-                    symbol: currentSymbol, 
-                    interval: '1d', 
-                    startTime: startActive.getTime(), 
-                    limit: 1 
-                });
-
+                const anchorKlines = await fetchBinance('klines', { symbol: currentSymbol, interval: '1d', startTime: startActive.getTime(), limit: 1 });
                 if (anchorKlines && anchorKlines.length > 0) {
                     const candleTime = anchorKlines[0][0];
                     if (Math.abs(candleTime - startActive.getTime()) < 86400000) {
@@ -657,15 +686,12 @@
             for (let lvl = 0; lvl <= 11; lvl++) {
                 const statsPrev = extractStats(intervalsPrev[lvl], historicalData);
                 const statsCurr = extractStats(intervalsCurr[lvl], historicalData);
-
                 let finalUps = [...statsPrev.ups];
                 let finalDowns = [...statsPrev.downs];
-
                 if (statsCurr.count > 0) {
                     finalUps = finalUps.concat(statsCurr.ups);
                     finalDowns = finalDowns.concat(statsCurr.downs);
                 }
-
                 if (finalUps.length === 0) {
                     avgCaps[lvl] = { u: 0, d: 0 }; 
                 } else {
@@ -676,12 +702,29 @@
                 }
             }
 
+            // --- FIX 2: ROBUST OPEN PRICE FINDER (Contains Check) ---
+            const microHistory = histories[0] || []; 
+
             activeStats = {};
             for (let lvl = 0; lvl <= 11; lvl++) {
                 const mergedIntervals = intervalsPrev[lvl].concat(intervalsCurr[lvl]);
                 activeStats[lvl] = mergedIntervals.map(([s, e]) => {
+                    // 1. Try Daily Data
                     const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
                     let openPrice = mask.length ? mask[0].o : null;
+                    
+                    // 2. Fallback: Try 1H Data with "CONTAINS" check
+                    // This fixes the 0.00 issue for L10/L11 on load
+                    if (openPrice === null && microHistory.length > 0) {
+                         const startTs = s.getTime();
+                         const match = microHistory.find(c => {
+                             const cTime = c[0].getTime();
+                             // Candle start <= Interval Start AND Candle End > Interval Start
+                             return cTime <= startTs && (cTime + 3600000) > startTs;
+                         });
+                         if (match) openPrice = match[1];
+                    }
+
                     if (s.getTime() === startActive.getTime() && fixedCycleAnchorPrice !== null) {
                         openPrice = fixedCycleAnchorPrice;
                     }
@@ -690,16 +733,6 @@
                     }
                     return { start: s, end: e, open: openPrice };
                 });
-            }
-
-            for (let cfg of WINDOW_CONFIGS) {
-                const res = await fetchBinance('klines', { symbol: currentSymbol, interval: cfg.interval, limit: cfg.limit });
-                if(res) {
-                    histories[cfg.id] = res.map(d => [new Date(d[0]), parseFloat(d[1]), parseFloat(d[2]), parseFloat(d[3]), parseFloat(d[4])]);
-                    document.getElementById(`title-${cfg.id}`).innerText = cfg.title;
-                    chartStates[cfg.id].viewLimit = Math.min(histories[cfg.id].length, 100);
-                    chartStates[cfg.id].offset = 0;
-                }
             }
             
             stopLoadingSequence();
@@ -751,7 +784,6 @@
             const now = new Date();
             WINDOW_CONFIGS.forEach(cfg => {
                 const cv = document.getElementById(`chart-${cfg.id}`);
-                // FIX 1: Safety Check for uninitialized canvas
                 if (!cv || !cv.parentElement || cv.parentElement.clientWidth === 0) return;
 
                 const ctx = cv.getContext('2d', { alpha: false });
@@ -765,7 +797,6 @@
 
                 cv.width = cv.parentElement.clientWidth;
                 cv.height = cv.parentElement.clientHeight;
-                
                 const chartW = cv.width - 200; 
                 const chartH = cv.height - 30;
 
@@ -777,7 +808,11 @@
                             
                             let effectiveOpen = p.open;
                             if (effectiveOpen === null) {
-                                const match = full.find(c => c[0].getTime() === p.start.getTime());
+                                const startTs = p.start.getTime();
+                                const match = full.find(c => {
+                                    const cTime = c[0].getTime();
+                                    return cTime <= startTs && (cTime + 3600000) > startTs;
+                                });
                                 if (match) effectiveOpen = match[1];
                             }
 
@@ -790,18 +825,11 @@
                     });
                 });
                 
-                // FIX 2: Only push livePrice if it is valid (non-zero)
-                if (livePrice > 0) {
-                    prices.push(livePrice);
-                }
-                
-                // FIX 3: Filter out any 0s or NaNs that might crush the scale
+                if (livePrice > 0) prices.push(livePrice);
                 prices = prices.filter(p => p > 0);
-
-                if (prices.length === 0) return; // Abort drawing if no valid price data
+                if (prices.length === 0) return;
 
                 const minP = Math.min(...prices), maxP = Math.max(...prices);
-                
                 let getY;
                 if (st.isLog) {
                     const lMin = Math.log(minP), lMax = Math.log(maxP), lR = lMax - lMin;
@@ -831,11 +859,9 @@
                 }
 
                 let labels = [];
-
                 cfg.levels.forEach(lvl => {
                     const caps = avgCaps[lvl];
                     activeStats[lvl]?.forEach(ph => {
-                        
                         const isActive = (now.getTime() >= ph.start.getTime() && now.getTime() < ph.end.getTime());
                         const startVisible = ph.start.getTime() <= viewEndTime;
                         const endVisible = ph.end.getTime() >= viewStartTime;
@@ -843,8 +869,12 @@
 
                         let effectiveOpen = ph.open;
                         if (effectiveOpen === null) {
-                            const match = full.find(c => c[0].getTime() === ph.start.getTime());
-                            if (match) effectiveOpen = match[1];
+                             const startTs = ph.start.getTime();
+                             const match = full.find(c => {
+                                 const cTime = c[0].getTime();
+                                 return cTime <= startTs && (cTime + 3600000) > startTs;
+                             });
+                             if (match) effectiveOpen = match[1];
                         }
                         if (effectiveOpen === null || effectiveOpen === 0) return;
 
@@ -863,20 +893,16 @@
                             const phData = full.filter(d => d[0] >= ph.start && d[0] < ph.end);
                             const highestHigh = phData.length > 0 ? Math.max(...phData.map(d => d[2]), livePrice) : livePrice;
                             const lowestLow = phData.length > 0 ? Math.min(...phData.map(d => d[3]), livePrice) : livePrice;
-                            
                             const isCT = highestHigh >= c; 
                             const isFT = lowestLow <= f;
                             const isEQT = (highestHigh >= m && lowestLow <= m);    
-
                             const desc = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
 
                             ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
                             ctx.strokeStyle = isCT ? '#ffffff' : '#ef4444'; 
                             ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(chartW, getY(c)); ctx.stroke(); 
-                            
                             ctx.strokeStyle = isFT ? '#ffffff' : '#10b981'; 
                             ctx.beginPath(); ctx.moveTo(x1, getY(f)); ctx.lineTo(chartW, getY(f)); ctx.stroke();
-
                             ctx.setLineDash([2, 2]); 
                             ctx.strokeStyle = '#facc15'; 
                             ctx.beginPath(); ctx.moveTo(x1, getY(m)); ctx.lineTo(chartW, getY(m)); ctx.stroke();
@@ -902,7 +928,6 @@
                     ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([2, 2]);
                     ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(cv.width, getY(livePrice)); ctx.stroke();
                     ctx.setLineDash([]);
-                    
                     ctx.fillStyle = '#3b82f6'; ctx.fillRect(cv.width - 60, getY(livePrice) - 9, 60, 18);
                     ctx.fillStyle = '#fff'; ctx.font = 'bold 10px JetBrains Mono'; ctx.textAlign = "right";
                     ctx.fillText(formatPrice(livePrice), cv.width - 5, getY(livePrice) + 4);
@@ -912,9 +937,7 @@
                 labels.sort((a, b) => a.y - b.y);
                 const minGap = 12; 
                 for (let i = 1; i < labels.length; i++) {
-                    if (labels[i].y - labels[i - 1].y < minGap) {
-                        labels[i].y = labels[i - 1].y + minGap;
-                    }
+                    if (labels[i].y - labels[i - 1].y < minGap) labels[i].y = labels[i - 1].y + minGap;
                 }
 
                 ctx.font = '500 9px JetBrains Mono';
@@ -993,19 +1016,17 @@
             const latency = Math.round(end - start);
 
             if (t) {
-                // If we were offline, this is the first successful reconnection.
                 if (wasOffline) {
-                    wasOffline = false; // Reset flag
-                    // Trigger full refresh to backfill missing data
+                    wasOffline = false; 
                     await initData(); 
-                    return; // Exit this loop cycle to prevent double-update
+                    return; 
                 }
 
                 livePrice = parseFloat(t.price); 
                 document.getElementById('livePrice').innerText = formatPrice(livePrice); 
                 updateConnectionUI(true, latency);
             } else {
-                wasOffline = true; // Mark system as offline
+                wasOffline = true; 
                 updateConnectionUI(false, 0);
             }
 
