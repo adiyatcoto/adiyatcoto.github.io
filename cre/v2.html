@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSA Engine - PRO (v2.9.23)</title>
+    <title>RSA Engine - PRO (v2.9.24)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -162,6 +162,13 @@
                     <h1 class="text-lg font-bold text-white tracking-wide leading-none">RSA ENGINE <span class="text-blue-500 text-xs align-top opacity-80 border border-blue-500/30 px-1 rounded">PRO</span></h1>
                     <p class="text-[10px] text-gray-500 mono uppercase tracking-widest mt-1">Recursive Structure Analysis</p>
                 </div>
+                
+                <div id="headerWarning" class="hidden ml-2 flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-[10px] font-bold tracking-wider animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625l6.28-10.875zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    <span>CONNECTION LOST</span>
+                </div>
             </div>
         </div>
 
@@ -309,22 +316,22 @@
                 <span class="text-gray-400 font-bold tracking-widest">RSA ENGINE</span>
                 <span>© 2026 Adiyat Coto. All rights reserved.</span>
             </div>
-
-            <div class="flex items-center gap-2 bg-black/30 px-3 py-1 rounded-full border border-white/5">
+    
+            <div id="statusContainer" class="flex items-center gap-2 bg-black/30 px-3 py-1 rounded-full border border-white/5 transition-colors duration-300">
                 <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span id="statusDot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 transition-colors duration-300"></span>
                 </span>
-                <span class="text-emerald-500 font-bold tracking-wide">SYSTEM OPERATIONAL</span>
+                <span id="statusText" class="text-emerald-500 font-bold tracking-wide transition-colors duration-300">SYSTEM OPERATIONAL</span>
             </div>
-
+    
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-1">
                     <span>LATENCY:</span>
-                    <span class="text-blue-400">OPTIMAL</span>
+                    <span id="latencyValue" class="text-blue-400">CALCULATING...</span>
                 </div>
                 <div class="w-px h-3 bg-gray-700"></div>
-                <span class="opacity-50">v2.9.23-stable</span>
+                <span class="opacity-50">v2.9.24-stable</span>
             </div>
         </div>
     </footer>
@@ -339,8 +346,8 @@
         let histories = [[], [], [], []];
         let isCalendarMode = false;
         
-        // "Holy Anchor" - Fixed Open Price of the Cycle Start
         let fixedCycleAnchorPrice = null;
+        let wasOffline = false; // Tracks if we were previously offline
 
         let chartStates = [
             { viewLimit: 100, offset: 0, isDragging: false, lastX: 0, isLog: false },
@@ -349,7 +356,6 @@
             { viewLimit: 48,  offset: 0, isDragging: false, lastX: 0, isLog: false }
         ];
         
-        // CONTEXTUAL LABELS
         const TIMEFRAME_MAP = {
             0: "4-YEARS",
             1: "2-YEARS", 2: "YEARLY", 3: "6-MONTHS", 4: "3-MONTHS", 
@@ -419,6 +425,57 @@
             return sign + price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
         }
 
+        // --- REAL-TIME CONNECTION MONITOR (HEADER & FOOTER) ---
+        function updateConnectionUI(isConnected, latency) {
+            const container = document.getElementById('statusContainer');
+            const ping = document.getElementById('statusPing');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const latText = document.getElementById('latencyValue');
+            const headerWarn = document.getElementById('headerWarning');
+
+            if (isConnected) {
+                // Success State
+                headerWarn.classList.add('hidden'); 
+
+                container.classList.remove('border-red-500/30', 'bg-red-900/10');
+                container.classList.add('border-white/5', 'bg-black/30');
+                
+                ping.classList.remove('hidden');
+                dot.classList.remove('bg-red-500');
+                dot.classList.add('bg-emerald-500');
+                
+                text.classList.remove('text-red-500');
+                text.classList.add('text-emerald-500');
+                text.innerText = "SYSTEM OPERATIONAL";
+
+                let latColor = 'text-emerald-400';
+                if(latency > 300) latColor = 'text-yellow-400';
+                if(latency > 800) latColor = 'text-red-400';
+                
+                latText.className = latColor;
+                latText.innerText = latency + "ms";
+            } else {
+                // Failure State
+                headerWarn.classList.remove('hidden'); 
+
+                container.classList.remove('border-red-500/30', 'bg-red-900/10');
+                container.classList.add('border-red-500/30', 'bg-red-900/10');
+                
+                ping.classList.add('hidden');
+                dot.classList.remove('bg-emerald-500');
+                dot.classList.add('bg-red-500');
+                
+                text.classList.remove('text-emerald-500');
+                text.classList.add('text-red-500');
+                
+                text.innerText = "API UNREACHABLE • CHECK NETWORK / VPN";
+
+                latText.className = "text-red-500 font-bold";
+                latText.innerText = "OFFLINE";
+            }
+        }
+
         async function fetchBinance(endpoint, params) {
             const url = new URL(`https://api.binance.com/api/v3/${endpoint}`);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -475,17 +532,8 @@
 
             function divide(s, e, lvl) {
                 if (lvl > maxLevel) return;
-                
-                // FIXED LOGIC: Removed "days <= 1" check.
-                // Always split by time difference, down to milliseconds.
                 let diff = e.getTime() - s.getTime();
-                
-                // Safety break for extremely small intervals (< 1 min)
-                if (diff < 60000) { 
-                    intervals[lvl].push([s, e]);
-                    return; 
-                }
-
+                if (diff < 60000) { intervals[lvl].push([s, e]); return; }
                 let mid = new Date(s.getTime() + Math.floor(diff / 2));
                 intervals[lvl].push([s, mid], [mid, e]);
                 divide(s, mid, lvl + 1); divide(mid, e, lvl + 1);
@@ -703,6 +751,9 @@
             const now = new Date();
             WINDOW_CONFIGS.forEach(cfg => {
                 const cv = document.getElementById(`chart-${cfg.id}`);
+                // FIX 1: Safety Check for uninitialized canvas
+                if (!cv || !cv.parentElement || cv.parentElement.clientWidth === 0) return;
+
                 const ctx = cv.getContext('2d', { alpha: false });
                 const full = histories[cfg.id];
                 if (!full || !full.length) return;
@@ -719,20 +770,38 @@
                 const chartH = cv.height - 30;
 
                 let prices = data.flatMap(d => [d[2], d[3]]);
+                
                 cfg.levels.forEach(l => {
                     activeStats[l]?.forEach(p => {
                         if(p.end >= data[0][0] && p.start <= data[data.length-1][0]) {
-                            if(p.open !== null) {
+                            
+                            let effectiveOpen = p.open;
+                            if (effectiveOpen === null) {
+                                const match = full.find(c => c[0].getTime() === p.start.getTime());
+                                if (match) effectiveOpen = match[1];
+                            }
+
+                            if(effectiveOpen !== null && effectiveOpen > 0) {
                                 const caps = avgCaps[l];
-                                prices.push(p.open * (1 + caps.u/100));
-                                prices.push(p.open * (1 - caps.d/100));
+                                prices.push(effectiveOpen * (1 + (caps.u || 0)/100));
+                                prices.push(effectiveOpen * (1 - (caps.d || 0)/100));
                             }
                         }
                     });
                 });
-                prices.push(livePrice);
                 
+                // FIX 2: Only push livePrice if it is valid (non-zero)
+                if (livePrice > 0) {
+                    prices.push(livePrice);
+                }
+                
+                // FIX 3: Filter out any 0s or NaNs that might crush the scale
+                prices = prices.filter(p => p > 0);
+
+                if (prices.length === 0) return; // Abort drawing if no valid price data
+
                 const minP = Math.min(...prices), maxP = Math.max(...prices);
+                
                 let getY;
                 if (st.isLog) {
                     const lMin = Math.log(minP), lMax = Math.log(maxP), lR = lMax - lMin;
@@ -765,33 +834,27 @@
 
                 cfg.levels.forEach(lvl => {
                     const caps = avgCaps[lvl];
-                    
                     activeStats[lvl]?.forEach(ph => {
-                        if (ph.open === null) return;
                         
                         const isActive = (now.getTime() >= ph.start.getTime() && now.getTime() < ph.end.getTime());
                         const startVisible = ph.start.getTime() <= viewEndTime;
                         const endVisible = ph.end.getTime() >= viewStartTime;
-                        
                         if (!isActive && (!startVisible || !endVisible)) return;
 
-                        const c = ph.open * (1 + caps.u/100);
-                        const f = ph.open * (1 - caps.d/100);
+                        let effectiveOpen = ph.open;
+                        if (effectiveOpen === null) {
+                            const match = full.find(c => c[0].getTime() === ph.start.getTime());
+                            if (match) effectiveOpen = match[1];
+                        }
+                        if (effectiveOpen === null || effectiveOpen === 0) return;
+
+                        const c = effectiveOpen * (1 + (caps.u||0)/100);
+                        const f = effectiveOpen * (1 - (caps.d||0)/100);
                         const m = (c + f) / 2;
 
                         let x1, x2;
-
-                        if (ph.start.getTime() < viewStartTime) {
-                            x1 = 0; 
-                        } else {
-                            x1 = getX_Time(ph.start);
-                        }
-
-                        if (ph.end.getTime() > viewEndTime) {
-                            x2 = chartW; 
-                        } else {
-                            x2 = getX_Time(ph.end);
-                        }
+                        if (ph.start.getTime() < viewStartTime) { x1 = 0; } else { x1 = getX_Time(ph.start); }
+                        if (ph.end.getTime() > viewEndTime) { x2 = chartW; } else { x2 = getX_Time(ph.end); }
 
                         ctx.fillStyle = 'rgba(59, 130, 246, 0.03)';
                         ctx.fillRect(x1, getY(c), Math.max(1, x2 - x1), Math.max(1, getY(f) - getY(c)));
@@ -808,7 +871,6 @@
                             const desc = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
 
                             ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
-                            
                             ctx.strokeStyle = isCT ? '#ffffff' : '#ef4444'; 
                             ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(chartW, getY(c)); ctx.stroke(); 
                             
@@ -836,14 +898,16 @@
                     ctx.fillRect(x - cw / 2, getY(Math.max(d[1], d[4])), cw, Math.abs(getY(d[1]) - getY(d[4])) || 1);
                 });
 
-                ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([2, 2]);
-                ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(cv.width, getY(livePrice)); ctx.stroke();
-                ctx.setLineDash([]);
-                
-                ctx.fillStyle = '#3b82f6'; ctx.fillRect(cv.width - 60, getY(livePrice) - 9, 60, 18);
-                ctx.fillStyle = '#fff'; ctx.font = 'bold 10px JetBrains Mono'; ctx.textAlign = "right";
-                ctx.fillText(formatPrice(livePrice), cv.width - 5, getY(livePrice) + 4);
-                ctx.textAlign = "left"; 
+                if (livePrice > 0) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([2, 2]);
+                    ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(cv.width, getY(livePrice)); ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillStyle = '#3b82f6'; ctx.fillRect(cv.width - 60, getY(livePrice) - 9, 60, 18);
+                    ctx.fillStyle = '#fff'; ctx.font = 'bold 10px JetBrains Mono'; ctx.textAlign = "right";
+                    ctx.fillText(formatPrice(livePrice), cv.width - 5, getY(livePrice) + 4);
+                    ctx.textAlign = "left"; 
+                }
 
                 labels.sort((a, b) => a.y - b.y);
                 const minGap = 12; 
@@ -865,19 +929,15 @@
             const now = new Date(); const tb = document.getElementById('statsTableBody'); let h = "";
             for(let l=0; l<=11; l++) {
                 const ph = activeStats[l]?.find(p => now.getTime() >= p.start.getTime() && now.getTime() < p.end.getTime());
-                
                 if(!ph || ph.open===null) continue;
                 const cp = avgCaps[l], c = ph.open*(1+cp.u/100), f = ph.open*(1-cp.d/100), m = (c+f)/2;
                 const isMain = l<=1 ? "bg-white/5" : "";
                 const desc = isCalendarMode ? CALENDAR_LABELS[l] : TIMEFRAME_MAP[l];
                 
-                // --- TABLE SYNC LOGIC FIXED ---
                 const phaseData = historicalData.filter(d => d.ot >= ph.start && d.ot < ph.end);
                 const phHigh = phaseData.length > 0 ? Math.max(...phaseData.map(d => d.h), livePrice) : livePrice;
                 const phLow = phaseData.length > 0 ? Math.min(...phaseData.map(d => d.l), livePrice) : livePrice;
-                
                 const isEQT = (phHigh >= m && phLow <= m); 
-                // ------------------------------
 
                 const total = ph.end - ph.start;
                 const elap = now - ph.start;
@@ -890,7 +950,6 @@
 
                 const upPct = parseFloat(((c - livePrice) / livePrice * 100).toFixed(2));
                 const downPct = parseFloat(((livePrice - f) / livePrice * 100).toFixed(2));
-                
                 const isBullish = upPct < downPct; 
                 const winnerBadge = isBullish 
                     ? `<span class="bg-emerald-500/10 text-emerald-400 text-[9px] px-2 py-0.5 rounded-sm ml-2 font-bold tracking-wider border border-emerald-500/20">BULLS</span>`
@@ -921,40 +980,52 @@
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                });
+                document.documentElement.requestFullscreen().catch(err => { console.log(`Error attempting to enable fullscreen: ${err.message}`); });
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                if (document.exitFullscreen) { document.exitFullscreen(); }
             }
         }
 
         async function loop() {
+            const start = performance.now();
             const t = await fetchBinance('ticker/price', { symbol: currentSymbol });
-            if (t) { 
+            const end = performance.now();
+            const latency = Math.round(end - start);
+
+            if (t) {
+                // If we were offline, this is the first successful reconnection.
+                if (wasOffline) {
+                    wasOffline = false; // Reset flag
+                    // Trigger full refresh to backfill missing data
+                    await initData(); 
+                    return; // Exit this loop cycle to prevent double-update
+                }
+
                 livePrice = parseFloat(t.price); 
                 document.getElementById('livePrice').innerText = formatPrice(livePrice); 
+                updateConnectionUI(true, latency);
+            } else {
+                wasOffline = true; // Mark system as offline
+                updateConnectionUI(false, 0);
             }
+
             const now = new Date(); 
-            
-            // --- NEW: Update Date and Time ---
             const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
             document.getElementById('currentDate').innerText = dateStr;
             document.getElementById('currentTime').innerText = now.toUTCString().split(' ')[4] + " UTC";
-            // ---------------------------------
             
-            histories.forEach(h => { 
-                if (h.length) { 
-                    const l = h[h.length - 1]; 
-                    l[2] = Math.max(l[2], livePrice); 
-                    l[3] = Math.min(l[3], livePrice); 
-                    l[4] = livePrice; 
-                } 
-            });
-            renderCharts(); 
-            updateStatsTable();
+            if (t) {
+                histories.forEach(h => { 
+                    if (h.length) { 
+                        const l = h[h.length - 1]; 
+                        l[2] = Math.max(l[2], livePrice); 
+                        l[3] = Math.min(l[3], livePrice); 
+                        l[4] = livePrice; 
+                    } 
+                });
+                renderCharts(); 
+                updateStatsTable();
+            }
         }
 
         async function toggleMode() {
