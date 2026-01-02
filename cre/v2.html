@@ -3,191 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSA Recursive Engine - GMT+0 UTC (v2.8.0 - L0 Enabled)</title>
+    <title>RSA Engine - Fullscreen & Date (v2.9.23)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* --- CORE THEME --- */
+        :root {
+            --bg-main: #09090b;
+            --bg-panel: #18181b;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-yellow: #facc15;
+            --text-primary: #e4e4e7;
+        }
+
         body {
-            background-color: #0b0e11;
-            color: #d1d4dc;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            scrollbar-width: thin;
+            scrollbar-color: #3f3f46 transparent;
         }
+
         .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* --- GLASSMOPHISM PANELS --- */
+        .glass-panel {
+            background-color: rgba(24, 24, 27, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         .chart-container {
-            background-color: #131722;
-            border: 1px solid #2a2e39;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
             position: relative;
             cursor: crosshair;
             overflow: hidden;
+            transition: border-color 0.2s;
         }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        .chart-container:hover {
+            border-color: rgba(59, 130, 246, 0.3);
         }
-        input::placeholder { color: #4a4f5d; }
+
+        canvas { display: block; width: 100%; height: 100%; }
         
+        input::placeholder { color: #52525b; }
+        input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 1px var(--accent-blue); }
+
+        /* --- SWITCH COMPONENT --- */
         .switch {
             position: relative;
             display: inline-block;
-            width: 44px;
-            height: 22px;
+            width: 36px;
+            height: 18px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #363a45;
-            transition: .4s;
-            border-radius: 22px;
+            background-color: #3f3f46;
+            transition: .3s;
+            border-radius: 18px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px; width: 16px;
-            left: 3px; bottom: 3px;
+            height: 14px; width: 14px;
+            left: 2px; bottom: 2px;
             background-color: white;
-            transition: .4s;
+            transition: .3s;
             border-radius: 50%;
         }
-        input:checked + .slider { background-color: #2563eb; }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider { background-color: var(--accent-blue); }
+        input:checked + .slider:before { transform: translateX(18px); }
 
-        .zoom-info {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 8px;
-            color: #4a4f5d;
-            pointer-events: none;
-        }
-
+        /* --- BUTTONS --- */
         .scale-btn {
             font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            background: #1e222d;
-            border: 1px solid #363a45;
-            color: #787b86;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            color: #a1a1aa;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .scale-btn:hover { background: #3f3f46; color: white; }
+        .scale-btn.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: #3b82f6;
+        }
+        
+        .action-btn {
+            background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+            border: 1px solid #1e40af;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .action-btn:hover { background: linear-gradient(to bottom, #1d4ed8, #1e3a8a); }
+        
+        .icon-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #a1a1aa;
             transition: all 0.2s;
         }
-        .scale-btn.active {
-            background: #2563eb;
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.1);
             color: white;
-            border-color: #2563eb;
         }
+
+        /* --- LOADING OVERLAY --- */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 9, 11, 0.98);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column;
+            transition: opacity 0.4s ease-out;
+        }
+        .hidden { opacity: 0; pointer-events: none; }
+        
+        /* Table Styles */
+        .data-row { border-bottom: 1px solid var(--border-color); transition: background 0.1s; }
+        .data-row:hover { background-color: rgba(255,255,255,0.02); }
+        .data-row:last-child { border-bottom: none; }
     </style>
 </head>
-<body class="p-4 overflow-x-hidden">
+<body class="p-4 md:p-6 overflow-x-hidden">
 
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-[#131722] p-4 rounded-lg border border-[#2a2e39]">
-        <div class="flex flex-col">
-            <h1 class="text-xl font-bold text-white uppercase tracking-wider">RSA Recursive Engine <span class="text-blue-500">v2.8.0</span></h1>
-            <div class="flex items-center gap-3 mt-1">
-                <p class="text-[10px] text-gray-500 mono" id="cycle-info">Cycle: 2022-2025 (UTC)</p>
-                <div class="h-3 w-[1px] bg-gray-700"></div>
+    <div id="loadingOverlay">
+        <div class="flex flex-col items-center gap-6">
+            <div class="relative w-16 h-16">
+                <div class="absolute inset-0 border-2 border-blue-500/20 rounded-full"></div>
+                <div class="absolute inset-0 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+                <div class="absolute inset-4 bg-blue-500/10 rounded-full animate-pulse"></div>
+            </div>
+            <div class="text-center">
+                <div id="loadingTitle" class="text-white font-bold text-lg mono tracking-[0.2em]">INITIALIZING</div>
+                <div id="loadingSubtitle" class="text-gray-500 text-xs mt-2 mono uppercase tracking-widest">System Boot Sequence</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel rounded-xl p-4 mb-6 flex flex-col lg:flex-row justify-between items-center gap-6 sticky top-4 z-40">
+        
+        <div class="flex flex-col gap-1 w-full lg:w-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-8 bg-blue-600 rounded-sm"></div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide leading-none">RSA ENGINE <span class="text-blue-500 text-xs align-top opacity-80 border border-blue-500/30 px-1 rounded">v2.9.23</span></h1>
+                    <p class="text-[10px] text-gray-500 mono uppercase tracking-widest mt-1">Recursive Structure Analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 bg-black/20 px-4 py-2 rounded-lg border border-white/5">
+            <div class="flex flex-col items-start gap-1">
+                <span class="text-[9px] text-gray-500 mono font-bold uppercase">Active Cycle</span>
+                <span id="cycle-info" class="text-[11px] text-gray-300 mono">Loading...</span>
+            </div>
+            <div class="w-px h-8 bg-white/10 mx-2"></div>
+            <div class="flex flex-col items-start gap-1">
+                <span class="text-[9px] text-gray-500 mono font-bold uppercase">Timeframe</span>
                 <div class="flex items-center gap-2">
-                    <span class="text-[10px] mono text-gray-400">MODE:</span>
                     <label class="switch">
                         <input type="checkbox" id="modeToggle" onchange="toggleMode()">
                         <span class="slider"></span>
                     </label>
-                    <span id="modeLabel" class="text-[10px] mono text-blue-400 font-bold uppercase">Atomic Day</span>
+                    <span id="modeLabel" class="text-[10px] mono text-blue-400 font-bold uppercase">ATOMIC</span>
                 </div>
-                <div class="h-3 w-[1px] bg-gray-700"></div>
-                <span class="text-[9px] text-gray-600 uppercase mono italic">Scroll to Zoom · Drag to Pan</span>
             </div>
         </div>
-        <div class="flex gap-2">
-            <div class="relative">
-                <input type="text" id="tickerInput" list="tickerList" placeholder="Ex: BTCUSDT" class="bg-[#1e222d] border border-[#363a45] px-4 py-2 rounded text-white mono focus:outline-none focus:border-blue-500 w-40">
+
+        <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
+            <button onclick="toggleFullscreen()" class="icon-btn p-2 rounded-lg" title="Toggle Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                </svg>
+            </button>
+
+            <div class="relative group">
+                <input type="text" id="tickerInput" list="tickerList" placeholder="BTCUSDT" 
+                       class="bg-[#09090b] border border-[#27272a] pl-3 pr-10 py-2 rounded text-sm text-white mono w-32 focus:w-40 transition-all">
+                <div class="absolute right-2 top-2.5 text-gray-600 text-[10px]">🔍</div>
                 <datalist id="tickerList"></datalist>
             </div>
-            <button onclick="changeTicker()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold transition uppercase">LOAD</button>
-        </div>
-        <div class="text-right">
-            <div id="livePrice" class="text-2xl font-bold text-[#26a69a] mono">--.---</div>
-            <div id="currentTime" class="text-[11px] text-blue-400 font-bold mono uppercase tracking-tighter">-- --- ----, --:--:-- UTC</div>
+            
+            <button onclick="changeTicker()" class="action-btn text-white px-5 py-2 rounded text-xs font-bold tracking-wider hover:brightness-110 transition active:scale-95">
+                LOAD
+            </button>
+            
+            <div class="text-right pl-4 border-l border-white/10">
+                <div id="livePrice" class="text-xl font-bold text-[#26a69a] mono tracking-tight leading-none mb-1">--.---</div>
+                <div class="flex flex-col items-end">
+                    <div id="currentDate" class="text-[10px] text-gray-400 mono font-medium tracking-wide">-- --- ----</div>
+                    <div id="currentTime" class="text-[10px] text-gray-500 mono font-medium">--:--:-- UTC</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="bg-[#131722] rounded-lg border border-[#2a2e39] overflow-hidden mb-6">
+    <div class="glass-panel rounded-xl overflow-hidden mb-6">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm mono">
-                <thead class="bg-[#1e222d] text-gray-400 border-b border-[#2a2e39]">
+            <table class="w-full text-left text-xs mono">
+                <thead class="bg-[#101012] text-gray-500 border-b border-white/10 uppercase tracking-wider text-[10px]">
                     <tr>
-                        <th class="p-3">LVL</th>
-                        <th class="p-3">REF. DURATION</th>
-                        <th class="p-3">TIME PROG.</th>
-                        <th class="p-3">EXPIRES AT (UTC)</th>
-                        <th class="p-3">EQUILIBRIUM</th>
-                        <th class="p-3">DELTA TO EQ</th>
-                        <th class="p-3">REMAINING UP/DOWN (%)</th>
+                        <th class="p-4 font-medium">Level</th>
+                        <th class="p-4 font-medium">Context</th>
+                        <th class="p-4 font-medium">Progress</th>
+                        <th class="p-4 font-medium">Full Expiry (UTC)</th>
+                        <th class="p-4 font-medium text-right text-yellow-500">Equilibrium</th>
+                        <th class="p-4 font-medium text-right">Delta</th>
+                        <th class="p-4 font-medium text-right">Trend Conclusion</th>
                     </tr>
                 </thead>
-                <tbody id="statsTableBody">
-                    <tr><td colspan="7" class="p-4 text-center text-gray-500 italic">Initializing data... Please wait.</td></tr>
+                <tbody id="statsTableBody" class="text-gray-300">
+                    <tr><td colspan="7" class="p-8 text-center text-gray-600 italic">Awaiting data stream...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[900px]">
-        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-0">
-            <div class="flex justify-between items-center mb-1 px-1">
-                <div class="text-[10px] font-bold text-gray-400 uppercase" id="title-0">Window 1</div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[900px] mb-6">
+        <div class="chart-container rounded-lg p-1 flex flex-col" id="container-0">
+            <div class="flex justify-between items-center px-3 py-2 bg-[#101012] border-b border-white/5">
+                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                    <span id="title-0">Window 1</span>
+                </div>
                 <div class="flex gap-1">
                     <button onclick="setScale(0, false)" id="scale-lin-0" class="scale-btn active">LIN</button>
                     <button onclick="setScale(0, true)" id="scale-log-0" class="scale-btn">LOG</button>
                 </div>
             </div>
-            <canvas id="chart-0"></canvas>
-            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+            <div class="flex-1 relative bg-[#09090b]">
+                <canvas id="chart-0"></canvas>
+                <div class="absolute bottom-2 left-2 text-[9px] text-gray-700 mono pointer-events-none">ZOOM: SCROLL | PAN: DRAG</div>
+            </div>
         </div>
-        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-1">
-            <div class="flex justify-between items-center mb-1 px-1">
-                <div class="text-[10px] font-bold text-gray-400 uppercase" id="title-1">Window 2</div>
+
+        <div class="chart-container rounded-lg p-1 flex flex-col" id="container-1">
+            <div class="flex justify-between items-center px-3 py-2 bg-[#101012] border-b border-white/5">
+                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    <span id="title-1">Window 2</span>
+                </div>
                 <div class="flex gap-1">
                     <button onclick="setScale(1, false)" id="scale-lin-1" class="scale-btn active">LIN</button>
                     <button onclick="setScale(1, true)" id="scale-log-1" class="scale-btn">LOG</button>
                 </div>
             </div>
-            <canvas id="chart-1"></canvas>
-            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+            <div class="flex-1 relative bg-[#09090b]">
+                <canvas id="chart-1"></canvas>
+                <div class="absolute bottom-2 left-2 text-[9px] text-gray-700 mono pointer-events-none">ZOOM: SCROLL | PAN: DRAG</div>
+            </div>
         </div>
-        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-2">
-            <div class="flex justify-between items-center mb-1 px-1">
-                <div class="text-[10px] font-bold text-gray-400 uppercase" id="title-2">Window 3</div>
+
+        <div class="chart-container rounded-lg p-1 flex flex-col" id="container-2">
+            <div class="flex justify-between items-center px-3 py-2 bg-[#101012] border-b border-white/5">
+                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                    <span id="title-2">Window 3</span>
+                </div>
                 <div class="flex gap-1">
                     <button onclick="setScale(2, false)" id="scale-lin-2" class="scale-btn active">LIN</button>
                     <button onclick="setScale(2, true)" id="scale-log-2" class="scale-btn">LOG</button>
                 </div>
             </div>
-            <canvas id="chart-2"></canvas>
-            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+            <div class="flex-1 relative bg-[#09090b]">
+                <canvas id="chart-2"></canvas>
+                <div class="absolute bottom-2 left-2 text-[9px] text-gray-700 mono pointer-events-none">ZOOM: SCROLL | PAN: DRAG</div>
+            </div>
         </div>
-        <div class="chart-container rounded-lg p-2 flex flex-col" id="container-3">
-            <div class="flex justify-between items-center mb-1 px-1">
-                <div class="text-[10px] font-bold text-gray-400 uppercase" id="title-3">Window 4</div>
+
+        <div class="chart-container rounded-lg p-1 flex flex-col" id="container-3">
+            <div class="flex justify-between items-center px-3 py-2 bg-[#101012] border-b border-white/5">
+                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                    <span id="title-3">Window 4</span>
+                </div>
                 <div class="flex gap-1">
                     <button onclick="setScale(3, false)" id="scale-lin-3" class="scale-btn active">LIN</button>
                     <button onclick="setScale(3, true)" id="scale-log-3" class="scale-btn">LOG</button>
                 </div>
             </div>
-            <canvas id="chart-3"></canvas>
-            <div class="zoom-info mono uppercase">Scroll: Zoom | Drag: Pan</div>
+            <div class="flex-1 relative bg-[#09090b]">
+                <canvas id="chart-3"></canvas>
+                <div class="absolute bottom-2 left-2 text-[9px] text-gray-700 mono pointer-events-none">ZOOM: SCROLL | PAN: DRAG</div>
+            </div>
         </div>
     </div>
 
-    <footer class="mt-auto py-8 text-center border-t border-[#2a2e39] bg-[#0b0e11] mt-8">
-        <p class="text-xs text-gray-500 mono uppercase tracking-widest">
-            Copyright <a href="https://adiyatcoto.github.io" target="_blank" class="hover:text-blue-500 transition underline">adiyatcoto.github.io</a> 
-            <span class="mx-2">|</span> Adiyat Coto 2025
-        </p>
+    <footer class="mt-auto border-t border-white/10 bg-[#0c0c0e] py-3 px-6 rounded-t-lg">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] mono text-gray-500">
+            
+            <div class="flex items-center gap-4">
+                <span class="text-gray-400 font-bold tracking-widest">RSA ENGINE</span>
+                <span>© 2026 Adiyat Coto. All rights reserved.</span>
+            </div>
+
+            <div class="flex items-center gap-2 bg-black/30 px-3 py-1 rounded-full border border-white/5">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="text-emerald-500 font-bold tracking-wide">SYSTEM OPERATIONAL</span>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1">
+                    <span>LATENCY:</span>
+                    <span class="text-blue-400">OPTIMAL</span>
+                </div>
+                <div class="w-px h-3 bg-gray-700"></div>
+                <span class="opacity-50">v2.9.23-stable</span>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -200,6 +339,9 @@
         let histories = [[], [], [], []];
         let isCalendarMode = false;
         
+        // "Holy Anchor" - Fixed Open Price of the Cycle Start
+        let fixedCycleAnchorPrice = null;
+
         let chartStates = [
             { viewLimit: 100, offset: 0, isDragging: false, lastX: 0, isLog: false },
             { viewLimit: 200, offset: 0, isDragging: false, lastX: 0, isLog: false },
@@ -207,27 +349,60 @@
             { viewLimit: 48,  offset: 0, isDragging: false, lastX: 0, isLog: false }
         ];
         
-        // Added 0: 4-YEARLY
+        // CONTEXTUAL LABELS
         const TIMEFRAME_MAP = {
             0: "4-YEARS",
-            1: "730-DAYS", 2: "365-DAYS", 3: "182-DAYS", 4: "91-DAYS",
-            5: "45-DAYS", 6: "22-DAYS", 7: "11-DAYS", 8: "5-DAYS",
-            9: "2-DAYS", 10: "1-DAY", 11: "INTRADAY (12 HOURS)"
+            1: "2-YEARS", 2: "YEARLY", 3: "6-MONTHS", 4: "3-MONTHS", 
+            5: "1.5-MO", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS", 
+            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
         };
 
         const CALENDAR_LABELS = {
             0: "4-YEARLY",
-            1: "2-YEARLY", 2: "YEARLY", 3: "SEMESTER", 4: "QUARTER",
-            5: "1.5-MONTH", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS",
-            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY (12 HOURS)"
+            1: "2-YEARLY", 2: "YEARLY", 3: "SEMESTER", 4: "QUARTER", 
+            5: "1.5-MO", 6: "3-WEEKS", 7: "11-DAYS", 8: "5-DAYS", 
+            9: "2-DAYS", 10: "DAILY", 11: "INTRADAY"
         };
 
         const WINDOW_CONFIGS = [
-            { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10, 11], title: "WINDOW 1: Micro (L8-L11)" },
-            { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],      title: "WINDOW 2: Intermediate (L5-L7)" },
-            { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],      title: "WINDOW 3: Macro (L2-L4)" },
-            { id: 3, interval: "1M", limit: 96,  levels: [0, 1],         title: "WINDOW 4: Global (L0-L1)" } // Added L0
+            { id: 0, interval: "1h", limit: 504, levels: [8, 9, 10, 11], title: "MICRO STRUCTURE (L8-L11)" },
+            { id: 1, interval: "4h", limit: 720, levels: [5, 6, 7],      title: "INTERMEDIATE (L5-L7)" },
+            { id: 2, interval: "1w", limit: 104, levels: [2, 3, 4],      title: "MACRO TREND (L2-L4)" },
+            { id: 3, interval: "1M", limit: 96,  levels: [0, 1],         title: "GLOBAL CYCLE (L0-L1)" } 
         ];
+
+        // --- LOADING UX ---
+        const loadingMessages = [
+            { t: "HANDSHAKE", s: "Establishing secure connection..." },
+            { t: "DEEP QUERY", s: "Retrieving 2018-2026 dataset..." },
+            { t: "CALIBRATION", s: "Aligning volatility structures..." },
+            { t: "RENDERING", s: "Generating visualization layers..." }
+        ];
+
+        let loadingStep = 0;
+        let loadingInterval;
+
+        function startLoadingSequence() {
+            const titleEl = document.getElementById('loadingTitle');
+            const subEl = document.getElementById('loadingSubtitle');
+            const overlay = document.getElementById('loadingOverlay');
+            
+            overlay.classList.remove('hidden');
+            loadingStep = 0;
+            titleEl.innerText = loadingMessages[0].t;
+            subEl.innerText = loadingMessages[0].s;
+
+            loadingInterval = setInterval(() => {
+                loadingStep = (loadingStep + 1) % loadingMessages.length;
+                titleEl.innerText = loadingMessages[loadingStep].t;
+                subEl.innerText = loadingMessages[loadingStep].s;
+            }, 1200);
+        }
+
+        function stopLoadingSequence() {
+            clearInterval(loadingInterval);
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
 
         // --- HELPER FUNCTIONS ---
         function formatPrice(price, isDelta = false) {
@@ -276,8 +451,7 @@
 
         async function fetchFullHistory(symbol) {
             let all = [];
-            // UPDATED: Start from 2018 to capture the full previous L0 cycle
-            let currentStart = Date.UTC(2018, 0, 1);
+            let currentStart = Date.UTC(2018, 0, 1); 
             const now = Date.now();
             
             while (currentStart < now) {
@@ -297,72 +471,68 @@
         function getAtomicIntervals(start, end, maxLevel) {
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
-            
-            // L0 is explicitly the full range provided (e.g., 2018-2022)
             intervals[0].push([start, end]);
 
             function divide(s, e, lvl) {
                 if (lvl > maxLevel) return;
-                let days = Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24));
-                if (days <= 1) {
-                    intervals[lvl].push([s, e], [s, e]);
-                    divide(s, e, lvl + 1); divide(s, e, lvl + 1);
-                    return;
+                
+                // FIXED LOGIC: Removed "days <= 1" check.
+                // Always split by time difference, down to milliseconds.
+                let diff = e.getTime() - s.getTime();
+                
+                // Safety break for extremely small intervals (< 1 min)
+                if (diff < 60000) { 
+                    intervals[lvl].push([s, e]);
+                    return; 
                 }
-                let mid = new Date(s.getTime() + Math.floor(days/2) * 24 * 60 * 60 * 1000);
+
+                let mid = new Date(s.getTime() + Math.floor(diff / 2));
                 intervals[lvl].push([s, mid], [mid, e]);
                 divide(s, mid, lvl + 1); divide(mid, e, lvl + 1);
             }
-            // Recursive split starts at Level 1 (splitting L0 into two L1s)
             divide(start, end, 1);
             return intervals;
         }
 
         function getCalendarIntervals(start, end, maxLevel) {
-            // Dynamic generation based on start/end to support both 2018-2022 and 2022-2026 blocks
             let intervals = {};
             for(let i=0; i<=maxLevel; i++) intervals[i] = [];
-            
-            // Level 0: The Full 4 Years
             intervals[0].push([start, end]);
 
-            // Level 1: 2-Yearly Split
             let midPoint = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
-            // Align to year boundary if close
-            if (midPoint.getUTCMonth() === 0 && midPoint.getUTCDate() === 1) {
-                // Good
-            } else {
-                // Force align to Jan 1st of mid year for clean calendar logic
+            if (midPoint.getUTCMonth() !== 0 || midPoint.getUTCDate() !== 1) {
                 midPoint = new Date(Date.UTC(start.getUTCFullYear() + 2, 0, 1));
             }
             intervals[1].push([start, midPoint]);
             intervals[1].push([midPoint, end]);
 
-            // Level 2: Yearly
             intervals[1].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear() + 1, 0, 1));
                 intervals[2].push([s, mid], [mid, e]);
             });
-
-            // Level 3: Semester (6 Month)
             intervals[2].forEach(([s, e]) => {
                 let mid = new Date(Date.UTC(s.getUTCFullYear(), 6, 1));
                 intervals[3].push([s, mid], [mid, e]);
             });
-
-            // Level 4: Quarter (3 Month)
             intervals[3].forEach(([s, e]) => {
                 let mid = new Date(s.getTime() + (e.getTime() - s.getTime()) / 2);
                 mid.setUTCHours(0,0,0,0);
                 intervals[4].push([s, mid], [mid, e]);
             });
 
-            // Recursive fill for L5+
             function fillRecursive(lvl) {
                 if (lvl > maxLevel) return;
                 intervals[lvl-1].forEach(([s, e]) => {
                     let diff = e.getTime() - s.getTime();
-                    let mid = new Date(s.getTime() + Math.floor(diff / (2 * 86400000)) * 86400000);
+                    let mid;
+                    if (diff > 86400000) {
+                        mid = new Date(s.getTime() + Math.floor(diff / (2 * 86400000)) * 86400000);
+                    } else {
+                        mid = new Date(s.getTime() + Math.floor(diff / 2));
+                    }
+                    if (mid.getTime() === s.getTime() && diff > 1000) {
+                        mid = new Date(s.getTime() + Math.floor(diff/2));
+                    }
                     intervals[lvl].push([s, mid], [mid, e]);
                 });
                 fillRecursive(lvl + 1);
@@ -371,53 +541,106 @@
             return intervals;
         }
 
+        function extractStats(intervals, historicalData) {
+            let ups = [];
+            let downs = [];
+            let count = 0;
+
+            intervals.forEach(([s, e]) => {
+                const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
+                if (mask.length > 0) {
+                    const open = mask[0].o;
+                    const hh = Math.max(...mask.map(m => m.h));
+                    const ll = Math.min(...mask.map(m => m.l));
+                    ups.push(((hh - open) / open) * 100);
+                    downs.push(((open - ll) / open) * 100);
+                    count++;
+                }
+            });
+            return { ups, downs, count };
+        }
+
         async function initData() {
+            startLoadingSequence();
+            
             historicalData = await fetchFullHistory(currentSymbol);
-            if (historicalData.length === 0) return;
+            if (historicalData.length === 0) {
+                 stopLoadingSequence();
+                 return;
+            }
 
             const now = new Date();
             const cycleIdx = Math.floor((now.getUTCFullYear() - 2022) / 4);
-            const cycleStartYear = 2022 + (cycleIdx * 4); // 2022
+            const cycleStartYear = 2022 + (cycleIdx * 4); 
             
-            // ACTIVE CYCLE: 2022 - 2026
+            document.getElementById('cycle-info').innerText = `${cycleStartYear}-${cycleStartYear + 4}`;
+            
             const startActive = new Date(Date.UTC(cycleStartYear, 0, 1));
             const endActive = new Date(Date.UTC(cycleStartYear + 4, 0, 1));
-            
-            // REFERENCE CYCLE: 2018 - 2022 (Used to calculate Caps/Volatility for L0 prediction)
-            const refStart = new Date(Date.UTC(cycleStartYear - 4, 0, 1)); // 2018
-            const refEnd = new Date(Date.UTC(cycleStartYear, 0, 1)); // 2022
 
-            const refIntervals = isCalendarMode ? getCalendarIntervals(refStart, refEnd, 11) : getAtomicIntervals(refStart, refEnd, 11);
-
-            // Calculate Averages from Reference Cycle (2018-2022)
-            // UPDATED: Loop starts from 0
-            for (let lvl = 0; lvl <= 11; lvl++) {
-                let ups = [], downs = [];
-                refIntervals[lvl].forEach(([s, e]) => {
-                    const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
-                    if (mask.length > 0) {
-                        const open = mask[0].o;
-                        const hh = Math.max(...mask.map(m => m.h));
-                        const ll = Math.min(...mask.map(m => m.l));
-                        ups.push(((hh - open) / open) * 100);
-                        downs.push(((open - ll) / open) * 100);
-                    }
+            try {
+                const anchorKlines = await fetchBinance('klines', { 
+                    symbol: currentSymbol, 
+                    interval: '1d', 
+                    startTime: startActive.getTime(), 
+                    limit: 1 
                 });
-                // If L0 reference data is missing (e.g. coin didn't exist in 2018), fallback to 0 or estimates
-                if (ups.length === 0 && lvl === 0) {
-                    // Fallback logic for young coins: use L1 aggregate * 1.5 roughly
+
+                if (anchorKlines && anchorKlines.length > 0) {
+                    const candleTime = anchorKlines[0][0];
+                    if (Math.abs(candleTime - startActive.getTime()) < 86400000) {
+                        fixedCycleAnchorPrice = parseFloat(anchorKlines[0][1]); 
+                    }
+                }
+            } catch (e) { console.error("Anchor fetch error", e); }
+            
+            const startPrev = new Date(Date.UTC(cycleStartYear - 4, 0, 1));
+            const endPrev = new Date(Date.UTC(cycleStartYear, 0, 1));
+
+            let intervalsPrev, intervalsCurr;
+            if (isCalendarMode) {
+                intervalsPrev = getCalendarIntervals(startPrev, endPrev, 11);
+                intervalsCurr = getCalendarIntervals(startActive, endActive, 11);
+            } else {
+                intervalsPrev = getAtomicIntervals(startPrev, endPrev, 11);
+                intervalsCurr = getAtomicIntervals(startActive, endActive, 11);
+            }
+
+            for (let lvl = 0; lvl <= 11; lvl++) {
+                const statsPrev = extractStats(intervalsPrev[lvl], historicalData);
+                const statsCurr = extractStats(intervalsCurr[lvl], historicalData);
+
+                let finalUps = [...statsPrev.ups];
+                let finalDowns = [...statsPrev.downs];
+
+                if (statsCurr.count > 0) {
+                    finalUps = finalUps.concat(statsCurr.ups);
+                    finalDowns = finalDowns.concat(statsCurr.downs);
+                }
+
+                if (finalUps.length === 0) {
                     avgCaps[lvl] = { u: 0, d: 0 }; 
                 } else {
-                    avgCaps[lvl] = { u: ups.length ? ups.reduce((a,b)=>a+b)/ups.length : 0, d: downs.length ? downs.reduce((a,b)=>a+b)/downs.length : 0 };
+                    avgCaps[lvl] = { 
+                        u: finalUps.reduce((a,b)=>a+b)/finalUps.length, 
+                        d: finalDowns.reduce((a,b)=>a+b)/finalDowns.length 
+                    };
                 }
             }
 
-            const activeIntervals = isCalendarMode ? getCalendarIntervals(startActive, endActive, 11) : getAtomicIntervals(startActive, endActive, 11);
             activeStats = {};
             for (let lvl = 0; lvl <= 11; lvl++) {
-                activeStats[lvl] = activeIntervals[lvl].map(([s, e]) => {
+                const mergedIntervals = intervalsPrev[lvl].concat(intervalsCurr[lvl]);
+                activeStats[lvl] = mergedIntervals.map(([s, e]) => {
                     const mask = historicalData.filter(d => d.ot >= s && d.ot < e);
-                    return { start: s, end: e, open: mask.length ? mask[0].o : null, hh: null, ll: null };
+                    let openPrice = mask.length ? mask[0].o : null;
+                    if (s.getTime() === startActive.getTime() && fixedCycleAnchorPrice !== null) {
+                        openPrice = fixedCycleAnchorPrice;
+                    }
+                    if (openPrice === null && s <= now && e > now) {
+                        openPrice = livePrice;
+                    }
+                    return { start: s, end: e, open: openPrice };
                 });
             }
 
@@ -430,10 +653,12 @@
                     chartStates[cfg.id].offset = 0;
                 }
             }
+            
+            stopLoadingSequence();
             renderCharts();
+            updateStatsTable();
         }
 
-        // --- INTERACTION LOGIC ---
         function setScale(idx, isLog) {
             chartStates[idx].isLog = isLog;
             document.getElementById(`scale-lin-${idx}`).classList.toggle('active', !isLog);
@@ -477,234 +702,270 @@
         function renderCharts() {
             const now = new Date();
             WINDOW_CONFIGS.forEach(cfg => {
-                const canvas = document.getElementById(`chart-${cfg.id}`);
-                const ctx = canvas.getContext('2d', { alpha: false });
-                const fullOhlc = histories[cfg.id];
-                if (!fullOhlc || !fullOhlc.length) return;
+                const cv = document.getElementById(`chart-${cfg.id}`);
+                const ctx = cv.getContext('2d', { alpha: false });
+                const full = histories[cfg.id];
+                if (!full || !full.length) return;
 
-                const state = chartStates[cfg.id];
-                const endSlice = fullOhlc.length - state.offset;
-                const startSlice = Math.max(0, endSlice - state.viewLimit);
-                const ohlc = fullOhlc.slice(startSlice, endSlice);
+                const st = chartStates[cfg.id];
+                const end = full.length - st.offset;
+                const start = Math.max(0, end - st.viewLimit);
+                const data = full.slice(start, end);
 
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = canvas.parentElement.clientHeight - 30;
-
-                const paddingRight = 240; 
-                const chartW = canvas.width - paddingRight;
-                const chartH = canvas.height - 40;
-
-                let visiblePrices = ohlc.flatMap(o => [o[2], o[3]]);
-                cfg.levels.forEach(lvl => {
-                    const phase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
-                    if (phase && phase.open !== null) {
-                        const caps = avgCaps[lvl];
-                        visiblePrices.push(phase.open * (1 + caps.u/100));
-                        visiblePrices.push(phase.open * (1 - caps.d/100));
-                    }
-                });
-                visiblePrices.push(livePrice);
-
-                const vMax = Math.max(...visiblePrices);
-                const vMin = Math.min(...visiblePrices);
+                cv.width = cv.parentElement.clientWidth;
+                cv.height = cv.parentElement.clientHeight;
                 
+                const chartW = cv.width - 200; 
+                const chartH = cv.height - 30;
+
+                let prices = data.flatMap(d => [d[2], d[3]]);
+                cfg.levels.forEach(l => {
+                    activeStats[l]?.forEach(p => {
+                        if(p.end >= data[0][0] && p.start <= data[data.length-1][0]) {
+                            if(p.open !== null) {
+                                const caps = avgCaps[l];
+                                prices.push(p.open * (1 + caps.u/100));
+                                prices.push(p.open * (1 - caps.d/100));
+                            }
+                        }
+                    });
+                });
+                prices.push(livePrice);
+                
+                const minP = Math.min(...prices), maxP = Math.max(...prices);
                 let getY;
-                if (state.isLog) {
-                    const logMax = Math.log(vMax);
-                    const logMin = Math.log(vMin);
-                    const logRange = logMax - logMin;
-                    const yScaleLog = chartH / (logRange * 1.05);
-                    const yOffsetLog = logMin - (logRange * 0.025);
-                    getY = (p) => chartH - (Math.log(Math.max(1e-9, p)) - yOffsetLog) * yScaleLog + 20;
+                if (st.isLog) {
+                    const lMin = Math.log(minP), lMax = Math.log(maxP), lR = lMax - lMin;
+                    getY = p => chartH - (Math.log(Math.max(1e-9, p)) - lMin) / lR * chartH + 15;
                 } else {
-                    const range = vMax - vMin;
-                    const yScale = chartH / (range * 1.05);
-                    const yOffset = vMin - (range * 0.025);
-                    getY = (p) => chartH - (p - yOffset) * yScale + 20;
+                    const R = maxP - minP;
+                    getY = p => chartH - (p - minP) / R * chartH + 15;
                 }
 
-                const getX = (i) => (i / ohlc.length) * chartW;
+                const viewStartTime = data[0][0].getTime();
+                const viewEndTime = data[data.length - 1][0].getTime();
+                const getX_Time = (t) => {
+                    const diffTime = t.getTime() - viewStartTime;
+                    const ratio = diffTime / (viewEndTime - viewStartTime);
+                    return (ratio * chartW); 
+                };
+                const getX_Index = i => (i / data.length) * chartW;
 
-                ctx.fillStyle = '#131722';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.strokeStyle = '#1f222d';
+                ctx.fillStyle = '#09090b'; 
+                ctx.fillRect(0, 0, cv.width, cv.height);
+                
+                ctx.strokeStyle = '#27272a'; 
                 ctx.lineWidth = 1;
-                for(let i=0; i<=5; i++) {
-                    const y = 20 + (i/5)*chartH;
-                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartW, y); ctx.stroke();
+                for(let i=0; i<=5; i++) { 
+                    let y = 15 + (i/5) * chartH; 
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartW, y); ctx.stroke(); 
                 }
 
-                let priceLabels = [];
+                let labels = [];
 
                 cfg.levels.forEach(lvl => {
                     const caps = avgCaps[lvl];
-                    const activePhase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
                     
                     activeStats[lvl]?.forEach(ph => {
-                        const visibleStart = ohlc[0][0];
-                        const visibleEnd = ohlc[ohlc.length-1][0];
-                        if (ph.end < visibleStart || ph.start > visibleEnd || ph.open === null) return;
+                        if (ph.open === null) return;
                         
+                        const isActive = (now.getTime() >= ph.start.getTime() && now.getTime() < ph.end.getTime());
+                        const startVisible = ph.start.getTime() <= viewEndTime;
+                        const endVisible = ph.end.getTime() >= viewStartTime;
+                        
+                        if (!isActive && (!startVisible || !endVisible)) return;
+
                         const c = ph.open * (1 + caps.u/100);
                         const f = ph.open * (1 - caps.d/100);
-                        const m = (c+f)/2;
+                        const m = (c + f) / 2;
 
-                        const sIdx = ohlc.findIndex(o => o[0] >= ph.start);
-                        const eIdx = ohlc.findIndex(o => o[0] >= ph.end);
-                        const x1 = sIdx === -1 ? 0 : getX(sIdx);
-                        const x2 = eIdx === -1 ? chartW : getX(eIdx);
-                        
-                        const boxCandleIdx = eIdx === -1 ? ohlc.length-1 : Math.max(0, eIdx-1);
-                        const isBull = ohlc[boxCandleIdx][4] >= ph.open;
-                        ctx.fillStyle = isBull ? 'rgba(38, 166, 154, 0.05)' : 'rgba(239, 83, 80, 0.05)';
-                        ctx.fillRect(x1, getY(c), x2-x1, Math.max(1, getY(f) - getY(c)));
+                        let x1, x2;
 
-                        if (ph === activePhase) {
-                            const phaseCandles = fullOhlc.filter(o => o[0] >= ph.start && o[0] < ph.end);
-                            const phaseHigh = Math.max(...phaseCandles.map(o => o[2]), livePrice);
-                            const phaseLow = Math.min(...phaseCandles.map(o => o[3]), livePrice);
+                        if (ph.start.getTime() < viewStartTime) {
+                            x1 = 0; 
+                        } else {
+                            x1 = getX_Time(ph.start);
+                        }
+
+                        if (ph.end.getTime() > viewEndTime) {
+                            x2 = chartW; 
+                        } else {
+                            x2 = getX_Time(ph.end);
+                        }
+
+                        ctx.fillStyle = 'rgba(59, 130, 246, 0.03)';
+                        ctx.fillRect(x1, getY(c), Math.max(1, x2 - x1), Math.max(1, getY(f) - getY(c)));
+
+                        if (isActive) {
+                            const phData = full.filter(d => d[0] >= ph.start && d[0] < ph.end);
+                            const highestHigh = phData.length > 0 ? Math.max(...phData.map(d => d[2]), livePrice) : livePrice;
+                            const lowestLow = phData.length > 0 ? Math.min(...phData.map(d => d[3]), livePrice) : livePrice;
                             
-                            const isCT = phaseHigh >= c;
-                            const isFT = phaseLow <= f;
+                            const isCT = highestHigh >= c; 
+                            const isFT = lowestLow <= f;
+                            const isEQT = (highestHigh >= m && lowestLow <= m);    
+
                             const desc = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
 
-                            priceLabels.push({ y: getY(c), text: `L${lvl} ${desc} CEIL: $${formatPrice(c)} ${isCT ? '[TOUCHED]' : ''}`, color: isCT ? '#ffffff' : '#ef5350' });
-                            priceLabels.push({ y: getY(f), text: `L${lvl} ${desc} FLOR: $${formatPrice(f)} ${isFT ? '[TOUCHED]' : ''}`, color: isFT ? '#ffffff' : '#26a69a' });
-                            priceLabels.push({ y: getY(m), text: `L${lvl} EQ: $${formatPrice(m)}`, color: 'rgba(255, 255, 0, 0.8)' });
+                            ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
+                            
+                            ctx.strokeStyle = isCT ? '#ffffff' : '#ef4444'; 
+                            ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(chartW, getY(c)); ctx.stroke(); 
+                            
+                            ctx.strokeStyle = isFT ? '#ffffff' : '#10b981'; 
+                            ctx.beginPath(); ctx.moveTo(x1, getY(f)); ctx.lineTo(chartW, getY(f)); ctx.stroke();
 
-                            ctx.setLineDash([5, 5]);
-                            ctx.strokeStyle = isCT ? '#ffffff' : '#ef5350';
-                            ctx.beginPath(); ctx.moveTo(x1, getY(c)); ctx.lineTo(canvas.width, getY(c)); ctx.stroke();
-                            ctx.strokeStyle = isFT ? '#ffffff' : '#26a69a';
-                            ctx.beginPath(); ctx.moveTo(x1, getY(f)); ctx.lineTo(canvas.width, getY(f)); ctx.stroke();
-                            ctx.setLineDash([2, 2]);
-                            ctx.strokeStyle = 'rgba(255, 255, 0, 0.6)';
-                            ctx.beginPath(); ctx.moveTo(x1, getY(m)); ctx.lineTo(chartW + 30, getY(m)); ctx.stroke();
+                            ctx.setLineDash([2, 2]); 
+                            ctx.strokeStyle = '#facc15'; 
+                            ctx.beginPath(); ctx.moveTo(x1, getY(m)); ctx.lineTo(chartW, getY(m)); ctx.stroke();
                             ctx.setLineDash([]);
+
+                            labels.push({ y: getY(c), t: `L${lvl} ${desc} TOP: $${formatPrice(c)} ${isCT ? '[⚡]' : ''}`, c: isCT ? '#ffffff' : '#ef4444' });
+                            labels.push({ y: getY(f), t: `L${lvl} ${desc} BOT: $${formatPrice(f)} ${isFT ? '[⚡]' : ''}`, c: isFT ? '#ffffff' : '#10b981' });
+                            labels.push({ y: getY(m), t: `L${lvl} ${desc} EQ : $${formatPrice(m)} ${isEQT ? '[⚡]' : ''}`, c: '#facc15' });
                         }
                     });
                 });
 
-                priceLabels.sort((a, b) => a.y - b.y);
-                const minGap = 13;
-                for (let i = 1; i < priceLabels.length; i++) {
-                    if (priceLabels[i].y - priceLabels[i-1].y < minGap) priceLabels[i].y = priceLabels[i-1].y + minGap;
+                const cw = Math.max(1, (chartW / data.length) * 0.7);
+                data.forEach((d, i) => {
+                    const color = d[4] >= d[1] ? '#10b981' : '#ef4444';
+                    ctx.fillStyle = color; ctx.strokeStyle = color;
+                    const x = getX_Index(i);
+                    ctx.beginPath(); ctx.moveTo(x, getY(d[2])); ctx.lineTo(x, getY(d[3])); ctx.stroke();
+                    ctx.fillRect(x - cw / 2, getY(Math.max(d[1], d[4])), cw, Math.abs(getY(d[1]) - getY(d[4])) || 1);
+                });
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([2, 2]);
+                ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(cv.width, getY(livePrice)); ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#3b82f6'; ctx.fillRect(cv.width - 60, getY(livePrice) - 9, 60, 18);
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 10px JetBrains Mono'; ctx.textAlign = "right";
+                ctx.fillText(formatPrice(livePrice), cv.width - 5, getY(livePrice) + 4);
+                ctx.textAlign = "left"; 
+
+                labels.sort((a, b) => a.y - b.y);
+                const minGap = 12; 
+                for (let i = 1; i < labels.length; i++) {
+                    if (labels[i].y - labels[i - 1].y < minGap) {
+                        labels[i].y = labels[i - 1].y + minGap;
+                    }
                 }
 
-                ctx.font = 'bold 9px JetBrains Mono';
-                priceLabels.forEach(lb => {
-                    ctx.fillStyle = lb.color;
-                    ctx.fillText(lb.text, chartW + 5, lb.y - 4); 
+                ctx.font = '500 9px JetBrains Mono';
+                labels.forEach(l => {
+                    ctx.fillStyle = l.c;
+                    ctx.fillText(l.t, chartW + 8, l.y + 3);
                 });
-
-                const candleW = Math.max(1, (chartW / ohlc.length) * 0.7);
-                ohlc.forEach((d, i) => {
-                    const [t, o, h, l, c] = d;
-                    const color = c >= o ? '#26a69a' : '#ef5350';
-                    ctx.strokeStyle = color; ctx.fillStyle = color;
-                    const x = getX(i);
-                    ctx.beginPath(); ctx.moveTo(x, getY(h)); ctx.lineTo(x, getY(l)); ctx.stroke();
-                    ctx.fillRect(x - candleW/2, getY(Math.max(o,c)), candleW, Math.abs(getY(o) - getY(c)) || 1);
-                });
-
-                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-                ctx.setLineDash([2, 2]);
-                ctx.beginPath(); ctx.moveTo(0, getY(livePrice)); ctx.lineTo(chartW, getY(livePrice)); ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.fillStyle = '#363a45';
-                ctx.fillRect(chartW + 2, getY(livePrice) - 10, 80, 20);
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 10px JetBrains Mono';
-                ctx.fillText(formatPrice(livePrice), chartW + 8, getY(livePrice) + 4);
             });
         }
 
         function updateStatsTable() {
-            const now = new Date();
-            const tbody = document.getElementById('statsTableBody');
-            let html = "";
-            for (let lvl = 0; lvl <= 11; lvl++) { // Updated to include L0
-                const phase = activeStats[lvl]?.find(p => p.start <= now && p.end > now);
-                if (!phase || phase.open === null) continue;
+            const now = new Date(); const tb = document.getElementById('statsTableBody'); let h = "";
+            for(let l=0; l<=11; l++) {
+                const ph = activeStats[l]?.find(p => now.getTime() >= p.start.getTime() && now.getTime() < p.end.getTime());
                 
-                const caps = avgCaps[lvl];
-                const c = phase.open * (1 + caps.u/100);
-                const f = phase.open * (1 - caps.d/100);
-                const m = (c + f) / 2;
-                const prog = ((now - phase.start) / (phase.end - phase.start)) * 100;
-                const label = isCalendarMode ? CALENDAR_LABELS[lvl] : TIMEFRAME_MAP[lvl];
+                if(!ph || ph.open===null) continue;
+                const cp = avgCaps[l], c = ph.open*(1+cp.u/100), f = ph.open*(1-cp.d/100), m = (c+f)/2;
+                const isMain = l<=1 ? "bg-white/5" : "";
+                const desc = isCalendarMode ? CALENDAR_LABELS[l] : TIMEFRAME_MAP[l];
                 
-                const expiryStr = phase.end.toLocaleString('en-US', { 
-                    weekday: 'short', day: '2-digit', month: 'short', 
-                    year: 'numeric', hour: '2-digit', minute: '2-digit', 
-                    timeZone: 'UTC', hour12: false 
-                });
+                // --- TABLE SYNC LOGIC FIXED ---
+                const phaseData = historicalData.filter(d => d.ot >= ph.start && d.ot < ph.end);
+                const phHigh = phaseData.length > 0 ? Math.max(...phaseData.map(d => d.h), livePrice) : livePrice;
+                const phLow = phaseData.length > 0 ? Math.min(...phaseData.map(d => d.l), livePrice) : livePrice;
+                
+                const isEQT = (phHigh >= m && phLow <= m); 
+                // ------------------------------
 
-                // Styling specific for L0 to make it stand out slightly
-                const rowClass = lvl === 0 ? "border-b border-blue-900 bg-[#0f1b2d] hover:bg-[#1a2b42]" : "border-b border-[#1e222d] hover:bg-[#1e222d]";
-                const lvlClass = lvl === 0 ? "text-white font-bold" : "text-blue-400";
+                const total = ph.end - ph.start;
+                const elap = now - ph.start;
+                const prog = Math.min(100, Math.max(0, (elap/total)*100)).toFixed(1);
 
-                html += `
-                    <tr class="${rowClass} transition">
-                        <td class="p-3 ${lvlClass}">L${lvl}</td>
-                        <td class="p-3 font-semibold">${label}</td>
-                        <td class="p-3">
-                            <div class="w-24 bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-blue-500 h-full" style="width: ${prog}%"></div>
+                const expiryStr = ph.end.toLocaleString('en-GB', { 
+                    weekday:'short', year:'numeric', month:'short', day:'2-digit', 
+                    hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'UTC' 
+                }) + " UTC";
+
+                const upPct = parseFloat(((c - livePrice) / livePrice * 100).toFixed(2));
+                const downPct = parseFloat(((livePrice - f) / livePrice * 100).toFixed(2));
+                
+                const isBullish = upPct < downPct; 
+                const winnerBadge = isBullish 
+                    ? `<span class="bg-emerald-500/10 text-emerald-400 text-[9px] px-2 py-0.5 rounded-sm ml-2 font-bold tracking-wider border border-emerald-500/20">BULLS</span>`
+                    : `<span class="bg-red-500/10 text-red-400 text-[9px] px-2 py-0.5 rounded-sm ml-2 font-bold tracking-wider border border-red-500/20">BEARS</span>`;
+
+                h += `<tr class="data-row ${isMain}">
+                    <td class="p-4 ${l<=1?'text-white font-bold':'text-blue-400'}">L${l}</td>
+                    <td class="p-4 font-medium text-white">${desc}</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width:${prog}%"></div>
                             </div>
-                            <span class="text-[10px] text-gray-500">${prog.toFixed(1)}%</span>
-                        </td>
-                        <td class="p-3 text-xs text-gray-400">${expiryStr}</td>
-                        <td class="p-3 text-yellow-500">${formatPrice(m)}</td>
-                        <td class="p-3 ${livePrice - m >= 0 ? 'text-[#26a69a]' : 'text-[#ef5350]'}">${formatPrice(livePrice - m, true)}</td>
-                        <td class="p-3 text-[11px] text-gray-300">U: ${((c - livePrice) / livePrice * 100).toFixed(2)}% | D: ${((livePrice - f) / livePrice * 100).toFixed(2)}%</td>
-                    </tr>
-                `;
+                            <span class="text-[10px] text-gray-400">${prog}%</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-gray-400 text-[10px] mono">${expiryStr}</td>
+                    <td class="p-4 text-right text-yellow-500 font-mono">${formatPrice(m)} ${isEQT?'⚡':''}</td>
+                    <td class="p-4 text-right ${livePrice>=m?'text-emerald-400':'text-red-400'} font-mono">${formatPrice(livePrice-m,true)}</td>
+                    <td class="p-4 text-right font-mono text-gray-500 text-[10px]">
+                        <span class="text-red-400">↑${upPct}%</span> / <span class="text-emerald-400">↓${downPct}%</span>
+                        ${winnerBadge}
+                    </td>
+                </tr>`;
             }
-            tbody.innerHTML = html;
+            tb.innerHTML = h;
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
         }
 
         async function loop() {
-            const priceData = await fetchBinance('ticker/price', { symbol: currentSymbol });
-            if (priceData && priceData.price) {
-                livePrice = parseFloat(priceData.price);
-                document.getElementById('livePrice').innerText = formatPrice(livePrice);
+            const t = await fetchBinance('ticker/price', { symbol: currentSymbol });
+            if (t) { 
+                livePrice = parseFloat(t.price); 
+                document.getElementById('livePrice').innerText = formatPrice(livePrice); 
             }
+            const now = new Date(); 
             
-            const now = new Date();
-            const utcString = now.toLocaleString('en-GB', { 
-                timeZone: 'UTC', 
-                day: '2-digit', 
-                month: 'short', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit', 
-                hour12: false 
+            // --- NEW: Update Date and Time ---
+            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+            document.getElementById('currentDate').innerText = dateStr;
+            document.getElementById('currentTime').innerText = now.toUTCString().split(' ')[4] + " UTC";
+            // ---------------------------------
+            
+            histories.forEach(h => { 
+                if (h.length) { 
+                    const l = h[h.length - 1]; 
+                    l[2] = Math.max(l[2], livePrice); 
+                    l[3] = Math.min(l[3], livePrice); 
+                    l[4] = livePrice; 
+                } 
             });
-            document.getElementById('currentTime').innerText = utcString + " UTC";
-
-            histories.forEach(h => {
-                if (h && h.length) {
-                    const l = h[h.length - 1];
-                    l[2] = Math.max(l[2], livePrice); l[3] = Math.min(l[3], livePrice); l[4] = livePrice;
-                }
-            });
+            renderCharts(); 
             updateStatsTable();
-            renderCharts();
         }
 
         async function toggleMode() {
             isCalendarMode = document.getElementById('modeToggle').checked;
-            document.getElementById('modeLabel').innerText = isCalendarMode ? "Calendar" : "Atomic Day";
-            document.getElementById('statsTableBody').innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500 italic">Switching mode...</td></tr>`;
+            document.getElementById('modeLabel').innerText = isCalendarMode ? "CALENDAR" : "ATOMIC";
             await initData();
         }
 
         async function changeTicker() {
-            const input = document.getElementById('tickerInput').value.trim().toUpperCase();
-            if (input) { currentSymbol = input; await initData(); }
+            const v = document.getElementById('tickerInput').value.trim().toUpperCase();
+            if (v) { currentSymbol = v; await initData(); }
         }
 
         window.onload = async () => {
