@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Law Generator | Draggable Windows</title>
+    <title>Power Law Generator | Auto Slope and R² Confidence Detection</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -173,13 +173,28 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        /* --- NEW: SCANNER TABLE STYLES --- */
+        .scanner-table th {
+            font-size: 8px; color: #475569; text-transform: uppercase;
+            padding: 10px 8px; text-align: left; border-bottom: 1px solid #1e293b;
+            cursor: pointer; transition: color 0.2s; user-select: none;
+        }
+        .scanner-table th:hover { color: #fbce03; background: #0f172a; }
+        .scanner-table td {
+            font-size: 10px; padding: 8px; font-family: 'JetBrains Mono', monospace;
+            border-bottom: 1px solid #0f172a;
+        }
+        .scanner-row { transition: background 0.1s; }
+        .scanner-row:hover { background: #1e293b; cursor: pointer; }
+        .highlight-score { color: #fbce03; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="h-24 header-ui flex items-center justify-between px-10 relative z-20">
         
-        <div class="absolute top-0 left-0 w-full flex justify-center pointer-events-none">
+        <div class="absolute top-0 right-10 w-full flex justify-center pointer-events-none">
             <div class="mt-2 px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-2xl text-center">
                 <p class="text-[9px] text-slate-400 font-sans leading-relaxed">
                     <span class="text-yellow-500 font-bold uppercase tracking-widest text-[10px]">Log-Log Power Law Model</span>
@@ -216,10 +231,11 @@
 
         <div class="flex items-center space-x-4 z-10 pt-4">
             <div class="flex flex-col space-y-1 mr-4">
-                <div class="text-[8px] text-slate-600 font-bold uppercase tracking-widest text-right">Windows</div>
+                <div class="text-[8px] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
                 <div class="flex space-x-2">
                     <button id="toggleLegend" class="toggle-btn active" onclick="togglePanel('legend-panel', this)">Legend</button>
                     <button id="toggleOsc" class="toggle-btn active" onclick="togglePanel('oscillator-panel', this)">Oscillator</button>
+                    <button id="toggleScanner" class="toggle-btn active" onclick="togglePanel('scanner-panel', this)">Scanner</button>
                 </div>
             </div>
 
@@ -327,6 +343,31 @@
             <div id="oscillator-chart" class="flex-1 w-full relative"></div>
         </div>
 
+        <div id="scanner-panel" class="draggable-panel top-6 right-10 w-[380px] h-[500px]" style="display: flex;">
+            <div class="drag-handle h-10 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-4">
+                <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase">Market Alpha Scanner</span>
+                <div class="flex items-center space-x-2">
+                    <button onclick="runScanner()" class="text-[8px] bg-yellow-600/10 text-yellow-500 px-3 py-1 rounded border border-yellow-500/30 hover:bg-yellow-600 hover:text-black font-bold transition-all">SCAN MARKET (100)</button>
+                    <button onclick="closePanel('scanner-panel', 'toggleScanner')" class="text-slate-500 hover:text-white text-xs font-bold px-1">✕</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <table class="w-full scanner-table">
+                    <thead class="sticky top-0 bg-black z-10">
+                        <tr>
+                            <th onclick="sortScanner('symbol')" title="Sort by Symbol">Asset</th>
+                            <th onclick="sortScanner('slope')" title="Sort by Slope">Slope (m)</th>
+                            <th onclick="sortScanner('r2')" title="Sort by R²">R² Conf</th>
+                            <th onclick="sortScanner('score')" class="text-yellow-500 font-bold" title="Sort by Score">Power Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scanner-body">
+                        <tr><td colspan="4" class="text-center py-20 text-slate-600 italic">Click "SCAN" to analyze top 100...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="absolute bottom-3 w-full text-center text-[9px] text-slate-600 font-mono tracking-[0.3em] pointer-events-none z-30 uppercase">
             © 2026 Adiyat Coto
         </div>
@@ -341,7 +382,7 @@
 
     <script>
         /**
-         * POWER LAW GENERATOR ENGINE (V5.2 - FIXES)
+         * POWER LAW GENERATOR ENGINE (V6.0 - FINAL)
          */
 
         const GENESIS_BLOCK_TIMESTAMP = 1230940800; 
@@ -365,6 +406,10 @@
         let refData = [];
         let refMeta = {};
         let currentRefSymbol = "BTC";
+
+        // Scanner Variables
+        let scannerData = [];
+        let sortKey = 'score', sortDir = -1;
 
         const margin = { top: 40, right: 90, bottom: 60, left: 20 };
 
@@ -444,6 +489,8 @@
         // Initialize Draggables
         makeDraggable(document.getElementById("legend-panel"));
         makeDraggable(document.getElementById("oscillator-panel"));
+        // ADDED: Init Scanner Drag
+        makeDraggable(document.getElementById("scanner-panel"));
 
 
         // --- DATA & CHART LOGIC ---
@@ -825,12 +872,99 @@
             await analyze(tickerInput.value);
         }
 
-        window.onload = async () => { 
-            setupCanvas(); 
-            fetchAutocompleteData(); 
+        // --- NEW SCANNER LOGIC ---
+        async function runScanner() {
+            const body = document.getElementById('scanner-body');
+            const limit = 100; // Scan Top 100
+            
+            try {
+                body.innerHTML = `<tr><td colspan="4" class="text-center py-20 text-yellow-500 font-bold animate-pulse">FETCHING MARKET DATA...</td></tr>`;
+
+                // 1. Get Top 100 List
+                const res = await fetch(`https://min-api.cryptocompare.com/data/top/mktcapfull?limit=${limit}&tsym=USD&api_key=${HARDCODED_API_KEY}`);
+                const listJson = await res.json();
+                
+                if (!listJson.Data) throw new Error("API Limit");
+                
+                scannerData = [];
+                let count = 0;
+
+                // 2. Iterate and Fetch History
+                for (const item of listJson.Data) {
+                    const symbol = item.CoinInfo.Name;
+                    count++;
+                    
+                    // Show live progress
+                    body.innerHTML = `<tr><td colspan="4" class="text-center py-20 text-yellow-500 font-bold font-mono">SCANNING: ${symbol} (${count}/${limit})</td></tr>`;
+
+                    try {
+                        const histRes = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&allData=true&api_key=${HARDCODED_API_KEY}`);
+                        const json = await histRes.json();
+                        
+                        if (json.Response === 'Success' && json.Data && json.Data.Data) {
+                            const raw = json.Data.Data.filter(d => d.close > 0);
+                            
+                            // Only include coins with >180 days history for valid regression
+                            if (raw.length > 180) { 
+                                const anchor = symbol === 'BTC' ? GENESIS_BLOCK_TIMESTAMP : raw[0].time;
+                                const clean = raw.map(d => ({ close: d.close, days: Math.max(1, (d.time - anchor) / SECONDS_IN_DAY) }));
+                                const stats = calculateRegression(clean);
+                                const score = stats.slope * stats.r2; // Power Score Algo
+                                
+                                scannerData.push({ symbol, slope: stats.slope, r2: stats.r2, score: score });
+                            }
+                        }
+                        
+                        // Tiny delay to be nice to API
+                        await new Promise(r => setTimeout(r, 20)); 
+
+                    } catch (e) { console.warn(`Skipped ${symbol}`); }
+                }
+                
+                // 3. Done scanning, sort by score default
+                sortScanner('score', true); 
+
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="4" class="text-center py-20 text-red-500 font-bold">SCAN ERROR<br><span class="text-[9px]">API Key Exhausted</span></td></tr>`;
+            }
+        }
+
+        function sortScanner(key, force = false) {
+            if (!force && sortKey === key) sortDir *= -1;
+            else if (!force) sortDir = -1;
+            sortKey = key;
+            
+            scannerData.sort((a, b) => (a[key] > b[key] ? 1 : -1) * sortDir);
+            renderScanner();
+        }
+
+        function renderScanner() {
+            const body = document.getElementById('scanner-body');
+            body.innerHTML = scannerData.map(d => `
+                <tr class="scanner-row" onclick="loadFromScanner('${d.symbol}')">
+                    <td class="text-white font-bold">${d.symbol}</td>
+                    <td class="text-slate-400">${d.slope.toFixed(4)}</td>
+                    <td class="text-slate-400">${d.r2.toFixed(4)}</td>
+                    <td class="highlight-score">${d.score.toFixed(4)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Helper to load ticker from scanner click
+        function loadFromScanner(symbol) {
+            tickerInput.value = symbol;
+            triggerUpdate();
+        }
+
+        window.onload = async () => { 
+            setupCanvas();
+            makeDraggable(document.getElementById("legend-panel"));
+            makeDraggable(document.getElementById("oscillator-panel"));
+            makeDraggable(document.getElementById("scanner-panel"));
+            fetchAutocompleteData();
             // Load initial reference BTC first
             await loadReference("BTC");
-            await analyze("BTC"); 
+            await analyze("BTC");
         };
         window.onresize = () => { setupCanvas(); analyze(tickerInput.value); };
         d3.select("#updateBtn").on("click", triggerUpdate);
