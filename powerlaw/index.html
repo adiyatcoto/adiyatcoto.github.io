@@ -6,7 +6,7 @@
     <title>Power Law Generator | Auto slope and R² confidence detection</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-pure: #000000;
@@ -122,14 +122,26 @@
 </head>
 <body>
 
-    <!-- Header Section -->
     <header class="h-24 header-ui flex items-center justify-between px-10 relative z-20">
-        <div class="flex items-center space-x-8">
-            <div class="flex flex-col">
+        
+        <div class="absolute top-0 left-0 w-full flex justify-center pointer-events-none">
+            <div class="mt-2 px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-2xl text-center">
+                <p class="text-[9px] text-slate-400 font-sans leading-relaxed">
+                    <span class="text-yellow-500 font-bold uppercase tracking-widest text-[10px]">Log-Log Power Law Model</span>
+                    <span class="block mt-0.5 text-slate-500">
+                        This chart uses a <span class="text-slate-300 font-medium">double-logarithmic scale</span> (Time & Price) to visualize exponential network growth as a linear trend. 
+                        The central regression line represents the asset's theoretical <span class="text-slate-300 font-medium">"Fair Value"</span> baseline, 
+                        while the corridors indicate statistical deviation (<span class="font-serif italic font-bold">σ</span>) often associated with market tops and bottoms.
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-8 z-10 pt-4"> <div class="flex flex-col justify-center">
                 <h1 class="text-xl font-black text-white italic tracking-tighter uppercase leading-tight">
                     <span class="text-yellow-500">POWER LAW GENERATOR</span>
                 </h1>
-                <p class="text-[9px] text-slate-400 font-mono tracking-widest uppercase italic">Auto slope and R² confidence detection</p>
+                <p class="text-[9px] text-slate-400 font-mono tracking-widest uppercase italic mb-1">Auto slope and R² confidence detection</p>
             </div>
             
             <div class="flex flex-col space-y-1">
@@ -142,10 +154,11 @@
                     </div>
                     <div id="autocomplete-list" class="rounded-b-lg shadow-2xl"></div>
                 </div>
+                <div class="text-[9px] text-slate-600 font-mono italic text-right pr-1">Try: ETH, SOL, ADA...</div>
             </div>
         </div>
 
-        <div class="flex space-x-4">
+        <div class="flex space-x-4 z-10 pt-4">
             <div class="stat-card flex flex-col items-end">
                 <span class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">Growth Slope (m)</span>
                 <span id="slopeVal" class="text-yellow-500 font-mono text-lg font-bold">0.0000</span>
@@ -159,12 +172,10 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="relative w-full h-[calc(100vh-96px)] bg-black">
         <div id="chart-container" class="w-full h-full"></div>
         <div id="tooltip" class="tooltip"></div>
         
-        <!-- Interactive Legend -->
         <div class="absolute top-6 left-10 p-4 bg-black/90 rounded-lg border border-slate-900 pointer-events-none flex flex-col space-y-1.5 z-10 shadow-2xl backdrop-blur-sm min-w-[210px]">
             <div class="text-[9px] font-black text-slate-500 tracking-[0.2em] mb-2 uppercase border-b border-slate-800 pb-1">Deviation Corridors</div>
             
@@ -219,12 +230,10 @@
             </div>
         </div>
 
-        <!-- Copyright Info -->
         <div class="absolute bottom-3 w-full text-center text-[9px] text-slate-600 font-mono tracking-[0.3em] pointer-events-none z-30 uppercase">
             © 2026 Adiyat Coto
         </div>
 
-        <!-- App Loader -->
         <div id="loader" class="absolute inset-0 bg-black flex items-center justify-center z-50">
             <div class="flex flex-col items-center">
                 <div class="w-10 h-10 border-2 border-yellow-500/10 border-t-yellow-500 rounded-full animate-spin"></div>
