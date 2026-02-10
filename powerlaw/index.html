@@ -402,7 +402,7 @@
             <div class="drag-handle h-8 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0">
                 <div class="flex items-center space-x-2">
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden xl:inline">Deviation Oscillator Comparison - Main Ticker VS Reference Ticker</span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest xl:hidden">Oscillator Comp.</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest xl:hidden">Oscillator Comparison</span>
                 </div>
                 
                 <div class="flex items-center space-x-3 z-50">
@@ -844,6 +844,9 @@
         function renderChart() {
             if (!globalData || globalData.length === 0) return;
 
+            // Define isDesktop check inside render to handle resize dynamic updates
+            const isDesktop = window.innerWidth >= 1280;
+
             originalXScale = d3.scaleLog().domain([d3.min(globalData, d => d.days), d3.max(globalData, d => d.days) * 3]).range([0, width]);
             originalYScale = d3.scaleLog().domain([d3.min(globalData, d => d.low) * 0.4, d3.max(globalData, d => d.high) * 12]).range([height, 0]);
 
@@ -875,23 +878,37 @@
                     chartArea.select(`.band-line-${i}`).attr("stroke-dasharray", b.dash);
                 }
 
-                chartArea.append("path")
+                const hitbox = chartArea.append("path")
                     .attr("class", `line-hitbox hitbox-${i}`)
-                    .on("mouseover", (e) => handleLineHover(e, b, false, i))
-                    .on("mousemove", (e) => handleLineHover(e, b, false, i))
-                    .on("mouseout", () => removeGlow(i));
+                    // FIX BUG: Apply d attribute immediately for path data
+                    .attr("d", d3.line().x(d => xScale(d)).y(d => yScale(Math.exp(regressionMeta.slope * Math.log(d) + regressionMeta.intercept + (b.dev * regressionMeta.stdDev))))(d3.range(Math.log(Math.max(0.1, xScale.domain()[0])), Math.log(xScale.domain()[1]), (Math.log(xScale.domain()[1]) - Math.log(Math.max(0.1, xScale.domain()[0])))/250).map(Math.exp))); 
+                
+                // MOBILE FIX: Only attach hover events if on Desktop
+                if (isDesktop) {
+                    hitbox.on("mouseover", (e) => handleLineHover(e, b, false, i))
+                          .on("mousemove", (e) => handleLineHover(e, b, false, i))
+                          .on("mouseout", () => removeGlow(i));
+                }
             });
 
-            chartArea.append("path")
-                .attr("class", "regression-line")
-                .on("mouseover", (e) => handleLineHover(e, null, true))
-                .on("mousemove", (e) => handleLineHover(e, null, true))
-                .on("mouseout", () => removeGlow());
+            const regLine = chartArea.append("path")
+                .attr("class", "regression-line");
+            
+            // MOBILE FIX: Only attach hover events if on Desktop
+            if (isDesktop) {
+                regLine.on("mouseover", (e) => handleLineHover(e, null, true))
+                       .on("mousemove", (e) => handleLineHover(e, null, true))
+                       .on("mouseout", () => removeGlow());
+            }
 
             const candleGroups = chartArea.selectAll(".candle-group").data(globalData).enter().append("g").attr("class", "candle-group");
             candleGroups.append("line").attr("class", "wick");
-            candleGroups.append("rect").attr("width", 2.5).attr("class", d => d.close >= d.open ? "candle-up" : "candle-down")
-                .on("mouseover", (e, d) => {
+            
+            const candles = candleGroups.append("rect").attr("width", 2.5).attr("class", d => d.close >= d.open ? "candle-up" : "candle-down");
+            
+            // MOBILE FIX: Only attach hover events if on Desktop
+            if (isDesktop) {
+                candles.on("mouseover", (e, d) => {
                     const dev = (Math.log(d.close) - (regressionMeta.slope * Math.log(d.days) + regressionMeta.intercept)) / regressionMeta.stdDev;
                     tooltip.style("display", "block").html(`
                         <div class="text-white font-bold border-b border-slate-900 pb-1.5 mb-2 font-mono">${d.date.toLocaleDateString('en-US', {year:'numeric', month:'short', day:'numeric'})}</div>
@@ -907,6 +924,7 @@
                 })
                 .on("mousemove", (e) => tooltip.style("left", (event.pageX + 15) + "px").style("top", (event.pageY - 15) + "px"))
                 .on("mouseout", () => tooltip.style("display", "none"));
+            }
 
             updateElements(originalXScale, originalYScale);
         }
