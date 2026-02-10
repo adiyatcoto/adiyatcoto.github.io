@@ -270,13 +270,10 @@
 <body>
 
     <!-- Header: Switch to CSS Grid on XL screens for perfect, collision-free centering -->
-    <!-- UPDATED GRID COLS: [1fr auto 1.3fr] -> Right is larger, pushing center Left -->
     <header class="header-ui flex flex-col xl:grid xl:grid-cols-[1fr_auto_1.3fr] items-center px-4 lg:px-10 py-4 lg:py-0 relative z-20 xl:h-24 h-auto gap-4 xl:gap-0">
         
-        <!-- Info Box: Relative on Mobile/Tablet/Zoom (flows with content), Static position on Desktop -->
-        <!-- Added dynamic text size using clamp() -->
+        <!-- Info Box: Relative on Mobile/Tablet/Zoom, Static position on Desktop -->
         <div class="header-info-container relative xl:static w-full xl:w-auto flex justify-center pointer-events-none xl:mt-0 order-first xl:col-start-2 xl:row-start-1 mb-2 xl:mb-0">
-            <!-- REMOVED translate, let Grid handle the left shift safely -->
             <div class="px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-lg text-center">
                 <p class="text-[clamp(8px,0.7vw,9px)] text-slate-400 font-sans leading-relaxed">
                     <span class="text-yellow-500 font-bold uppercase tracking-widest text-[clamp(9px,0.8vw,10px)]">Log-Log Power Law Model</span>
@@ -292,11 +289,9 @@
         <!-- Left Section: Title & Input -->
         <div class="header-title-section flex flex-col xl:flex-row items-center xl:space-x-8 space-y-4 xl:space-y-0 z-10 w-full xl:w-auto xl:col-start-1 xl:row-start-1 xl:justify-self-start"> 
             <div class="flex flex-col justify-center text-center xl:text-left">
-                <!-- Added dynamic text size using clamp() for Title -->
                 <h1 class="text-[clamp(16px,1.5vw,22px)] font-black text-white italic tracking-tighter uppercase leading-tight">
                     <span class="text-yellow-500">POWER LAW GENERATOR</span>
                 </h1>
-                <!-- Added dynamic text size using clamp() for Subtitle -->
                 <p class="text-[clamp(8px,0.7vw,9px)] text-slate-400 font-mono tracking-widest uppercase italic mb-1">Auto slope and R² confidence detection</p>
             </div>
             
@@ -304,16 +299,13 @@
             <div class="flex flex-col space-y-1 w-full xl:w-auto relative z-[50]">
                 <div class="relative flex items-center bg-black rounded-lg border border-slate-900 group focus-within:border-yellow-500 transition-all w-full">
                     <div class="p-1.5 flex items-center space-x-2 w-full justify-center">
-                        <!-- Dynamic input font size -->
                         <input id="tickerInput" type="text" value="BTC" autocomplete="off" class="bg-transparent border-none px-3 py-1 text-[clamp(10px,0.9vw,12px)] focus:outline-none uppercase w-24 font-bold text-yellow-500 text-center xl:text-left" placeholder="Ticker...">
-                        <!-- Dynamic button font size -->
                         <button id="updateBtn" class="bg-yellow-600 hover:bg-yellow-500 text-black px-6 py-2 rounded text-[clamp(9px,0.8vw,10px)] font-black transition-all uppercase">
                             Sync
                         </button>
                     </div>
                     <div id="autocomplete-list" class="rounded-b-lg shadow-2xl"></div>
                 </div>
-                <!-- Dynamic helper text size -->
                 <div class="try-text text-[clamp(8px,0.7vw,9px)] text-slate-600 font-mono italic text-right pr-1 xl:block hidden">Try: ETH, SOL, ADA, etc...</div>
             </div>
         </div>
@@ -321,7 +313,6 @@
         <!-- Right Section: Windows & Stats -->
         <div class="flex flex-col xl:flex-row items-center xl:space-x-4 space-y-4 xl:space-y-0 z-0 w-full xl:w-auto relative xl:col-start-3 xl:row-start-1 xl:justify-self-end">
             <div class="flex flex-col space-y-1 mr-0 xl:mr-4 w-full xl:w-auto items-center">
-                <!-- Dynamic label size -->
                 <div class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
                 <div class="flex space-x-2">
                     <button id="toggleLegend" class="toggle-btn active" onclick="togglePanel('legend-panel', this)">Legend</button>
@@ -332,9 +323,7 @@
 
             <div class="flex w-full xl:w-auto gap-2 xl:gap-4 flex-col xl:flex-row xl:items-center">
                 <div class="stat-card flex flex-col items-end">
-                    <!-- Dynamic Stat Labels -->
                     <span class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">Growth Slope (m)</span>
-                    <!-- Dynamic Stat Value -->
                     <span id="slopeVal" class="text-yellow-500 font-mono text-[clamp(14px,1.2vw,18px)] font-bold">0.0000</span>
                     <span class="text-[clamp(6px,0.5vw,7px)] text-slate-500 font-mono italic text-right hidden xl:block">Linear regression slope</span>
                 </div>
@@ -499,11 +488,14 @@
         let topAssets = []; 
         let currentAnchorTime = GENESIS_BLOCK_TIMESTAMP;
         let lastWindowWidth = window.innerWidth;
+        let isSyncing = false; // Flag to handle Sync vs Blur Race Condition
         
         // Dynamic Reference Storage
         let refData = [];
         let refMeta = {};
         let currentRefSymbol = "BTC";
+        // NEW: Menyimpan simbol Main Ticker yang terakhir sukses di-load
+        let currentMainSymbol = "BTC"; 
 
         // Scanner Variables
         let scannerData = [];
@@ -546,13 +538,9 @@
         }
 
         function makeDraggable(elmnt) {
-            // FIXED BUG: Removed early return check here. Listeners must ALWAYS attach.
-            // Screen width check moved inside dragMouseDown.
-
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             const header = elmnt.querySelector('.drag-handle');
             
-            // Allow clicking inside input without dragging
             const inputs = header.querySelectorAll('input, button');
             inputs.forEach(input => {
                 input.onmousedown = (e) => e.stopPropagation();
@@ -565,8 +553,7 @@
             }
 
             function dragMouseDown(e) {
-                // FIXED BUG: Check screen width HERE. Only allow drag if desktop width.
-                if (window.innerWidth < 1280) return;
+                if (window.innerWidth < 1280) return; 
 
                 e = e || window.event;
                 e.preventDefault();
@@ -644,7 +631,7 @@
         function setupCanvas() {
             container.selectAll("*").remove();
             const rect = container.node().getBoundingClientRect();
-            const margin = getMargin(); // Dynamic Margin
+            const margin = getMargin(); 
             width = rect.width - margin.left - margin.right;
             height = rect.height - margin.top - margin.bottom;
 
@@ -685,7 +672,6 @@
             return { slope, intercept, r2: r * r, stdDev };
         }
 
-        // --- REFERENCE LOADER ---
         async function loadReference(symbol) {
             if (!symbol) return;
             currentRefSymbol = symbol.toUpperCase();
@@ -704,7 +690,6 @@
 
                 const meta = calculateRegression(data);
                 
-                // Pre-calculate Ratios
                 refData = data.map(d => {
                     const predicted = Math.exp(meta.slope * Math.log(d.days) + meta.intercept);
                     const ratio = d.close / predicted; 
@@ -717,7 +702,6 @@
             }
         }
 
-        // --- LOG-SYMMETRIC OSCILLATOR DRAWING FUNCTION ---
         function updateOscillator(symbolData, symbolMeta, symbol) {
             const oscContainer = d3.select("#oscillator-chart");
             oscContainer.selectAll("*").remove();
@@ -731,31 +715,24 @@
             const svg = oscContainer.append("svg").attr("width", w).attr("height", h);
             const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
 
-            // 1. Calculate Ratio (Price / FairValue)
             const coinRatios = symbolData.map(d => {
                 const predicted = Math.exp(symbolMeta.slope * Math.log(d.days) + symbolMeta.intercept);
                 const ratio = d.close / predicted;
                 return { time: d.time, ratio: ratio, date: d.date };
             });
 
-            // 2. Calculate Sigma Ratios for Zones
             const rPlus2 = Math.exp(2 * symbolMeta.stdDev);
             const rMinus2 = Math.exp(-2 * symbolMeta.stdDev);
 
-            // 3. Determine Log Domain
             let maxRatio = d3.max(coinRatios, d => d.ratio);
             let minRatio = d3.min(coinRatios, d => d.ratio);
-            
             maxRatio = Math.max(maxRatio, rPlus2);
             minRatio = Math.min(minRatio, rMinus2);
-
-            // Symmetric boundary
             const boundary = Math.max(maxRatio, 1/minRatio) * 1.1; 
             
             const oscY = d3.scaleLog().domain([1/boundary, boundary]).range([innerH, 0]);
             const oscX = d3.scaleTime().domain(d3.extent(coinRatios, d => d.date)).range([0, innerW]);
 
-            // 4. Draw Zones
             g.append("rect").attr("x", 0).attr("width", innerW).attr("y", 0)
                 .attr("height", Math.max(0, oscY(rPlus2))).attr("class", "osc-band-upper");
             
@@ -767,7 +744,6 @@
             g.append("text").attr("x", innerW + 4).attr("y", oscY(rPlus2) + 3).text("+2σ").attr("class", "osc-label-sigma");
             g.append("text").attr("x", innerW + 4).attr("y", oscY(rMinus2) + 3).text("-2σ").attr("class", "osc-label-sigma");
 
-            // 5. Axes
             const yAxisOsc = d3.axisRight(oscY)
                 .tickValues([boundary, rPlus2, 1, rMinus2, 1/boundary]) 
                 .tickSize(innerW)
@@ -783,21 +759,16 @@
             const xAxisOsc = d3.axisBottom(oscX).ticks(4);
             g.append("g").attr("class", "axis-label").attr("transform", `translate(0,${innerH})`).call(xAxisOsc).select(".domain").remove();
 
-            // 6. Draw Lines
             const lineGen = d3.line().x(d => oscX(d.date)).y(d => oscY(d.ratio));
 
-            // Draw Reference Line (if not self)
             if (symbol !== currentRefSymbol && refData.length > 0) {
-                // Filter ref data to view range
                 const refVisible = refData.filter(d => d.time >= coinRatios[0].time && d.time <= coinRatios[coinRatios.length-1].time);
                 g.append("path").datum(refVisible).attr("class", "osc-line-ref").attr("d", lineGen);
             }
 
-            // Draw Asset Line
             g.append("path").datum(coinRatios).attr("class", "osc-line-main").attr("d", lineGen);
         }
 
-        // Lightweight Hover Function
         function handleLineHover(event, d, isMean = false, index = null) {
             const [mx, my] = d3.pointer(event, chartArea.node());
             const days = xScale.invert(mx);
@@ -870,13 +841,9 @@
             updateElements(event.transform.rescaleX(originalXScale), event.transform.rescaleY(originalYScale));
         }
 
-        // === REFACTORED: Separate Drawing Logic for Resize Efficiency ===
-        
-        // 1. Draw Chart (Synchronous, No Fetching)
         function renderChart() {
             if (!globalData || globalData.length === 0) return;
 
-            // Re-setup scales based on current container size
             originalXScale = d3.scaleLog().domain([d3.min(globalData, d => d.days), d3.max(globalData, d => d.days) * 3]).range([0, width]);
             originalYScale = d3.scaleLog().domain([d3.min(globalData, d => d.low) * 0.4, d3.max(globalData, d => d.high) * 12]).range([height, 0]);
 
@@ -944,7 +911,6 @@
             updateElements(originalXScale, originalYScale);
         }
 
-        // 2. Fetch Data (Calls Render)
         async function analyze(symbol) {
             d3.select("#loader").style("display", "flex");
             oscTickerLabel.innerText = symbol;
@@ -963,6 +929,11 @@
                     date: new Date(d.time * 1000)
                 }));
 
+                // SAVE SUCCESSFUL MAIN SYMBOL
+                currentMainSymbol = symbol.toUpperCase();
+                // Ensure Input UI reflects valid symbol if it was pending
+                tickerInput.value = currentMainSymbol;
+
                 regressionMeta = calculateRegression(globalData);
                 d3.select("#slopeVal").text(regressionMeta.slope.toFixed(4));
                 d3.select("#r2Val").text(regressionMeta.r2.toFixed(4));
@@ -974,23 +945,51 @@
 
                 updateOscillator(globalData, regressionMeta, symbol.toUpperCase());
                 
-                // CALL RENDER
                 renderChart();
 
             } catch (err) { 
                 console.error(err); 
                 alert("Failed to load chart data. Please check the API key or try again later.\nError: " + err.message);
+                // REVERT on error to maintain UI consistency
+                tickerInput.value = currentMainSymbol;
             }
-            finally { d3.select("#loader").style("display", "none"); }
+            finally { 
+                d3.select("#loader").style("display", "none"); 
+                isSyncing = false; // Reset Sync Flag
+            }
         }
 
         async function triggerUpdate() {
+            // SET FLAG: We are syncing, ignore blur resets
+            isSyncing = true;
             setupCanvas();
             await loadReference(refInput.value);
             await analyze(tickerInput.value);
         }
 
-        // --- NEW SCANNER LOGIC ---
+        // NEW: Function to safely update ONLY reference ticker without re-fetching main data
+        async function updateRefOnly() {
+             isSyncing = true; // Flag sync active
+             d3.select("#loader").style("display", "flex");
+             try {
+                 const refSymbol = refInput.value.toUpperCase();
+                 await loadReference(refSymbol);
+                 
+                 // Update oscillator using the CLEAN/SAVED main symbol, ignoring dirty input
+                 if (globalData.length > 0) {
+                     updateOscillator(globalData, regressionMeta, currentMainSymbol);
+                 }
+             } catch (err) {
+                 console.error(err);
+                 alert("Ref Ticker Error: " + err.message);
+                 // REVERT Ref input on error
+                 refInput.value = currentRefSymbol;
+             } finally {
+                 d3.select("#loader").style("display", "none");
+                 isSyncing = false;
+             }
+        }
+
         async function runScanner() {
             const body = document.getElementById('scanner-body');
             const limit = 100; // Scan Top 100
@@ -998,7 +997,6 @@
             try {
                 body.innerHTML = `<tr><td colspan="4" class="text-center py-20 text-yellow-500 font-bold animate-pulse">FETCHING MARKET DATA...</td></tr>`;
 
-                // 1. Get Top 100 List
                 const res = await fetch(`https://min-api.cryptocompare.com/data/top/mktcapfull?limit=${limit}&tsym=USD&api_key=${HARDCODED_API_KEY}`);
                 const listJson = await res.json();
                 
@@ -1007,12 +1005,10 @@
                 scannerData = [];
                 let count = 0;
 
-                // 2. Iterate and Fetch History
                 for (const item of listJson.Data) {
                     const symbol = item.CoinInfo.Name;
                     count++;
                     
-                    // Show live progress
                     body.innerHTML = `<tr><td colspan="4" class="text-center py-20 text-yellow-500 font-bold font-mono">SCANNING: ${symbol} (${count}/${limit})</td></tr>`;
 
                     try {
@@ -1022,24 +1018,21 @@
                         if (json.Response === 'Success' && json.Data && json.Data.Data) {
                             const raw = json.Data.Data.filter(d => d.close > 0);
                             
-                            // Only include coins with >180 days history for valid regression
                             if (raw.length > 180) { 
                                 const anchor = symbol === 'BTC' ? GENESIS_BLOCK_TIMESTAMP : raw[0].time;
                                 const clean = raw.map(d => ({ close: d.close, days: Math.max(1, (d.time - anchor) / SECONDS_IN_DAY) }));
                                 const stats = calculateRegression(clean);
-                                const score = stats.slope * stats.r2; // Power Score Algo
+                                const score = stats.slope * stats.r2; 
                                 
                                 scannerData.push({ symbol, slope: stats.slope, r2: stats.r2, score: score });
                             }
                         }
                         
-                        // Tiny delay to be nice to API
                         await new Promise(r => setTimeout(r, 20)); 
 
                     } catch (e) { console.warn(`Skipped ${symbol}`); }
                 }
                 
-                // 3. Done scanning, sort by score default
                 sortScanner('score', true); 
 
             } catch (e) {
@@ -1068,7 +1061,6 @@
             `).join('');
         }
 
-        // Helper to load ticker from scanner click
         function loadFromScanner(symbol) {
             tickerInput.value = symbol;
             triggerUpdate();
@@ -1080,27 +1072,47 @@
             makeDraggable(document.getElementById("oscillator-panel"));
             makeDraggable(document.getElementById("scanner-panel"));
             fetchAutocompleteData();
-            // Load initial reference BTC first
             await loadReference("BTC");
             await analyze("BTC");
         };
 
-        // === FIXED WINDOW RESIZE LOGIC ===
-        // 1. Only triggers if WIDTH changes (ignoring height/scroll).
-        // 2. Only renders (no fetch).
         window.onresize = () => { 
             if (window.innerWidth !== lastWindowWidth) {
-                lastWindowWidth = window.innerWidth; // Update width
-                setupCanvas(); // Re-calc chart dimensions
+                lastWindowWidth = window.innerWidth; 
+                setupCanvas(); 
                 if (globalData.length > 0) {
-                    renderChart(); // Redraw chart immediately (No loader)
-                    updateOscillator(globalData, regressionMeta, tickerInput.value.toUpperCase()); // Redraw Oscillator
+                    renderChart(); 
+                    updateOscillator(globalData, regressionMeta, currentMainSymbol); 
                 }
             }
         };
 
         d3.select("#updateBtn").on("click", triggerUpdate);
-        refInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerUpdate() });
+        
+        // --- INPUT BEHAVIOR LOGIC ---
+        // 1. Focus: Clear input immediately
+        // 2. Blur: Delayed check. If NOT syncing, revert to last valid symbol.
+        
+        tickerInput.addEventListener('focus', function() { this.value = ''; });
+        tickerInput.addEventListener('blur', function() { 
+            setTimeout(() => {
+                if (!isSyncing && this.value.trim() !== currentMainSymbol) {
+                    this.value = currentMainSymbol;
+                }
+            }, 200);
+        });
+
+        refInput.addEventListener('focus', function() { this.value = ''; });
+        refInput.addEventListener('blur', function() { 
+            setTimeout(() => {
+                if (!isSyncing && this.value.trim() !== currentRefSymbol) {
+                    this.value = currentRefSymbol;
+                }
+            }, 200);
+        });
+
+        // UPDATED: Pressing Enter on Ref Input now calls updateRefOnly instead of triggerUpdate
+        refInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') updateRefOnly() });
     </script>
 </body>
 </html>
