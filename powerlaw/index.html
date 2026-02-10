@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Power Law Generator | Auto Slope and R² Confidence Detection</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,7 +24,7 @@
             padding: 0;
             height: 100%;
             width: 100%;
-            overflow: hidden;
+            overflow: hidden; /* Default Desktop: Hidden */
         }
 
         /* Styling Grid */
@@ -103,10 +103,11 @@
             right: 0;
             background: #050505;
             border: 1px solid #1e293b;
-            z-index: 1000;
+            z-index: 9999; 
             max-height: 250px;
             overflow-y: auto;
             display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
         }
 
         .suggestion-item {
@@ -137,7 +138,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.8);
             z-index: 50;
             display: flex;
-            flex-direction: column; /* FIXED: Corrected CSS property */
+            flex-direction: column; 
             overflow: hidden;
             transition: opacity 0.2s;
         }
@@ -150,8 +151,9 @@
             cursor: grabbing;
         }
 
+        /* UPDATED: Dynamic Font Size for Windows Toggle Buttons */
         .toggle-btn {
-            font-size: 9px;
+            font-size: clamp(8px, 0.7vw, 10px); /* Dynamic Font */
             font-family: 'JetBrains Mono', monospace;
             text-transform: uppercase;
             padding: 4px 10px;
@@ -169,7 +171,7 @@
         }
         .toggle-btn:hover { color: #fff; border-color: #475569; }
 
-        /* Custom Scrollbar for autocomplete */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -188,16 +190,96 @@
         .scanner-row { transition: background 0.1s; }
         .scanner-row:hover { background: #1e293b; cursor: pointer; }
         .highlight-score { color: #fbce03; font-weight: bold; }
+
+        /* --- MOBILE/TABLET/ZOOM RESPONSIVE OVERRIDES (< 1280px) --- */
+        @media (max-width: 1280px) {
+            html, body {
+                overflow-y: auto !important; /* Enable scroll */
+                height: auto !important;
+                position: static !important;
+            }
+
+            /* Axis Font Fix for Mobile: Smaller */
+            .axis-label { font-size: 8px !important; }
+
+            /* Header Stack */
+            header {
+                height: auto !important;
+                flex-direction: column;
+                padding: 1rem !important;
+                gap: 1rem;
+            }
+
+            /* Info Box adjustment */
+            .header-info-container {
+                position: relative !important;
+                top: auto !important; right: auto !important; left: auto !important; transform: none !important;
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
+
+            /* Main Container Scrollable */
+            main {
+                height: auto !important;
+                display: flex !important;
+                flex-direction: column;
+                overflow: visible !important;
+            }
+
+            /* Chart tidak gepeng */
+            #chart-container {
+                height: 60vh !important; /* Tinggi fix untuk grafik utama */
+                min-height: 400px;
+                width: 100% !important;
+                flex-shrink: 0;
+                border-bottom: 1px solid #1e293b;
+            }
+
+            /* Windows Capabilities Removed -> Menjadi Section Statis di bawah Chart */
+            .draggable-panel {
+                position: relative !important; /* Tidak melayang */
+                top: auto !important; left: auto !important; bottom: auto !important; right: auto !important;
+                width: 100% !important;
+                margin-top: 0;
+                border-radius: 0 !important;
+                border-left: 0 !important; border-right: 0 !important;
+                box-shadow: none !important;
+                border-bottom: 1px solid #1e293b;
+            }
+
+            /* Ukuran Panel Statis */
+            #legend-panel { order: 1; height: auto !important; max-height: 300px; }
+            #oscillator-panel { order: 2; height: 400px !important; }
+            #scanner-panel { order: 3; height: 500px !important; }
+
+            /* Sembunyikan tombol close di mobile agar tidak tertutup tidak sengaja */
+            .draggable-panel button { display: block; }
+            
+            /* Drag handle cursor reset */
+            .drag-handle { cursor: default !important; }
+
+            /* Sembunyikan Text "Try: ETH..." jika sempit */
+            .try-text { display: none; }
+            
+            /* Stat Cards full width */
+            .stat-card { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+            .stat-card span { text-align: left; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="h-24 header-ui flex items-center justify-between px-10 relative z-20">
+    <!-- Header: Switch to CSS Grid on XL screens for perfect, collision-free centering -->
+    <!-- UPDATED GRID COLS: [1fr auto 1.3fr] -> Right is larger, pushing center Left -->
+    <header class="header-ui flex flex-col xl:grid xl:grid-cols-[1fr_auto_1.2fr] items-center px-4 lg:px-10 py-4 lg:py-0 relative z-20 xl:h-24 h-auto gap-4 xl:gap-0">
         
-        <div class="absolute top-0 right-10 w-full flex justify-center pointer-events-none">
-            <div class="mt-2 px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-2xl text-center">
-                <p class="text-[9px] text-slate-400 font-sans leading-relaxed">
-                    <span class="text-yellow-500 font-bold uppercase tracking-widest text-[10px]">Log-Log Power Law Model</span>
+        <!-- Info Box: Relative on Mobile/Tablet/Zoom (flows with content), Static position on Desktop -->
+        <!-- Added dynamic text size using clamp() -->
+        <div class="header-info-container relative xl:static w-full xl:w-auto flex justify-center pointer-events-none xl:mt-0 order-first xl:col-start-2 xl:row-start-1 mb-2 xl:mb-0">
+            <!-- REMOVED translate, let Grid handle the left shift safely -->
+            <div class="px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-lg text-center">
+                <p class="text-[clamp(8px,0.7vw,9px)] text-slate-400 font-sans leading-relaxed">
+                    <span class="text-yellow-500 font-bold uppercase tracking-widest text-[clamp(9px,0.8vw,10px)]">Log-Log Power Law Model</span>
                     <span class="block mt-0.5 text-slate-500">
                         This chart uses a <span class="text-slate-300 font-medium">double-logarithmic scale</span> (Time & Price) to visualize exponential network growth as a linear trend. 
                         The central regression line represents the asset's theoretical <span class="text-slate-300 font-medium">"Fair Value"</span> baseline, 
@@ -207,31 +289,40 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-8 z-10 pt-4"> 
-            <div class="flex flex-col justify-center">
-                <h1 class="text-xl font-black text-white italic tracking-tighter uppercase leading-tight">
+        <!-- Left Section: Title & Input -->
+        <div class="header-title-section flex flex-col xl:flex-row items-center xl:space-x-8 space-y-4 xl:space-y-0 z-10 w-full xl:w-auto xl:col-start-1 xl:row-start-1 xl:justify-self-start"> 
+            <div class="flex flex-col justify-center text-center xl:text-left">
+                <!-- Added dynamic text size using clamp() for Title -->
+                <h1 class="text-[clamp(16px,1.5vw,22px)] font-black text-white italic tracking-tighter uppercase leading-tight">
                     <span class="text-yellow-500">POWER LAW GENERATOR</span>
                 </h1>
-                <p class="text-[9px] text-slate-400 font-mono tracking-widest uppercase italic mb-1">Auto slope and R² confidence detection</p>
+                <!-- Added dynamic text size using clamp() for Subtitle -->
+                <p class="text-[clamp(8px,0.7vw,9px)] text-slate-400 font-mono tracking-widest uppercase italic mb-1">Auto slope and R² confidence detection</p>
             </div>
             
-            <div class="flex flex-col space-y-1">
-                <div class="relative flex items-center bg-black rounded-lg border border-slate-900 group focus-within:border-yellow-500 transition-all">
-                    <div class="p-1.5 flex items-center space-x-2">
-                        <input id="tickerInput" type="text" value="BTC" autocomplete="off" class="bg-transparent border-none px-3 py-1 text-xs focus:outline-none uppercase w-24 font-bold text-yellow-500" placeholder="Ticker...">
-                        <button id="updateBtn" class="bg-yellow-600 hover:bg-yellow-500 text-black px-6 py-2 rounded text-[10px] font-black transition-all uppercase">
+            <!-- Input Wrapper -->
+            <div class="flex flex-col space-y-1 w-full xl:w-auto relative z-[50]">
+                <div class="relative flex items-center bg-black rounded-lg border border-slate-900 group focus-within:border-yellow-500 transition-all w-full">
+                    <div class="p-1.5 flex items-center space-x-2 w-full justify-center">
+                        <!-- Dynamic input font size -->
+                        <input id="tickerInput" type="text" value="BTC" autocomplete="off" class="bg-transparent border-none px-3 py-1 text-[clamp(10px,0.9vw,12px)] focus:outline-none uppercase w-24 font-bold text-yellow-500 text-center xl:text-left" placeholder="Ticker...">
+                        <!-- Dynamic button font size -->
+                        <button id="updateBtn" class="bg-yellow-600 hover:bg-yellow-500 text-black px-6 py-2 rounded text-[clamp(9px,0.8vw,10px)] font-black transition-all uppercase">
                             Sync
                         </button>
                     </div>
                     <div id="autocomplete-list" class="rounded-b-lg shadow-2xl"></div>
                 </div>
-                <div class="text-[9px] text-slate-600 font-mono italic text-right pr-1">Try: ETH, SOL, ADA, etc...</div>
+                <!-- Dynamic helper text size -->
+                <div class="try-text text-[clamp(8px,0.7vw,9px)] text-slate-600 font-mono italic text-right pr-1 xl:block hidden">Try: ETH, SOL, ADA, etc...</div>
             </div>
         </div>
 
-        <div class="flex items-center space-x-4 z-10 pt-4">
-            <div class="flex flex-col space-y-1 mr-4">
-                <div class="text-[8px] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
+        <!-- Right Section: Windows & Stats -->
+        <div class="flex flex-col xl:flex-row items-center xl:space-x-4 space-y-4 xl:space-y-0 z-0 w-full xl:w-auto relative xl:col-start-3 xl:row-start-1 xl:justify-self-end">
+            <div class="flex flex-col space-y-1 mr-0 xl:mr-4 w-full xl:w-auto items-center">
+                <!-- Dynamic label size -->
+                <div class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
                 <div class="flex space-x-2">
                     <button id="toggleLegend" class="toggle-btn active" onclick="togglePanel('legend-panel', this)">Legend</button>
                     <button id="toggleOsc" class="toggle-btn active" onclick="togglePanel('oscillator-panel', this)">Oscillator</button>
@@ -239,15 +330,19 @@
                 </div>
             </div>
 
-            <div class="stat-card flex flex-col items-end">
-                <span class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">Growth Slope (m)</span>
-                <span id="slopeVal" class="text-yellow-500 font-mono text-lg font-bold">0.0000</span>
-                <span class="text-[7px] text-slate-500 font-mono italic text-right">Linear regression slope</span>
-            </div>
-            <div class="stat-card flex flex-col items-end">
-                <span class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">R² Confidence</span>
-                <span id="r2Val" class="text-emerald-500 font-mono text-lg font-bold">0.0000</span>
-                <span class="text-[7px] text-slate-500 font-mono italic text-right">Coefficient of determination</span>
+            <div class="flex w-full xl:w-auto gap-2 xl:gap-4 flex-col xl:flex-row xl:items-center">
+                <div class="stat-card flex flex-col items-end">
+                    <!-- Dynamic Stat Labels -->
+                    <span class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">Growth Slope (m)</span>
+                    <!-- Dynamic Stat Value -->
+                    <span id="slopeVal" class="text-yellow-500 font-mono text-[clamp(14px,1.2vw,18px)] font-bold">0.0000</span>
+                    <span class="text-[clamp(6px,0.5vw,7px)] text-slate-500 font-mono italic text-right hidden xl:block">Linear regression slope</span>
+                </div>
+                <div class="stat-card flex flex-col items-end">
+                    <span class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest leading-none mb-1">R² Confidence</span>
+                    <span id="r2Val" class="text-emerald-500 font-mono text-[clamp(14px,1.2vw,18px)] font-bold">0.0000</span>
+                    <span class="text-[clamp(6px,0.5vw,7px)] text-slate-500 font-mono italic text-right hidden xl:block">Coefficient of determination</span>
+                </div>
             </div>
         </div>
     </header>
@@ -317,12 +412,14 @@
         <div id="oscillator-panel" class="draggable-panel bottom-10 right-10 w-[840px] h-[440px]" style="display: flex;">
             <div class="drag-handle h-8 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0">
                 <div class="flex items-center space-x-2">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Deviation Oscillator Comparison - Main Ticker VS Reference Ticker</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden xl:inline">Deviation Oscillator Comparison - Main Ticker VS Reference Ticker</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest xl:hidden">Oscillator Comp.</span>
                 </div>
                 
                 <div class="flex items-center space-x-3 z-50">
                     <div class="flex items-center bg-[#0a0a0a] border border-slate-800 rounded px-1.5 py-0.5">
-                        <span class="text-[8px] text-yellow-600 font-bold mr-1">CHANGE YOUR REF TICKER:</span>
+                        <span class="text-[8px] text-yellow-600 font-bold mr-1 hidden xl:inline">CHANGE YOUR REF TICKER:</span>
+                        <span class="text-[8px] text-yellow-600 font-bold mr-1 xl:hidden">REF:</span>
                         <input id="refInput" type="text" value="BTC" class="bg-transparent border-none text-[9px] font-bold text-yellow-500 w-8 focus:outline-none uppercase text-center">
                     </div>
 
@@ -368,7 +465,7 @@
             </div>
         </div>
 
-        <div class="absolute bottom-3 w-full text-center text-[9px] text-slate-600 font-mono tracking-[0.3em] pointer-events-none z-30 uppercase">
+        <div class="w-full text-center text-[9px] text-slate-600 font-mono tracking-[0.3em] pointer-events-none z-30 uppercase py-6 xl:py-4 xl:absolute xl:bottom-3 relative order-last">
             © 2026 Adiyat Coto
         </div>
 
@@ -411,7 +508,12 @@
         let scannerData = [];
         let sortKey = 'score', sortDir = -1;
 
-        const margin = { top: 40, right: 90, bottom: 60, left: 20 };
+        // Dynamic Margin for Mobile Responsiveness (FIXED: Tighter margin for mobile)
+        function getMargin() {
+            return window.innerWidth < 1280 
+                ? { top: 20, right: 25, bottom: 40, left: 10 } // Mobile/Tablet: Tight margin
+                : { top: 40, right: 90, bottom: 60, left: 20 }; // Desktop
+        }
 
         const BANDS_CONFIG = [
             { dev: 2.0, color: '#ff1e56', opacity: 0.8, dash: 'none', weight: 2, label: 'Cycle Peak' }, 
@@ -443,6 +545,9 @@
         }
 
         function makeDraggable(elmnt) {
+            // --- MOBILE FIX: Disable dragging on small screens ---
+            if (window.innerWidth < 1280) return;
+
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             const header = elmnt.querySelector('.drag-handle');
             
@@ -489,7 +594,6 @@
         // Initialize Draggables
         makeDraggable(document.getElementById("legend-panel"));
         makeDraggable(document.getElementById("oscillator-panel"));
-        // ADDED: Init Scanner Drag
         makeDraggable(document.getElementById("scanner-panel"));
 
 
@@ -536,6 +640,7 @@
         function setupCanvas() {
             container.selectAll("*").remove();
             const rect = container.node().getBoundingClientRect();
+            const margin = getMargin(); // Dynamic Margin
             width = rect.width - margin.left - margin.right;
             height = rect.height - margin.top - margin.bottom;
 
