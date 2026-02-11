@@ -402,7 +402,7 @@
             </div>
         </div>
 
-        <!-- OSCILLATOR: Default Open (style="display: flex;") -->
+        <!-- OSCILLATOR: Default Closed (style="display: none;") -->
         <div id="oscillator-panel" class="draggable-panel bottom-10 right-10 w-[840px] h-[440px]" style="display: none;">
             <div class="drag-handle h-8 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0">
                 <div class="flex items-center space-x-2">
@@ -967,7 +967,7 @@
 
             const w = oscContainer.node().getBoundingClientRect().width;
             const h = oscContainer.node().getBoundingClientRect().height;
-            const m = {t: 10, r: 40, b: 20, l: 10};
+            const m = {t: 20, r: 50, b: 25, l: 20}; // Adjusted margins for better fit
             const innerW = w - m.l - m.r;
             const innerH = h - m.t - m.b;
 
@@ -1026,6 +1026,95 @@
             }
 
             g.append("path").datum(coinRatios).attr("class", "osc-line-main").attr("d", lineGen);
+
+            // Tooltip Setup - INSIDE G to fix offset
+            const focusMain = g.append("circle").attr("r", 4).attr("fill", "#2de1fc").attr("stroke", "#000").style("opacity", 0);
+            const focusRef = g.append("circle").attr("r", 4).attr("fill", "#fbce03").attr("stroke", "#000").style("opacity", 0);
+            
+            const focusText = g.append("text")
+                .attr("fill", "#fff")
+                .attr("font-size", "10px")
+                .attr("font-family", "monospace")
+                .attr("text-anchor", "middle")
+                .style("opacity", 0)
+                .style("pointer-events", "none"); 
+
+            // Hitbox
+            g.append("rect")
+                .attr("width", innerW)
+                .attr("height", innerH)
+                .attr("fill", "transparent")
+                .on("mousemove", function(event) {
+                    const [mx] = d3.pointer(event);
+                    const dateVal = oscX.invert(mx);
+                    
+                    const bisect = d3.bisector(d => d.date).left;
+                    
+                    // 1. Main Ticker
+                    const idx = bisect(coinRatios, dateVal);
+                    const validIdx = Math.min(Math.max(0, idx), coinRatios.length - 1);
+                    const d = coinRatios[validIdx];
+
+                    let textLines = [];
+                    let xPos = 0;
+
+                    if (d) {
+                        xPos = oscX(d.date);
+                        const yPos = oscY(d.ratio);
+                        focusMain.style("opacity", 1).attr("cx", xPos).attr("cy", yPos);
+                        
+                        const dateStr = d.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+                        const pct = Math.round((d.ratio - 1) * 100);
+                        const sign = pct > 0 ? "+" : "";
+                        textLines.push(`${dateStr} | ${symbol}: ${d.ratio.toFixed(2)}x (${sign}${pct}%)`);
+                    }
+
+                    // 2. Ref Ticker
+                    if (symbol !== currentRefSymbol && refData.length > 0) {
+                         const idxRef = bisect(refData, dateVal);
+                         const validRefIdx = Math.min(Math.max(0, idxRef), refData.length - 1);
+                         const dRef = refData[validRefIdx];
+                         
+                         if (dRef && Math.abs(dRef.date - dateVal) < 86400000) {
+                             const yRef = oscY(dRef.ratio);
+                             focusRef.style("opacity", 1).attr("cx", xPos).attr("cy", yRef);
+                             
+                             const pctRef = Math.round((dRef.ratio - 1) * 100);
+                             const signRef = pctRef > 0 ? "+" : "";
+                             textLines.push(`${currentRefSymbol}: ${dRef.ratio.toFixed(2)}x (${signRef}${pctRef}%)`);
+                         } else {
+                             focusRef.style("opacity", 0);
+                         }
+                    } else {
+                        focusRef.style("opacity", 0);
+                    }
+
+                    focusText.style("opacity", 1).selectAll("tspan").remove();
+                    
+                    let textX = xPos;
+                    let textAnchor = "middle";
+                    if (xPos < 60) { textX = xPos + 10; textAnchor = "start"; }
+                    else if (xPos > innerW - 60) { textX = xPos - 10; textAnchor = "end"; }
+
+                    focusText.attr("x", textX).attr("text-anchor", textAnchor); 
+                    
+                    let textY = oscY(d.ratio) - 15;
+                    if (textY < 20) textY = oscY(d.ratio) + 30; 
+                    
+                    textLines.forEach((line, i) => {
+                        focusText.append("tspan")
+                            .attr("x", textX)
+                            .attr("dy", i === 0 ? 0 : "1.2em")
+                            .text(line);
+                    });
+                    
+                    focusText.attr("y", textY);
+                })
+                .on("mouseout", () => {
+                    focusMain.style("opacity", 0);
+                    focusRef.style("opacity", 0);
+                    focusText.style("opacity", 0);
+                });
         }
 
         function handleLineHover(event, d, isMean = false, index = null) {
