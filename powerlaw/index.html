@@ -251,6 +251,7 @@
             #legend-panel { order: 1; height: auto !important; max-height: 300px; }
             #oscillator-panel { order: 2; height: 400px !important; }
             #scanner-panel { order: 3; height: 500px !important; }
+            #metrics-panel { order: 4; height: 500px !important; }
 
             /* Sembunyikan tombol close di mobile agar tidak tertutup tidak sengaja */
             .draggable-panel button { display: block; }
@@ -315,9 +316,11 @@
             <div class="flex flex-col space-y-1 mr-0 xl:mr-4 w-full xl:w-auto items-center">
                 <div class="text-[clamp(7px,0.6vw,8px)] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
                 <div class="flex space-x-2">
+                    <!-- CONFIG: Tambahkan 'active' di class untuk nyala, hapus untuk mati -->
                     <button id="toggleLegend" class="toggle-btn active" onclick="togglePanel('legend-panel', this)">Legend</button>
-                    <button id="toggleOsc" class="toggle-btn active" onclick="togglePanel('oscillator-panel', this)">Oscillator</button>
-                    <button id="toggleScanner" class="toggle-btn active" onclick="togglePanel('scanner-panel', this)">Scanner</button>
+                    <button id="toggleOsc" class="toggle-btn" onclick="togglePanel('oscillator-panel', this)">Oscillator</button>
+                    <button id="toggleScanner" class="toggle-btn" onclick="togglePanel('scanner-panel', this)">Scanner</button>
+                    <button id="toggleMetrics" class="toggle-btn" onclick="togglePanel('metrics-panel', this)">Metrics</button>
                 </div>
             </div>
 
@@ -340,6 +343,7 @@
         <div id="chart-container" class="w-full h-full"></div>
         <div id="tooltip" class="tooltip"></div>
         
+        <!-- LEGEND: Default Open (style="display: flex;") -->
         <div id="legend-panel" class="draggable-panel top-6 left-10 w-[240px]" style="display: flex;">
             <div class="drag-handle h-8 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative">
                 <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase">Deviation Corridors</span>
@@ -398,7 +402,8 @@
             </div>
         </div>
 
-        <div id="oscillator-panel" class="draggable-panel bottom-10 right-10 w-[840px] h-[440px]" style="display: flex;">
+        <!-- OSCILLATOR: Default Open (style="display: flex;") -->
+        <div id="oscillator-panel" class="draggable-panel bottom-10 right-10 w-[840px] h-[440px]" style="display: none;">
             <div class="drag-handle h-8 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0">
                 <div class="flex items-center space-x-2">
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden xl:inline">Deviation Oscillator Comparison - Main Ticker VS Reference Ticker</span>
@@ -429,7 +434,8 @@
             <div id="oscillator-chart" class="flex-1 w-full relative"></div>
         </div>
 
-        <div id="scanner-panel" class="draggable-panel top-6 right-10 w-[380px] h-[500px]" style="display: flex;">
+        <!-- SCANNER: Default Closed (style="display: none;") -->
+        <div id="scanner-panel" class="draggable-panel top-6 right-10 w-[380px] h-[500px]" style="display: none;">
             <div class="drag-handle h-10 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-4">
                 <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase">Market Alpha Scanner</span>
                 <div class="flex items-center space-x-2">
@@ -454,6 +460,38 @@
             </div>
         </div>
 
+        <!-- NEW: METRICS HISTORY PANEL (Default Closed) -->
+        <div id="metrics-panel" class="draggable-panel bottom-10 left-10 w-[600px] h-[450px]" style="display: none;">
+            <div class="drag-handle h-8 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative">
+                <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase">Regression Evolution (Genesis -> Now)</span>
+                <!-- Added RUN ANALYSIS Button -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="runMetricsAnalysis()" class="text-[8px] bg-emerald-600/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-600 hover:text-black font-bold transition-all uppercase">RUN ANALYSIS</button>
+                    <button onclick="closePanel('metrics-panel', 'toggleMetrics')" class="text-slate-500 hover:text-white text-xs font-bold px-1">✕</button>
+                </div>
+            </div>
+            
+            <!-- Container untuk 2 Chart -->
+            <div class="flex-1 flex flex-col p-2 space-y-2 overflow-hidden bg-black/80">
+                
+                <!-- Chart 1: Slope Evolution -->
+                <div class="flex-1 border border-slate-900 rounded bg-[#050505] relative flex flex-col">
+                    <div class="absolute top-2 left-2 text-[8px] font-bold text-yellow-500 uppercase tracking-wider z-10 bg-black/50 px-1">
+                        Growth Slope (m) History
+                    </div>
+                    <div id="slope-history-chart" class="flex-1 w-full h-full"></div>
+                </div>
+
+                <!-- Chart 2: R² Evolution -->
+                <div class="flex-1 border border-slate-900 rounded bg-[#050505] relative flex flex-col">
+                    <div class="absolute top-2 left-2 text-[8px] font-bold text-emerald-500 uppercase tracking-wider z-10 bg-black/50 px-1">
+                        R² Confidence History
+                    </div>
+                    <div id="r2-history-chart" class="flex-1 w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="w-full text-center text-[9px] text-slate-600 font-mono tracking-[0.3em] pointer-events-none z-30 uppercase py-6 xl:py-4 xl:absolute xl:bottom-3 relative order-last">
             © 2026 Adiyat Coto
         </div>
@@ -468,7 +506,7 @@
 
     <script>
         /**
-         * POWER LAW GENERATOR ENGINE (V6.0 - FINAL)
+         * POWER LAW GENERATOR ENGINE (V6.5 - METRICS VISUAL FIX + TOOLTIP DATE)
          */
 
         const GENESIS_BLOCK_TIMESTAMP = 1230940800; 
@@ -494,7 +532,7 @@
         let refData = [];
         let refMeta = {};
         let currentRefSymbol = "BTC";
-        // NEW: Menyimpan simbol Main Ticker yang terakhir sukses di-load
+        // Menyimpan simbol Main Ticker yang terakhir sukses di-load
         let currentMainSymbol = "BTC"; 
 
         // Scanner Variables
@@ -526,6 +564,9 @@
             if (panel.style.display === 'none') {
                 panel.style.display = 'flex';
                 btn.classList.add('active');
+                // FIX: Trigger re-render when opening a panel (Crucial for Mobile/Hidden tabs)
+                if (panelId === 'metrics-panel') runMetricsAnalysis();
+                if (panelId === 'oscillator-panel' && globalData.length > 0) updateOscillator(globalData, regressionMeta, currentMainSymbol);
             } else {
                 panel.style.display = 'none';
                 btn.classList.remove('active');
@@ -586,7 +627,7 @@
         makeDraggable(document.getElementById("legend-panel"));
         makeDraggable(document.getElementById("oscillator-panel"));
         makeDraggable(document.getElementById("scanner-panel"));
-
+        makeDraggable(document.getElementById("metrics-panel")); // Enable Metrics Drag
 
         // --- DATA & CHART LOGIC ---
 
@@ -653,6 +694,224 @@
             svg.call(zoom);
         }
 
+        // --- NEW: INCREMENTAL OLS FOR METRICS HISTORY ---
+        function calculateMetricsHistory(data) {
+            const history = [];
+            
+            let n = 0;
+            let sumX = 0;   // Sum of ln(days)
+            let sumY = 0;   // Sum of ln(price)
+            let sumXY = 0;
+            let sumXX = 0;
+            let sumYY = 0;
+
+            const startRecord = 90; // Skip first 90 days for stability
+
+            for (let i = 0; i < data.length; i++) {
+                const d = data[i];
+                const lnX = Math.log(d.days);
+                const lnY = Math.log(d.close);
+
+                n++;
+                sumX += lnX;
+                sumY += lnY;
+                sumXY += lnX * lnY;
+                sumXX += lnX * lnX; // Correct OLS
+                sumYY += lnY * lnY;
+
+                if (i >= startRecord) {
+                    const denominator = (n * sumXX - sumX * sumX);
+                    
+                    if (denominator !== 0) {
+                        const slope = (n * sumXY - sumX * sumY) / denominator;
+                        
+                        // Calculate R2
+                        const numeratorR = (n * sumXY - sumX * sumY);
+                        const denomR = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+                        
+                        let r2 = 0;
+                        if (denomR !== 0) {
+                            const r = numeratorR / denomR;
+                            r2 = r * r;
+                        }
+
+                        history.push({
+                            date: d.date,
+                            days: d.days,
+                            slope: slope,
+                            r2: r2
+                        });
+                    }
+                }
+            }
+            return history;
+        }
+
+        // --- NEW: DRAW MINI CHARTS ---
+        function renderMetricsCharts(history) {
+            // Slope uses LINEAR scale with Auto Domain (safe for all ranges)
+            drawMiniChart("#slope-history-chart", history, "slope", "#fbce03", null, false); 
+            
+            // R2 uses Linear + Dynamic Domain
+            drawMiniChart("#r2-history-chart", history, "r2", "#10b981", null, false); 
+        }
+
+        function drawMiniChart(containerId, data, key, color, yDomainOverride = null, useLogScale = false) {
+            const container = d3.select(containerId);
+            container.selectAll("*").remove();
+
+            const rect = container.node().getBoundingClientRect();
+            const m = {t: 15, r: 35, b: 20, l: 30}; // Slightly increased right margin for text
+            const w = rect.width - m.l - m.r;
+            const h = rect.height - m.t - m.b;
+
+            const svg = container.append("svg").attr("width", rect.width).attr("height", rect.height)
+                .append("g").attr("transform", `translate(${m.l},${m.t})`);
+
+            // Filter bad data
+            const cleanData = data.filter(d => d[key] !== null && isFinite(d[key]));
+            
+            if (cleanData.length === 0) {
+                svg.append("text").attr("x", w/2).attr("y", h/2).attr("text-anchor", "middle").attr("fill", "#666").text("No Data");
+                return;
+            }
+
+            // X Axis
+            const x = d3.scaleTime().domain(d3.extent(cleanData, d => d.date)).range([0, w]);
+            
+            // Y Axis Domain Logic - SMART PADDING & SCALING
+            let minVal, maxVal;
+            
+            if (yDomainOverride) {
+                [minVal, maxVal] = yDomainOverride;
+            } else {
+                [minVal, maxVal] = d3.extent(cleanData, d => d[key]);
+            }
+
+            // Fix Flat Line or Micro Variation Case
+            // If variation is too small (micro scale issue), force a minimum visual range
+            if (Math.abs(maxVal - minVal) < 0.0001) {
+                if (minVal === 0) { minVal = 0; maxVal = 1; }
+                else {
+                    const center = minVal;
+                    minVal = center * 0.9;
+                    maxVal = center * 1.1;
+                }
+            }
+
+            // Add Visual Padding (Breathing Room) so lines don't touch edges
+            let y;
+            if (useLogScale && minVal > 0) {
+                // Log Scale Padding
+                const safeMin = Math.max(0.0001, minVal);
+                const logPadding = (Math.log(maxVal) - Math.log(safeMin)) * 0.1; 
+                const pad = logPadding > 0 ? logPadding : 0.1;
+                
+                const finalMin = Math.exp(Math.log(safeMin) - pad);
+                const finalMax = Math.exp(Math.log(maxVal) + pad);
+                
+                y = d3.scaleLog().domain([finalMin, finalMax]).range([h, 0]);
+            } else {
+                // Linear Scale Padding
+                const range = maxVal - minVal;
+                const padding = range * 0.15; // 15% padding top/bottom
+                
+                let bottom = minVal - padding;
+                let top = maxVal + padding;
+                
+                // R2 specific capping (visual only)
+                if (key === 'r2') {
+                    if (top > 1.0) top = 1.005; 
+                    if (bottom < 0) bottom = -0.01; 
+                }
+                
+                y = d3.scaleLinear().domain([bottom, top]).range([h, 0]);
+            }
+
+            // Grid Line Zero/Middle
+            if (key === 'r2') {
+                 const y1 = y(1);
+                 if (y1 >= 0 && y1 <= h) {
+                    svg.append("line").attr("x1",0).attr("x2",w).attr("y1", y1).attr("y2", y1)
+                        .attr("stroke", "#333").attr("stroke-dasharray", "2,2");
+                 }
+            }
+
+            // Line Path
+            const line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d[key]));
+
+            svg.append("path")
+                .datum(cleanData)
+                .attr("fill", "none")
+                .attr("stroke", color)
+                .attr("stroke-width", 1.5)
+                .attr("d", line);
+
+            // Axes
+            svg.append("g").attr("transform", `translate(0,${h})`)
+                .call(d3.axisBottom(x).ticks(4).tickSize(0).tickPadding(5))
+                .attr("class", "axis-label")
+                .select(".domain").remove();
+
+            // Smart Y Axis Formatting
+            // Determine if we need high precision based on range
+            const yRange = y.domain()[1] - y.domain()[0];
+            let formatString = ".2f";
+            if (yRange < 0.1) formatString = ".4f"; // High precision for small ranges
+            if (yRange > 100) formatString = ".0f"; // Low precision for big ranges
+
+            svg.append("g")
+                .call(d3.axisRight(y).ticks(4).tickSize(w).tickFormat(d3.format(formatString))) 
+                .attr("class", "axis-label")
+                .call(g => g.select(".domain").remove())
+                .call(g => g.selectAll(".tick line").attr("stroke", "#1e293b").attr("stroke-dasharray", "2,2").attr("x1", 0).attr("x2", w))
+                .call(g => g.selectAll(".tick text").attr("x", w + 5));
+
+            // Hover
+            const focus = svg.append("circle").attr("r", 3).attr("fill", "#fff").style("opacity", 0);
+            
+            // Modified: Text Group with Background for better visibility
+            const focusText = svg.append("text")
+                .attr("fill", "#fff")
+                .attr("font-size", "9px")
+                .attr("font-family", "monospace")
+                .attr("text-anchor", "middle") 
+                .style("opacity", 0);
+
+            svg.append("rect").attr("width", w).attr("height", h).attr("fill", "transparent")
+                .on("mousemove", function(event) {
+                    const [mx] = d3.pointer(event);
+                    const dateVal = x.invert(mx);
+                    const idx = d3.bisector(d => d.date).left(cleanData, dateVal);
+                    
+                    if (idx < 0 || idx >= cleanData.length) return;
+
+                    // Safety: ensure d exists
+                    const d = cleanData[Math.min(Math.max(0, idx), cleanData.length - 1)]; 
+
+                    if(d) {
+                        focus.style("opacity", 1).attr("cx", x(d.date)).attr("cy", y(d[key]));
+                        
+                        // New Format: Date + Value (Day, Month, Year)
+                        const dateStr = d.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const textContent = `${dateStr}: ${d[key].toFixed(4)}`;
+                        
+                        // Smart positioning logic
+                        let tx = x(d.date);
+                        if (tx < 40) tx = 40; // Prevent left cutoff
+                        if (tx > w - 40) tx = w - 40; // Prevent right cutoff
+
+                        focusText.style("opacity", 1)
+                            .text(textContent)
+                            .attr("x", tx)
+                            .attr("y", y(d[key]) - 10);
+                    }
+                })
+                .on("mouseout", () => { focus.style("opacity", 0); focusText.style("opacity", 0); });
+        }
+
         function calculateRegression(data) {
             const n = data.length;
             let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, sumYY = 0;
@@ -661,7 +920,7 @@
                 const lnY = Math.log(d.close);
                 sumX += lnX; sumY += lnY;
                 sumXY += lnX * lnY;
-                sumXX += lnX * lnX;
+                sumXX += lnX * lnX; // Correct OLS
                 sumYY += lnY * lnY;
             });
             const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
@@ -962,6 +1221,9 @@
                 }
 
                 updateOscillator(globalData, regressionMeta, symbol.toUpperCase());
+
+                // --- NEW: Calculate & Render Metrics Evolution (Auto on load) ---
+                runMetricsAnalysis();
                 
                 renderChart();
 
@@ -975,6 +1237,14 @@
                 d3.select("#loader").style("display", "none"); 
                 isSyncing = false; // Reset Sync Flag
             }
+        }
+
+        // NEW: Dedicated Metrics Trigger
+        function runMetricsAnalysis() {
+            if (!globalData || globalData.length === 0) return;
+            // Recalculate
+            const historyMetrics = calculateMetricsHistory(globalData);
+            renderMetricsCharts(historyMetrics);
         }
 
         async function triggerUpdate() {
@@ -1084,11 +1354,12 @@
             triggerUpdate();
         }
 
-        window.onload = async () => { 
+        window.onload = async () => { 
             setupCanvas();
             makeDraggable(document.getElementById("legend-panel"));
             makeDraggable(document.getElementById("oscillator-panel"));
             makeDraggable(document.getElementById("scanner-panel"));
+            makeDraggable(document.getElementById("metrics-panel"));
             fetchAutocompleteData();
             await loadReference("BTC");
             await analyze("BTC");
@@ -1101,6 +1372,8 @@
                 if (globalData.length > 0) {
                     renderChart(); 
                     updateOscillator(globalData, regressionMeta, currentMainSymbol); 
+                    // FIX MOBILE RESIZE: Re-calculate and render metrics history on window resize
+                    runMetricsAnalysis(); 
                 }
             }
         };
