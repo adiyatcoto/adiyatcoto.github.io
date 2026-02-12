@@ -124,6 +124,7 @@
 
         /* Oscillator Styles */
         .osc-line-main { stroke: #2de1fc; stroke-width: 1.5; fill: none; }
+        .osc-line-ref { stroke: #fbce03; stroke-width: 1.5; stroke-dasharray: 4,2; fill: none; opacity: 0.8; }
         .osc-zero-line { stroke: #475569; stroke-width: 1; stroke-dasharray: 2,2; opacity: 0.5; }
         .osc-band-upper { fill: #ff1e56; fill-opacity: 0.08; }
         .osc-band-lower { fill: #2164f3; fill-opacity: 0.08; }
@@ -150,6 +151,15 @@
         }
         .drag-handle:active {
             cursor: grabbing;
+        }
+
+        /* Utility to hide scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
 
         /* Dynamic Font Size for Windows Toggle Buttons */
@@ -201,7 +211,7 @@
                 display: block !important;
             }
 
-            .axis-label { font-size: 9px !important; }
+            .axis-label { font-size: 8px !important; }
 
             header {
                 height: auto !important;
@@ -284,7 +294,7 @@
             </div>
         </div>
 
-        <!-- Info Box -->
+        <!-- Info Box: Removed 'order-first' so Title comes first on mobile -->
         <div class="header-info-container relative xl:static w-full xl:w-auto flex justify-center pointer-events-none xl:mt-0 xl:col-start-2 xl:row-start-1 mb-2 xl:mb-0">
             <div class="px-6 py-2 bg-[#050505] border border-slate-900 rounded-lg shadow-2xl backdrop-blur-sm max-w-lg text-center">
                 <p class="text-[clamp(9px,0.8vw,10px)] text-slate-400 font-sans leading-relaxed">
@@ -303,6 +313,7 @@
             <div class="flex flex-col space-y-1 mr-0 xl:mr-4 w-full xl:w-auto items-center">
                 <div class="text-[clamp(8px,0.7vw,9px)] text-slate-600 font-bold uppercase tracking-widest text-center">Windows</div>
                 <div class="flex space-x-2">
+                    <!-- Default configuration: Legend Active, others inactive -->
                     <button id="toggleLegend" class="toggle-btn active" onclick="togglePanel('legend-panel', this)">Legend</button>
                     <button id="toggleOsc" class="toggle-btn" onclick="togglePanel('oscillator-panel', this)">Oscillator</button>
                     <button id="toggleScanner" class="toggle-btn" onclick="togglePanel('scanner-panel', this)">Scanner</button>
@@ -333,9 +344,9 @@
         
         <!-- LEGEND: Default Open -->
         <div id="legend-panel" class="draggable-panel top-6 left-10 w-[240px]" style="display: flex; z-index: 50;">
-            <div class="drag-handle h-9 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative">
-                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">Deviation Corridors</span>
-                <button onclick="closePanel('legend-panel', 'toggleLegend')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1 z-50">✕</button>
+            <div class="drag-handle h-9 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative overflow-x-auto no-scrollbar">
+                <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase flex-shrink-0">Deviation Corridors</span>
+                <button onclick="closePanel('legend-panel', 'toggleLegend')" class="text-slate-500 hover:text-white text-xs font-bold px-1 z-50 flex-shrink-0 ml-2">✕</button>
             </div>
             <div class="p-4 flex flex-col space-y-2 overflow-y-auto">
                 <div class="flex items-center justify-between text-[10px] font-bold">
@@ -392,11 +403,11 @@
 
         <!-- OSCILLATOR: Default Closed -->
         <div id="oscillator-panel" class="draggable-panel bottom-10 right-10 w-[840px] h-[440px]" style="display: none; z-index: 50;">
-            <div class="drag-handle h-9 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0">
-                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase hidden sm:inline">Oscillator Comparison</span>
-                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase sm:hidden">Oscillator</span>
+            <div class="drag-handle h-9 border-b border-slate-800 flex items-center justify-between px-3 bg-[#050505] relative flex-shrink-0 overflow-x-auto no-scrollbar">
+                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase hidden sm:inline flex-shrink-0 mr-4">Oscillator Comparison</span>
+                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase sm:hidden flex-shrink-0 mr-4">Oscillator</span>
                 
-                <div class="flex items-center space-x-2 relative">
+                <div class="flex items-center space-x-2 relative flex-shrink-0">
                     <div class="flex items-center bg-[#0a0a0a] border border-slate-800 rounded px-1.5 py-0.5">
                         <span class="text-[8px] text-slate-500 uppercase tracking-widest mr-1">MAIN:</span>
                         <span id="oscMainTickerLabel" class="text-[9px] font-bold text-cyan-400 uppercase">BTC</span>
@@ -409,7 +420,7 @@
                     </div>
                     <button id="oscModeBtn" onclick="toggleOscMode()" class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 hover:bg-slate-700 font-bold transition-all">MODE: %</button>
                     <button id="oscCompareBtn" onclick="runOscillatorAnalysis()" class="text-[9px] bg-emerald-600/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-600 hover:text-black font-bold transition-all uppercase">COMPARE</button>
-                    <button onclick="closePanel('oscillator-panel', 'toggleOsc')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1">✕</button>
+                    <button onclick="closePanel('oscillator-panel', 'toggleOsc')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1 ml-2">✕</button>
                 </div>
             </div>
             <div id="oscillator-chart" class="flex-1 w-full relative"></div>
@@ -417,9 +428,9 @@
 
         <!-- SCANNER: Default Closed -->
         <div id="scanner-panel" class="draggable-panel top-6 right-10 w-[380px] h-[500px]" style="display: none; z-index: 50;">
-            <div class="drag-handle h-10 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-4">
-                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">Market Alpha Scanner</span>
-                <div class="flex items-center space-x-2">
+            <div class="drag-handle h-10 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-4 overflow-x-auto no-scrollbar">
+                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase flex-shrink-0 mr-4">Market Alpha Scanner</span>
+                <div class="flex items-center space-x-2 flex-shrink-0">
                     <button onclick="runScanner()" class="text-[9px] bg-yellow-600/10 text-yellow-500 px-3 py-1 rounded border border-yellow-500/30 hover:bg-yellow-600 hover:text-black font-bold transition-all">SCAN MARKET (100)</button>
                     <button onclick="closePanel('scanner-panel', 'toggleScanner')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1">✕</button>
                 </div>
@@ -443,9 +454,9 @@
 
         <!-- METRICS HISTORY PANEL (Default Closed) -->
         <div id="metrics-panel" class="draggable-panel bottom-10 left-10 w-[600px] h-[450px]" style="display: none; z-index: 50;">
-            <div class="drag-handle h-9 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative">
-                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">Regression Evolution</span>
-                <div class="flex items-center space-x-2 relative">
+            <div class="drag-handle h-9 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative overflow-x-auto no-scrollbar">
+                <span class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase flex-shrink-0 mr-4">Regression Evolution</span>
+                <div class="flex items-center space-x-2 relative flex-shrink-0">
                     <div class="flex items-center bg-[#0a0a0a] border border-slate-800 rounded px-1.5 py-0.5">
                         <span class="text-[8px] text-slate-500 uppercase tracking-widest mr-1">MAIN:</span>
                         <span id="metricsMainTickerLabel" class="text-[9px] font-bold text-cyan-400 uppercase">BTC</span>
@@ -457,7 +468,7 @@
                          <input id="metricsCompareInput" type="text" value="" class="bg-transparent border-none text-[9px] font-bold text-yellow-500 w-28 focus:outline-none uppercase text-center" placeholder="ETH, SOL...">
                     </div>
                     <button id="metricsCompareBtn" onclick="runMetricsAnalysis()" class="text-[9px] bg-emerald-600/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-600 hover:text-black font-bold transition-all uppercase">COMPARE</button>
-                    <button onclick="closePanel('metrics-panel', 'toggleMetrics')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1">✕</button>
+                    <button onclick="closePanel('metrics-panel', 'toggleMetrics')" class="text-slate-500 hover:text-white text-[13px] font-bold px-1 ml-2">✕</button>
                 </div>
             </div>
             
@@ -491,7 +502,7 @@
 
     <script>
         /**
-         * POWER LAW GENERATOR ENGINE (V8.6 - LAYOUT FIX & OVERALL SIZE BOOST)
+         * POWER LAW GENERATOR ENGINE (V8.8 - FINAL ORDER & LABELS FIX)
          */
 
         const GENESIS_BLOCK_TIMESTAMP = 1230940800; 
@@ -878,13 +889,14 @@
                         if (tx < 50) tx = 50; 
                         if (tx > w - 50) tx = w - 50; 
 
-                        const blockHeight = (activeLines.length + 1) * 13; // slightly more height per line
+                        const blockHeight = (activeLines.length + 1) * 12;
                         let startY = maxVisualY - blockHeight - 5;
                         if (startY < 10) startY = minVisualY + 15;
                         if (startY + blockHeight > h) startY = 15;
 
                         focusText.style("opacity", 1).attr("x", tx).attr("y", startY);
                         focusText.selectAll("tspan").remove();
+                        
                         focusText.append("tspan").attr("x", tx).attr("dy", 0).attr("fill", "#a1a1aa").text(dateStr);
                         
                         activeLines.forEach((line) => {
@@ -999,7 +1011,7 @@
                 focusCircles.push(g.append("circle").attr("r", 4).attr("fill", color).attr("stroke", "#000").style("opacity", 0));
             });
 
-            const focusText = g.append("text").attr("font-size", "11px").attr("font-family", "monospace").attr("text-anchor", "middle").style("opacity", 0).style("pointer-events", "none"); 
+            const focusText = g.append("text").attr("font-size", "10px").attr("font-family", "monospace").attr("text-anchor", "middle").style("opacity", 0).style("pointer-events", "none"); 
 
             g.append("rect").attr("width", innerW).attr("height", innerH).attr("fill", "transparent")
                 .on("mousemove", function(event) {
@@ -1045,7 +1057,7 @@
                         if (tx < 60) tx = 60;
                         if (tx > innerW - 60) tx = innerW - 60;
 
-                        const blockHeight = (activeLines.length + 1) * 13;
+                        const blockHeight = (activeLines.length + 1) * 12;
                         let startY = yPosForText - 15;
                         
                         // Smart Offset
