@@ -122,6 +122,7 @@
 
         /* Oscillator Styles */
         .osc-line-main { stroke: #2de1fc; stroke-width: 1.5; fill: none; }
+        .osc-line-ref { stroke: #fbce03; stroke-width: 1.5; stroke-dasharray: 4,2; fill: none; opacity: 0.8; }
         .osc-zero-line { stroke: #475569; stroke-width: 1; stroke-dasharray: 2,2; opacity: 0.5; }
         .osc-band-upper { fill: #ff1e56; fill-opacity: 0.08; }
         .osc-band-lower { fill: #2164f3; fill-opacity: 0.08; }
@@ -400,6 +401,8 @@
                          <span class="text-[7px] text-slate-500 uppercase tracking-widest mr-1 hidden sm:inline-block">VS (COMMA SEPARATED):</span>
                          <input id="oscCompareInput" type="text" value="" class="bg-transparent border-none text-[8px] font-bold text-yellow-500 w-24 focus:outline-none uppercase text-center" placeholder="ETH, SOL...">
                     </div>
+                    <!-- FIX: Removed uppercase class from this button to prevent σ from becoming Σ -->
+                    <button id="oscModeBtn" onclick="toggleOscMode()" class="text-[8px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 hover:bg-slate-700 font-bold transition-all">MODE: %</button>
                     <button id="oscCompareBtn" onclick="runOscillatorAnalysis()" class="text-[8px] bg-emerald-600/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-600 hover:text-black font-bold transition-all uppercase">COMPARE</button>
                     <button onclick="closePanel('oscillator-panel', 'toggleOsc')" class="text-slate-500 hover:text-white text-xs font-bold px-1">✕</button>
                 </div>
@@ -437,7 +440,6 @@
         <div id="metrics-panel" class="draggable-panel bottom-10 left-10 w-[600px] h-[450px]" style="display: none;">
             <div class="drag-handle h-8 bg-[#050505] border-b border-slate-800 flex items-center justify-between px-3 relative">
                 <span class="text-[9px] font-black text-slate-500 tracking-[0.2em] uppercase">Regression Evolution</span>
-                <!-- Multi-Ticker Input & Compare Button inline -->
                 <div class="flex items-center space-x-2 relative">
                     <div class="flex items-center bg-[#0a0a0a] border border-slate-800 rounded px-1.5 py-0.5">
                         <span class="text-[7px] text-slate-500 uppercase tracking-widest mr-1">MAIN:</span>
@@ -483,14 +485,13 @@
 
     <script>
         /**
-         * POWER LAW GENERATOR ENGINE (V7.5 - FINAL BUG FIX)
+         * POWER LAW GENERATOR ENGINE (V8.1 - OSCILLATOR SIGMA UPPERCASE FIX)
          */
 
         const GENESIS_BLOCK_TIMESTAMP = 1230940800; 
         const SECONDS_IN_DAY = 86400;
         const HARDCODED_API_KEY = "kucd5ccf2da23b5b008ee549b281c29ec08fd342b5a6bc99e206dfa4bbee162431";
         
-        // Colors for multi-ticker comparison (Cyan is primary)
         const METRIC_COLORS = ['#2de1fc', '#fbce03', '#ff1e56', '#10b981', '#a855f7', '#f97316'];
 
         const container = d3.select("#chart-container");
@@ -509,6 +510,10 @@
         let currentMainSymbol = "BTC"; 
         let scannerData = [];
         let sortKey = 'score', sortDir = -1;
+        
+        // Global state for Oscillator Mode and Cache
+        let oscillatorMode = 'PERCENT'; // 'PERCENT' or 'SIGMA'
+        let lastOscillatorResults = [];
 
         function getMargin() {
             return window.innerWidth < 1280 
@@ -544,6 +549,17 @@
         function closePanel(panelId, btnId) {
             document.getElementById(panelId).style.display = 'none';
             document.getElementById(btnId).classList.remove('active');
+        }
+
+        function toggleOscMode() {
+            oscillatorMode = oscillatorMode === 'PERCENT' ? 'SIGMA' : 'PERCENT';
+            const btn = document.getElementById('oscModeBtn');
+            btn.innerText = oscillatorMode === 'PERCENT' ? 'MODE: %' : 'MODE: σ';
+            btn.style.color = oscillatorMode === 'PERCENT' ? '#cbd5e1' : '#fbce03'; 
+            
+            if (lastOscillatorResults.length > 0 && document.getElementById('oscillator-panel').style.display !== 'none') {
+                renderOscillatorCharts(lastOscillatorResults);
+            }
         }
 
         function makeDraggable(elmnt) {
@@ -634,12 +650,11 @@
             if (e.target !== tickerInput) autocompleteList.style.display = 'none';
         });
 
-        // Add Enter key support for main ticker input
         tickerInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                this.blur(); // dismiss keyboard/autocomplete
-                autocompleteList.style.display = 'none'; // Force hide dropdown
+                this.blur(); 
+                autocompleteList.style.display = 'none'; 
                 triggerUpdate();
             }
         });
@@ -672,18 +687,12 @@
             svg.call(zoom);
         }
 
-        // Helper function for main tooltip smart positioning
         function updateMainTooltipPosition(e) {
             const mainRect = document.querySelector('main').getBoundingClientRect();
-            
-            // Calculate absolute position inside the <main> container (which is position:relative)
             let xPos = e.clientX - mainRect.left + 15;
             let yPos = e.clientY - mainRect.top + 15;
-            
-            // Boundary detection relative to <main>
             if (xPos + 220 > mainRect.width) xPos = (e.clientX - mainRect.left) - 235;
             if (yPos + 100 > mainRect.height) yPos = (e.clientY - mainRect.top) - 115;
-            
             tooltip.style("left", xPos + "px").style("top", yPos + "px");
         }
 
@@ -853,7 +862,6 @@
                 .on("mouseout", () => { focusText.style("opacity", 0); focusCircles.forEach(c => c.style("opacity", 0)); });
         }
 
-        // --- NEW: MULTI-LINE OSCILLATOR RENDERER ---
         function renderOscillatorCharts(multiData) {
             const oscContainer = d3.select("#oscillator-chart");
             oscContainer.selectAll("*").remove();
@@ -869,47 +877,71 @@
             const svg = oscContainer.append("svg").attr("width", w).attr("height", h);
             const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
 
-            let allValues = [];
             let allDates = [];
-            
-            // To maintain visual stability, calculate limits strictly based on main ticker (index 0)
-            const mainSeries = multiData[0];
-            mainSeries.ratios.forEach(d => {
-                allValues.push(d.ratio);
-                allDates.push(d.date);
-            });
-
-            const rPlus2 = Math.exp(2 * mainSeries.stdDev);
-            const rMinus2 = Math.exp(-2 * mainSeries.stdDev);
-
-            let maxRatio = d3.max(allValues);
-            let minRatio = d3.min(allValues);
-            maxRatio = Math.max(maxRatio, rPlus2);
-            minRatio = Math.min(minRatio, rMinus2);
-            const boundary = Math.max(maxRatio, 1/minRatio) * 1.1; 
-            
-            const oscY = d3.scaleLog().domain([1/boundary, boundary]).range([innerH, 0]);
-            
-            // Re-extend dates just in case comparisons are wider
             multiData.forEach(s => s.ratios.forEach(d => allDates.push(d.date)));
             const oscX = d3.scaleTime().domain(d3.extent(allDates)).range([0, innerW]);
 
-            g.append("rect").attr("x", 0).attr("width", innerW).attr("y", 0).attr("height", Math.max(0, oscY(rPlus2))).attr("class", "osc-band-upper");
-            g.append("rect").attr("x", 0).attr("width", innerW).attr("y", oscY(rMinus2)).attr("height", Math.max(0, innerH - oscY(rMinus2))).attr("class", "osc-band-lower");
-            g.append("line").attr("x1", 0).attr("x2", innerW).attr("y1", oscY(1)).attr("y2", oscY(1)).attr("class", "osc-zero-line");
-            
-            g.append("text").attr("x", innerW + 4).attr("y", oscY(rPlus2) + 3).text("+2σ").attr("class", "osc-label-sigma");
-            g.append("text").attr("x", innerW + 4).attr("y", oscY(rMinus2) + 3).text("-2σ").attr("class", "osc-label-sigma");
+            let oscY, yBandUpper, yBandLower, yZero, tickVals, yFormat;
+            const mainSeries = multiData[0]; // To derive bands
 
-            const yAxisOsc = d3.axisRight(oscY).tickValues([boundary, rPlus2, 1, rMinus2, 1/boundary]).tickSize(innerW)
-                .tickFormat(d => { const pct = (d - 1) * 100; return (pct > 0 ? "+" : "") + Math.round(pct) + "%"; });
+            if (oscillatorMode === 'PERCENT') {
+                let allValues = [];
+                mainSeries.ratios.forEach(d => allValues.push(d.ratio));
+                
+                const rPlus2 = Math.exp(2 * mainSeries.stdDev);
+                const rMinus2 = Math.exp(-2 * mainSeries.stdDev);
+
+                let maxRatio = d3.max(allValues);
+                let minRatio = d3.min(allValues);
+                maxRatio = Math.max(maxRatio, rPlus2);
+                minRatio = Math.min(minRatio, rMinus2);
+                const boundary = Math.max(maxRatio, 1/minRatio) * 1.1; 
+                
+                oscY = d3.scaleLog().domain([1/boundary, boundary]).range([innerH, 0]);
+                yBandUpper = oscY(rPlus2);
+                yBandLower = oscY(rMinus2);
+                yZero = oscY(1);
+                tickVals = [boundary, rPlus2, 1, rMinus2, 1/boundary];
+                yFormat = d => { const pct = (d - 1) * 100; return (pct > 0 ? "+" : "") + Math.round(pct) + "%"; };
+            } else {
+                let allSigmas = [];
+                multiData.forEach(series => {
+                    series.ratios.forEach(d => {
+                        const sig = Math.log(d.ratio) / series.stdDev;
+                        d.sigma = sig; // Cache sigma computation
+                        allSigmas.push(sig);
+                    });
+                });
+                
+                let maxSigma = d3.max(allSigmas);
+                let minSigma = d3.min(allSigmas);
+                maxSigma = Math.max(maxSigma, 2);
+                minSigma = Math.min(minSigma, -2);
+                const boundSigma = Math.max(maxSigma, Math.abs(minSigma)) * 1.1;
+
+                oscY = d3.scaleLinear().domain([-boundSigma, boundSigma]).range([innerH, 0]);
+                yBandUpper = oscY(2);
+                yBandLower = oscY(-2);
+                yZero = oscY(0);
+                tickVals = [boundSigma, 2, 0, -2, -boundSigma];
+                yFormat = d => (d > 0 ? "+" : "") + d.toFixed(1) + "σ";
+            }
+
+            g.append("rect").attr("x", 0).attr("width", innerW).attr("y", 0).attr("height", Math.max(0, yBandUpper)).attr("class", "osc-band-upper");
+            g.append("rect").attr("x", 0).attr("width", innerW).attr("y", yBandLower).attr("height", Math.max(0, innerH - yBandLower)).attr("class", "osc-band-lower");
+            g.append("line").attr("x1", 0).attr("x2", innerW).attr("y1", yZero).attr("y2", yZero).attr("class", "osc-zero-line");
+            
+            g.append("text").attr("x", innerW + 4).attr("y", yBandUpper + 3).text("+2σ").attr("class", "osc-label-sigma");
+            g.append("text").attr("x", innerW + 4).attr("y", yBandLower + 3).text("-2σ").attr("class", "osc-label-sigma");
+
+            const yAxisOsc = d3.axisRight(oscY).tickValues(tickVals).tickSize(innerW).tickFormat(yFormat);
 
             g.append("g").attr("class", "grid axis-label").call(yAxisOsc).call(g => g.select(".domain").remove()).call(g => g.selectAll(".tick line").attr("stroke-opacity", 0.1).attr("x1", -innerW));
             
             const xAxisOsc = d3.axisBottom(oscX).ticks(4);
             g.append("g").attr("class", "axis-label").attr("transform", `translate(0,${innerH})`).call(xAxisOsc).select(".domain").remove();
 
-            const lineGen = d3.line().x(d => oscX(d.date)).y(d => oscY(d.ratio));
+            const lineGen = d3.line().x(d => oscX(d.date)).y(d => oscillatorMode === 'PERCENT' ? oscY(d.ratio) : oscY(d.sigma));
             const focusCircles = [];
 
             // Draw reverse so main is on top visually
@@ -947,12 +979,21 @@
 
                         if (d && Math.abs(d.date - dateVal) < 86400000 * 3) {
                             const color = METRIC_COLORS[i % METRIC_COLORS.length];
-                            const currentY = oscY(d.ratio);
+                            const currentY = oscillatorMode === 'PERCENT' ? oscY(d.ratio) : oscY(d.sigma);
                             focusCircles[i].style("opacity", 1).attr("cx", oscX(d.date)).attr("cy", currentY);
                             
-                            const pct = Math.round((d.ratio - 1) * 100);
-                            const sign = pct > 0 ? "+" : "";
-                            activeLines.push({ text: `${series.symbol}: ${d.ratio.toFixed(2)}x (${sign}${pct}%)`, color: color, yPos: currentY });
+                            let lineText;
+                            if (oscillatorMode === 'PERCENT') {
+                                const pct = Math.round((d.ratio - 1) * 100);
+                                const sign = pct > 0 ? "+" : "";
+                                lineText = `${series.symbol}: ${d.ratio.toFixed(2)}x (${sign}${pct}%)`;
+                            } else {
+                                const sig = d.sigma;
+                                const sign = sig > 0 ? "+" : "";
+                                lineText = `${series.symbol}: ${sign}${sig.toFixed(2)}σ`;
+                            }
+                            
+                            activeLines.push({ text: lineText, color: color, yPos: currentY });
 
                             if (yPosForText === null || currentY < yPosForText) yPosForText = currentY; 
                         } else {
@@ -1253,6 +1294,7 @@
                         }
                     }
                 }
+                lastOscillatorResults = results; // Cache for mode switching
                 renderOscillatorCharts(results);
             } catch (err) {
                 console.error(err);
