@@ -21,16 +21,28 @@
             --bg-gradient-end: #c3cfe2;
         }
 
-        /* Print Specific Styles - Browsers */
+        /* Print Specific Styles - Long Page (Non-A4) */
         @media print {
-            @page { margin: 0; }
-            body { 
-                margin: 0; 
-                padding: 0; 
+            html, body { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                background: white !important; 
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                width: 800px !important; /* Memaksa body pas dengan kertas 800px */
             }
-            .no-print { display: none !important; }
+            .container {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 40px 50px !important;
+                width: 800px !important; /* Sinkron dengan body dan kertas */
+                max-width: 800px !important;
+                box-sizing: border-box !important;
+                border-radius: 0 !important;
+            }
+            .no-print { 
+                display: none !important; 
+            }
         }
 
         /* PDF Generation Specific Styles (Applied by JS) */
@@ -631,6 +643,47 @@
             document.getElementById('themeOptions').classList.remove('active');
         }
 
+        // --- NATIVE BROWSER PRINT FIX (Ctrl+P) ---
+        // Memaksa browser mencetak dalam 1 halaman panjang tanpa terpotong
+        window.addEventListener('beforeprint', () => {
+            const container = document.getElementById('resumeContent');
+            
+            // Terapkan paksa style layaknya di dalam kertas PDF agar perhitungan akurat 100%
+            container.style.width = '800px';
+            container.style.maxWidth = '800px';
+            container.style.padding = '40px 50px';
+            container.style.boxSizing = 'border-box';
+            
+            // Ukur persis tinggi dari elemen utama
+            const totalHeight = container.offsetHeight;
+            
+            let printStyle = document.getElementById('dynamic-print-size');
+            if (!printStyle) {
+                printStyle = document.createElement('style');
+                printStyle.id = 'dynamic-print-size';
+                document.head.appendChild(printStyle);
+            }
+            
+            // Atur ukuran @page sama persis dengan lebar 800px dan tinggi offsetHeight
+            // Tidak perlu ada margin/penambahan lagi karena padding bawah sudah ada di dalam offsetHeight
+            printStyle.innerHTML = `@page { size: 800px ${totalHeight}px !important; margin: 0 !important; }`;
+        });
+
+        window.addEventListener('afterprint', () => {
+            // Bersihkan pengaturan setelah dialog print ditutup
+            const container = document.getElementById('resumeContent');
+            container.style.width = '';
+            container.style.maxWidth = '';
+            container.style.padding = '';
+            container.style.boxSizing = '';
+            
+            const printStyle = document.getElementById('dynamic-print-size');
+            if (printStyle) {
+                printStyle.remove();
+            }
+        });
+
+        // --- EXPORT PDF BUTTON ---
         function downloadPDF() {
             const element = document.getElementById('resumeContent');
             const button = document.getElementById('downloadBtn');
