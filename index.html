@@ -20,20 +20,26 @@
     }
 
     :root {
-        --ink: #080808;
+        --ink: #0f172a; /* Richer dark slate for text */
         --paper: #fcfcfc;
-        --dim: #707070;
+        --dim: #64748b;
         --vital: #3B82F6; 
         --border: rgba(0,0,0,0.06);
         --nav-bg: rgba(252, 252, 252, 0.7);
+        
+        /* Light Mode Container Depth (Pearl & Platinum) */
+        --canvas-bg: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
     }
 
     [data-theme="dark"] {
-        --ink: #fcfcfc;
+        --ink: #f8fafc; /* Crisp pearl white for text */
         --paper: #050505;
-        --dim: #888888;
+        --dim: #94a3b8;
         --border: rgba(255,255,255,0.08);
         --nav-bg: rgba(5, 5, 5, 0.8);
+        
+        /* Dark Mode Container Depth (Obsidian & Abyssal) */
+        --canvas-bg: radial-gradient(circle at top right, #0a0f1a 0%, #020408 100%);
     }
 
     body {
@@ -50,6 +56,51 @@
         text-transform: uppercase;
         letter-spacing: -0.04em;
     }
+
+    /* --- DUAL LAYER CANVAS LOGIC (LAKE + SILK) --- */
+    .canvas-container {
+        position: relative;
+        overflow: hidden;
+        background: var(--canvas-bg);
+        transition: background 0.6s ease;
+    }
+
+    /* Base Water Layer: Heavily blurred for deep liquid feel */
+    .generative-canvas-base {
+        position: absolute;
+        top: -100px; left: -100px;
+        width: calc(100% + 200px); 
+        height: calc(100% + 200px);
+        z-index: 0;
+        pointer-events: none; 
+        filter: blur(60px) saturate(1.1); 
+        transform: translate3d(0,0,0);
+        opacity: 0.8;
+    }
+
+    /* Silk Threads Layer: Blurred & Saturated for Glowing Vibrant Ribbon Effect */
+    .generative-canvas-silk {
+        position: absolute;
+        /* Oversized to hide hard clipped edges from the heavy blur */
+        top: -40px; left: -40px;
+        width: calc(100% + 80px); 
+        height: calc(100% + 80px);
+        z-index: 1;
+        pointer-events: none;
+        transform: translate3d(0,0,0);
+        filter: blur(8px) saturate(2); /* Beautiful vibrant glow */
+        opacity: 0.95;
+    }
+
+    /* Wrap content to stay above both canvas layers */
+    .hero-content-wrapper, .footer-content-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    /* ------------------------------------------- */
 
     /* Minimalist Navigation with Blur */
     .nav {
@@ -157,7 +208,6 @@
         flex-direction: column;
         justify-content: center;
         padding: 2.5rem;
-        max-width: 1400px;
         margin: 0 auto;
     }
 
@@ -283,7 +333,10 @@
     .social-links {
         display: flex;
         justify-content: center;
-        gap: 3rem;
+        flex-wrap: wrap; 
+        gap: 2rem 3rem; 
+        max-width: 900px;
+        margin: 0 auto;
     }
 
     .social-links a {
@@ -291,6 +344,19 @@
         text-decoration: none;
         font-weight: 600;
         font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem; 
+        transition: color 0.4s ease;
+    }
+
+    .social-links a:hover {
+        color: var(--vital);
+    }
+
+    .social-links a i {
+        width: 18px;
+        height: 18px;
     }
 
     @media (max-width: 968px) {
@@ -332,10 +398,18 @@
     <a href="#contact" onclick="toggleMenu()">Contact</a>
 </div>
 
-<section id="home" class="hero">
-    <div class="hero-label">Welcome.</div>
-    <h1>Order in chaos.<br>Rhythm in noise.</h1>
-    <p>I’ve spent the last seven years making sure things work when they shouldn't, and the last decade wondering why the world moves in waves. I spend my days bridging gaps for others and my nights mapping the hidden lines of the market.</p>
+<!-- TOP GENERATIVE CANVAS SECTION -->
+<section id="home" class="hero canvas-container">
+    <!-- Layer 1: Base Water -->
+    <canvas id="canvas-hero-base" class="generative-canvas-base"></canvas>
+    <!-- Layer 2: Silk Glowing Strings -->
+    <canvas id="canvas-hero-silk" class="generative-canvas-silk"></canvas>
+    
+    <div class="hero-content-wrapper">
+        <div class="hero-label">Welcome.</div>
+        <h1>Order in chaos.<br>Rhythm in noise.</h1>
+        <p>I’ve spent the last seven years making sure things work when they shouldn't, and the last decade wondering why the world moves in waves. I spend my days bridging gaps for others and my nights mapping the hidden lines of the market.</p>
+    </div>
 </section>
 
 <section id="person" class="section" style="border-top: 1px solid var(--border);">
@@ -433,17 +507,17 @@
             <p class="card-summary">A simple, high-fidelity window into the core rhythm of the crypto market. Just a clean way to track what’s actually happening.</p>
         </a>
 
-        <!-- Pine Script -->
-        <a href="/pine_script/" class="card" target="_blank">
-            <span class="card-meta">Shared Logic</span>
-            <h3 class="card-title">Pine Script Collections</h3>
-            <p class="card-summary">A gathering of the scripts and indicators I’ve built over the years. It’s where I share the logic I use to see the market more clearly.</p>
+        <!-- Power Law -->
+        <a href="/powerlaw/" class="card" target="_blank">
+            <span class="card-meta">Structural Mapping</span>
+            <h3 class="card-title">Power Law Generator</h3>
+            <p class="card-summary">An engine built to map exponential network growth into a readable linear trend. I use this to automatically calculate fair value baselines and statistical deviations across assets, separating the market's noise from its actual trajectory.</p>
         </a>
 
         <!-- RSA Theory -->
         <a href="/rsa/" class="card" target="_blank">
             <span class="card-meta">Theoretical Architecture</span>
-            <h3 class="card-title">Symmetrical Design</h3>
+            <h3 class="card-title">Reflexive Symmetrical Architecture (RSA) Whitepaper</h3>
             <p class="card-summary">A whitepaper and interactive demo where I explore the geometry of trading. It’s my foundational thinking on spatial mapping.</p>
         </a>
 
@@ -461,13 +535,6 @@
             <p class="card-summary">A tool I developed in Pine Script to help identify when the market is shifting its structure across different timeframes.</p>
         </a>
 
-        <!-- Digital Shelf -->
-        <a href="/books/" class="card" target="_blank">
-            <span class="card-meta">References</span>
-            <h3 class="card-title">The Digital Shelf</h3>
-            <p class="card-summary">A collection of the books I love.</p>
-        </a>
-
         <!-- PULZR -->
         <a href="/pulzr/" class="card" target="_blank">
             <span class="card-meta">Generative Visuals</span>
@@ -482,6 +549,20 @@
             <p class="card-summary">An interactive artwork visualizing time as a series of concentric, nested rings—from millenniums down to the pulse of a second.</p>
         </a>
 
+        <!-- Digital Shelf -->
+        <a href="/books/" class="card" target="_blank">
+            <span class="card-meta">References</span>
+            <h3 class="card-title">The Digital Shelf</h3>
+            <p class="card-summary">A collection of the books I love.</p>
+        </a>
+
+        <!-- Pine Script -->
+        <a href="/pine_script/" class="card" target="_blank">
+            <span class="card-meta">Shared Logic</span>
+            <h3 class="card-title">Pine Script Collections</h3>
+            <p class="card-summary">A gathering of the scripts and indicators I’ve built over the years. It’s where I share the logic I use to see the market more clearly.</p>
+        </a>
+
         <!-- Voice from Zero Point -->
         <a href="https://www.youtube.com/@VoicefromZeroPoint" class="card" target="_blank">
             <span class="card-meta">Personal Reflections</span>
@@ -491,22 +572,219 @@
     </div>
 </section>
 
-<section id="contact" class="footer" style="border-top: 1px solid var(--border);">
-    <div class="hero-label">Want to connect?</div>
-    <a href="mailto:coto.adiyat@gmail.com" class="contact-link">Drop me a line.</a>
-    
-    <div class="social-links">
-        <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank">LinkedIn</a>
-        <a href="https://medium.com/@coto.adiyat" target="_blank">Medium</a>
-        <a href="https://www.instagram.com/luxinextinguibilitatis/" target="_blank">Instagram</a>
-    </div>
+<!-- BOTTOM GENERATIVE CANVAS SECTION -->
+<section id="contact" class="footer canvas-container" style="border-top: 1px solid var(--border);">
+    <canvas id="canvas-footer-base" class="generative-canvas-base"></canvas>
+    <canvas id="canvas-footer-silk" class="generative-canvas-silk"></canvas>
 
-    <p style="margin-top: 6rem; color: var(--dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;">
-        © 2026 Adiyat Coto
-    </p>
+    <div class="footer-content-wrapper">
+        <div class="hero-label">Want to connect?</div>
+        <a href="mailto:coto.adiyat@gmail.com" class="contact-link">Click to drop me an email.</a>
+        
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank">
+                <i data-lucide="linkedin"></i> LinkedIn
+            </a>
+            <a href="https://medium.com/@coto.adiyat" target="_blank">
+                <i data-lucide="feather"></i> Medium
+            </a>
+            <a href="https://www.instagram.com/luxinextinguibilitatis/" target="_blank">
+                <i data-lucide="instagram"></i> Instagram
+            </a>
+            <a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm?si=f5e027dc5242417d" target="_blank">
+                <i data-lucide="podcast"></i> Spotify Podcast
+            </a>
+            <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank">
+                <i data-lucide="candlestick-chart"></i> TradingView
+            </a>
+            <a href="https://orcid.org/0009-0006-1914-0849" target="_blank">
+                <i data-lucide="graduation-cap"></i> ORCID
+            </a>
+            <a href="https://about.me/adiyatcoto" target="_blank">
+                <i data-lucide="user-square"></i> About.me
+            </a>
+            <a href="https://cotoadiyat.gumroad.com/" target="_blank">
+                <i data-lucide="store"></i> Gumroad
+            </a>
+        </div>
+
+        <p style="margin-top: 6rem; color: var(--dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;">
+            © 2026 Adiyat Coto
+        </p>
+    </div>
 </section>
 
 <script>
+    /* ======================================================================
+       Vibrant Glow Liquid & Silk Simulation (Perfect Smooth Magnetic Pull)
+       ====================================================================== */
+    class ElegantLiquidSilk {
+        constructor(sectionId, baseCanvasId, silkCanvasId) {
+            this.section = document.getElementById(sectionId);
+            this.baseCanvas = document.getElementById(baseCanvasId);
+            this.silkCanvas = document.getElementById(silkCanvasId);
+            
+            if (!this.baseCanvas || !this.silkCanvas) return;
+            
+            this.ctxBase = this.baseCanvas.getContext('2d');
+            this.ctxSilk = this.silkCanvas.getContext('2d');
+            this.time = 0;
+            
+            // Interaction State
+            this.mouse = { x: 0, y: 0, influence: 0 };
+            this.targetMouse = { x: 0, y: 0, influence: 0 };
+            
+            this.section.addEventListener('mousemove', (e) => {
+                const rect = this.silkCanvas.getBoundingClientRect();
+                this.targetMouse.x = e.clientX - rect.left;
+                this.targetMouse.y = e.clientY - rect.top;
+                this.targetMouse.influence = 1; 
+            });
+            
+            this.section.addEventListener('mouseleave', () => {
+                // Smoothly fade out the influence when mouse leaves
+                this.targetMouse.influence = 0; 
+            });
+
+            window.addEventListener('resize', () => this.resize());
+            this.resize();
+            
+            this.mouse.x = this.width / 2;
+            this.mouse.y = this.height / 2;
+            this.targetMouse.x = this.width / 2;
+            this.targetMouse.y = this.height / 2;
+            
+            this.animate();
+        }
+
+        resize() {
+            // Base layer is larger to hide CSS blur edges
+            this.baseWidth = this.baseCanvas.width = this.section.offsetWidth + 200;
+            this.baseHeight = this.baseCanvas.height = this.section.offsetHeight + 200;
+            
+            // Silk layer maps to its expanded CSS bounds
+            this.width = this.silkCanvas.width = this.section.offsetWidth + 80;
+            this.height = this.silkCanvas.height = this.section.offsetHeight + 80;
+        }
+
+        drawLakeWater(isDark) {
+            this.ctxBase.clearRect(0, 0, this.baseWidth, this.baseHeight);
+            
+            const baseLayers = [
+                { yOff: -0.1, amp: 200, freq: 0.0015, speed: 0.003, colorD: 'rgba(5, 10, 20, 0.95)', colorL: 'rgba(203, 213, 225, 0.6)' },
+                { yOff: 0.3, amp: 250, freq: 0.001, speed: -0.002, colorD: 'rgba(15, 23, 42, 0.8)', colorL: 'rgba(226, 232, 240, 0.7)' },
+                { yOff: 0.6, amp: 180, freq: 0.002, speed: 0.004, colorD: 'rgba(30, 27, 75, 0.6)', colorL: 'rgba(241, 245, 249, 0.8)' }
+            ];
+
+            this.ctxBase.globalCompositeOperation = 'source-over';
+
+            baseLayers.forEach((layer) => {
+                this.ctxBase.beginPath();
+                this.ctxBase.moveTo(0, this.baseHeight);
+                this.ctxBase.lineTo(0, this.baseHeight * layer.yOff);
+
+                for (let x = 0; x <= this.baseWidth; x += 40) {
+                    let y = this.baseHeight * layer.yOff 
+                          + Math.sin(x * layer.freq + this.time * layer.speed) * layer.amp;
+
+                    let dx = x - (this.mouse.x + 60);
+                    let dy = y - (this.mouse.y + 60);
+                    let distSq = dx*dx + dy*dy;
+                    
+                    let force = Math.exp(-distSq / 80000) * this.mouse.influence;
+                    y += Math.sin(Math.sqrt(distSq) * 0.015 - this.time * 0.03) * force * 60; 
+
+                    this.ctxBase.lineTo(x, y);
+                }
+
+                this.ctxBase.lineTo(this.baseWidth, this.baseHeight);
+                this.ctxBase.closePath();
+                this.ctxBase.fillStyle = isDark ? layer.colorD : layer.colorL;
+                this.ctxBase.fill();
+            });
+        }
+
+        drawSilkStrings(isDark) {
+            this.ctxSilk.clearRect(0, 0, this.width, this.height);
+            
+            const silkStrings = [
+                { yOff: 0.4, amp: 120, freq: 0.002, speed: 0.005, phase: 0, colorD: 'rgba(0, 255, 234, 0.7)', colorL: 'rgba(0, 110, 255, 0.7)' },
+                { yOff: 0.4, amp: 110, freq: 0.0021, speed: 0.0055, phase: 1, colorD: 'rgba(0, 212, 255, 0.6)', colorL: 'rgba(0, 153, 255, 0.6)' },
+                { yOff: 0.55, amp: 150, freq: 0.0015, speed: -0.004, phase: 2, colorD: 'rgba(255, 0, 191, 0.7)', colorL: 'rgba(255, 20, 147, 0.7)' },
+                { yOff: 0.55, amp: 140, freq: 0.0016, speed: -0.0042, phase: 2.5, colorD: 'rgba(217, 0, 255, 0.6)', colorL: 'rgba(255, 0, 102, 0.6)' },
+                { yOff: 0.7, amp: 90, freq: 0.0025, speed: 0.006, phase: 4, colorD: 'rgba(138, 43, 226, 0.7)', colorL: 'rgba(255, 102, 0, 0.7)' }
+            ];
+
+            this.ctxSilk.globalCompositeOperation = isDark ? 'screen' : 'source-over';
+            this.ctxSilk.lineJoin = 'round';
+            this.ctxSilk.lineCap = 'round';
+            this.ctxSilk.lineWidth = isDark ? 6 : 5; 
+
+            silkStrings.forEach((silk) => {
+                this.ctxSilk.beginPath();
+                let started = false;
+
+                // Density of drawing points increased (x += 10) for maximum smoothness on the bend
+                for (let x = -50; x <= this.width + 50; x += 10) {
+                    let y = this.height * silk.yOff 
+                          + Math.sin(x * silk.freq + this.time * silk.speed + silk.phase) * silk.amp
+                          + Math.cos(x * silk.freq * 1.3 - this.time * silk.speed * 0.8) * (silk.amp * 0.3);
+
+                    // PERFECT MAGNETIC PULL (Gaussian Interpolation)
+                    let dx = x - this.mouse.x;
+                    let dy = y - this.mouse.y;
+
+                    // 1. Horizontal Bell Curve: Creates a smooth, wide "U" shape instead of a sharp "V"
+                    let horizontalWeight = Math.exp(-(dx * dx) / 45000);
+
+                    // 2. Vertical Falloff: Ensures strings far away aren't pulled too aggressively
+                    let verticalWeight = Math.exp(-(dy * dy) / 80000);
+
+                    // Combine weights and apply mouse influence smoothly
+                    let pullForce = horizontalWeight * verticalWeight * this.mouse.influence;
+
+                    // Interpolate the line's Y position directly towards the Mouse's Y position.
+                    // A multiplier of ~0.85 gives a soft, fluid elasticity so it doesn't look totally rigid.
+                    y += (this.mouse.y - y) * pullForce * 0.85;
+
+                    if (!started) {
+                        this.ctxSilk.moveTo(x, y);
+                        started = true;
+                    } else {
+                        this.ctxSilk.lineTo(x, y);
+                    }
+                }
+
+                this.ctxSilk.strokeStyle = isDark ? silk.colorD : silk.colorL;
+                this.ctxSilk.stroke();
+            });
+        }
+
+        animate() {
+            this.time += 1;
+
+            // Interpolation for very smooth mouse position tracking
+            this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.08;
+            this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.08;
+            
+            // Interpolate the magnetic force so it fades in and out organically without snapping
+            this.mouse.influence += (this.targetMouse.influence - this.mouse.influence) * 0.03;
+
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+
+            this.drawLakeWater(isDark);
+            this.drawSilkStrings(isDark);
+
+            requestAnimationFrame(() => this.animate());
+        }
+    }
+
+    // Initialize Canvas instances
+    let topEngine, bottomEngine;
+
+    /* ======================================================================
+       UI and Theme Logic
+       ====================================================================== */
     function toggleTheme() {
         const body = document.body;
         const current = body.getAttribute('data-theme');
@@ -556,6 +834,10 @@
         const icon = saved === 'dark' ? 'sun' : 'moon';
         document.getElementById('theme-icon').setAttribute('data-lucide', icon);
         lucide.createIcons();
+
+        // Boot up the dual-layer fluid and silk engines
+        topEngine = new ElegantLiquidSilk('home', 'canvas-hero-base', 'canvas-hero-silk');
+        bottomEngine = new ElegantLiquidSilk('contact', 'canvas-footer-base', 'canvas-footer-silk');
     });
 </script>
 </body>
