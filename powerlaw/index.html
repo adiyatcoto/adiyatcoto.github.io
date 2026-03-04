@@ -781,7 +781,7 @@
             container.selectAll("*").remove();
 
             const rect = container.node().getBoundingClientRect();
-            const m = {t: 15, r: 35, b: 20, l: 30}; 
+            const m = {t: 15, r: 50, b: 20, l: 30}; 
             const w = rect.width - m.l - m.r;
             const h = rect.height - m.t - m.b;
 
@@ -1249,12 +1249,74 @@
             d3.select("#loader p").text("Calibrating engine...");
             
             try {
-                const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol.toUpperCase()}&tsym=USD&allData=true&api_key=${HARDCODED_API_KEY}`);
-                const json = await response.json();
-                if (json.Response === "Error") throw new Error(json.Message);
-                const rawData = json.Data.Data.filter(d => d.close > 0);
-                const firstTimestamp = rawData[0].time;
-                currentAnchorTime = symbol.toUpperCase() === 'BTC' ? GENESIS_BLOCK_TIMESTAMP : firstTimestamp;
+                let rawData = [];
+                let firstTimestamp;
+                const isFormula = /[+\-*/]/.test(symbol);
+
+                if (isFormula) {
+                    const tickers = [...new Set(symbol.toUpperCase().match(/[A-Z]+/g) || [])];
+                    const dataMap = {};
+                    
+                    for (const t of tickers) {
+                        const res = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${t}&tsym=USD&allData=true&api_key=${HARDCODED_API_KEY}`);
+                        const json = await res.json();
+                        if (json.Response === "Error") throw new Error(json.Message);
+                        const arr = json.Data.Data.filter(d => d.close > 0);
+                        const map = {};
+                        arr.forEach(d => map[d.time] = d);
+                        dataMap[t] = map;
+                    }
+
+                    let commonTimes = Object.keys(dataMap[tickers[0]]).map(Number);
+                    for (let i = 1; i < tickers.length; i++) {
+                        commonTimes = commonTimes.filter(t => dataMap[tickers[i]][t]);
+                    }
+                    commonTimes.sort((a, b) => a - b);
+                    if (commonTimes.length === 0) throw new Error("No overlapping data found for " + symbol);
+
+                    const sortedTickers = [...tickers].sort((a, b) => b.length - a.length);
+
+                    for (const t of commonTimes) {
+                        let oStr = symbol.toUpperCase();
+                        let hStr = symbol.toUpperCase();
+                        let lStr = symbol.toUpperCase();
+                        let cStr = symbol.toUpperCase();
+                        
+                        for (const tk of sortedTickers) {
+                            oStr = oStr.split(tk).join(dataMap[tk][t].open);
+                            hStr = hStr.split(tk).join(dataMap[tk][t].high);
+                            lStr = lStr.split(tk).join(dataMap[tk][t].low);
+                            cStr = cStr.split(tk).join(dataMap[tk][t].close);
+                        }
+                        
+                        try {
+                            const o = Number(new Function('return ' + oStr)());
+                            const h = Number(new Function('return ' + hStr)());
+                            const l = Number(new Function('return ' + lStr)());
+                            const c = Number(new Function('return ' + cStr)());
+                            
+                            if (c > 0 && isFinite(c) && isFinite(o) && isFinite(h) && isFinite(l)) {
+                                rawData.push({
+                                    time: t,
+                                    open: o,
+                                    high: Math.max(o, h, l, c),
+                                    low: Math.min(o, h, l, c),
+                                    close: c
+                                });
+                            }
+                        } catch (e) {}
+                    }
+                    if (rawData.length === 0) throw new Error("Invalid formula result");
+                    firstTimestamp = rawData[0].time;
+                } else {
+                    const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol.toUpperCase()}&tsym=USD&allData=true&api_key=${HARDCODED_API_KEY}`);
+                    const json = await response.json();
+                    if (json.Response === "Error") throw new Error(json.Message);
+                    rawData = json.Data.Data.filter(d => d.close > 0);
+                    firstTimestamp = rawData[0].time;
+                }
+
+                currentAnchorTime = (!isFormula && symbol.toUpperCase() === 'BTC') ? GENESIS_BLOCK_TIMESTAMP : firstTimestamp;
 
                 globalData = rawData.map(d => ({
                     ...d,
