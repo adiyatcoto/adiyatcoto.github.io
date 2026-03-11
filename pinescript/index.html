@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pine Script Library — Adiyat Coto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #060b14;
+            --card:     #0c1424;
+            --card2:    #111c30;
+            --border:   #1a2d4a;
+            --text:     #e8f0fa;
+            --soft:     #8ba3c0;
+            --muted:    #4d6a8a;
+            --dim:      #2e4a6a;
+            --teal:     #00d4aa;
+            --teal-dim: #004d3e;
+            --blue:     #3b82f6;
+            --blue-dim: #1e3a5f;
+            --gold:     #f0b429;
+            --gold-dim: #7a5c14;
+            --purple:   #a78bfa;
+            --purple-dim: #3b2770;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(ellipse 80% 50% at 50% 0%, #0a1628 0%, #030810 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0 0 60px;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 48px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(6,11,20,0.8);
+            backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900; font-size: 18px;
+            letter-spacing: -0.5px; color: var(--text);
+        }
+        .nav-logo span { color: var(--teal); }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px; color: var(--muted);
+            text-decoration: none; letter-spacing: 0.05em;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--teal); }
+
+        /* ── HERO ── */
+        .hero {
+            max-width: 860px; margin: 0 auto;
+            padding: 64px 24px 48px;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: var(--card2); border: 1px solid var(--purple-dim);
+            color: var(--purple); font-family: 'Space Mono', monospace;
+            font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+            padding: 4px 14px; border-radius: 20px; margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(28px, 4vw, 46px);
+            font-weight: 900; letter-spacing: -1.5px;
+            line-height: 1.08; margin-bottom: 14px;
+        }
+        .hero h1 .grad {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #3b82f6 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 14px; color: var(--soft); line-height: 1.7;
+            max-width: 580px; margin-bottom: 12px;
+        }
+        .hero-note {
+            font-family: 'Space Mono', monospace; font-size: 10px;
+            color: var(--muted);
+            background: var(--card2); border: 1px solid var(--border);
+            border-left: 2px solid var(--purple);
+            padding: 8px 14px; border-radius: 4px;
+            display: inline-block; margin-top: 8px;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            max-width: 860px; margin: 0 auto 48px;
+            padding: 0 24px;
+        }
+        .section-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2.5px;
+            color: var(--muted); margin-bottom: 16px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-label::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
+        }
+
+        /* ── INDICATOR CARDS ── */
+        .ind-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .ind-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 18px;
+            position: relative; overflow: hidden;
+            text-decoration: none;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .ind-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 3px;
+        }
+        .ind-card:nth-child(1)::before,
+        .ind-card:nth-child(6)::before { background: var(--purple); }
+        .ind-card:nth-child(2)::before { background: var(--teal); }
+        .ind-card:nth-child(3)::before { background: var(--gold); }
+        .ind-card:nth-child(4)::before { background: var(--blue); }
+        .ind-card:nth-child(5)::before { background: #f43f5e; }
+
+        .ind-card:hover {
+            border-color: var(--purple);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(167,139,250,0.12);
+        }
+
+        .ind-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px; font-weight: 900;
+            color: var(--dim); line-height: 1;
+            min-width: 32px;
+        }
+
+        .ind-body {}
+        .ind-name {
+            font-size: 14px; font-weight: 600;
+            color: var(--text); margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .ind-meta {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px; color: var(--muted);
+        }
+        .ind-tags {
+            display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;
+        }
+        .ind-tag {
+            font-family: 'Space Mono', monospace; font-size: 9px;
+            padding: 2px 7px; border-radius: 3px;
+            background: var(--card2); border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .ind-arrow {
+            font-size: 18px; color: var(--muted);
+            transition: color 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .ind-card:hover .ind-arrow { color: var(--purple); transform: translateX(3px); }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .stat-chip {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px 18px;
+            flex: 1; min-width: 120px;
+        }
+        .stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px; font-weight: 800;
+            color: var(--purple); line-height: 1;
+            margin-bottom: 3px;
+        }
+        .stat-lbl {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+
+        /* ── BACK ── */
+        .back-row {
+            max-width: 860px; margin: 0 auto;
+            padding: 0 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: 'Space Mono', monospace; font-size: 11px;
+            color: var(--muted); text-decoration: none;
+            border: 1px solid var(--border);
+            background: var(--card); padding: 7px 14px;
+            border-radius: 6px; transition: all 0.2s;
+        }
+        .back-btn:hover { color: var(--purple); border-color: var(--purple-dim); }
+        .credit {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px; color: var(--muted);
+        }
+
+        /* ── TV PLATFORM NOTE ── */
+        .platform-note {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--purple);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 24px;
+        }
+        .platform-note p {
+            font-size: 12.5px; color: var(--soft); line-height: 1.65;
+        }
+        .platform-note strong { color: var(--text); }
+        .platform-note a { color: var(--purple); text-decoration: none; }
+        .platform-note a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo">Adiyat <span>Coto</span></div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-badge">TRADINGVIEW · PINE SCRIPT v5 · PUBLIC LIBRARY</div>
+        <h1><span class="grad">Pine Script</span><br>Indicator Library</h1>
+        <p class="hero-sub">
+            Custom indicators written in Pine Script v5, built around personal trading frameworks —
+            market structure, multi-timeframe confluence, and liquidity tools. All published publicly
+            on TradingView and free to use.
+        </p>
+        <div class="hero-note">⚠ All indicators are self-taught, AI-assisted builds based on personal trading research — not financial advice.</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="section">
+        <div class="stats-bar">
+            <div class="stat-chip">
+                <div class="stat-val">6</div>
+                <div class="stat-lbl">Published Scripts</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-val">v5</div>
+                <div class="stat-lbl">Pine Script Version</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-val">Free</div>
+                <div class="stat-lbl">Access</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-val">Multi-TF</div>
+                <div class="stat-lbl">Focus Area</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="section">
+        <div class="section-label">Published Indicators</div>
+        <div class="ind-list">
+
+            <a class="ind-card" href="https://www.tradingview.com/script/9VlhfNHG-New-Coto-s-RRA-Ultra-Granular-12-5-Steps-2026-Edition/" target="_blank" rel="noopener">
+                <div class="ind-num">01</div>
+                <div class="ind-body">
+                    <div class="ind-name">Coto's RRA Ultra Granular 12.5 Steps — 2026 Edition</div>
+                    <div class="ind-meta">tradingview.com/script/9VlhfNHG · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">Range Analysis</span>
+                        <span class="ind-tag">12.5-Step Granularity</span>
+                        <span class="ind-tag">2026 Edition</span>
+                        <span class="ind-tag">Ultra Granular</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+            <a class="ind-card" href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" target="_blank" rel="noopener">
+                <div class="ind-num">02</div>
+                <div class="ind-body">
+                    <div class="ind-name">Coto COP/TAH — Multi-Timeframe Bias Analyzer</div>
+                    <div class="ind-meta">tradingview.com/script/Bp4ls8mK · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">COP/TAH</span>
+                        <span class="ind-tag">Multi-Timeframe</span>
+                        <span class="ind-tag">Bias Detection</span>
+                        <span class="ind-tag">Confluence</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+            <a class="ind-card" href="https://www.tradingview.com/script/xkGlOH8P-Cotos-Higher-Timeframe-HTF-Candles-Overlay-2026-Edition/" target="_blank" rel="noopener">
+                <div class="ind-num">03</div>
+                <div class="ind-body">
+                    <div class="ind-name">Coto's Higher Timeframe (HTF) Candles Overlay — 2026 Edition</div>
+                    <div class="ind-meta">tradingview.com/script/xkGlOH8P · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">HTF Candles</span>
+                        <span class="ind-tag">Overlay</span>
+                        <span class="ind-tag">Multi-Timeframe</span>
+                        <span class="ind-tag">2026 Edition</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+            <a class="ind-card" href="https://www.tradingview.com/script/N0yQ3cvY-Coto-s-COP-TAH-Auto-Pivot-Auto-Tick-Size-Detection/" target="_blank" rel="noopener">
+                <div class="ind-num">04</div>
+                <div class="ind-body">
+                    <div class="ind-name">Coto's COP/TAH — Auto Pivot + Auto Tick Size Detection</div>
+                    <div class="ind-meta">tradingview.com/script/N0yQ3cvY · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">COP/TAH</span>
+                        <span class="ind-tag">Auto Pivot</span>
+                        <span class="ind-tag">Auto Tick Size</span>
+                        <span class="ind-tag">Smart Detection</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+            <a class="ind-card" href="https://www.tradingview.com/script/VPQLgqBA-Macro-Liquidity-Monitor-v2-0/" target="_blank" rel="noopener">
+                <div class="ind-num">05</div>
+                <div class="ind-body">
+                    <div class="ind-name">Macro Liquidity Monitor v2.0</div>
+                    <div class="ind-meta">tradingview.com/script/VPQLgqBA · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">Macro</span>
+                        <span class="ind-tag">Liquidity</span>
+                        <span class="ind-tag">Monitor</span>
+                        <span class="ind-tag">v2.0</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+            <a class="ind-card" href="https://www.tradingview.com/script/aJXqPcUg-For-All-Asset-Class-Cotos-COP-TAH-Mutitimeframe-Candle-Overlay/" target="_blank" rel="noopener">
+                <div class="ind-num">06</div>
+                <div class="ind-body">
+                    <div class="ind-name">Coto's COP/TAH Multi-Timeframe Candle Overlay — For All Asset Classes</div>
+                    <div class="ind-meta">tradingview.com/script/aJXqPcUg · Pine Script v5</div>
+                    <div class="ind-tags">
+                        <span class="ind-tag">All Asset Classes</span>
+                        <span class="ind-tag">COP/TAH</span>
+                        <span class="ind-tag">Multi-TF Candle</span>
+                        <span class="ind-tag">Overlay</span>
+                    </div>
+                </div>
+                <div class="ind-arrow">↗</div>
+            </a>
+
+        </div>
+
+        <div class="platform-note">
+            <p>All indicators are published on <strong>TradingView</strong> and accessible for free.
+            Built in <strong>Pine Script v5</strong> based on personal trading frameworks across crypto, forex, and equities —
+            primarily focused on <strong>multi-timeframe confluence, market structure, and liquidity analysis</strong>.<br><br>
+            To use: search the script name on TradingView, or click any card above to go directly to the script page.
+        </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="back-row">
+        <div class="credit"><center>© Adiyat Coto · Pine Script v5</center></div>
+    </div>
+
+</body>
+</html>
