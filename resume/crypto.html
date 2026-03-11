@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiyat Coto – Resume</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* ══════════════════════════════════════
+           DESIGN TOKENS
+        ══════════════════════════════════════ */
+        :root {
+            /* Dark Professional — Obsidian + Champagne */
+            --bg:           #0e1117;
+            --bg-card:      #161b25;
+            --bg-card-2:    #1c2333;
+            --bg-raised:    #212840;
+            --border:       #252e42;
+            --border-mid:   #2e3a54;
+            --border-bright:#3d4f6e;
+
+            --text:         #edf0f7;
+            --text-soft:    #a8b4cc;
+            --text-muted:   #5c6e8a;
+            --text-dim:     #2e3e58;
+
+            /* Signature accents */
+            --gold:         #c9a84c;   /* warm champagne gold */
+            --gold-light:   #e8c97a;
+            --gold-dim:     #3a2e12;
+            --teal:         #4db8a0;   /* muted jade */
+            --teal-light:   #6ed0bb;
+            --teal-dim:     #0e3028;
+            --blue:         #5b8dee;   /* softer royal blue */
+            --blue-light:   #7aaaf5;
+            --blue-dim:     #162040;
+            --indigo:       #8b7cf8;
+            --indigo-dim:   #241e48;
+            --rose:         #e07070;
+            --rose-dim:     #3a1818;
+
+            --page-w:       900px;
+            --body-bg-1:    #080c14;
+            --body-bg-2:    #050810;
+
+            /* Typography scale */
+            --fs-xs:        11px;
+            --fs-sm:        12.5px;
+            --fs-base:      14px;
+            --fs-md:        15px;
+            --fs-lg:        17px;
+            --fs-xl:        20px;
+            --fs-2xl:       28px;
+            --fs-name:      52px;
+        }
+
+        /* ── LIGHT THEME ── */
+        [data-theme="light"] {
+            --bg:           #f7f8fc;
+            --bg-card:      #ffffff;
+            --bg-card-2:    #eef1f8;
+            --bg-raised:    #e6eaf5;
+            --border:       #d4daea;
+            --border-mid:   #b8c2d8;
+            --border-bright:#8a9abf;
+            --text:         #0d1420;
+            --text-soft:    #2a3650;
+            --text-muted:   #5a6a8a;
+            --text-dim:     #b0bcd4;
+            --gold:         #8a5e0a;
+            --gold-light:   #b07a18;
+            --gold-dim:     #fef3dc;
+            --teal:         #1a7a64;
+            --teal-light:   #2a9a80;
+            --teal-dim:     #ddf5f0;
+            --blue:         #1a44a8;
+            --blue-light:   #2a5acc;
+            --blue-dim:     #e4ecff;
+            --indigo:       #5030b0;
+            --indigo-dim:   #ede8ff;
+            --rose:         #b03040;
+            --rose-dim:     #feeaed;
+            --body-bg-1:    #dce2f0;
+            --body-bg-2:    #ccd4e8;
+        }
+
+        /* ── SLATE THEME ── */
+        [data-theme="slate"] {
+            --bg:           #1a1e2e;
+            --bg-card:      #222638;
+            --bg-card-2:    #2a3048;
+            --bg-raised:    #323858;
+            --border:       #363d5a;
+            --border-mid:   #424a6a;
+            --border-bright:#545e80;
+            --text:         #dde4f5;
+            --text-soft:    #8a9abf;
+            --text-muted:   #525e7a;
+            --text-dim:     #323850;
+            --gold:         #d4a030;
+            --gold-light:   #e8c060;
+            --gold-dim:     #3a2a08;
+            --teal:         #38c4a8;
+            --teal-light:   #5ad4bc;
+            --teal-dim:     #0a3028;
+            --blue:         #6090f0;
+            --blue-light:   #80acff;
+            --blue-dim:     #182048;
+            --indigo:       #9880f8;
+            --indigo-dim:   #281e58;
+            --rose:         #e88080;
+            --rose-dim:     #3a1820;
+            --body-bg-1:    #14182a;
+            --body-bg-2:    #0e1220;
+        }
+
+        /* ── EMBER THEME ── */
+        [data-theme="ember"] {
+            --bg:           #120e0a;
+            --bg-card:      #1c1510;
+            --bg-card-2:    #241c14;
+            --bg-raised:    #2e2418;
+            --border:       #382c1e;
+            --border-mid:   #4a3a28;
+            --border-bright:#5e4a34;
+            --text:         #f0e8dc;
+            --text-soft:    #c0a888;
+            --text-muted:   #706050;
+            --text-dim:     #3a2e20;
+            --gold:         #d4900a;
+            --gold-light:   #e8ae30;
+            --gold-dim:     #2a1e04;
+            --teal:         #38b890;
+            --teal-light:   #54d0a8;
+            --teal-dim:     #0a2818;
+            --blue:         #5888d8;
+            --blue-light:   #78a4ec;
+            --blue-dim:     #101828;
+            --indigo:       #9870e0;
+            --indigo-dim:   #201438;
+            --rose:         #d86858;
+            --rose-dim:     #2a1010;
+            --body-bg-1:    #0c0a06;
+            --body-bg-2:    #080604;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            font-size: var(--fs-base);
+            line-height: 1.65;
+            color: var(--text);
+            background: radial-gradient(ellipse 90% 70% at 50% -10%, var(--body-bg-1) 0%, var(--body-bg-2) 100%);
+            min-height: 100vh;
+            padding: 48px 20px 80px;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT / PDF
+        ══════════════════════════════════════ */
+        @media print {
+            html,body { margin:0!important;padding:0!important;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;
+                width:var(--page-w)!important; }
+            .page { box-shadow:none!important;margin:0!important;
+                width:var(--page-w)!important;border-radius:0!important; }
+            .no-print { display:none!important; }
+        }
+        .pdf-mode { width:var(--page-w)!important;max-width:var(--page-w)!important;
+            margin:0!important;border-radius:0!important;
+            box-shadow:none!important;box-sizing:border-box!important; }
+        .pdf-body { padding:0!important;margin:0!important;width:100%!important;overflow:visible!important; }
+
+        /* ══════════════════════════════════════
+           PAGE
+        ══════════════════════════════════════ */
+        .page {
+            max-width: var(--page-w);
+            margin: 0 auto;
+            background: var(--bg);
+            border: 1px solid var(--border-mid);
+            border-radius: 14px;
+            padding: 52px 58px;
+            position: relative;
+            box-shadow:
+                0 0 0 1px rgba(100,130,200,0.06),
+                0 12px 40px rgba(0,0,0,0.55),
+                0 48px 96px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* Fine dot grid */
+        .page::before {
+            content:'';
+            position:absolute; inset:0;
+            background-image: radial-gradient(circle, rgba(100,130,210,0.07) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events:none;
+            border-radius: inherit;
+        }
+
+        /* Ambient corner glow */
+        .page::after {
+            content:'';
+            position:absolute; top:-120px; right:-120px;
+            width:420px; height:420px;
+            background: radial-gradient(circle, rgba(78,184,160,0.05) 0%, transparent 65%);
+            pointer-events:none;
+        }
+
+        /* ══════════════════════════════════════
+           FAB + THEME SWITCHER
+        ══════════════════════════════════════ */
+        .fab {
+            position:fixed; bottom:30px; right:30px;
+            z-index:1000; display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+        }
+        .fab-btn {
+            display:flex; align-items:center; gap:9px;
+            background: linear-gradient(135deg, var(--gold) 0%, #a87a28 100%);
+            color: var(--bg); border:none; padding:12px 22px;
+            border-radius:50px; cursor:pointer;
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:13px; letter-spacing:0.3px;
+            box-shadow:0 4px 24px rgba(201,168,76,0.3);
+            transition:all 0.25s ease;
+        }
+        .fab-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(201,168,76,0.42); }
+        .fab-btn svg { width:16px; height:16px; fill:currentColor; }
+
+        .theme-switcher {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-radius: 50px;
+            padding: 5px;
+            gap: 3px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+        }
+        .theme-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 14px;
+            border-radius: 50px;
+            border: none; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px; font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .theme-btn:hover { color: var(--text); background: var(--bg-card-2); }
+        .theme-btn.active {
+            background: var(--bg-card-2);
+            color: var(--text);
+            border: 1px solid var(--border-bright);
+        }
+        .theme-btn .swatch {
+            width: 9px; height: 9px;
+            border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* ══════════════════════════════════════
+           HEADER
+        ══════════════════════════════════════ */
+        .header {
+            margin-bottom: 32px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-mid);
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: var(--fs-name);
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: -1.5px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .header h1 em {
+            font-style: italic;
+            color: var(--gold-light);
+        }
+
+        .header-title {
+            font-size: var(--fs-md);
+            font-weight: 400;
+            color: var(--text-soft);
+            margin-bottom: 14px;
+            padding-left: 3px;
+            letter-spacing: 0.1px;
+        }
+        .header-title strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .contact-grid {
+            display: flex; flex-wrap: wrap; gap: 5px 18px;
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+        }
+        .contact-grid a { color: var(--blue-light); text-decoration: none; }
+        .contact-grid a:hover { color: var(--teal-light); }
+        .contact-sep { color: var(--text-dim); }
+
+        /* ══════════════════════════════════════
+           SECTION LABELS
+        ══════════════════════════════════════ */
+        .section { margin-bottom: 28px; }
+
+        .section-head {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-head .label {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--gold);
+            white-space: nowrap;
+        }
+        .section-head::before {
+            content:'';
+            width: 18px; height: 1.5px;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+        .section-head::after {
+            content:'';
+            flex:1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-mid) 0%, transparent 100%);
+        }
+
+        /* ══════════════════════════════════════
+           SUMMARY
+        ══════════════════════════════════════ */
+        .summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-left: 3px solid var(--teal);
+            border-radius: 10px;
+            padding: 18px 22px;
+            font-size: var(--fs-base);
+            color: var(--text-soft);
+            line-height: 1.8;
+        }
+        .summary p { margin-bottom: 10px; }
+        .summary p:last-child { margin-bottom: 0; }
+        .summary strong { color: var(--text); font-weight: 600; }
+        .summary .pill {
+            display: inline-block;
+            background: rgba(77,184,160,0.1);
+            border: 1px solid rgba(77,184,160,0.25);
+            color: var(--teal-light);
+            font-weight: 600;
+            font-size: var(--fs-sm);
+            padding: 1px 8px;
+            border-radius: 5px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* ══════════════════════════════════════
+           SKILLS
+        ══════════════════════════════════════ */
+        .skills-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .skill-group {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .skill-group-title {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+        .skill-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 5px;
+            border: 1px solid;
+            font-weight: 400;
+        }
+        .skill-tag.teal   { color: var(--teal-light);   border-color: rgba(77,184,160,0.25);  background: rgba(77,184,160,0.07); }
+        .skill-tag.blue   { color: var(--blue-light);   border-color: rgba(91,141,238,0.25);  background: rgba(91,141,238,0.07); }
+        .skill-tag.gold   { color: var(--gold-light);   border-color: rgba(201,168,76,0.25);  background: rgba(201,168,76,0.07); }
+        .skill-tag.indigo { color: var(--indigo);       border-color: rgba(139,124,248,0.25); background: rgba(139,124,248,0.07); }
+        .skill-tag.rose   { color: var(--rose);         border-color: rgba(224,112,112,0.25); background: rgba(224,112,112,0.07); }
+        .skill-tag.soft   { color: var(--text-soft);    border-color: var(--border-mid);      background: var(--bg-card-2); }
+
+        /* ══════════════════════════════════════
+           EXPERIENCE CARDS
+        ══════════════════════════════════════ */
+        .exp-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .exp-card::before {
+            content:'';
+            position:absolute; left:0; top:0; bottom:0;
+            width: 3px;
+        }
+        .exp-card.c-teal::before   { background: linear-gradient(180deg, var(--teal), rgba(77,184,160,0.2)); }
+        .exp-card.c-blue::before   { background: linear-gradient(180deg, var(--blue), rgba(91,141,238,0.2)); }
+        .exp-card.c-indigo::before { background: linear-gradient(180deg, var(--indigo), rgba(139,124,248,0.2)); }
+        .exp-card.c-gold::before   { background: linear-gradient(180deg, var(--gold), rgba(201,168,76,0.2)); }
+
+        .exp-top {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 13px 18px 12px;
+            background: var(--bg-card-2);
+            border-bottom: 1px solid var(--border);
+            gap: 14px;
+        }
+        .exp-company {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: var(--fs-xl);
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .exp-company-sub {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 400;
+        }
+        .exp-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            text-align: right; flex-shrink: 0;
+            line-height: 1.7;
+        }
+        .exp-context {
+            padding: 8px 18px 9px;
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.18);
+            border-bottom: 1px solid var(--border);
+            font-style: italic;
+            line-height: 1.6;
+        }
+        .exp-context strong { font-style: normal; color: var(--text-soft); font-weight:600; }
+        .exp-role { padding: 12px 18px 14px; }
+        .exp-role + .exp-role { border-top: 1px dashed var(--border-mid); }
+        .exp-role-head {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 8px; gap: 12px;
+        }
+        .exp-role-title {
+            font-size: var(--fs-md);
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.1px;
+        }
+        .exp-role-dates {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .exp-bullets { list-style: none; }
+        .exp-bullets li {
+            font-size: var(--fs-base);
+            color: var(--text-soft);
+            padding-left: 16px;
+            position: relative;
+            margin-bottom: 5px;
+            line-height: 1.7;
+        }
+        .exp-bullets li::before {
+            content:'›';
+            position:absolute; left:3px;
+            color: var(--teal);
+            font-weight:700; font-size: 15px;
+            line-height: 1.6;
+        }
+        .exp-bullets li:last-child { margin-bottom:0; }
+        .exp-bullets strong { color: var(--text); font-weight:600; }
+
+        /* Stat chips */
+        .n {
+            display:inline-block;
+            background: rgba(201,168,76,0.1);
+            border: 1px solid rgba(201,168,76,0.28);
+            color: var(--gold-light);
+            font-family:'DM Mono',monospace;
+            font-size: 11.5px; font-weight:500;
+            padding: 0 6px; border-radius:4px;
+        }
+
+        /* ══════════════════════════════════════
+           PROJECTS
+        ══════════════════════════════════════ */
+        .proj-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-radius: 10px;
+            padding: 14px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .proj-card::after {
+            content:'';
+            position:absolute; top:0; left:0; right:0;
+            height:2px;
+        }
+        .proj-card.c-teal::after   { background: linear-gradient(90deg, var(--teal), transparent); }
+        .proj-card.c-gold::after   { background: linear-gradient(90deg, var(--gold), transparent); }
+        .proj-card.c-blue::after   { background: linear-gradient(90deg, var(--blue), transparent); }
+        .proj-card.c-indigo::after { background: linear-gradient(90deg, var(--indigo), transparent); }
+        .proj-card.c-rose::after   { background: linear-gradient(90deg, #00ff9d 0%, #4fc3f7 50%, var(--indigo) 100%); }
+
+        .proj-type {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px; font-weight:500;
+            text-transform: uppercase; letter-spacing:1.5px;
+            margin-bottom: 6px;
+        }
+        .proj-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: var(--fs-lg);
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 5px;
+            line-height: 1.3;
+            letter-spacing: -0.2px;
+        }
+        .proj-desc {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .proj-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .proj-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px; padding: 2px 7px;
+            border-radius: 4px;
+            background: var(--bg-card-2);
+            border: 1px solid var(--border-mid);
+            color: var(--text-muted);
+        }
+        .proj-link {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px; color: var(--blue-light);
+            text-decoration: none;
+            display: block;
+            margin-top: 8px;
+        }
+        .proj-link:hover { color: var(--teal-light); }
+
+        /* ══════════════════════════════════════
+           EDUCATION
+        ══════════════════════════════════════ */
+        .edu-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 11px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            gap: 16px;
+        }
+        .edu-row:last-child { margin-bottom:0; }
+        .edu-school {
+            font-family: 'DM Serif Display', serif;
+            font-size: var(--fs-lg);
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 3px;
+            letter-spacing: -0.2px;
+        }
+        .edu-deg { font-size: var(--fs-base); color: var(--text-soft); font-weight: 400; }
+        .edu-detail { font-size: var(--fs-sm); color: var(--text-muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+        .edu-date {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs); color: var(--text-muted);
+            white-space: nowrap; flex-shrink:0; margin-top:4px;
+        }
+
+        /* ══════════════════════════════════════
+           TRADING PANELS
+        ══════════════════════════════════════ */
+        .trading-col {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .trading-col-title {
+            font-family:'DM Mono',monospace;
+            font-size: var(--fs-xs); font-weight:500;
+            text-transform:uppercase; letter-spacing:2px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .trading-item {
+            font-size: var(--fs-base);
+            color: var(--text-soft);
+            margin-bottom: 6px;
+            padding-left: 14px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .trading-item::before {
+            content:'▸';
+            position:absolute; left:0;
+            font-size: 10px; top: 3px;
+        }
+        .trading-item:last-child { margin-bottom: 0; }
+
+        /* ══════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════ */
+        .resume-footer {
+            margin-top: 32px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-mid);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .resume-footer span {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            color: var(--text-dim);
+        }
+        .footer-links { display: flex; gap: 18px; }
+        .footer-links a {
+            font-family: 'DM Mono', monospace;
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .footer-links a:hover { color: var(--gold-light); }
+
+    </style>
+</head>
+<body>
+
+    <!-- FAB -->
+    <div class="fab no-print">
+        <div class="theme-switcher">
+            <button class="theme-btn active" onclick="setTheme('dark', this)">
+                <span class="swatch" style="background:#4db8a0"></span> Dark
+            </button>
+            <button class="theme-btn" onclick="setTheme('light', this)">
+                <span class="swatch" style="background:#1a7a64"></span> Light
+            </button>
+            <button class="theme-btn" onclick="setTheme('slate', this)">
+                <span class="swatch" style="background:#6090f0"></span> Slate
+            </button>
+            <button class="theme-btn" onclick="setTheme('ember', this)">
+                <span class="swatch" style="background:#d4900a"></span> Ember
+            </button>
+        </div>
+        <button class="fab-btn" id="dlBtn" onclick="downloadPDF()" style="align-self:flex-end;">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <span id="btnTxt">Save as PDF</span>
+        </button>
+    </div>
+
+    <div class="page" id="resume">
+
+        <!-- ══ HEADER ══ -->
+        <div class="header">
+            <h1>Adiyat <em>Coto</em></h1>
+            <div class="header-title">
+                <strong>Sr. Technical Support &amp; SaaS Implementation</strong> &nbsp;·&nbsp; Crypto Enthusiast &amp; Self-Taught Builder
+            </div>
+            <div class="contact-grid">
+                <span>Semarang, Indonesia</span>
+                <span class="contact-sep">·</span>
+                <span>+62 823 3172 2481</span>
+                <span class="contact-sep">·</span>
+                <a href="mailto:adiyatcoto@gmail.com">adiyatcoto@gmail.com</a>
+                <span class="contact-sep">·</span>
+                <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a>
+                <span class="contact-sep">·</span>
+                <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
+            </div>
+        </div>
+
+        <!-- ══ PROFESSIONAL SUMMARY ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Professional Summary</span></div>
+            <div class="summary">
+                <p>Technical Implementation &amp; Product Support Specialist with <strong>7+ years</strong> across <strong>POS systems, merchant services, and EdTech ERP platforms</strong> — with a genuine personal interest in crypto markets that's grown into an active side pursuit.</p>
+                <p>That combination is fairly rare: deep <strong>SaaS/B2B support experience</strong> (L1/L2 incident management, PSR, UAT, cross-functional escalation) paired with someone who actually understands the market — not just surface-level, but enough to build tools around it, stake on-chain, and follow the space daily.</p>
+                <p>Outside of work, been learning to build crypto tools with the help of AI (vibe coding with LLMs) — a <strong>Streamlit/Python sentiment intelligence app</strong> (Gemini API + TradingView scraper), live market dashboards using the <span class="pill">Binance WebSocket API</span> and <span class="pill">CryptoCompare API</span>, and analysis tools exploring <strong>Power Law patterns, RSA confluence, BTC correlation, and order flow</strong> — all self-taught, AI-assisted, built from scratch.</p>
+                <p>Active spot trader across <strong>Stocks (IDX), Forex, and Crypto</strong>. Actively stakes <strong>ADA on Cardano</strong> via the native <strong>Lace wallet</strong> (IOG), with hands-on familiarity: <strong>on-chain vs off-chain, on-ramp/off-ramp, DEX and CEX flows, token swaps</strong>. Follows the TradingView Cryptocurrency chatroom, writes market notes on Medium, and builds tools for personal use.</p>
+                <p>Looking to bring a solid support background into the crypto space — ideally somewhere that values people who are genuinely into this, not just on paper.</p>
+            </div>
+        </div>
+
+        <!-- ══ CORE COMPETENCIES ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Core Competencies</span></div>
+            <div class="skills-row">
+                <div class="skill-group">
+                    <div class="skill-group-title">Market Exposure &amp; Knowledge</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag teal">Technical Analysis (TA)</span>
+                        <span class="skill-tag teal">Multi-TF Confluence (RSA)</span>
+                        <span class="skill-tag teal">Power Law Patterns</span>
+                        <span class="skill-tag teal">BTC Correlation / Alpha</span>
+                        <span class="skill-tag teal">Volume Dominance</span>
+                        <span class="skill-tag gold">Order Flow / Footprint</span>
+                        <span class="skill-tag gold">Market Microstructure</span>
+                        <span class="skill-tag gold">Macro Analysis</span>
+                        <span class="skill-tag gold">Crowd Sentiment Analysis</span>
+                        <span class="skill-tag gold">TradingView Pine Script</span>
+                        <span class="skill-tag indigo">Stocks (IDX)</span>
+                        <span class="skill-tag indigo">Forex</span>
+                        <span class="skill-tag indigo">Crypto Spot</span>
+                    </div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-group-title">DeFi &amp; On-Chain</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag teal">On-Chain / Off-Chain Flows</span>
+                        <span class="skill-tag teal">On-Ramp / Off-Ramp</span>
+                        <span class="skill-tag teal">DEX &amp; CEX Operations</span>
+                        <span class="skill-tag teal">Token Swap Mechanics</span>
+                        <span class="skill-tag blue">ADA Staking — Cardano</span>
+                        <span class="skill-tag blue">Lace Wallet (IOG Native)</span>
+                        <span class="skill-tag blue">UTXO Model Awareness</span>
+                        <span class="skill-tag blue">Self-Custody Principles</span>
+                        <span class="skill-tag gold">DeFi Protocol Literacy</span>
+                        <span class="skill-tag gold">L1 / L2 Concepts</span>
+                        <span class="skill-tag soft">CEX Operational Flows</span>
+                        <span class="skill-tag soft">Crypto Compliance Basics</span>
+                    </div>
+                </div>
+            </div>
+            <div class="skills-row">
+                <div class="skill-group">
+                    <div class="skill-group-title">Technical Support &amp; Ops</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag blue">L1/L2 Functional Support</span>
+                        <span class="skill-tag blue">SaaS Implementation</span>
+                        <span class="skill-tag blue">Incident Management</span>
+                        <span class="skill-tag blue">PSR &amp; Root Cause Analysis</span>
+                        <span class="skill-tag soft">UAT / Production Validation</span>
+                        <span class="skill-tag soft">Change &amp; Release Mgmt</span>
+                        <span class="skill-tag soft">SDLC / FSDs / CRs</span>
+                        <span class="skill-tag soft">Customer Success Lifecycle</span>
+                        <span class="skill-tag soft">Cross-functional Collab</span>
+                        <span class="skill-tag soft">SOP &amp; Documentation</span>
+                    </div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-group-title">Tools (Self-Taught / AI-Assisted)</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag teal">Python · Streamlit</span>
+                        <span class="skill-tag teal">Pandas / NumPy / Plotly</span>
+                        <span class="skill-tag teal">BeautifulSoup / Requests</span>
+                        <span class="skill-tag teal">Gemini API (Google AI)</span>
+                        <span class="skill-tag blue">JavaScript (ES6+)</span>
+                        <span class="skill-tag blue">WebSocket / REST API</span>
+                        <span class="skill-tag blue">D3.js · Chart.js</span>
+                        <span class="skill-tag blue">HTML5 Canvas · Tailwind CSS</span>
+                        <span class="skill-tag blue">Binance API · CryptoCompare API</span>
+                        <span class="skill-tag gold">GitHub Pages · Jira</span>
+                        <span class="skill-tag gold">Looker Studio · G Workspace</span>
+                        <span class="skill-tag soft">Bahasa Indonesia (Native)</span>
+                        <span class="skill-tag soft">English (Fluent)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ CRYPTO PROJECTS ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Personal Projects — Built with AI Assistance</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+
+                <div class="proj-card c-teal">
+                    <div class="proj-type" style="color:var(--teal-light)">Live Dashboard · Binance API · JavaScript</div>
+                    <div class="proj-name">Top 100 Crypto Market Dashboard</div>
+                    <div class="proj-desc">Real-time market intelligence platform covering the top 100 USDT pairs by volume. Candlestick charting, volume dominance analysis, performance ranking, BTC correlation matrix, and Alpha scanner across multiple timeframes.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">WebSocket Stream</span>
+                        <span class="proj-tag">Pearson Correlation</span>
+                        <span class="proj-tag">Multi-TF (1h/4h/24h/1w)</span>
+                        <span class="proj-tag">Chart.js + Candlestick</span>
+                        <span class="proj-tag">Volume Dominance</span>
+                        <span class="proj-tag">Alpha Scanner</span>
+                        <span class="proj-tag">Historical Heatmaps</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/cryptodash/">↗ adiyatcoto.github.io/cryptodash/</a>
+                </div>
+
+                <div class="proj-card c-gold">
+                    <div class="proj-type" style="color:var(--gold-light)">Analysis Tool · D3.js · CryptoCompare API</div>
+                    <div class="proj-name">Power Law Generator</div>
+                    <div class="proj-desc">Log-log chart tool for exploring Power Law patterns on any crypto asset. Plots slope and R² as a confidence indicator, deviation bands (±2σ), and a market scanner comparing 100+ assets — built for long-term cycle positioning.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Log-Log Chart</span>
+                        <span class="proj-tag">Auto Slope + R²</span>
+                        <span class="proj-tag">D3.js Zoom/Pan</span>
+                        <span class="proj-tag">Deviation Bands ±2σ</span>
+                        <span class="proj-tag">Market Scanner</span>
+                        <span class="proj-tag">Formula Mode (ETH/BTC)</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/powerlaw/">↗ adiyatcoto.github.io/powerlaw/</a>
+                </div>
+
+                <div class="proj-card c-blue">
+                    <div class="proj-type" style="color:var(--blue-light)">Analysis Tool · Live WebSocket · JavaScript</div>
+                    <div class="proj-name">RSA Confluence System</div>
+                    <div class="proj-desc">Multi-timeframe structural analysis built around a personal trading framework. Live WebSocket feed, RSA level mapping across 6 timeframes (Daily–Yearly), footprint/order flow overlay, market maker behavior detection, and probabilistic scenario mapping.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Live WebSocket Stream</span>
+                        <span class="proj-tag">6-TF Structural Map</span>
+                        <span class="proj-tag">Order Flow Overlay</span>
+                        <span class="proj-tag">MM Behavior Signals</span>
+                        <span class="proj-tag">Probabilistic Scenarios</span>
+                        <span class="proj-tag">Seismograph View</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/svn/">↗ adiyatcoto.github.io/svn/</a>
+                </div>
+
+                <div class="proj-card c-rose">
+                    <div class="proj-type" style="color:#6ed0bb;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Python · Streamlit · Gemini AI</div>
+                    <div class="proj-name">TV Intelligence System v4.0</div>
+                    <div class="proj-desc">Scrapes TradingView chatroom data, runs weighted NLP sentiment scoring (bull/bear lexicons + negation detection), computes a Fear &amp; Greed Index, flags anomalies via Z-score, and uses <strong style="color:var(--text)">Gemini 2.5 Flash</strong> to generate behavioral user profiles and market summaries. First Python project shipped end-to-end.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Python / Streamlit</span>
+                        <span class="proj-tag">BeautifulSoup Scraper</span>
+                        <span class="proj-tag">Gemini 2.5 Flash API</span>
+                        <span class="proj-tag">Weighted NLP Sentiment</span>
+                        <span class="proj-tag">Fear &amp; Greed Index</span>
+                        <span class="proj-tag">Z-Score Anomaly</span>
+                        <span class="proj-tag">Plotly Heatmaps</span>
+                        <span class="proj-tag">AI Behavioral Profiling</span>
+                        <span class="proj-tag">Pandas / NumPy</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ View Demo →</a>
+                </div>
+
+            </div>
+
+            <div class="proj-card c-indigo">
+                <div class="proj-type" style="color:var(--indigo)">TradingView · Pine Script v5</div>
+                <div class="proj-name">TradingView Pine Script Indicators — Public Library</div>
+                <div class="proj-desc">Custom indicators written in Pine Script v5, built around personal trading frameworks — market structure, confluence logic, and statistical ideas visualized for practical use. All published publicly on TradingView. Also an active member of the TradingView Cryptocurrency chatroom, following real-time crowd sentiment as part of ongoing market research.</div>
+                <div class="proj-tags">
+                    <span class="proj-tag">Pine Script v5</span>
+                    <span class="proj-tag">Market Structure</span>
+                    <span class="proj-tag">Confluence Logic</span>
+                    <span class="proj-tag">Publicly Published</span>
+                    <span class="proj-tag">Crypto Chatroom Active</span>
+                    <span class="proj-tag">Crowd Sentiment Research</span>
+                </div>
+                <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ View All Indicators →</a>
+            </div>
+        </div>
+
+        <!-- ══ PROFESSIONAL EXPERIENCE ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Professional Experience</span></div>
+
+            <div class="exp-card c-teal">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">MaivenPoint</div>
+                        <div class="exp-company-sub">AvePoint Subsidiary · EdTech SaaS · Singapore</div>
+                    </div>
+                    <div class="exp-meta">Fully Remote</div>
+                </div>
+                <div class="exp-context">
+                    <strong>EdTech SaaS</strong> subsidiary of AvePoint — AI-powered Learning Suite for higher education &amp; public sector: <strong>Curricula</strong> (LMS), <strong>Examena</strong> (digital assessments), <strong>Vitae</strong> (student admin ERP).
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">L1/L2 Functional Application Support Engineer – Singapore Market</span>
+                        <span class="exp-role-dates">Feb 2024 – Dec 2024</span>
+                    </div>
+                    <ul class="exp-bullets">
+                        <li>Delivered L1/L2 functional support for Singapore's education sector across <strong><span class="n">25+</span> major enterprise accounts</strong> (SMU, WMI, BCA, NIEC) — managing full ticket lifecycle across academic, financial/compliance, and client-facing modules, averaging <span class="n">5–8 tickets/week</span>.</li>
+                        <li>Acted as <strong>Point of Contact &amp; Incident Manager</strong> for key enterprise clients; coordinated cross-functional incident response (R&amp;D, QA, L3) minimizing business impact.</li>
+                        <li>Partnered on <strong>Product Support Replication (PSR)</strong>, regression testing, and UAT/production patch deployments — maintaining full SDLC documentation via Jira.</li>
+                        <li>Designed &amp; maintained <strong>weekly statistical dashboards</strong> (Google Sheets) tracking ticket status by assignee, issue type, and resolution stage for stakeholder visibility.</li>
+                        <li>Conducted <span class="n">bi-weekly</span> syncs with institutional stakeholders; delivered technical insights, release timelines, and transparent progress updates.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="exp-card c-blue">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">Moka POS</div>
+                        <div class="exp-company-sub">GoTo Group Subsidiary · Cloud POS · Surabaya, East Java</div>
+                    </div>
+                    <div class="exp-meta">Sep 2016 – Nov 2022 · 6 yrs 3 mos</div>
+                </div>
+                <div class="exp-context">
+                    <strong>Cloud-based POS platform</strong> for SMEs across F&amp;B, retail &amp; service sectors. Ecosystem: mobile cashier, analytics, CRM, inventory, <strong>multi-payment integration</strong> (GoPay, OVO, ShopeePay), GoStore omnichannel.
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">Tech Support &amp; System Implementor Lead – East Java</span>
+                        <span class="exp-role-dates">Dec 2021 – Nov 2022 · 1 yr</span>
+                    </div>
+                    <ul class="exp-bullets">
+                        <li>Led a <span class="n">5-member</span> regional team across Surabaya &amp; Malang; built monitoring dashboards in <strong>Google Sheets + Looker Studio</strong> to track KPIs and <span class="n">200 schedules/month</span>.</li>
+                        <li>Developed <strong>nationwide SOPs, training modules, and technical documentation</strong> covering core features, devices, add-ons, and third-party integrations.</li>
+                    </ul>
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">Sr. Tech Support &amp; System Implementor</span>
+                        <span class="exp-role-dates">Sep 2016 – Dec 2021 · 5 yrs 4 mos</span>
+                    </div>
+                    <ul class="exp-bullets">
+                        <li>Managed end-to-end merchant onboarding: pre-sales consultation → system setup → staff training → data migration → post-go-live support across East Java and nationally via remote.</li>
+                        <li>Designed <strong>network topologies</strong> and deployed multi-device POS systems; drove adoption of integrations including <strong>GoPay, GoFood, GoStore, Jurnal.id</strong>.</li>
+                        <li>Served as Training Facilitator for <strong>Bank Indonesia-Led MSME Digital Training Program</strong> (East Java, Dec 2020).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="exp-card c-indigo">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">VIVERE Group</div>
+                        <div class="exp-company-sub">PT Gema Graha Sarana Tbk · Jakarta Barat</div>
+                    </div>
+                    <div class="exp-meta">Jul – Dec 2014 · Internship</div>
+                </div>
+                <div class="exp-role">
+                    <ul class="exp-bullets">
+                        <li>Provided daily IT support and conducted internal research/feasibility study on <strong>Citrix XenApp 6.5</strong> deployment.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EDUCATION & CERTS ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Education &amp; Certifications</span></div>
+            <div class="edu-row">
+                <div>
+                    <div class="edu-school">Universitas 17 Agustus 1945 Surabaya</div>
+                    <div class="edu-deg">Bachelor's – Financial Management (Attended) · Macro &amp; Financial Markets Focus</div>
+                </div>
+                <div class="edu-date">2015 – 2019</div>
+            </div>
+            <div class="edu-row">
+                <div>
+                    <div class="edu-school">SMK Negeri 7 Semarang</div>
+                    <div class="edu-deg">Vocational Diploma – Network Engineering</div>
+                    <div class="edu-detail">PC Troubleshooting · LAN/WAN · Network Architecture</div>
+                </div>
+                <div class="edu-date">2011 – 2015</div>
+            </div>
+            <div class="edu-row" style="margin-bottom:0;">
+                <div>
+                    <div class="edu-school">Cisco Networking Academy</div>
+                    <div class="edu-deg">CCNA Discovery: Networking for Home and Small Businesses</div>
+                </div>
+                <div class="edu-date">Feb 2014</div>
+            </div>
+        </div>
+
+        <!-- ══ TRADING & RESEARCH ══ -->
+        <div class="section">
+            <div class="section-head"><span class="label">Trading Background, Research &amp; Community</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--teal-light)">Market Background</div>
+                    <div class="trading-item" style="--c:var(--teal)">Active spot trader across <strong style="color:var(--text)">Stocks (IDX)</strong>, <strong style="color:var(--text)">Forex</strong>, and <strong style="color:var(--text)">Crypto</strong> — unleveraged, no futures</div>
+                    <div class="trading-item">Multi-year market participation across macro, technical, and on-chain lenses</div>
+                    <div class="trading-item">Tracks BTC Dominance, altcoin rotation cycles, and macro structure</div>
+                    <div class="trading-item">Power Law and S2F frameworks applied for long-term cycle positioning</div>
+                </div>
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--blue-light)">On-Chain &amp; DeFi Practitioner</div>
+                    <div class="trading-item">Active <strong style="color:var(--text)">ADA staker on Cardano</strong> — native <strong style="color:var(--text)">Lace wallet</strong> (IOG)</div>
+                    <div class="trading-item">Hands-on with <strong style="color:var(--text)">on-chain / off-chain</strong> mechanics, <strong style="color:var(--text)">on-ramp / off-ramp</strong> flows</div>
+                    <div class="trading-item">Experienced with <strong style="color:var(--text)">DEX &amp; CEX</strong> operations, <strong style="color:var(--text)">token swaps</strong>, liquidity dynamics</div>
+                    <div class="trading-item">Self-custody principles, UTXO model, L1/L2 ecosystem literacy</div>
+                </div>
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--gold-light)">Content &amp; Community</div>
+                    <div class="trading-item">Active in <strong style="color:var(--text)">TradingView Cryptocurrency chatroom</strong> — live crowd sentiment monitoring</div>
+                    <div class="trading-item">Publishes <strong style="color:var(--text)">Pine Script v5</strong> indicators on TradingView (public library)</div>
+                    <div class="trading-item">Writes macroeconomic analysis &amp; market commentary on <strong style="color:var(--text)">Medium</strong></div>
+                    <div class="trading-item">All engineering projects open-sourced via <strong style="color:var(--text)">GitHub Pages</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FOOTER ══ -->
+        <div class="resume-footer">
+            <span>© Adiyat Coto</span>
+            <div class="footer-links">
+                <a href="https://adiyatcoto.github.io">Portfolio →</a>
+                <a href="https://linkedin.com/in/adiyatcoto">LinkedIn →</a>
+                <a href="mailto:adiyatcoto@gmail.com">Email →</a>
+            </div>
+        </div>
+
+    </div><!-- /page -->
+
+    <script>
+        // ══ PRINT — dynamic @page size ══
+        window.addEventListener('beforeprint', () => {
+            const el = document.getElementById('resume');
+            el.style.width        = '900px';
+            el.style.maxWidth     = '900px';
+            el.style.padding      = '52px 58px';
+            el.style.boxSizing    = 'border-box';
+            el.style.boxShadow    = 'none';
+            el.style.borderRadius = '0';
+            const h = el.scrollHeight + 10;
+            let s = document.getElementById('_dps');
+            if (!s) { s = document.createElement('style'); s.id = '_dps'; document.head.appendChild(s); }
+            s.innerHTML = `@page { size: 900px ${h}px !important; margin: 0 !important; } body { margin: 0 !important; padding: 0 !important; }`;
+        });
+        window.addEventListener('afterprint', () => {
+            const el = document.getElementById('resume');
+            ['width','maxWidth','padding','boxSizing','boxShadow','borderRadius'].forEach(p => el.style[p] = '');
+            const s = document.getElementById('_dps');
+            if (s) s.remove();
+        });
+
+        // ══ PDF BUTTON ══
+        function downloadPDF() {
+            const el  = document.getElementById('resume');
+            const btn = document.getElementById('dlBtn');
+            const txt = document.getElementById('btnTxt');
+            txt.textContent = 'Generating…';
+            btn.disabled = true;
+            el.classList.add('pdf-mode');
+            document.body.classList.add('pdf-body');
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const h = el.scrollHeight + 10;
+                    const w = 900;
+                    const opt = {
+                        margin: 0,
+                        filename: 'Adiyat_Coto_Resume.pdf',
+                        image: { type: 'png', quality: 1.0 },
+                        html2canvas: {
+                            scale: 2, useCORS: true,
+                            width: w, windowWidth: w,
+                            scrollY: 0, scrollX: 0,
+                            height: h, windowHeight: h,
+                            backgroundColor: window._pdfBg || '#0e1117'
+                        },
+                        jsPDF: { unit: 'px', format: [w, h], orientation: 'portrait', hotfixes: ['px_scaling'] }
+                    };
+                    html2pdf().set(opt).from(el).save()
+                        .then(() => {
+                            el.classList.remove('pdf-mode');
+                            document.body.classList.remove('pdf-body');
+                            txt.textContent = 'Save as PDF';
+                            btn.disabled = false;
+                        })
+                        .catch(() => {
+                            el.classList.remove('pdf-mode');
+                            document.body.classList.remove('pdf-body');
+                            txt.textContent = 'Save as PDF';
+                            btn.disabled = false;
+                        });
+                }, 250);
+            });
+        }
+
+        // ══ THEME SWITCHER ══
+        const BG_COLORS = { dark:'#0e1117', light:'#f7f8fc', slate:'#1a1e2e', ember:'#120e0a' };
+
+        function setTheme(theme, btn) {
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window._pdfBg = BG_COLORS[theme];
+        }
+
+        window._pdfBg = BG_COLORS['dark'];
+    </script>
+</body>
+</html>
