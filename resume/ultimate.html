@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiyat Coto – Resume</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* ══════════════════════════════════════
+           DESIGN TOKENS — DARK (DEFAULT)
+        ══════════════════════════════════════ */
+        :root {
+            --bg:            #0e1117;
+            --bg-card:       #161b25;
+            --bg-card-2:     #1c2333;
+            --bg-raised:     #212840;
+            --border:        #252e42;
+            --border-mid:    #2e3a54;
+            --border-bright: #3d4f6e;
+            --text:          #edf0f7;
+            --text-soft:     #a8b4cc;
+            --text-muted:    #5c6e8a;
+            --text-dim:      #2e3e58;
+            --gold:          #c9a84c;
+            --gold-light:    #e8c97a;
+            --gold-dim:      #3a2e12;
+            --teal:          #4db8a0;
+            --teal-light:    #6ed0bb;
+            --teal-dim:      #0e3028;
+            --blue:          #5b8dee;
+            --blue-light:    #7aaaf5;
+            --blue-dim:      #162040;
+            --indigo:        #8b7cf8;
+            --indigo-dim:    #241e48;
+            --rose:          #e07070;
+            --rose-dim:      #3a1818;
+            --purple:        #b07ef8;
+            --body-bg-1:     #080c14;
+            --body-bg-2:     #050810;
+        }
+
+        /* ── LIGHT THEME ── */
+        [data-theme="light"] {
+            --bg:            #f7f8fc;
+            --bg-card:       #ffffff;
+            --bg-card-2:     #eef1f8;
+            --bg-raised:     #e6eaf5;
+            --border:        #d4daea;
+            --border-mid:    #b8c2d8;
+            --border-bright: #8a9abf;
+            --text:          #0d1420;
+            --text-soft:     #2a3650;
+            --text-muted:    #5a6a8a;
+            --text-dim:      #b0bcd4;
+            --gold:          #8a5e0a;
+            --gold-light:    #b07a18;
+            --gold-dim:      #fef3dc;
+            --teal:          #1a7a64;
+            --teal-light:    #2a9a80;
+            --teal-dim:      #ddf5f0;
+            --blue:          #1a44a8;
+            --blue-light:    #2a5acc;
+            --blue-dim:      #e4ecff;
+            --indigo:        #5030b0;
+            --indigo-dim:    #ede8ff;
+            --rose:          #b03040;
+            --rose-dim:      #feeaed;
+            --purple:        #7040c0;
+            --body-bg-1:     #dce2f0;
+            --body-bg-2:     #ccd4e8;
+        }
+
+        /* ── SLATE THEME ── */
+        [data-theme="slate"] {
+            --bg:            #1a1e2e;
+            --bg-card:       #222638;
+            --bg-card-2:     #2a3048;
+            --bg-raised:     #323858;
+            --border:        #363d5a;
+            --border-mid:    #424a6a;
+            --border-bright: #545e80;
+            --text:          #dde4f5;
+            --text-soft:     #8a9abf;
+            --text-muted:    #525e7a;
+            --text-dim:      #323850;
+            --gold:          #d4a030;
+            --gold-light:    #e8c060;
+            --gold-dim:      #3a2a08;
+            --teal:          #38c4a8;
+            --teal-light:    #5ad4bc;
+            --teal-dim:      #0a3028;
+            --blue:          #6090f0;
+            --blue-light:    #80acff;
+            --blue-dim:      #182048;
+            --indigo:        #9880f8;
+            --indigo-dim:    #281e58;
+            --rose:          #e88080;
+            --rose-dim:      #3a1820;
+            --purple:        #b890f8;
+            --body-bg-1:     #14182a;
+            --body-bg-2:     #0e1220;
+        }
+
+        /* ── EMBER THEME ── */
+        [data-theme="ember"] {
+            --bg:            #120e0a;
+            --bg-card:       #1c1510;
+            --bg-card-2:     #241c14;
+            --bg-raised:     #2e2418;
+            --border:        #382c1e;
+            --border-mid:    #4a3a28;
+            --border-bright: #5e4a34;
+            --text:          #f0e8dc;
+            --text-soft:     #c0a888;
+            --text-muted:    #706050;
+            --text-dim:      #3a2e20;
+            --gold:          #d4900a;
+            --gold-light:    #e8ae30;
+            --gold-dim:      #2a1e04;
+            --teal:          #38b890;
+            --teal-light:    #54d0a8;
+            --teal-dim:      #0a2818;
+            --blue:          #5888d8;
+            --blue-light:    #78a4ec;
+            --blue-dim:      #101828;
+            --indigo:        #9870e0;
+            --indigo-dim:    #201438;
+            --rose:          #d86858;
+            --rose-dim:      #2a1010;
+            --purple:        #b870d8;
+            --body-bg-1:     #0c0a06;
+            --body-bg-2:     #080604;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--text);
+            background: radial-gradient(ellipse 90% 70% at 50% -10%, var(--body-bg-1) 0%, var(--body-bg-2) 100%);
+            min-height: 100vh;
+            padding: 48px 20px 80px;
+            transition: background 0.35s ease, color 0.35s ease;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT / PDF
+        ══════════════════════════════════════ */
+        @media print {
+            html,body { margin:0!important;padding:0!important;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;
+                width:900px!important; }
+            .page { box-shadow:none!important;margin:0!important;
+                width:900px!important;border-radius:0!important; }
+            .no-print { display:none!important; }
+        }
+        .pdf-mode { width:900px!important;max-width:900px!important;
+            margin:0!important;border-radius:0!important;
+            box-shadow:none!important;box-sizing:border-box!important; }
+        .pdf-body { padding:0!important;margin:0!important;width:100%!important;overflow:visible!important; }
+
+        /* ══════════════════════════════════════
+           PAGE CONTAINER
+        ══════════════════════════════════════ */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg);
+            border: 1px solid var(--border-mid);
+            border-radius: 14px;
+            padding: 52px 58px;
+            position: relative;
+            box-shadow:
+                0 0 0 1px rgba(100,130,200,0.06),
+                0 12px 40px rgba(0,0,0,0.55),
+                0 48px 96px rgba(0,0,0,0.35);
+            overflow: hidden;
+            transition: background 0.35s ease, border-color 0.35s ease;
+        }
+        .page::before {
+            content:'';
+            position:absolute; inset:0;
+            background-image: radial-gradient(circle, rgba(100,130,210,0.055) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events:none;
+            border-radius: inherit;
+        }
+        .page::after {
+            content:'';
+            position:absolute; top:-140px; right:-140px;
+            width:480px; height:480px;
+            background: radial-gradient(circle, rgba(77,184,160,0.045) 0%, transparent 65%);
+            pointer-events:none;
+        }
+
+        /* ══════════════════════════════════════
+           FAB + THEME SWITCHER
+        ══════════════════════════════════════ */
+        .fab {
+            position:fixed; bottom:28px; right:28px;
+            z-index:1000; display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+        }
+        .fab-btn {
+            display:flex; align-items:center; gap:9px;
+            background: linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #000) 100%);
+            color: var(--bg); border:none; padding:12px 22px;
+            border-radius:50px; cursor:pointer;
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:13px; letter-spacing:0.3px;
+            box-shadow:0 4px 24px rgba(201,168,76,0.3);
+            transition:all 0.25s ease;
+        }
+        .fab-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(201,168,76,0.42); }
+        .fab-btn:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
+        .fab-btn svg { width:16px; height:16px; fill:currentColor; }
+
+        /* ── MODE TOGGLE (Dark / Light) ── */
+        .mode-toggle {
+            display:flex; align-items:center;
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:50px;
+            padding:4px;
+            gap:2px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.35);
+            transition:background 0.35s ease, border-color 0.35s ease;
+        }
+        .mode-btn {
+            display:flex; align-items:center; gap:7px;
+            padding:8px 16px;
+            border-radius:50px; border:none; cursor:pointer;
+            font-family:'DM Sans',sans-serif;
+            font-size:12.5px; font-weight:700;
+            color:var(--text-muted);
+            background:transparent;
+            transition:all 0.22s ease;
+            white-space:nowrap; letter-spacing:0.2px;
+        }
+        .mode-btn svg { width:15px; height:15px; flex-shrink:0; transition:transform 0.4s ease; }
+        .mode-btn:hover { color:var(--text); }
+        .mode-btn.active {
+            background:var(--bg-card-2);
+            color:var(--text);
+            box-shadow:0 1px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+            border:1px solid var(--border-bright);
+        }
+        .mode-btn.active svg { transform:rotate(20deg); }
+
+        /* ── SECONDARY PALETTE STRIP ── */
+        .palette-strip {
+            display:flex; align-items:center; gap:6px;
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:50px;
+            padding:7px 14px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            transition:background 0.35s ease;
+        }
+        .palette-label {
+            font-family:'DM Mono',monospace;
+            font-size:10px; font-weight:500;
+            text-transform:uppercase; letter-spacing:1.5px;
+            color:var(--text-muted);
+            margin-right:4px;
+        }
+        .pal-btn {
+            width:22px; height:22px; border-radius:50%;
+            border:2px solid transparent;
+            cursor:pointer; transition:all 0.18s ease;
+            outline:none;
+            box-shadow:0 1px 4px rgba(0,0,0,0.3);
+        }
+        .pal-btn:hover { transform:scale(1.2); }
+        .pal-btn.active { border-color:var(--text); box-shadow:0 0 0 3px rgba(255,255,255,0.12); }
+
+        /* ══════════════════════════════════════
+           SECTION SCAFFOLD
+        ══════════════════════════════════════ */
+        .section { margin-bottom: 26px; }
+
+        .sec-head {
+            display:flex; align-items:center; gap:12px;
+            margin-bottom:16px;
+        }
+        .sec-head .label {
+            font-family:'DM Mono',monospace;
+            font-size:11px; font-weight:500;
+            text-transform:uppercase; letter-spacing:3px;
+            color:var(--gold);
+            white-space:nowrap;
+        }
+        .sec-head::before {
+            content:'';
+            width:18px; height:1.5px;
+            background:var(--gold);
+            flex-shrink:0;
+        }
+        .sec-head::after {
+            content:'';
+            flex:1; height:1px;
+            background:linear-gradient(90deg, var(--border-mid) 0%, transparent 100%);
+        }
+
+        /* ══════════════════════════════════════
+           HEADER
+        ══════════════════════════════════════ */
+        .header {
+            margin-bottom:30px;
+            padding-bottom:28px;
+            border-bottom:1px solid var(--border-mid);
+            position:relative;
+        }
+        .header h1 {
+            font-family:'DM Serif Display',Georgia,serif;
+            font-size:52px; font-weight:400;
+            color:var(--text);
+            letter-spacing:-1.5px;
+            line-height:1;
+            margin-bottom:8px;
+        }
+        .header h1 em { font-style:italic; color:var(--gold-light); }
+
+        .header-tagline {
+            font-size:15px; font-weight:400;
+            color:var(--text-soft);
+            margin-bottom:14px;
+            padding-left:3px;
+        }
+        .header-tagline strong { color:var(--text); font-weight:600; }
+
+        .contact-bar {
+            display:flex; flex-wrap:wrap; gap:5px 16px;
+            font-family:'DM Mono',monospace;
+            font-size:12.5px;
+            color:var(--text-muted);
+        }
+        .contact-bar a { color:var(--blue-light); text-decoration:none; transition:color 0.2s; }
+        .contact-bar a:hover { color:var(--teal-light); }
+        .contact-bar .sep { color:var(--text-dim); }
+
+        /* ══════════════════════════════════════
+           SUMMARY
+        ══════════════════════════════════════ */
+        .summary {
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-left:3px solid var(--teal);
+            border-radius:10px;
+            padding:18px 22px;
+            font-size:14px;
+            color:var(--text-soft);
+            line-height:1.8;
+        }
+        .summary p { margin-bottom:10px; }
+        .summary p:last-child { margin-bottom:0; }
+        .summary strong { color:var(--text); font-weight:600; }
+        .pill {
+            display:inline-block;
+            background:rgba(77,184,160,0.1);
+            border:1px solid rgba(77,184,160,0.25);
+            color:var(--teal-light);
+            font-weight:600; font-size:12px;
+            padding:1px 8px; border-radius:5px;
+            font-family:'DM Mono',monospace;
+        }
+        .n {
+            display:inline-block;
+            background:rgba(201,168,76,0.1);
+            border:1px solid rgba(201,168,76,0.28);
+            color:var(--gold-light);
+            font-family:'DM Mono',monospace;
+            font-size:11.5px; font-weight:500;
+            padding:0 6px; border-radius:4px;
+        }
+
+        /* ══════════════════════════════════════
+           SKILLS GRID
+        ══════════════════════════════════════ */
+        .skills-2col { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+
+        .skill-group {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:14px 16px;
+            transition:background 0.35s ease;
+        }
+        .skill-group-title {
+            font-family:'DM Mono',monospace;
+            font-size:11px; font-weight:500;
+            text-transform:uppercase; letter-spacing:2px;
+            color:var(--gold);
+            margin-bottom:10px; padding-bottom:8px;
+            border-bottom:1px solid var(--border);
+        }
+        .skill-tags { display:flex; flex-wrap:wrap; gap:5px; }
+        .skill-tag {
+            font-family:'DM Mono',monospace;
+            font-size:11px; padding:3px 9px;
+            border-radius:5px; border:1px solid; font-weight:400;
+        }
+        .st-teal   { color:var(--teal-light);   border-color:rgba(77,184,160,0.25);  background:rgba(77,184,160,0.07); }
+        .st-blue   { color:var(--blue-light);   border-color:rgba(91,141,238,0.25);  background:rgba(91,141,238,0.07); }
+        .st-gold   { color:var(--gold-light);   border-color:rgba(201,168,76,0.25);  background:rgba(201,168,76,0.07); }
+        .st-indigo { color:var(--indigo);       border-color:rgba(139,124,248,0.25); background:rgba(139,124,248,0.07); }
+        .st-rose   { color:var(--rose);         border-color:rgba(224,112,112,0.25); background:rgba(224,112,112,0.07); }
+        .st-soft   { color:var(--text-soft);    border-color:var(--border-mid);      background:var(--bg-card-2); }
+
+        /* tools strip */
+        .tools-strip {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-top:2px solid var(--blue);
+            border-radius:10px;
+            padding:12px 16px;
+            font-size:13px; line-height:1.7;
+            color:var(--text-soft);
+        }
+        .tools-strip p { margin-bottom:5px; }
+        .tools-strip p:last-child { margin-bottom:0; }
+        .tools-strip strong { color:var(--text); font-weight:600; }
+
+        /* ══════════════════════════════════════
+           EXPERIENCE CARDS
+        ══════════════════════════════════════ */
+        .exp-card {
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:12px;
+            overflow:hidden;
+            margin-bottom:12px;
+            position:relative;
+            transition:background 0.35s ease;
+        }
+        .exp-card::before {
+            content:'';
+            position:absolute; left:0; top:0; bottom:0;
+            width:3px;
+        }
+        .exp-card.c-teal::before   { background:linear-gradient(180deg, var(--teal), rgba(77,184,160,0.15)); }
+        .exp-card.c-blue::before   { background:linear-gradient(180deg, var(--blue), rgba(91,141,238,0.15)); }
+        .exp-card.c-indigo::before { background:linear-gradient(180deg, var(--indigo), rgba(139,124,248,0.15)); }
+        .exp-card.c-gold::before   { background:linear-gradient(180deg, var(--gold), rgba(201,168,76,0.15)); }
+        .exp-card.c-purple::before { background:linear-gradient(180deg, var(--purple), rgba(176,126,248,0.15)); }
+
+        .exp-top {
+            display:flex; justify-content:space-between; align-items:flex-start;
+            padding:13px 18px 12px;
+            background:var(--bg-card-2);
+            border-bottom:1px solid var(--border);
+            gap:14px;
+            transition:background 0.35s ease;
+        }
+        .exp-company {
+            font-family:'DM Serif Display',Georgia,serif;
+            font-size:20px; font-weight:400;
+            color:var(--text); letter-spacing:-0.3px;
+        }
+        .exp-company-sub {
+            font-size:12.5px; color:var(--text-muted);
+            margin-top:2px;
+        }
+        .exp-meta {
+            font-family:'DM Mono',monospace;
+            font-size:11px; color:var(--text-muted);
+            text-align:right; flex-shrink:0; line-height:1.7;
+        }
+        .exp-context {
+            padding:8px 18px 9px;
+            font-size:12.5px; color:var(--text-muted);
+            background:rgba(0,0,0,0.15);
+            border-bottom:1px solid var(--border);
+            font-style:italic; line-height:1.6;
+        }
+        .exp-context strong { font-style:normal; color:var(--text-soft); font-weight:600; }
+
+        .exp-role { padding:12px 18px 14px; }
+        .exp-role + .exp-role { border-top:1px dashed var(--border-mid); }
+
+        .exp-role-head {
+            display:flex; justify-content:space-between; align-items:baseline;
+            margin-bottom:7px; gap:12px;
+        }
+        .exp-role-title {
+            font-size:15px; font-weight:600;
+            color:var(--text); letter-spacing:-0.1px;
+        }
+        .exp-role-dates {
+            font-family:'DM Mono',monospace;
+            font-size:11px; color:var(--text-muted);
+            white-space:nowrap; flex-shrink:0;
+        }
+        .exp-role-summary {
+            font-size:13.5px; color:var(--text-soft);
+            line-height:1.65; margin-bottom:8px;
+        }
+        .exp-bullets { list-style:none; }
+        .exp-bullets li {
+            font-size:13.5px; color:var(--text-soft);
+            padding-left:16px; position:relative;
+            margin-bottom:5px; line-height:1.7;
+        }
+        .exp-bullets li::before {
+            content:'›'; position:absolute; left:2px;
+            color:var(--teal); font-weight:700; font-size:15px; line-height:1.6;
+        }
+        .exp-bullets li:last-child { margin-bottom:0; }
+        .exp-bullets strong { color:var(--text); font-weight:600; }
+
+        /* ══════════════════════════════════════
+           PROJECTS GRID
+        ══════════════════════════════════════ */
+        .proj-2col { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+        .proj-3col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+        .proj-full { margin-bottom:10px; }
+        .proj-full:last-child { margin-bottom:0; }
+
+        .proj-card {
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:10px;
+            padding:14px 16px;
+            position:relative; overflow:hidden;
+            transition:background 0.35s ease;
+        }
+        .proj-card::after {
+            content:'';
+            position:absolute; top:0; left:0; right:0; height:2px;
+        }
+        .proj-card.c-teal::after   { background:linear-gradient(90deg, var(--teal), transparent); }
+        .proj-card.c-gold::after   { background:linear-gradient(90deg, var(--gold), transparent); }
+        .proj-card.c-blue::after   { background:linear-gradient(90deg, var(--blue), transparent); }
+        .proj-card.c-indigo::after { background:linear-gradient(90deg, var(--indigo), transparent); }
+        .proj-card.c-rose::after   { background:linear-gradient(90deg, #00e5a0, #4fc3f7 50%, var(--indigo) 100%); }
+        .proj-card.c-purple::after { background:linear-gradient(90deg, var(--purple), transparent); }
+
+        .proj-type {
+            font-family:'DM Mono',monospace;
+            font-size:10px; font-weight:500;
+            text-transform:uppercase; letter-spacing:1.5px;
+            margin-bottom:5px;
+        }
+        .proj-name {
+            font-family:'DM Serif Display',serif;
+            font-size:17px; font-weight:400;
+            color:var(--text); margin-bottom:5px;
+            line-height:1.3; letter-spacing:-0.2px;
+        }
+        .proj-desc {
+            font-size:12.5px; color:var(--text-muted);
+            line-height:1.65; margin-bottom:9px;
+        }
+        .proj-desc strong { color:var(--text-soft); font-weight:600; }
+        .proj-tags { display:flex; flex-wrap:wrap; gap:4px; }
+        .proj-tag {
+            font-family:'DM Mono',monospace;
+            font-size:10px; padding:2px 7px;
+            border-radius:4px;
+            background:var(--bg-card-2);
+            border:1px solid var(--border-mid);
+            color:var(--text-muted);
+        }
+        .proj-link {
+            font-family:'DM Mono',monospace;
+            font-size:11px; color:var(--blue-light);
+            text-decoration:none; display:block; margin-top:8px;
+            transition:color 0.2s;
+        }
+        .proj-link:hover { color:var(--teal-light); }
+
+        /* Work key projects (compact) */
+        .work-proj-card {
+            padding:10px 14px;
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-top:2px solid var(--rose);
+            border-radius:8px;
+        }
+        .work-proj-company {
+            font-family:'DM Mono',monospace;
+            font-size:10px; font-weight:600; letter-spacing:1px;
+            color:var(--rose); text-transform:uppercase; margin-bottom:3px;
+        }
+        .work-proj-role {
+            font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:2px;
+        }
+        .work-proj-sub { font-size:12.5px; color:var(--text-soft); line-height:1.4; margin-bottom:3px; }
+        .work-proj-date { font-size:11px; color:var(--text-muted); font-family:'DM Mono',monospace; }
+
+        /* ══════════════════════════════════════
+           EDUCATION
+        ══════════════════════════════════════ */
+        .edu-row {
+            display:flex; justify-content:space-between; align-items:flex-start;
+            padding:11px 16px;
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:10px;
+            margin-bottom:8px; gap:16px;
+            transition:background 0.35s ease;
+        }
+        .edu-row:last-child { margin-bottom:0; }
+        .edu-school {
+            font-family:'DM Serif Display',serif;
+            font-size:17px; font-weight:400;
+            color:var(--text); margin-bottom:3px; letter-spacing:-0.2px;
+        }
+        .edu-deg { font-size:14px; color:var(--text-soft); font-weight:400; }
+        .edu-detail { font-size:12px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px; }
+        .edu-date {
+            font-family:'DM Mono',monospace;
+            font-size:11px; color:var(--text-muted);
+            white-space:nowrap; flex-shrink:0; margin-top:4px;
+        }
+
+        /* ══════════════════════════════════════
+           TRADING / BEYOND
+        ══════════════════════════════════════ */
+        .trading-3col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+        .trading-col {
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:10px;
+            padding:14px 16px;
+            transition:background 0.35s ease;
+        }
+        .trading-col-title {
+            font-family:'DM Mono',monospace;
+            font-size:11px; font-weight:500;
+            text-transform:uppercase; letter-spacing:2px;
+            margin-bottom:10px; padding-bottom:8px;
+            border-bottom:1px solid var(--border);
+        }
+        .trading-item {
+            font-size:13.5px; color:var(--text-soft);
+            margin-bottom:6px; padding-left:14px;
+            position:relative; line-height:1.6;
+        }
+        .trading-item::before {
+            content:'▸'; position:absolute; left:0;
+            font-size:9px; top:4px; color:var(--gold);
+        }
+        .trading-item:last-child { margin-bottom:0; }
+        .trading-item strong { color:var(--text); font-weight:600; }
+
+        /* ══════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════ */
+        .resume-footer {
+            margin-top:30px; padding-top:18px;
+            border-top:1px solid var(--border-mid);
+            display:flex; justify-content:space-between; align-items:center;
+        }
+        .resume-footer span {
+            font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim);
+        }
+        .footer-links { display:flex; gap:18px; }
+        .footer-links a {
+            font-family:'DM Mono',monospace; font-size:11px;
+            color:var(--text-muted); text-decoration:none; transition:color 0.2s;
+        }
+        .footer-links a:hover { color:var(--gold-light); }
+    </style>
+</head>
+<body>
+
+    <!-- ══ FAB ══ -->
+    <div class="fab no-print">
+        <!-- Primary: Dark / Light toggle -->
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="modeDark" onclick="setMode('dark')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                Dark
+            </button>
+            <button class="mode-btn" id="modeLight" onclick="setMode('light')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                Light
+            </button>
+        </div>
+        <!-- Secondary: palette accents -->
+        <div class="palette-strip" style="align-self:flex-end;">
+            <span class="palette-label">Palette</span>
+            <button class="pal-btn active" id="palDefault" style="background:linear-gradient(135deg,#4db8a0,#5b8dee)" onclick="setPalette('default',this)" title="Ocean (Default)"></button>
+            <button class="pal-btn" id="palSlate"   style="background:linear-gradient(135deg,#6090f0,#9880f8)" onclick="setPalette('slate',this)"   title="Slate"></button>
+            <button class="pal-btn" id="palEmber"   style="background:linear-gradient(135deg,#d4900a,#e07070)" onclick="setPalette('ember',this)"   title="Ember"></button>
+            <button class="pal-btn" id="palForest"  style="background:linear-gradient(135deg,#38b890,#b890f8)" onclick="setPalette('forest',this)"  title="Forest"></button>
+        </div>
+        <!-- PDF button -->
+        <button class="fab-btn" id="dlBtn" onclick="downloadPDF()" style="align-self:flex-end;">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <span id="btnTxt">Save as PDF</span>
+        </button>
+    </div>
+
+    <div class="page" id="resume">
+
+        <!-- ══ HEADER ══ -->
+        <div class="header">
+            <h1>Adiyat <em>Coto</em></h1>
+            <div class="header-tagline">
+                <strong>Sr. Technical Support &amp; SaaS Implementation · Product Support Specialist</strong>
+                &nbsp;·&nbsp; Functional Analysis &amp; Incident Management · POS Systems · Merchant Services · EdTech &nbsp;·&nbsp; B2B / B2B2C
+            </div>
+            <div class="contact-bar">
+                <span>Semarang, Indonesia</span>
+                <span class="sep">·</span>
+                <span>+62 823 3172 2481 (WhatsApp)</span>
+                <span class="sep">·</span>
+                <a id="mailtoLink" href="#">coto.adiyat&#64;gmail.com</a>
+                <span class="sep">·</span>
+                <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a>
+                <span class="sep">·</span>
+                <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
+            </div>
+        </div>
+
+        <!-- ══ PROFESSIONAL SUMMARY ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Professional Summary</span></div>
+            <div class="summary">
+                <p>Technical Implementation &amp; Product Support Specialist with <strong>7+ years</strong> across <strong>POS systems, merchant services, and EdTech ERP platforms</strong> — bridging both implementation and ongoing support throughout the full product lifecycle.</p>
+                <p>Hands-on across <strong>SaaS implementation</strong> (system setup, network config, data migration, onboarding, training, post–go-live) and <strong>L1/L2 Functional Support &amp; Incident Management</strong> — working closely with Product, Engineering, QA, and Sales at every stage. Experienced in <strong>Change &amp; Release Management</strong>: <strong>PSR</strong>, regression testing, UAT, <strong>FSDs</strong>, and effort estimations — covering the full <strong>SDLC</strong> from issue identification to production release.</p>
+                <p>Outside of work, genuinely into crypto — not just on paper. Actively stakes <strong>ADA on Cardano</strong> via the native <strong>Lace wallet</strong> (IOG), trades spot across <strong>Stocks (IDX) and Crypto</strong>, and has been building crypto tools with AI assistance: a <strong>Streamlit/Python sentiment intelligence app</strong> (Gemini API), live market dashboards via the <span class="pill">Binance WebSocket API</span>, and analysis tools exploring <strong>Power Law, RSA confluence, BTC correlation, and order flow</strong>. Follows the TradingView Crypto chatroom, writes market notes on Medium, and publishes <strong>Pine Script v5</strong> indicators publicly. That combination of deep B2B support experience with genuine crypto market participation is fairly rare.</p>
+            </div>
+        </div>
+
+        <!-- ══ CORE COMPETENCIES ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Core Competencies</span></div>
+            <div class="skills-2col">
+                <div class="skill-group">
+                    <div class="skill-group-title">Technical Support &amp; Implementation</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag st-blue">SaaS Platform Implementation (B2B/B2B2C)</span>
+                        <span class="skill-tag st-blue">L1/L2 Functional Support &amp; Ticket Lifecycle</span>
+                        <span class="skill-tag st-blue">Incident Management &amp; Root Cause Analysis</span>
+                        <span class="skill-tag st-blue">Product Support Replication (PSR) &amp; Bug Analysis</span>
+                        <span class="skill-tag st-soft">System Integration (POS, Payment Gateways, ERP)</span>
+                        <span class="skill-tag st-soft">Change &amp; Release Coordination (FSDs, CRs, Patches)</span>
+                        <span class="skill-tag st-soft">UAT &amp; Production Patch Validation</span>
+                        <span class="skill-tag st-soft">SDLC Exposure &amp; Functional Documentation</span>
+                        <span class="skill-tag st-soft">Cross-functional Collaboration (Sales, Product, Dev, QA)</span>
+                        <span class="skill-tag st-soft">Customer Success &amp; Stakeholder Communication</span>
+                        <span class="skill-tag st-soft">SOP &amp; Training Material Development</span>
+                    </div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-group-title">Market Knowledge &amp; DeFi</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag st-teal">Technical Analysis (TA) · Multi-TF Confluence (RSA)</span>
+                        <span class="skill-tag st-teal">Power Law Patterns · BTC Correlation / Alpha</span>
+                        <span class="skill-tag st-teal">Volume Dominance · Order Flow / Footprint</span>
+                        <span class="skill-tag st-gold">Macro Analysis · Crowd Sentiment Analysis</span>
+                        <span class="skill-tag st-gold">TradingView Pine Script v5</span>
+                        <span class="skill-tag st-gold">Stocks (IDX) · Crypto Spot</span>
+                        <span class="skill-tag st-teal">On-Chain / Off-Chain · On-Ramp / Off-Ramp</span>
+                        <span class="skill-tag st-teal">DEX &amp; CEX Operations · Token Swap Mechanics</span>
+                        <span class="skill-tag st-blue">ADA Staking — Cardano · Lace Wallet (IOG)</span>
+                        <span class="skill-tag st-blue">UTXO Model · Self-Custody · DeFi Protocol Literacy</span>
+                        <span class="skill-tag st-soft">L1/L2 Concepts · CEX Operational Flows</span>
+                    </div>
+                </div>
+            </div>
+            <div class="tools-strip">
+                <p><strong>Tools:</strong> Jira (Issue Tracking, PSR, Regression Testing, Workflow Mgmt) &nbsp;·&nbsp; Google Workspace (Sheets, Slides, Docs, Drive, Looker Studio) &nbsp;·&nbsp; Microsoft 365 (Excel, Teams, SharePoint) &nbsp;·&nbsp; Kissflow &nbsp;·&nbsp; Trello &nbsp;·&nbsp; Slack</p>
+                <p><strong>Tech Stack (Self-Taught / AI-Assisted):</strong> Python · Streamlit · Pandas / NumPy / Plotly &nbsp;·&nbsp; BeautifulSoup · Gemini API (Google AI) &nbsp;·&nbsp; JavaScript (ES6+) · WebSocket / REST API · D3.js · Chart.js · HTML5 Canvas · Tailwind CSS &nbsp;·&nbsp; Binance API · CryptoCompare API &nbsp;·&nbsp; GitHub Pages</p>
+                <p><strong>Languages:</strong> Bahasa Indonesia (Native) &nbsp;·&nbsp; English (Fluent)</p>
+            </div>
+        </div>
+
+        <!-- ══ PROFESSIONAL EXPERIENCE ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Professional Experience</span></div>
+
+            <!-- MaivenPoint -->
+            <div class="exp-card c-teal">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">MaivenPoint</div>
+                        <div class="exp-company-sub">AvePoint Subsidiary · EdTech SaaS · Singapore · Fully Remote</div>
+                    </div>
+                    <div class="exp-meta">Fully Remote<br>Feb 2024 – Dec 2024</div>
+                </div>
+                <div class="exp-context">
+                    <strong>EdTech SaaS</strong> subsidiary of AvePoint — AI-powered Learning Suite for <strong>higher education &amp; public sector agencies</strong>: <strong>Curricula</strong> (LMS), <strong>Examena</strong> (digital assessments), <strong>Vitae</strong> (student administration ERP).
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">L1/L2 Functional Application Support Engineer – Singapore Market</span>
+                        <span class="exp-role-dates">Feb 2024 – Dec 2024</span>
+                    </div>
+                    <p class="exp-role-summary">
+                        Delivered L1/L2 Functional Application Support for Singapore's education sector, ensuring operational continuity and high reliability for mission-critical systems across <strong><span class="n">25+</span> major enterprise accounts</strong> (SMU, WMI, BCA, NIEC) in a <strong>fully remote</strong> setup.
+                    </p>
+                    <ul class="exp-bullets">
+                        <li>Managed the full ticket lifecycle across <strong>academic &amp; operational</strong> (course setup, passing grade, certificates), <strong>financial &amp; compliance</strong> (GST, subsidy schemes, billing, invoicing), and <strong>client-facing</strong> modules — averaging <span class="n">5–8 tickets/week</span> with high resolution efficiency.</li>
+                        <li>Acted as <strong>Point of Contact (POC) &amp; Incident Manager</strong> for key enterprise clients; coordinated cross-functional incident response (R&amp;D, QA, L3 Dev) to minimize business impact.</li>
+                        <li>Performed Level 2 troubleshooting for functional and integration issues, managing a case portfolio across <span class="n">3 categories</span>: Defect, Non-Defect functional support, and Change Request management.</li>
+                        <li>Partnered with R&amp;D, QA, and L3 Development teams on <strong>Product Support Replication (PSR)</strong>, regression testing, and UAT/production patch deployments to ensure total system stability.</li>
+                        <li>Oversaw bug tracking, documentation, and change requests in Jira — designed and maintained <strong>weekly statistical dashboards</strong> (Google Sheets) to give stakeholders clear visibility into ticket status by assignee, issue type, and resolution stage.</li>
+                        <li>Conducted <span class="n">bi-weekly</span> syncs with key institutional stakeholders, delivering technical insights, progress updates, and transparent release timelines.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Moka -->
+            <div class="exp-card c-blue">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">Moka POS</div>
+                        <div class="exp-company-sub">GoTo Group Subsidiary · Cloud-based POS · Surabaya, East Java · Hybrid</div>
+                    </div>
+                    <div class="exp-meta">Sep 2016 – Nov 2022<br>6 yrs 3 mos</div>
+                </div>
+                <div class="exp-context">
+                    <strong>Cloud-based POS platform</strong> for <strong>SMEs across F&amp;B, retail &amp; service sectors</strong>. Ecosystem: mobile cashier app, back-office analytics, CRM, inventory management, <strong>multi-payment integration</strong> (GoPay, OVO, ShopeePay), and GoStore omnichannel platform.
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">Tech Support &amp; System Implementor Lead – East Java</span>
+                        <span class="exp-role-dates">Dec 2021 – Nov 2022 · 1 yr</span>
+                    </div>
+                    <p class="exp-role-summary">Led regional technical operations for East Java, overseeing onsite support teams and ensuring alignment with national service standards and business objectives.</p>
+                    <ul class="exp-bullets">
+                        <li>Supervised and coached a <span class="n">5-member</span> technical support team across <strong>Surabaya and Malang</strong> offices, driving improvements in performance metrics and KPI achievement.</li>
+                        <li>Designed and implemented monitoring dashboards and internal tools via <strong>Google Forms, Google Sheets, and Looker Studio</strong> to track team activity, optimize resource allocation, and measure OKR progress.</li>
+                        <li>Coordinated with Sales teams and Account Managers on merchant onboarding and after-sales activities — managing an average of <span class="n">10 schedules/day</span> and <span class="n">200 schedules/month</span> across the team.</li>
+                        <li>Developed <strong>nationwide SOPs, training modules, and technical documentation</strong> to standardize implementation processes and scale best practices, covering all core features, devices, add-ons, and third-party integrations.</li>
+                    </ul>
+                </div>
+                <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">Sr. Tech Support &amp; System Implementor</span>
+                        <span class="exp-role-dates">Sep 2016 – Dec 2021 · 5 yrs 4 mos</span>
+                    </div>
+                    <p class="exp-role-summary">Managed end-to-end merchant onboarding from <strong>pre-sales consultation</strong> through <strong>post-sales technical support</strong>, delivering POS system implementations across diverse SME industries in East Java and <strong>nationwide</strong> remotely.</p>
+                    <ul class="exp-bullets">
+                        <li>Executed onsite and remote system setup, staff training, and data migration — covering both <strong>front-office and back-office</strong> environments for merchant go-live.</li>
+                        <li>Designed <strong>network topologies</strong> and deployed <strong>multi-device POS systems</strong> tailored to client-specific operational requirements (Routers, Access Points, Printers, Tablets, Mobile Phones).</li>
+                        <li>Partnered with Sales and Account Managers on technical consultation and knowledge transfer; collaborated with Product and Customer Support on issue escalation and resolution.</li>
+                        <li>Drove adoption of advanced features and third-party integrations (<strong>GoPay, GoFood, GoStore, Jurnal.id</strong>) to increase client satisfaction and retention.</li>
+                        <li>Served as <strong>Training Facilitator</strong> for the <strong>Bank Indonesia-Led MSME Digital Training Program</strong> (Jawa Timur, Dec 2020).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- VIVERE -->
+            <div class="exp-card c-purple">
+                <div class="exp-top">
+                    <div>
+                        <div class="exp-company">VIVERE Group</div>
+                        <div class="exp-company-sub">PT Gema Graha Sarana Tbk · Jakarta Barat · On-site</div>
+                    </div>
+                    <div class="exp-meta">Jul – Dec 2014<br>Internship</div>
+                </div>
+                <div class="exp-context">
+                    Leading Indonesian <strong>multidisciplinary company</strong> — interior contracting, furniture manufacturing, and MEP services for residential &amp; commercial clients.
+                </div>
+                <div class="exp-role">
+                    <ul class="exp-bullets">
+                        <li>Provided <strong>daily IT support</strong> to employees and resolved technical issues across the organization.</li>
+                        <li>Conducted internal research and feasibility study on <strong>Citrix XenApp 6.5</strong> deployment.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ PERSONAL PROJECTS (CRYPTO / SELF-BUILT) ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Personal Projects — Built with AI Assistance</span></div>
+            <div class="proj-2col">
+                <div class="proj-card c-teal">
+                    <div class="proj-type" style="color:var(--teal-light)">Live Dashboard · Binance API · JavaScript</div>
+                    <div class="proj-name">Top 100 Crypto Market Dashboard</div>
+                    <div class="proj-desc">Real-time market intelligence covering the top 100 USDT pairs by volume. Candlestick charting, volume dominance, performance ranking, BTC correlation matrix, and Alpha scanner across multiple timeframes.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">WebSocket Stream</span>
+                        <span class="proj-tag">Pearson Correlation</span>
+                        <span class="proj-tag">Multi-TF (1h/4h/24h/1w)</span>
+                        <span class="proj-tag">Chart.js · Candlestick</span>
+                        <span class="proj-tag">Volume Dominance</span>
+                        <span class="proj-tag">Alpha Scanner</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/cryptodash/">↗ adiyatcoto.github.io/cryptodash/</a>
+                </div>
+                <div class="proj-card c-gold">
+                    <div class="proj-type" style="color:var(--gold-light)">Analysis Tool · D3.js · CryptoCompare API</div>
+                    <div class="proj-name">Power Law Generator</div>
+                    <div class="proj-desc">Log-log chart tool for Power Law pattern exploration on any crypto asset. Plots slope and R² as a confidence indicator, deviation bands (±2σ), and a market scanner comparing 100+ assets — built for long-term cycle positioning.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Log-Log Chart</span>
+                        <span class="proj-tag">Auto Slope + R²</span>
+                        <span class="proj-tag">D3.js Zoom/Pan</span>
+                        <span class="proj-tag">Deviation Bands ±2σ</span>
+                        <span class="proj-tag">Market Scanner</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/powerlaw/">↗ adiyatcoto.github.io/powerlaw/</a>
+                </div>
+                <div class="proj-card c-blue">
+                    <div class="proj-type" style="color:var(--blue-light)">Analysis Tool · Live WebSocket · JavaScript</div>
+                    <div class="proj-name">RSA Confluence System</div>
+                    <div class="proj-desc">Multi-timeframe structural analysis built around a personal trading framework. Live WebSocket feed, RSA level mapping across 6 timeframes (Daily–Yearly), footprint/order flow overlay, market maker behavior detection, and probabilistic scenario mapping.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Live WebSocket</span>
+                        <span class="proj-tag">6-TF Structural Map</span>
+                        <span class="proj-tag">Order Flow Overlay</span>
+                        <span class="proj-tag">MM Behavior Signals</span>
+                        <span class="proj-tag">Probabilistic Scenarios</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/svn/">↗ adiyatcoto.github.io/svn/</a>
+                </div>
+                <div class="proj-card c-rose">
+                    <div class="proj-type" style="color:var(--teal-light)">Python · Streamlit · Gemini AI</div>
+                    <div class="proj-name">TV Intelligence System v4.0</div>
+                    <div class="proj-desc">Scrapes TradingView chatroom data, runs weighted NLP sentiment scoring (bull/bear lexicons + negation detection), computes a Fear &amp; Greed Index, flags anomalies via Z-score, and uses <strong>Gemini 2.5 Flash</strong> to generate behavioral user profiles and market summaries. First Python project shipped end-to-end.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Python · Streamlit</span>
+                        <span class="proj-tag">BeautifulSoup Scraper</span>
+                        <span class="proj-tag">Gemini 2.5 Flash</span>
+                        <span class="proj-tag">Weighted NLP Sentiment</span>
+                        <span class="proj-tag">Fear &amp; Greed Index</span>
+                        <span class="proj-tag">Z-Score Anomaly</span>
+                        <span class="proj-tag">Plotly Heatmaps</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ adiyatcoto.github.io/tv/</a>
+                </div>
+            </div>
+            <div class="proj-card c-indigo proj-full">
+                <div class="proj-type" style="color:var(--indigo)">TradingView · Pine Script v5</div>
+                <div class="proj-name">TradingView Pine Script Indicators — Public Library</div>
+                <div class="proj-desc">Custom indicators in Pine Script v5 built around personal trading frameworks — market structure, confluence logic, and statistical ideas visualized for practical use. All published publicly on TradingView. Also an active member of the TradingView Cryptocurrency chatroom, following real-time crowd sentiment as part of ongoing market research.</div>
+                <div class="proj-tags">
+                    <span class="proj-tag">Pine Script v5</span>
+                    <span class="proj-tag">Market Structure</span>
+                    <span class="proj-tag">Confluence Logic</span>
+                    <span class="proj-tag">Publicly Published</span>
+                    <span class="proj-tag">Crypto Chatroom Active</span>
+                    <span class="proj-tag">Crowd Sentiment Research</span>
+                </div>
+                <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ View All Indicators →</a>
+            </div>
+        </div>
+
+        <!-- ══ KEY WORK PROJECTS ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Key Professional Projects</span></div>
+            <div class="proj-3col">
+                <div class="work-proj-card">
+                    <div class="work-proj-company">MaivenPoint</div>
+                    <div class="work-proj-role">POC / Incident Manager</div>
+                    <div class="work-proj-sub">Building and Construction Authority (BCA) Academy – Singapore</div>
+                    <div class="work-proj-date">May 2024 – Dec 2024</div>
+                </div>
+                <div class="work-proj-card">
+                    <div class="work-proj-company">Moka POS</div>
+                    <div class="work-proj-role">Contributor</div>
+                    <div class="work-proj-sub">Technical Support Team – Training Material &amp; Knowledge Resource Development</div>
+                    <div class="work-proj-date">Jan 2022 – Nov 2022</div>
+                </div>
+                <div class="work-proj-card">
+                    <div class="work-proj-company">Moka POS</div>
+                    <div class="work-proj-role">Training Facilitator</div>
+                    <div class="work-proj-sub">Bank Indonesia-Led MSME Training Program – Jawa Timur</div>
+                    <div class="work-proj-date">Dec 2020</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EDUCATION & CERTIFICATIONS ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Education &amp; Certifications</span></div>
+            <div class="edu-row">
+                <div>
+                    <div class="edu-school">Universitas 17 Agustus 1945 Surabaya</div>
+                    <div class="edu-deg">Bachelor's Degree – Financial Management (Attended)</div>
+                    <div class="edu-detail">Macro &amp; Financial Markets Focus</div>
+                </div>
+                <div class="edu-date">2015 – 2019</div>
+            </div>
+            <div class="edu-row">
+                <div>
+                    <div class="edu-school">SMK Negeri 7 Semarang</div>
+                    <div class="edu-deg">Vocational Diploma – Network Engineering</div>
+                    <div class="edu-detail">PC Troubleshooting · LAN/WAN · Network Architecture · 4-year program</div>
+                </div>
+                <div class="edu-date">2011 – 2015</div>
+            </div>
+            <div class="edu-row" style="margin-bottom:0">
+                <div>
+                    <div class="edu-school">Cisco Networking Academy</div>
+                    <div class="edu-deg">CCNA Discovery: Networking for Home and Small Businesses</div>
+                </div>
+                <div class="edu-date">Feb 2014</div>
+            </div>
+        </div>
+
+        <!-- ══ TRADING & BEYOND ══ -->
+        <div class="section">
+            <div class="sec-head"><span class="label">Trading Background, Research &amp; Beyond Work</span></div>
+            <div class="trading-3col">
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--teal-light)">Market Background</div>
+                    <div class="trading-item">Active spot trader — <strong>Stocks (IDX)</strong> and <strong>Crypto</strong> — unleveraged, no futures</div>
+                    <div class="trading-item">Multi-year participation across macro, technical, and on-chain lenses</div>
+                    <div class="trading-item">Tracks BTC Dominance, altcoin rotation cycles, and macro structure</div>
+                    <div class="trading-item">Power Law and S2F frameworks applied for long-term cycle positioning</div>
+                </div>
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--blue-light)">On-Chain &amp; DeFi Practitioner</div>
+                    <div class="trading-item">Active <strong>ADA staker on Cardano</strong> — native <strong>Lace wallet</strong> (IOG)</div>
+                    <div class="trading-item">Hands-on with <strong>on-chain / off-chain</strong> mechanics, <strong>on-ramp / off-ramp</strong> flows</div>
+                    <div class="trading-item">Experienced with <strong>DEX &amp; CEX</strong> operations, <strong>token swaps</strong>, liquidity dynamics</div>
+                    <div class="trading-item">Self-custody principles, UTXO model, L1/L2 ecosystem literacy</div>
+                </div>
+                <div class="trading-col">
+                    <div class="trading-col-title" style="color:var(--gold-light)">Content &amp; Community</div>
+                    <div class="trading-item">Active in <strong>TradingView Cryptocurrency chatroom</strong> — live crowd sentiment monitoring</div>
+                    <div class="trading-item">Publishes <strong>Pine Script v5</strong> indicators on TradingView (public library)</div>
+                    <div class="trading-item">Writes macroeconomic analysis &amp; market commentary on <strong>Medium</strong></div>
+                    <div class="trading-item">All engineering projects open-sourced via <strong>GitHub Pages</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FOOTER ══ -->
+        <div class="resume-footer">
+            <span>© Adiyat Coto</span>
+            <div class="footer-links">
+                <a href="https://adiyatcoto.github.io">Portfolio →</a>
+                <a href="https://linkedin.com/in/adiyatcoto">LinkedIn →</a>
+                <a id="footerMailLink" href="#">Email →</a>
+            </div>
+        </div>
+
+    </div><!-- /page -->
+
+    <script>
+        // ══════════════════════════════════════
+        // TWO-AXIS THEME SYSTEM: mode × palette
+        // ══════════════════════════════════════
+        const PALETTES = {
+            default: {},
+            slate: {
+                '--teal':'#6090f0','--teal-light':'#80acff','--teal-dim':'#182048',
+                '--gold':'#9880f8','--gold-light':'#b8a8ff','--gold-dim':'#241e48',
+                '--blue':'#38c4a8','--blue-light':'#5ad4bc','--blue-dim':'#0a3028',
+                '--indigo':'#60b0f0','--purple':'#9880f8'
+            },
+            ember: {
+                '--teal':'#d4900a','--teal-light':'#e8ae30','--teal-dim':'#2a1e04',
+                '--gold':'#e07070','--gold-light':'#f09898','--gold-dim':'#3a1818',
+                '--blue':'#5888d8','--blue-light':'#78a4ec','--blue-dim':'#101828',
+                '--indigo':'#9870e0','--purple':'#b870d8'
+            },
+            forest: {
+                '--teal':'#38b890','--teal-light':'#54d0a8','--teal-dim':'#0a2818',
+                '--gold':'#b890f8','--gold-light':'#d0b8ff','--gold-dim':'#201438',
+                '--blue':'#5b8dee','--blue-light':'#7aaaf5','--blue-dim':'#162040',
+                '--indigo':'#8b7cf8','--purple':'#b07ef8'
+            }
+        };
+        const PDF_BG = { dark:'#0e1117', light:'#f7f8fc' };
+        let _mode = 'dark', _palette = 'default';
+        window._pdfBg = PDF_BG.dark;
+
+        const ALL_PAL_VARS = new Set(Object.values(PALETTES).flatMap(p => Object.keys(p)));
+
+        function applyTheme() {
+            const root = document.documentElement;
+            if (_mode === 'dark') root.removeAttribute('data-theme');
+            else root.setAttribute('data-theme', 'light');
+            ALL_PAL_VARS.forEach(v => root.style.removeProperty(v));
+            const pal = PALETTES[_palette] || {};
+            Object.entries(pal).forEach(([k,v]) => root.style.setProperty(k,v));
+            window._pdfBg = PDF_BG[_mode];
+        }
+
+        function setMode(mode) {
+            _mode = mode;
+            applyTheme();
+            document.getElementById('modeDark').classList.toggle('active', mode === 'dark');
+            document.getElementById('modeLight').classList.toggle('active', mode === 'light');
+        }
+
+        function setPalette(palette, btn) {
+            _palette = palette;
+            applyTheme();
+            document.querySelectorAll('.pal-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        window.addEventListener('beforeprint', () => {
+            const el = document.getElementById('resume');
+            el.style.cssText += 'width:900px!important;max-width:900px!important;padding:52px 58px!important;box-sizing:border-box!important;box-shadow:none!important;border-radius:0!important;';
+            const h = el.scrollHeight + 10;
+            let s = document.getElementById('_dps');
+            if (!s) { s = document.createElement('style'); s.id = '_dps'; document.head.appendChild(s); }
+            s.innerHTML = '@page { size: 900px ' + h + 'px !important; margin: 0 !important; } body { margin: 0 !important; padding: 0 !important; }';
+        });
+        window.addEventListener('afterprint', () => {
+            const el = document.getElementById('resume');
+            ['width','maxWidth','padding','boxSizing','boxShadow','borderRadius'].forEach(p => el.style[p] = '');
+            const s = document.getElementById('_dps'); if (s) s.remove();
+        });
+
+        function downloadPDF() {
+            const el = document.getElementById('resume');
+            const btn = document.getElementById('dlBtn');
+            const txt = document.getElementById('btnTxt');
+            txt.textContent = 'Generating…';
+            btn.disabled = true;
+            el.classList.add('pdf-mode');
+            document.body.classList.add('pdf-body');
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const h = el.scrollHeight + 10, w = 900;
+                    html2pdf().set({
+                        margin: 0,
+                        filename: 'Adiyat_Coto_Resume.pdf',
+                        image: { type: 'png', quality: 1.0 },
+                        html2canvas: { scale:2, useCORS:true, width:w, windowWidth:w, scrollY:0, scrollX:0, height:h, windowHeight:h, backgroundColor: window._pdfBg || '#0e1117' },
+                        jsPDF: { unit:'px', format:[w,h], orientation:'portrait', hotfixes:['px_scaling'] }
+                    }).from(el).save()
+                    .then(() => { el.classList.remove('pdf-mode'); document.body.classList.remove('pdf-body'); txt.textContent='Save as PDF'; btn.disabled=false; })
+                    .catch(() => { el.classList.remove('pdf-mode'); document.body.classList.remove('pdf-body'); txt.textContent='Try Again'; btn.disabled=false; });
+                }, 280);
+            });
+        }
+
+        // Reveal obfuscated email after page load
+        (function() {
+            var u = 'coto.adiyat', d = 'gmail.com', e = u + '@' + d;
+            var displays = document.querySelectorAll('#emailDisplay');
+            displays.forEach(function(el) { el.textContent = e; });
+            var ml = document.getElementById('mailtoLink');
+            if (ml) ml.href = 'mailto:' + e;
+            var fl = document.getElementById('footerMailLink');
+            if (fl) { fl.href = 'mailto:' + e; fl.textContent = 'Email →'; }
+        })();
+    </script><script>
+        // ══ THEME SWITCHER ══
+        const BG = { dark:'#0e1117', light:'#f7f8fc', slate:'#1a1e2e', ember:'#120e0a' };
+        window._pdfBg = BG.dark;
+
+        function setTheme(t, btn) {
+            if (t === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', t);
+            }
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window._pdfBg = BG[t];
+        }
+
+        // ══ PRINT ══
+        window.addEventListener('beforeprint', () => {
+            const el = document.getElementById('resume');
+            el.style.cssText += 'width:900px!important;max-width:900px!important;padding:52px 58px!important;box-sizing:border-box!important;box-shadow:none!important;border-radius:0!important;';
+            const h = el.scrollHeight + 10;
+            let s = document.getElementById('_dps');
+            if (!s) { s = document.createElement('style'); s.id = '_dps'; document.head.appendChild(s); }
+            s.innerHTML = `@page { size: 900px ${h}px !important; margin: 0 !important; } body { margin: 0 !important; padding: 0 !important; }`;
+        });
+        window.addEventListener('afterprint', () => {
+            const el = document.getElementById('resume');
+            ['width','maxWidth','padding','boxSizing','boxShadow','borderRadius'].forEach(p => el.style[p] = '');
+            const s = document.getElementById('_dps'); if (s) s.remove();
+        });
+
+        // ══ PDF DOWNLOAD ══
+        function downloadPDF() {
+            const el  = document.getElementById('resume');
+            const btn = document.getElementById('dlBtn');
+            const txt = document.getElementById('btnTxt');
+            txt.textContent = 'Generating…';
+            btn.disabled = true;
+            el.classList.add('pdf-mode');
+            document.body.classList.add('pdf-body');
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const h = el.scrollHeight + 10;
+                    const w = 900;
+                    html2pdf().set({
+                        margin: 0,
+                        filename: 'Adiyat_Coto_Resume.pdf',
+                        image: { type: 'png', quality: 1.0 },
+                        html2canvas: {
+                            scale: 2, useCORS: true,
+                            width: w, windowWidth: w,
+                            scrollY: 0, scrollX: 0,
+                            height: h, windowHeight: h,
+                            backgroundColor: window._pdfBg || '#0e1117'
+                        },
+                        jsPDF: { unit: 'px', format: [w, h], orientation: 'portrait', hotfixes: ['px_scaling'] }
+                    }).from(el).save()
+                    .then(() => {
+                        el.classList.remove('pdf-mode');
+                        document.body.classList.remove('pdf-body');
+                        txt.textContent = 'Save as PDF';
+                        btn.disabled = false;
+                    })
+                    .catch(() => {
+                        el.classList.rem
