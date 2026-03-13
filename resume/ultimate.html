@@ -141,7 +141,7 @@
 
         body {
             font-family: 'DM Sans', system-ui, sans-serif;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.65;
             color: var(--text);
             background: radial-gradient(ellipse 90% 70% at 50% -10%, var(--body-bg-1) 0%, var(--body-bg-2) 100%);
@@ -291,7 +291,7 @@
         }
         .sec-head .label {
             font-family:'DM Mono',monospace;
-            font-size:11px; font-weight:500;
+            font-size:12px; font-weight:500;
             text-transform:uppercase; letter-spacing:3px;
             color:var(--gold);
             white-space:nowrap;
@@ -701,6 +701,10 @@
             <button class="pal-btn" id="palForest"  style="background:linear-gradient(135deg,#38b890,#b890f8)" onclick="setPalette('forest',this)"  title="Forest"></button>
         </div>
         <!-- PDF button -->
+        <button class="fab-btn" id="dlBtn" onclick="downloadPDF()" style="align-self:flex-end;">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <span id="btnTxt">Save as PDF</span>
+        </button>
     </div>
 
     <div class="page" id="resume">
@@ -709,8 +713,7 @@
         <div class="header">
             <h1>Adiyat <em>Coto</em></h1>
             <div class="header-tagline">
-                <strong>Sr. Technical Support &amp; SaaS Implementation · Product Support Specialist</strong>
-                &nbsp;·&nbsp; Functional Analysis &amp; Incident Management · POS Systems · Merchant Services · EdTech &nbsp;·&nbsp; B2B / B2B2C
+                <strong>Sr. Technical Support · SaaS Implementation · Product Support Specialist</strong> &nbsp;·&nbsp; Functional Analysis &amp; Incident Management · POS Systems · Merchant Services · EdTech ERP/LMS &nbsp;·&nbsp; B2B / B2B2C · Remote Ready
             </div>
             <div class="contact-bar">
                 <span>Semarang, Indonesia</span>
@@ -728,10 +731,19 @@
         <!-- ══ PROFESSIONAL SUMMARY ══ -->
         <div class="section">
             <div class="sec-head"><span class="label">Professional Summary</span></div>
-            <div class="summary">
-                <p>Technical Implementation &amp; Product Support Specialist with <strong>7+ years</strong> across <strong>POS systems, merchant services, and EdTech ERP platforms</strong> — bridging both implementation and ongoing support throughout the full product lifecycle.</p>
-                <p>Hands-on across <strong>SaaS implementation</strong> (system setup, network config, data migration, onboarding, training, post–go-live) and <strong>L1/L2 Functional Support &amp; Incident Management</strong> — working closely with Product, Engineering, QA, and Sales at every stage. Experienced in <strong>Change &amp; Release Management</strong>: <strong>PSR</strong>, regression testing, UAT, <strong>FSDs</strong>, and effort estimations — covering the full <strong>SDLC</strong> from issue identification to production release.</p>
-                <p>Outside of work, genuinely into crypto — not just on paper. Actively stakes <strong>ADA on Cardano</strong> via the native <strong>Lace wallet</strong> (IOG), trades spot across <strong>Stocks (IDX) and Crypto</strong>, and has been building crypto tools with AI assistance: a <strong>Streamlit/Python sentiment intelligence app</strong> (Gemini API), live market dashboards via the <span class="pill">Binance WebSocket API</span>, and analysis tools exploring <strong>Power Law, RSA confluence, BTC correlation, and order flow</strong>. Follows the TradingView Crypto chatroom, writes market notes on Medium, and publishes <strong>Pine Script v5</strong> indicators publicly. That combination of deep B2B support experience with genuine crypto market participation is fairly rare.</p>
+                                    <div class="summary">
+                <p><strong>7+ years</strong> across SaaS implementation and technical support — covering both sides of the product lifecycle. Started in one of <strong>Indonesia's most prominent cloud POS and fintech ecosystems</strong> — <span style="color:var(--teal-light);font-weight:700">Moka POS (GoTo Group)</span> — handling end-to-end merchant implementations for <span style="color:var(--teal-light);font-weight:600">SMEs across F&amp;B, retail, and service industries</span> — regionally onsite and nationwide remotely, across B2B and B2B2C environments, including <span style="color:var(--teal-light);font-weight:600">payment gateway, delivery platform, omnichannel sales, and accounting software integrations</span>. Progressed from implementor to senior to <strong>Regional Implementation Lead</strong>, managing a <span style="color:var(--teal-light);font-weight:600">5-member</span> team across two offices and <span style="color:var(--teal-light);font-weight:600">200 merchant schedules per month</span>.</p>
+                <p>Later moved into <strong>EdTech ERP</strong> at <span style="color:var(--blue-light);font-weight:700">MaivenPoint (AvePoint)</span> — an end-to-end Training Management System covering <span style="color:var(--blue-light);font-weight:600">registration, course structure, passing grade, certificates, financial modules (billing, invoicing, accounting ledger), GST and subsidy schemes, and a front-office web store</span>. Worked as part of the L1/L2 support team across <strong>25+ enterprise education accounts</strong> (SMU, BCA Academy, NIEC, WMI), fully remote and cross-timezone. Served as dedicated <strong>POC and Incident Manager for BCA Academy</strong>, a key Singapore public sector institution. Worked with R&amp;D, QA, and L3 Dev on <span style="color:var(--blue-light);font-weight:600">PSR, regression testing, fix validation, and UAT/production deployments</span>. Handled Change &amp; Release Management end-to-end: <span style="color:var(--blue-light);font-weight:600">bug tracking, change requests, FSDs, validation workflows, and effort estimations</span> — across the full SDLC from issue identification to production release.</p>
+                <p>Since Dec 2024, working independently on personal projects:
+                <ul style="margin:8px 0 8px 18px; padding:0; line-height:1.8">
+                    <li><strong>Python/Streamlit</strong> sentiment intelligence application — Gemini 2.5 Flash NLP, Z-score anomaly detection</li>
+                    <li>Live <strong>Binance WebSocket</strong> market dashboards</li>
+                    <li><strong>D3.js</strong> Power Law generator</li>
+                    <li>RSA confluence system with order flow overlay</li>
+                </ul>
+                Active spot trader across Stocks (IDX) and Crypto; hands-on with on-chain and off-chain flows, DEX and CEX operations, on-ramp/off-ramp, and token swaps.</p>
+                <p style="margin-top:14px; padding:10px 16px; border-left:2px solid var(--gold); background:linear-gradient(90deg, rgba(201,168,76,0.06) 0%, transparent 100%); border-radius:0 6px 6px 0;"><em style="color:var(--gold-light); font-size:13.5px; letter-spacing:0.2px;">&ldquo;At the intersection of technical operations, product support, and independent research — a self-starter who is tech-savvy and a fast learner, bringing both technical depth, client-facing experience, and product-side perspective, all in one person.&rdquo;</em></p>
+                            <p style="text-align:center; margin-top:16px; font-family:'DM Mono',monospace; font-size:14px; font-weight:700; color:var(--teal-light); letter-spacing:3px;">↓ &nbsp; SCROLL FOR MORE &nbsp; ↓</p>
             </div>
         </div>
 
@@ -756,25 +768,24 @@
                     </div>
                 </div>
                 <div class="skill-group">
-                    <div class="skill-group-title">Market Knowledge &amp; DeFi</div>
+                    <div class="skill-group-title">Tools, Integrations &amp; Technical Range</div>
                     <div class="skill-tags">
-                        <span class="skill-tag st-teal">Technical Analysis (TA) · Multi-TF Confluence (RSA)</span>
-                        <span class="skill-tag st-teal">Power Law Patterns · BTC Correlation / Alpha</span>
-                        <span class="skill-tag st-teal">Volume Dominance · Order Flow / Footprint</span>
-                        <span class="skill-tag st-gold">Macro Analysis · Crowd Sentiment Analysis</span>
-                        <span class="skill-tag st-gold">TradingView Pine Script v5</span>
-                        <span class="skill-tag st-gold">Stocks (IDX) · Crypto Spot</span>
-                        <span class="skill-tag st-teal">On-Chain / Off-Chain · On-Ramp / Off-Ramp</span>
-                        <span class="skill-tag st-teal">DEX &amp; CEX Operations · Token Swap Mechanics</span>
-                        <span class="skill-tag st-blue">ADA Staking — Cardano · Lace Wallet (IOG)</span>
-                        <span class="skill-tag st-blue">UTXO Model · Self-Custody · DeFi Protocol Literacy</span>
-                        <span class="skill-tag st-soft">L1/L2 Concepts · CEX Operational Flows</span>
+                        <span class="skill-tag st-teal">REST API · WebSocket · JSON Payload Analysis</span>
+                        <span class="skill-tag st-blue">Python · Streamlit · Pandas · BeautifulSoup</span>
+                        <span class="skill-tag st-blue">JavaScript (ES6+) · D3.js · Chart.js · HTML/CSS</span>
+                        <span class="skill-tag st-gold">Looker Studio · Google Sheets (Advanced)</span>
+                        <span class="skill-tag st-gold">Dashboard Design &amp; KPI Reporting</span>
+                        <span class="skill-tag st-soft">Network Configuration (LAN/WAN · Routers · APs)</span>
+                        <span class="skill-tag st-soft">Multi-device POS Topology &amp; Deployment</span>
+                        <span class="skill-tag st-soft">Fintech / Payments Literacy (CEX · DEX · On-chain)</span>
+                        <span class="skill-tag st-soft">Data Migration &amp; System Cutover</span>
+                        <span class="skill-tag st-soft">Remote &amp; Async-first Collaboration</span>
                     </div>
                 </div>
             </div>
             <div class="tools-strip">
-                <p><strong>Tools:</strong> Jira (Issue Tracking, PSR, Regression Testing, Workflow Mgmt) &nbsp;·&nbsp; Google Workspace (Sheets, Slides, Docs, Drive, Looker Studio) &nbsp;·&nbsp; Microsoft 365 (Excel, Teams, SharePoint) &nbsp;·&nbsp; Kissflow &nbsp;·&nbsp; Trello &nbsp;·&nbsp; Slack</p>
-                <p><strong>Tech Stack (Self-Taught / AI-Assisted):</strong> Python · Streamlit · Pandas / NumPy / Plotly &nbsp;·&nbsp; BeautifulSoup · Gemini API (Google AI) &nbsp;·&nbsp; JavaScript (ES6+) · WebSocket / REST API · D3.js · Chart.js · HTML5 Canvas · Tailwind CSS &nbsp;·&nbsp; Binance API · CryptoCompare API &nbsp;·&nbsp; GitHub Pages</p>
+                <p><strong>Tools:</strong> Jira (Issue Tracking, PSR, Regression Testing, Workflow Mgmt) &nbsp;·&nbsp; Google Workspace (Sheets — Importrange, Query, Data Validation; Slides; Docs; Drive; Looker Studio) &nbsp;·&nbsp; Microsoft 365 (Excel, Teams, SharePoint) &nbsp;·&nbsp; Kissflow (Process Management) &nbsp;·&nbsp; Trello &nbsp;·&nbsp; Slack</p>
+                <p><strong>Tech Stack (Self-Taught):</strong> Python · Streamlit · Pandas / NumPy / Plotly &nbsp;·&nbsp; BeautifulSoup · Gemini API (Google AI) &nbsp;·&nbsp; JavaScript (ES6+) · WebSocket / REST API · D3.js · Chart.js · HTML5 Canvas · Tailwind CSS &nbsp;·&nbsp; Binance API · CryptoCompare API &nbsp;·&nbsp; GitHub Pages</p>
                 <p><strong>Languages:</strong> Bahasa Indonesia (Native) &nbsp;·&nbsp; English (Fluent)</p>
             </div>
         </div>
@@ -793,21 +804,21 @@
                     <div class="exp-meta">Fully Remote<br>Feb 2024 – Dec 2024</div>
                 </div>
                 <div class="exp-context">
-                    <strong>EdTech SaaS</strong> subsidiary of AvePoint — AI-powered Learning Suite for <strong>higher education &amp; public sector agencies</strong>: <strong>Curricula</strong> (LMS), <strong>Examena</strong> (digital assessments), <strong>Vitae</strong> (student administration ERP).
+                    <strong>EdTech SaaS</strong> subsidiary of AvePoint — Learning Management Suite for <strong>higher education &amp; public sector institutions</strong>: <strong>Curricula</strong> (LMS), <strong>Examena</strong> (digital assessments), <strong>Vitae</strong> (student administration ERP).
                 </div>
                 <div class="exp-role">
                     <div class="exp-role-head">
-                        <span class="exp-role-title">L1/L2 Functional Application Support Engineer – Singapore Market</span>
+                        <span class="exp-role-title">L1/L2 Application Support Engineer – Singapore Enterprise</span>
                         <span class="exp-role-dates">Feb 2024 – Dec 2024</span>
                     </div>
                     <p class="exp-role-summary">
-                        Delivered L1/L2 Functional Application Support for Singapore's education sector, ensuring operational continuity and high reliability for mission-critical systems across <strong><span class="n">25+</span> major enterprise accounts</strong> (SMU, WMI, BCA, NIEC) in a <strong>fully remote</strong> setup.
+                        Part of the L1/L2 support team covering <strong><span class="n">25+</span> Singapore enterprise accounts</strong> (SMU, WMI, BCA, NIEC) — fully remote, cross-timezone. Served as dedicated <strong>POC and Incident Manager for BCA Academy</strong>, coordinating directly between the client and internal R&amp;D, QA, and L3 Dev teams.
                     </p>
                     <ul class="exp-bullets">
-                        <li>Managed the full ticket lifecycle across <strong>academic &amp; operational</strong> (course setup, passing grade, certificates), <strong>financial &amp; compliance</strong> (GST, subsidy schemes, billing, invoicing), and <strong>client-facing</strong> modules — averaging <span class="n">5–8 tickets/week</span> with high resolution efficiency.</li>
-                        <li>Acted as <strong>Point of Contact (POC) &amp; Incident Manager</strong> for key enterprise clients; coordinated cross-functional incident response (R&amp;D, QA, L3 Dev) to minimize business impact.</li>
+                        <li>Managed the full ticket lifecycle across <strong>academic &amp; operational</strong> (course setup, structures, passing grade, certificates), <strong>financial &amp; compliance</strong> (course costing, GST, subsidy schemes, accounting ledger, billing, invoicing), and <strong>client-facing</strong> modules (web store, client onboarding) — averaging <span class="n">5–8 tickets/week</span>, each requiring functional investigation across multiple modules and direct coordination with engineering.</li>
+                        <li>Acted as <strong>Point of Contact (POC) &amp; Incident Manager</strong> for key enterprise clients; coordinated response across R&amp;D, QA, and L3 Dev to resolve issues and maintain account stability.</li>
                         <li>Performed Level 2 troubleshooting for functional and integration issues, managing a case portfolio across <span class="n">3 categories</span>: Defect, Non-Defect functional support, and Change Request management.</li>
-                        <li>Partnered with R&amp;D, QA, and L3 Development teams on <strong>Product Support Replication (PSR)</strong>, regression testing, and UAT/production patch deployments to ensure total system stability.</li>
+                        <li>Partnered with R&amp;D, QA, and L3 Development teams on <strong>Product Support Replication (PSR)</strong>, regression testing, and UAT/production patch deployments.</li>
                         <li>Oversaw bug tracking, documentation, and change requests in Jira — designed and maintained <strong>weekly statistical dashboards</strong> (Google Sheets) to give stakeholders clear visibility into ticket status by assignee, issue type, and resolution stage.</li>
                         <li>Conducted <span class="n">bi-weekly</span> syncs with key institutional stakeholders, delivering technical insights, progress updates, and transparent release timelines.</li>
                     </ul>
@@ -819,7 +830,7 @@
                 <div class="exp-top">
                     <div>
                         <div class="exp-company">Moka POS</div>
-                        <div class="exp-company-sub">GoTo Group Subsidiary · Cloud-based POS · Surabaya, East Java · Hybrid</div>
+                        <div class="exp-company-sub">GoTo Group Subsidiary · Cloud-based POS · Surabaya, East Java, Indonesia · Hybrid</div>
                     </div>
                     <div class="exp-meta">Sep 2016 – Nov 2022<br>6 yrs 3 mos</div>
                 </div>
@@ -828,28 +839,29 @@
                 </div>
                 <div class="exp-role">
                     <div class="exp-role-head">
-                        <span class="exp-role-title">Tech Support &amp; System Implementor Lead – East Java</span>
+                        <span class="exp-role-title">Regional Implementation Lead – East Java</span>
                         <span class="exp-role-dates">Dec 2021 – Nov 2022 · 1 yr</span>
                     </div>
-                    <p class="exp-role-summary">Led regional technical operations for East Java, overseeing onsite support teams and ensuring alignment with national service standards and business objectives.</p>
+                    <p class="exp-role-summary">Ran implementation operations for East Java — two offices, five people, 200 merchant schedules a month — while contributing the SOPs and training materials that became the national standard.</p>
                     <ul class="exp-bullets">
-                        <li>Supervised and coached a <span class="n">5-member</span> technical support team across <strong>Surabaya and Malang</strong> offices, driving improvements in performance metrics and KPI achievement.</li>
+                        <li>Supervised and coached a <span class="n">5-member</span> technical support team across <strong>Surabaya and Malang</strong> offices — two locations covering the full East Java region, with engineers dispatched to whichever client site was closest — driving improvements in performance metrics and KPI achievement.</li>
                         <li>Designed and implemented monitoring dashboards and internal tools via <strong>Google Forms, Google Sheets, and Looker Studio</strong> to track team activity, optimize resource allocation, and measure OKR progress.</li>
                         <li>Coordinated with Sales teams and Account Managers on merchant onboarding and after-sales activities — managing an average of <span class="n">10 schedules/day</span> and <span class="n">200 schedules/month</span> across the team.</li>
                         <li>Developed <strong>nationwide SOPs, training modules, and technical documentation</strong> to standardize implementation processes and scale best practices, covering all core features, devices, add-ons, and third-party integrations.</li>
+                        <li>Served as <strong>Knowledge Transfer speaker</strong> for internal team sessions and as a technical speaker at <strong>client-facing events</strong> organized by Sales and Account Management.</li>
                     </ul>
                 </div>
                 <div class="exp-role">
                     <div class="exp-role-head">
-                        <span class="exp-role-title">Sr. Tech Support &amp; System Implementor</span>
+                        <span class="exp-role-title">Senior Implementation &amp; Technical Support Specialist</span>
                         <span class="exp-role-dates">Sep 2016 – Dec 2021 · 5 yrs 4 mos</span>
                     </div>
-                    <p class="exp-role-summary">Managed end-to-end merchant onboarding from <strong>pre-sales consultation</strong> through <strong>post-sales technical support</strong>, delivering POS system implementations across diverse SME industries in East Java and <strong>nationwide</strong> remotely.</p>
+                    <p class="exp-role-summary">Managed end-to-end merchant onboarding from pre-sales consultation through post-sales technical support — SMEs across F&amp;B, retail, and service industries, locally across East Java and nationwide remotely, covering both front-office and back-office environments.</p>
                     <ul class="exp-bullets">
                         <li>Executed onsite and remote system setup, staff training, and data migration — covering both <strong>front-office and back-office</strong> environments for merchant go-live.</li>
                         <li>Designed <strong>network topologies</strong> and deployed <strong>multi-device POS systems</strong> tailored to client-specific operational requirements (Routers, Access Points, Printers, Tablets, Mobile Phones).</li>
                         <li>Partnered with Sales and Account Managers on technical consultation and knowledge transfer; collaborated with Product and Customer Support on issue escalation and resolution.</li>
-                        <li>Drove adoption of advanced features and third-party integrations (<strong>GoPay, GoFood, GoStore, Jurnal.id</strong>) to increase client satisfaction and retention.</li>
+                        <li>Drove adoption of advanced features and third-party integrations — <strong>GoPay, GoFood, GoStore, Jurnal.id</strong> — to enhance client satisfaction and retention.</li>
                         <li>Served as <strong>Training Facilitator</strong> for the <strong>Bank Indonesia-Led MSME Digital Training Program</strong> (Jawa Timur, Dec 2020).</li>
                     </ul>
                 </div>
@@ -860,26 +872,44 @@
                 <div class="exp-top">
                     <div>
                         <div class="exp-company">VIVERE Group</div>
-                        <div class="exp-company-sub">PT Gema Graha Sarana Tbk · Jakarta Barat · On-site</div>
+                        <div class="exp-company-sub">PT Gema Graha Sarana Tbk · Jakarta Barat, Indonesia · On-site</div>
                     </div>
-                    <div class="exp-meta">Jul – Dec 2014<br>Internship</div>
+                    <div class="exp-meta">Jul – Dec 2014<br>6 mos · Internship</div>
                 </div>
                 <div class="exp-context">
-                    Leading Indonesian <strong>multidisciplinary company</strong> — interior contracting, furniture manufacturing, and MEP services for residential &amp; commercial clients.
+                    Leading Indonesian multidisciplinary company specialising in <strong>interior contracting, furniture manufacturing</strong>, and MEP services for residential &amp; commercial clients.
                 </div>
                 <div class="exp-role">
+                    <div class="exp-role-head">
+                        <span class="exp-role-title">Information System Intern</span>
+                        <span class="exp-role-dates">Jul – Dec 2014</span>
+                    </div>
                     <ul class="exp-bullets">
-                        <li>Provided <strong>daily IT support</strong> to employees and resolved technical issues across the organization.</li>
-                        <li>Conducted internal research and feasibility study on <strong>Citrix XenApp 6.5</strong> deployment.</li>
+                        <li>Provided <strong>daily IT support</strong> to employees and resolved technical issues across the organisation.</li>
+                        <li>Conducted internal research and feasibility study on <strong>Citrix XenApp 6.5</strong> virtualisation deployment.</li>
                     </ul>
                 </div>
             </div>
-        </div>
 
-        <!-- ══ PERSONAL PROJECTS (CRYPTO / SELF-BUILT) ══ -->
+        <!-- ══ PERSONAL PROJECTS ══ -->
         <div class="section">
-            <div class="sec-head"><span class="label">Personal Projects — Built with AI Assistance</span></div>
+            <div class="sec-head"><span class="label">Personal Projects</span></div>
             <div class="proj-2col">
+                <div class="proj-card c-rose">
+                    <div class="proj-type" style="color:var(--teal-light)">Python · Streamlit · Gemini AI</div>
+                    <div class="proj-name">TV Intelligence System v4.0</div>
+                    <div class="proj-desc">Scrapes TradingView chatroom data, runs weighted NLP sentiment scoring (bull/bear lexicons + negation detection), computes a Fear &amp; Greed Index, flags anomalies via Z-score, and uses <strong>Gemini 2.5 Flash</strong> to generate behavioral user profiles and market summaries.</div>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Python · Streamlit</span>
+                        <span class="proj-tag">BeautifulSoup Scraper</span>
+                        <span class="proj-tag">Gemini 2.5 Flash</span>
+                        <span class="proj-tag">Weighted NLP Sentiment</span>
+                        <span class="proj-tag">Fear &amp; Greed Index</span>
+                        <span class="proj-tag">Z-Score Anomaly</span>
+                        <span class="proj-tag">Plotly Heatmaps</span>
+                    </div>
+                    <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ adiyatcoto.github.io/tv/</a>
+                </div>
                 <div class="proj-card c-teal">
                     <div class="proj-type" style="color:var(--teal-light)">Live Dashboard · Binance API · JavaScript</div>
                     <div class="proj-name">Top 100 Crypto Market Dashboard</div>
@@ -920,25 +950,10 @@
                     </div>
                     <a class="proj-link" href="https://adiyatcoto.github.io/svn/">↗ adiyatcoto.github.io/svn/</a>
                 </div>
-                <div class="proj-card c-rose">
-                    <div class="proj-type" style="color:var(--teal-light)">Python · Streamlit · Gemini AI</div>
-                    <div class="proj-name">TV Intelligence System v4.0</div>
-                    <div class="proj-desc">Scrapes TradingView chatroom data, runs weighted NLP sentiment scoring (bull/bear lexicons + negation detection), computes a Fear &amp; Greed Index, flags anomalies via Z-score, and uses <strong>Gemini 2.5 Flash</strong> to generate behavioral user profiles and market summaries. First Python project shipped end-to-end.</div>
-                    <div class="proj-tags">
-                        <span class="proj-tag">Python · Streamlit</span>
-                        <span class="proj-tag">BeautifulSoup Scraper</span>
-                        <span class="proj-tag">Gemini 2.5 Flash</span>
-                        <span class="proj-tag">Weighted NLP Sentiment</span>
-                        <span class="proj-tag">Fear &amp; Greed Index</span>
-                        <span class="proj-tag">Z-Score Anomaly</span>
-                        <span class="proj-tag">Plotly Heatmaps</span>
-                    </div>
-                    <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ adiyatcoto.github.io/tv/</a>
-                </div>
             </div>
             <div class="proj-card c-indigo proj-full">
                 <div class="proj-type" style="color:var(--indigo)">TradingView · Pine Script v5</div>
-                <div class="proj-name">TradingView Pine Script Indicators — Public Library</div>
+                <div class="proj-name">Pine Script Indicator Suite — TradingView</div>
                 <div class="proj-desc">Custom indicators in Pine Script v5 built around personal trading frameworks — market structure, confluence logic, and statistical ideas visualized for practical use. All published publicly on TradingView. Also an active member of the TradingView Cryptocurrency chatroom, following real-time crowd sentiment as part of ongoing market research.</div>
                 <div class="proj-tags">
                     <span class="proj-tag">Pine Script v5</span>
@@ -948,32 +963,7 @@
                     <span class="proj-tag">Crypto Chatroom Active</span>
                     <span class="proj-tag">Crowd Sentiment Research</span>
                 </div>
-                <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ View All Indicators →</a>
-            </div>
-        </div>
-
-        <!-- ══ KEY WORK PROJECTS ══ -->
-        <div class="section">
-            <div class="sec-head"><span class="label">Key Professional Projects</span></div>
-            <div class="proj-3col">
-                <div class="work-proj-card">
-                    <div class="work-proj-company">MaivenPoint</div>
-                    <div class="work-proj-role">POC / Incident Manager</div>
-                    <div class="work-proj-sub">Building and Construction Authority (BCA) Academy – Singapore</div>
-                    <div class="work-proj-date">May 2024 – Dec 2024</div>
-                </div>
-                <div class="work-proj-card">
-                    <div class="work-proj-company">Moka POS</div>
-                    <div class="work-proj-role">Contributor</div>
-                    <div class="work-proj-sub">Technical Support Team – Training Material &amp; Knowledge Resource Development</div>
-                    <div class="work-proj-date">Jan 2022 – Nov 2022</div>
-                </div>
-                <div class="work-proj-card">
-                    <div class="work-proj-company">Moka POS</div>
-                    <div class="work-proj-role">Training Facilitator</div>
-                    <div class="work-proj-sub">Bank Indonesia-Led MSME Training Program – Jawa Timur</div>
-                    <div class="work-proj-date">Dec 2020</div>
-                </div>
+                <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ adiyatcoto.github.io/pinescript/</a>
             </div>
         </div>
 
@@ -983,8 +973,8 @@
             <div class="edu-row">
                 <div>
                     <div class="edu-school">Universitas 17 Agustus 1945 Surabaya</div>
-                    <div class="edu-deg">Bachelor's Degree – Financial Management (Attended)</div>
-                    <div class="edu-detail">Macro &amp; Financial Markets Focus</div>
+                    <div class="edu-deg">Financial Management — Macro &amp; Capital Markets</div>
+                    <div class="edu-detail">Coursework in macroeconomics, financial markets, and investment analysis</div>
                 </div>
                 <div class="edu-date">2015 – 2019</div>
             </div>
@@ -1005,42 +995,66 @@
             </div>
         </div>
 
-        <!-- ══ TRADING & BEYOND ══ -->
+        <!-- ══ BEYOND WORK ══ -->
         <div class="section">
-            <div class="sec-head"><span class="label">Trading Background, Research &amp; Beyond Work</span></div>
+            <div class="sec-head"><span class="label">Beyond Work</span></div>
             <div class="trading-3col">
                 <div class="trading-col">
                     <div class="trading-col-title" style="color:var(--teal-light)">Market Background</div>
                     <div class="trading-item">Active spot trader — <strong>Stocks (IDX)</strong> and <strong>Crypto</strong> — unleveraged, no futures</div>
-                    <div class="trading-item">Multi-year participation across macro, technical, and on-chain lenses</div>
-                    <div class="trading-item">Tracks BTC Dominance, altcoin rotation cycles, and macro structure</div>
-                    <div class="trading-item">Power Law and S2F frameworks applied for long-term cycle positioning</div>
+                    <div class="trading-item">Tracks BTC dominance cycles, altcoin rotation, and macro structure</div>
+                    <div class="trading-item">Applies <strong>Power Law</strong> and <strong>S2F</strong> frameworks for long-term cycle positioning</div>
+                    <div class="trading-item">Multi-timeframe <strong>RSA confluence</strong> as core analysis framework</div>
                 </div>
                 <div class="trading-col">
-                    <div class="trading-col-title" style="color:var(--blue-light)">On-Chain &amp; DeFi Practitioner</div>
-                    <div class="trading-item">Active <strong>ADA staker on Cardano</strong> — native <strong>Lace wallet</strong> (IOG)</div>
-                    <div class="trading-item">Hands-on with <strong>on-chain / off-chain</strong> mechanics, <strong>on-ramp / off-ramp</strong> flows</div>
-                    <div class="trading-item">Experienced with <strong>DEX &amp; CEX</strong> operations, <strong>token swaps</strong>, liquidity dynamics</div>
-                    <div class="trading-item">Self-custody principles, UTXO model, L1/L2 ecosystem literacy</div>
+                    <div class="trading-col-title" style="color:var(--blue-light)">On-Chain &amp; DeFi</div>
+                    <div class="trading-item">Actively stakes <strong>ADA on Cardano</strong> via native <strong>Lace wallet</strong> — own capital, self-custody</div>
+                    <div class="trading-item">Hands-on with <strong>on-chain / off-chain</strong> mechanics and <strong>on-ramp / off-ramp</strong> flows</div>
+                    <div class="trading-item">Executes <strong>token swaps on DEX</strong>, operates across <strong>CEX</strong> platforms</div>
+                    <div class="trading-item"><strong>UTXO model</strong>, L1/L2 bridging, and wallet security — learned through use</div>
                 </div>
                 <div class="trading-col">
                     <div class="trading-col-title" style="color:var(--gold-light)">Content &amp; Community</div>
-                    <div class="trading-item">Active in <strong>TradingView Cryptocurrency chatroom</strong> — live crowd sentiment monitoring</div>
-                    <div class="trading-item">Publishes <strong>Pine Script v5</strong> indicators on TradingView (public library)</div>
-                    <div class="trading-item">Writes macroeconomic analysis &amp; market commentary on <strong>Medium</strong></div>
-                    <div class="trading-item">All engineering projects open-sourced via <strong>GitHub Pages</strong></div>
+                    <div class="trading-item">Publishes <strong>Pine Script v5</strong> indicators publicly on TradingView</div>
+                    <div class="trading-item">Writes market analysis and macro commentary on <strong>Medium</strong></div>
+                    <div class="trading-item">Active in <strong>TradingView Cryptocurrency chatroom</strong> — crowd sentiment monitoring</div>
+                    <div class="trading-item">All engineering projects open-sourced on <strong>GitHub Pages</strong></div>
                 </div>
             </div>
         </div>
 
         <!-- ══ FOOTER ══ -->
-        <div class="resume-footer">
-            <span>© Adiyat Coto</span>
-            <div class="footer-links">
-                <a href="https://adiyatcoto.github.io">Portfolio →</a>
-                <a href="https://linkedin.com/in/adiyatcoto">LinkedIn →</a>
-                <a id="footerMailLink" href="#">Email →</a>
+        <div class="resume-footer" style="flex-direction:column; gap:14px; align-items:center; text-align:center;">
+            <div class="footer-links" style="flex-wrap:wrap; justify-content:center; gap:10px 20px;">
+                <a href="https://linkedin.com/in/adiyatcoto" title="LinkedIn">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn
+                </a>
+                <a href="https://medium.com/@coto.adiyat" title="Medium">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium
+                </a>
+                <a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm" title="Spotify Podcast">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path fill="var(--bg)" d="M8 11.5c2.5-1 5.5-.8 7.5.5M7.5 14.5c2-1 4.5-.8 6.5.4M9 8.5c3-1.2 6.5-.9 9 .8"/></svg>Podcast
+                </a>
+                <a href="https://www.tradingview.com/u/adiyatcoto/" title="TradingView">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>TradingView
+                </a>
+                <a href="https://orcid.org/0009-0006-1914-0849" title="ORCID">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path fill="var(--bg)" d="M8 7h1.5v10H8zm3.5 0h3.5a4 4 0 0 1 0 8H11.5z"/></svg>ORCID
+                </a>
+                <a href="https://about.me/adiyatcoto" title="About.me">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>About.me
+                </a>
+                <a href="https://cotoadiyat.gumroad.com/" title="Gumroad">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Gumroad
+                </a>
+                <a href="https://adiyatcoto.github.io" title="Portfolio">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>Portfolio
+                </a>
+                <a id="footerMailLink" href="#" title="Email">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email
+                </a>
             </div>
+            <span>© 2026 Adiyat Coto</span>
         </div>
 
     </div><!-- /page -->
