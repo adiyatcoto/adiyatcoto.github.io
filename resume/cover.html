@@ -375,30 +375,30 @@
 
         <div class="field-group">
             <label class="field-label">Role Title</label>
-            <input class="field-input" id="f-role" value="Product Support Specialist, APAC" oninput="update()">
+            <input class="field-input" id="f-role" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Company Name</label>
-            <input class="field-input" id="f-company" value="DoiT International" oninput="update()">
+            <input class="field-input" id="f-company" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Contract Type</label>
-            <input class="field-input" id="f-contract" value="6-month Contract" oninput="update()">
+            <input class="field-input" id="f-contract" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Work Setup</label>
-            <input class="field-input" id="f-setup" value="Remote" oninput="update()">
+            <input class="field-input" id="f-setup" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Location / Region (meta right)</label>
-            <input class="field-input" id="f-region" value="Indonesia / APAC" oninput="update()">
+            <input class="field-input" id="f-region" value="" oninput="update()">
         </div>
 
         <div class="section-divider">Letter</div>
 
         <div class="field-group">
             <label class="field-label">Salutation</label>
-            <input class="field-input" id="f-salutation" value="Dear DoiT Hiring Team," oninput="update()">
+            <input class="field-input" id="f-salutation" value="" oninput="update()">
         </div>
 
         <div class="field-group">
@@ -406,19 +406,19 @@
             <div id="para-list">
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">I've been working in B2B SaaS for about seven years now, mostly in implementation and technical support. The last role was at MaivenPoint, an AvePoint subsidiary that builds an end-to-end Training Management System covering course registration, academic structure, certificates, financial modules like billing and invoicing, GST and subsidy schemes, and a front-office web store. I was part of the L1/L2 support team handling enterprise education accounts in Singapore remotely, including institutions like SMU, BCA Academy, NIEC and WMI. I covered the full ticket lifecycle across academic, financial and client-facing modules, and for BCA Academy specifically I was the dedicated POC and Incident Manager. That meant coordinating directly with R&D, QA and L3 Dev whenever things escalated, running regression testing, UAT, change requests and FSDs from issue identification through to production release.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">Before that I spent six years at Moka POS, a cloud-based point-of-sale platform for SMEs under GoTo Group, covering F&B, retail and service sectors. The ecosystem included a mobile cashier app, back-office analytics, CRM, inventory management and multi-payment integrations like GoPay, OVO and ShopeePay, plus an omnichannel sales platform. I started doing merchant implementations across East Java and eventually led a five-person regional team managing around 200 onboarding schedules a month across two offices.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">On the cloud infrastructure side I want to be honest about where I am. I've explored AWS Amplify and PartyRock, so I'm not starting from zero, but I haven't gone deep on the infrastructure layer yet, things like S3, databases, IAM and the broader AWS service stack. That's a real gap and I know it, but I do have a conceptual understanding of how cloud infrastructure works and how the pieces fit together. What I also have is a track record of picking up complex SaaS platforms and owning issues at a technical level without much hand-holding, and I've built enough on my own in Python, JavaScript and REST APIs that learning a new layer of infrastructure isn't unfamiliar territory. It would just take time, which I'm willing to put in.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea" oninput="update()">The remote setup, the APAC timezone and the kind of cross-functional coordination this role involves is genuinely how I've been working. I'm happy to go into more detail if it seems like a fit.</textarea>
+                    <textarea class="field-textarea" oninput="update()"></textarea>
                 </div>
             </div>
             <button class="add-para-btn" onclick="addPara()">+ Add Paragraph</button>
@@ -426,7 +426,7 @@
 
         <div class="field-group" style="margin-top:8px;">
             <label class="field-label">PDF Filename</label>
-            <input class="field-input" id="f-filename" value="Adiyat_Coto_CoverLetter_DoiT">
+            <input class="field-input" id="f-filename" value="Adiyat_Coto_CoverLetter">
         </div>
     </div>
 
@@ -456,14 +456,14 @@
             <div class="role-target">
                 <div>
                     <div class="role-target-label">Applying For</div>
-                    <div class="role-target-title" id="p-role">Product Support Specialist, APAC</div>
-                    <div class="role-target-company" id="p-company-line">DoiT International &nbsp;·&nbsp; 6-month Contract &nbsp;·&nbsp; Remote</div>
+                    <div class="role-target-title" id="p-role"></div>
+                    <div class="role-target-company" id="p-company-line"> &nbsp;·&nbsp;  &nbsp;·&nbsp; </div>
                 </div>
                 <div class="role-target-meta" id="p-meta">Indonesia / APAC<br>Remote · Contract</div>
             </div>
 
             <div class="letter-body">
-                <div class="salutation" id="p-salutation">Dear DoiT Hiring Team,</div>
+                <div class="salutation" id="p-salutation"></div>
                 <div id="p-body"></div>
                 <div class="sign-off">
                     <div class="sign-off-name">Adiyat <em>Coto</em></div>
