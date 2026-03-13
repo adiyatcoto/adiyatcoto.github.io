@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiyat Coto – Cover Letter Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg:            #ffffff;
+            --bg-card:       #f8f9fc;
+            --bg-card-2:     #f1f4f9;
+            --border:        #e2e6ef;
+            --border-mid:    #d0d7e6;
+            --border-bright: #b8c4d8;
+            --text:          #0f1624;
+            --text-soft:     #2e3d55;
+            --text-muted:    #5a6e8a;
+            --text-dim:      #b0bccf;
+            --gold:          #a07c28;
+            --gold-light:    #b8921e;
+            --teal:          #1e8f78;
+            --teal-light:    #167a66;
+            --blue:          #2d62d4;
+            --blue-light:    #1a50bf;
+            --body-bg-1:     #eef1f7;
+            --body-bg-2:     #e6eaf3;
+            --panel-bg:      #f0f3f9;
+            --panel-border:  #dde3ef;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+            background: radial-gradient(ellipse 90% 70% at 50% -10%, var(--body-bg-1) 0%, var(--body-bg-2) 100%);
+            min-height: 100vh;
+        }
+
+        /* ── LAYOUT ── */
+        .app {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── EDITOR PANEL ── */
+        .editor {
+            background: var(--panel-bg);
+            border-right: 1px solid var(--panel-border);
+            padding: 28px 24px 80px;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .editor-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .field-input, .field-textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border-mid);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+            resize: none;
+        }
+
+        .field-input:focus, .field-textarea:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(45,98,212,0.08);
+        }
+
+        .field-textarea {
+            line-height: 1.7;
+            min-height: 120px;
+        }
+
+        .field-textarea.tall { min-height: 160px; }
+
+        .section-divider {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--teal-light);
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .add-para-btn {
+            width: 100%;
+            padding: 9px;
+            background: transparent;
+            border: 1px dashed var(--border-bright);
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .add-para-btn:hover { border-color: var(--blue-light); color: var(--blue-light); background: rgba(45,98,212,0.04); }
+
+        .para-block {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .para-remove {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: none; border: none;
+            font-size: 16px; color: var(--text-dim);
+            cursor: pointer; line-height: 1;
+            transition: color 0.2s;
+            z-index: 1;
+        }
+        .para-remove:hover { color: #e05555; }
+
+        /* ── PREVIEW AREA ── */
+        .preview {
+            padding: 48px 40px 80px;
+            overflow-y: auto;
+        }
+
+        @media print {
+            .editor, .fab { display:none!important; }
+            .app { grid-template-columns: 1fr!important; }
+            .preview { padding:0!important; overflow:visible!important; }
+            html,body { margin:0!important;padding:0!important;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;
+                width:900px!important; }
+            .page { box-shadow:none!important;margin:0!important;
+                width:900px!important;border-radius:0!important; }
+            @page { size: 900px auto; margin: 0; }
+        }
+        .pdf-mode { width:900px!important;max-width:900px!important;
+            margin:0!important;border-radius:0!important;
+            box-shadow:none!important;box-sizing:border-box!important; }
+        .pdf-body .preview { padding:0!important; }
+
+        /* ── LETTER PAGE ── */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg);
+            border: 1px solid var(--border-mid);
+            border-radius: 14px;
+            padding: 52px 58px;
+            position: relative;
+            box-shadow:
+                0 0 0 1px rgba(100,130,200,0.06),
+                0 12px 40px rgba(0,0,0,0.12),
+                0 48px 96px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+        .page::before {
+            content:'';
+            position:absolute; inset:0;
+            background-image: radial-gradient(circle, rgba(100,130,210,0.055) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events:none;
+            border-radius: inherit;
+        }
+        .page::after {
+            content:'';
+            position:absolute; top:-140px; right:-140px;
+            width:480px; height:480px;
+            background: radial-gradient(circle, rgba(77,184,160,0.045) 0%, transparent 65%);
+            pointer-events:none;
+        }
+
+        /* ── FAB ── */
+        .fab {
+            position:fixed; bottom:28px; right:28px;
+            z-index:1000; display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+        }
+        .mode-toggle {
+            display:flex; align-items:center;
+            background:var(--bg-card);
+            border:1px solid var(--border-mid);
+            border-radius:50px; padding:4px; gap:2px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.15);
+            transition:background 0.35s ease, border-color 0.35s ease;
+        }
+        .mode-btn {
+            display:flex; align-items:center; gap:7px;
+            padding:8px 16px; border-radius:50px; border:none; cursor:pointer;
+            font-family:'DM Sans',sans-serif; font-size:12.5px; font-weight:700;
+            color:var(--text-muted); background:transparent;
+            transition:all 0.22s ease; white-space:nowrap; letter-spacing:0.2px;
+        }
+        .mode-btn svg { width:15px; height:15px; flex-shrink:0; transition:transform 0.4s ease; }
+        .mode-btn:hover { color:var(--text); }
+        .mode-btn.active {
+            background:var(--bg-card-2); color:var(--text);
+            box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+            border:1px solid var(--border-bright);
+        }
+        .mode-btn.active svg { transform:rotate(20deg); }
+        .fab-btn {
+            display:flex; align-items:center; gap:9px;
+            background: linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #000) 100%);
+            color: #fff; border:none; padding:12px 22px;
+            border-radius:50px; cursor:pointer;
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:13px; letter-spacing:0.3px;
+            box-shadow:0 4px 24px rgba(160,124,40,0.3);
+            transition:all 0.25s ease;
+        }
+        .fab-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(160,124,40,0.42); }
+        .fab-btn:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
+        .fab-btn svg { width:16px; height:16px; fill:currentColor; }
+
+        /* ── LETTER ELEMENTS ── */
+        .header {
+            margin-bottom: 28px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--border-mid);
+        }
+        .header h1 {
+            font-family:'DM Serif Display',Georgia,serif;
+            font-size: 48px; font-weight: 400;
+            color: var(--text);
+            letter-spacing: -1.5px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .header h1 em { font-style:italic; color:var(--gold-light); }
+        .cover-label {
+            font-family:'DM Mono',monospace;
+            font-size:11px; letter-spacing:2.5px;
+            text-transform:uppercase; color:var(--text-muted);
+            margin-bottom:10px;
+        }
+        .header-tagline {
+            font-size: 12px; color: var(--text-muted);
+            line-height: 1.7; margin-bottom: 12px;
+        }
+        .header-tagline strong { color: var(--text-soft); font-weight: 600; }
+        .contact-bar {
+            display:flex; flex-wrap:wrap; gap:5px 16px;
+            font-family:'DM Mono',monospace;
+            font-size:12px; color:var(--text-muted);
+            margin-top:10px;
+        }
+        .contact-bar a { color:var(--blue-light); text-decoration:none; }
+        .contact-bar .sep { color:var(--text-dim); }
+
+        .role-target {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-left: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .role-target-label {
+            font-family:'DM Mono',monospace;
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--gold);
+            margin-bottom: 4px;
+        }
+        .role-target-title { font-size: 15px; font-weight: 600; color: var(--text); }
+        .role-target-company { font-size: 13px; color: var(--text-muted); }
+        .role-target-meta {
+            font-family:'DM Mono',monospace;
+            font-size: 11px; color: var(--text-muted);
+            text-align: right; flex-shrink: 0; line-height: 1.8;
+        }
+
+        .letter-body {
+            background: var(--bg-card);
+            border: 1px solid var(--border-mid);
+            border-left: 3px solid var(--teal);
+            border-radius: 10px;
+            padding: 24px 26px;
+            color: var(--text-soft);
+            font-size: 15px;
+            line-height: 1.85;
+        }
+        .letter-body p { margin-bottom: 18px; }
+        .letter-body p:last-child { margin-bottom: 0; }
+        .letter-body .salutation {
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 12px; letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        .letter-body .sign-off {
+            margin-top: 28px; padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .letter-body .sign-off-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px; font-weight: 400;
+            color: var(--text); letter-spacing: -0.5px; margin-bottom: 4px;
+        }
+        .letter-body .sign-off-name em { color: var(--gold-light); font-style: italic; }
+        .letter-body .sign-off-links {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px; color: var(--text-muted);
+            display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px;
+        }
+        .letter-body .sign-off-links a { color: var(--blue-light); text-decoration: none; }
+
+        .resume-footer {
+            margin-top: 24px; padding-top: 16px;
+            border-top: 1px solid var(--border-mid);
+            display: flex; flex-direction:column;
+            gap:14px; align-items:center; text-align:center;
+        }
+        .resume-footer span {
+            font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim);
+        }
+        .footer-links {
+            display:flex; flex-wrap:wrap; justify-content:center; gap:10px 20px;
+        }
+        .footer-links a {
+            font-family:'DM Mono',monospace; font-size:11px;
+            color:var(--text-muted); text-decoration:none; transition:color 0.2s;
+        }
+        .footer-links a:hover { color:var(--gold-light); }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ══ EDITOR PANEL ══ -->
+    <div class="editor no-print">
+        <div class="editor-title">Cover Letter Builder</div>
+
+        <div class="section-divider">Role & Company</div>
+
+        <div class="field-group">
+            <label class="field-label">Role Title</label>
+            <input class="field-input" id="f-role" value="Product Support Specialist, APAC" oninput="update()">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Company Name</label>
+            <input class="field-input" id="f-company" value="DoiT International" oninput="update()">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Contract Type</label>
+            <input class="field-input" id="f-contract" value="6-month Contract" oninput="update()">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Work Setup</label>
+            <input class="field-input" id="f-setup" value="Remote" oninput="update()">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Location / Region (meta right)</label>
+            <input class="field-input" id="f-region" value="Indonesia / APAC" oninput="update()">
+        </div>
+
+        <div class="section-divider">Letter</div>
+
+        <div class="field-group">
+            <label class="field-label">Salutation</label>
+            <input class="field-input" id="f-salutation" value="Dear DoiT Hiring Team," oninput="update()">
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Body Paragraphs</label>
+            <div id="para-list">
+                <div class="para-block">
+                    <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
+                    <textarea class="field-textarea tall" oninput="update()">I've been working in B2B SaaS for about seven years now, mostly in implementation and technical support. The last role was at MaivenPoint, an AvePoint subsidiary that builds an end-to-end Training Management System covering course registration, academic structure, certificates, financial modules like billing and invoicing, GST and subsidy schemes, and a front-office web store. I was part of the L1/L2 support team handling enterprise education accounts in Singapore remotely, including institutions like SMU, BCA Academy, NIEC and WMI. I covered the full ticket lifecycle across academic, financial and client-facing modules, and for BCA Academy specifically I was the dedicated POC and Incident Manager. That meant coordinating directly with R&D, QA and L3 Dev whenever things escalated, running regression testing, UAT, change requests and FSDs from issue identification through to production release.</textarea>
+                </div>
+                <div class="para-block">
+                    <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
+                    <textarea class="field-textarea tall" oninput="update()">Before that I spent six years at Moka POS, a cloud-based point-of-sale platform for SMEs under GoTo Group, covering F&B, retail and service sectors. The ecosystem included a mobile cashier app, back-office analytics, CRM, inventory management and multi-payment integrations like GoPay, OVO and ShopeePay, plus an omnichannel sales platform. I started doing merchant implementations across East Java and eventually led a five-person regional team managing around 200 onboarding schedules a month across two offices.</textarea>
+                </div>
+                <div class="para-block">
+                    <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
+                    <textarea class="field-textarea tall" oninput="update()">On the cloud infrastructure side I want to be honest about where I am. I've explored AWS Amplify and PartyRock, so I'm not starting from zero, but I haven't gone deep on the infrastructure layer yet, things like S3, databases, IAM and the broader AWS service stack. That's a real gap and I know it, but I do have a conceptual understanding of how cloud infrastructure works and how the pieces fit together. What I also have is a track record of picking up complex SaaS platforms and owning issues at a technical level without much hand-holding, and I've built enough on my own in Python, JavaScript and REST APIs that learning a new layer of infrastructure isn't unfamiliar territory. It would just take time, which I'm willing to put in.</textarea>
+                </div>
+                <div class="para-block">
+                    <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
+                    <textarea class="field-textarea" oninput="update()">The remote setup, the APAC timezone and the kind of cross-functional coordination this role involves is genuinely how I've been working. I'm happy to go into more detail if it seems like a fit.</textarea>
+                </div>
+            </div>
+            <button class="add-para-btn" onclick="addPara()">+ Add Paragraph</button>
+        </div>
+
+        <div class="field-group" style="margin-top:8px;">
+            <label class="field-label">PDF Filename</label>
+            <input class="field-input" id="f-filename" value="Adiyat_Coto_CoverLetter_DoiT">
+        </div>
+    </div>
+
+    <!-- ══ PREVIEW ══ -->
+    <div class="preview">
+        <div class="page" id="letter">
+
+            <div class="header">
+                <h1>Adiyat <em>Coto</em></h1>
+                <div class="cover-label">Cover Letter</div>
+                <div class="header-tagline">
+                    <strong>Sr. Technical Support · SaaS Implementation · Product Support Specialist</strong> &nbsp;·&nbsp; Functional Analysis &amp; Incident Management · POS Systems · Merchant Services · EdTech ERP/LMS &nbsp;·&nbsp; B2B / B2B2C · Remote Ready
+                </div>
+                <div class="contact-bar">
+                    <span>Semarang, Indonesia</span>
+                    <span class="sep">·</span>
+                    <span>+62 823 3172 2481 (WhatsApp)</span>
+                    <span class="sep">·</span>
+                    <a id="mailtoLink" href="#">coto.adiyat&#64;gmail.com</a>
+                    <span class="sep">·</span>
+                    <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a>
+                    <span class="sep">·</span>
+                    <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
+                </div>
+            </div>
+
+            <div class="role-target">
+                <div>
+                    <div class="role-target-label">Applying For</div>
+                    <div class="role-target-title" id="p-role">Product Support Specialist, APAC</div>
+                    <div class="role-target-company" id="p-company-line">DoiT International &nbsp;·&nbsp; 6-month Contract &nbsp;·&nbsp; Remote</div>
+                </div>
+                <div class="role-target-meta" id="p-meta">Indonesia / APAC<br>Remote · Contract</div>
+            </div>
+
+            <div class="letter-body">
+                <div class="salutation" id="p-salutation">Dear DoiT Hiring Team,</div>
+                <div id="p-body"></div>
+                <div class="sign-off">
+                    <div class="sign-off-name">Adiyat <em>Coto</em></div>
+                    <div class="sign-off-links">
+                        <a id="signMailLink" href="#">coto.adiyat&#64;gmail.com</a>
+                        <span>+62 823 3172 2481</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resume-footer">
+                <div class="footer-links">
+                    <a href="https://linkedin.com/in/adiyatcoto" title="LinkedIn">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn
+                    </a>
+                    <a href="https://medium.com/@coto.adiyat" title="Medium">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium
+                    </a>
+                    <a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm" title="Spotify Podcast">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path fill="var(--bg)" d="M8 11.5c2.5-1 5.5-.8 7.5.5M7.5 14.5c2-1 4.5-.8 6.5.4M9 8.5c3-1.2 6.5-.9 9 .8"/></svg>Podcast
+                    </a>
+                    <a href="https://www.tradingview.com/u/adiyatcoto/" title="TradingView">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>TradingView
+                    </a>
+                    <a href="https://orcid.org/0009-0006-1914-0849" title="ORCID">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path fill="var(--bg)" d="M8 7h1.5v10H8zm3.5 0h3.5a4 4 0 0 1 0 8H11.5z"/></svg>ORCID
+                    </a>
+                    <a href="https://about.me/adiyatcoto" title="About.me">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>About.me
+                    </a>
+                    <a href="https://cotoadiyat.gumroad.com/" title="Gumroad">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Gumroad
+                    </a>
+                    <a href="https://adiyatcoto.github.io" title="Portfolio">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>Portfolio
+                    </a>
+                    <a id="footerMailLink" href="#" title="Email">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email
+                    </a>
+                </div>
+                <span>© 2026 Adiyat Coto</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FAB -->
+<div class="fab no-print">
+    <div class="mode-toggle">
+        <button class="mode-btn" id="modeDark" onclick="setMode('dark')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            Dark
+        </button>
+        <button class="mode-btn active" id="modeLight" onclick="setMode('light')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            Light
+        </button>
+    </div>
+    <button class="fab-btn" id="dlBtn" onclick="downloadPDF()" style="align-self:flex-end;">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span id="btnTxt">Save as PDF</span>
+    </button>
+</div>
+
+<script>
+    /* ── LIVE UPDATE ── */
+    function update() {
+        const role     = document.getElementById('f-role').value;
+        const company  = document.getElementById('f-company').value;
+        const contract = document.getElementById('f-contract').value;
+        const setup    = document.getElementById('f-setup').value;
+        const region   = document.getElementById('f-region').value;
+        const sal      = document.getElementById('f-salutation').value;
+
+        document.getElementById('p-role').textContent = role;
+        document.getElementById('p-company-line').innerHTML =
+            escHtml(company) + ' &nbsp;·&nbsp; ' + escHtml(contract) + ' &nbsp;·&nbsp; ' + escHtml(setup);
+        document.getElementById('p-meta').innerHTML =
+            escHtml(region) + '<br>' + escHtml(setup) + ' · ' + escHtml(contract);
+        document.getElementById('p-salutation').textContent = sal;
+
+        // Render paragraphs
+        const textareas = document.querySelectorAll('#para-list textarea');
+        let html = '';
+        textareas.forEach(ta => {
+            const text = ta.value.trim();
+            if (text) html += '<p>' + escHtml(text) + '</p>';
+        });
+        document.getElementById('p-body').innerHTML = html;
+    }
+
+    function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function addPara() {
+        const list = document.getElementById('para-list');
+        const block = document.createElement('div');
+        block.className = 'para-block';
+        block.innerHTML = '<button class="para-remove" onclick="removePara(this)" title="Remove">×</button>' +
+            '<textarea class="field-textarea tall" oninput="update()"></textarea>';
+        list.appendChild(block);
+        block.querySelector('textarea').focus();
+    }
+
+    function removePara(btn) {
+        btn.closest('.para-block').remove();
+        update();
+    }
+
+    /* ── THEME ── */
+    const LIGHT = {
+        '--bg':'#ffffff','--bg-card':'#f8f9fc','--bg-card-2':'#f1f4f9',
+        '--border':'#e2e6ef','--border-mid':'#d0d7e6','--border-bright':'#b8c4d8',
+        '--text':'#0f1624','--text-soft':'#2e3d55','--text-muted':'#5a6e8a','--text-dim':'#b0bccf',
+        '--gold':'#a07c28','--gold-light':'#b8921e',
+        '--teal':'#1e8f78','--teal-light':'#167a66',
+        '--blue':'#2d62d4','--blue-light':'#1a50bf',
+        '--body-bg-1':'#eef1f7','--body-bg-2':'#e6eaf3',
+        '--panel-bg':'#f0f3f9','--panel-border':'#dde3ef',
+        '_pdfBg':'#ffffff'
+    };
+    const DARK = {
+        '--bg':'#0e1117','--bg-card':'#161b25','--bg-card-2':'#1c2333',
+        '--border':'#252e42','--border-mid':'#2e3a54','--border-bright':'#3d4f6e',
+        '--text':'#edf0f7','--text-soft':'#a8b4cc','--text-muted':'#5c6e8a','--text-dim':'#2e3e58',
+        '--gold':'#c9a84c','--gold-light':'#e8c97a',
+        '--teal':'#4db8a0','--teal-light':'#6ed0bb',
+        '--blue':'#5b8dee','--blue-light':'#7aaaf5',
+        '--body-bg-1':'#080c14','--body-bg-2':'#050810',
+        '--panel-bg':'#0d1320','--panel-border':'#1e2a3e',
+        '_pdfBg':'#0e1117'
+    };
+
+    function setMode(mode) {
+        const vars = mode === 'dark' ? DARK : LIGHT;
+        const root = document.documentElement;
+        for (const [k, v] of Object.entries(vars)) {
+            if (k.startsWith('--')) root.style.setProperty(k, v);
+        }
+        window._pdfBg = vars['_pdfBg'];
+        document.getElementById('modeDark').classList.toggle('active', mode === 'dark');
+        document.getElementById('modeLight').classList.toggle('active', mode === 'light');
+        localStorage.setItem('cl-mode', mode);
+    }
+
+    /* ── PDF ── */
+    function downloadPDF() {
+        const el = document.getElementById('letter');
+        const btn = document.getElementById('dlBtn');
+        const txt = document.getElementById('btnTxt');
+        const filename = (document.getElementById('f-filename').value || 'Adiyat_Coto_CoverLetter') + '.pdf';
+        txt.textContent = 'Generating…';
+        btn.disabled = true;
+        el.classList.add('pdf-mode');
+        document.body.classList.add('pdf-body');
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const h = el.scrollHeight + 10, w = 900;
+                html2pdf().set({
+                    margin: 0,
+                    filename: filename,
+                    image: { type: 'png', quality: 1.0 },
+                    html2canvas: { scale:2, useCORS:true, width:w, windowWidth:w, scrollY:0, scrollX:0, height:h, windowHeight:h, backgroundColor: window._pdfBg || '#ffffff' },
+                    jsPDF: { unit:'px', format:[w,h], orientation:'portrait', hotfixes:['px_scaling'] }
+                }).from(el).save()
+                .then(() => { el.classList.remove('pdf-mode'); document.body.classList.remove('pdf-body'); txt.textContent='Save as PDF'; btn.disabled=false; })
+                .catch(() => { el.classList.remove('pdf-mode'); document.body.classList.remove('pdf-body'); txt.textContent='Try Again'; btn.disabled=false; });
+            }, 280);
+        });
+    }
+
+    window.addEventListener('beforeprint', function() {
+        const el = document.getElementById('letter');
+        const h = el.scrollHeight + 10;
+        let s = document.getElementById('print-page-style');
+        if (!s) { s = document.createElement('style'); s.id='print-page-style'; document.head.appendChild(s); }
+        s.innerHTML = '@page { size: 900px ' + h + 'px !important; margin: 0 !important; }';
+    });
+
+    /* ── INIT ── */
+    const saved = localStorage.getItem('cl-mode') || 'light';
+    setMode(saved);
+    update();
+
+    // Email obfuscation
+    (function() {
+        var e = 'coto.adiyat' + '@' + 'gmail.com';
+        ['mailtoLink','signMailLink','footerMailLink'].forEach(id => {
+            var el = document.getElementById(id);
+            if (el) { el.href = 'mailto:' + e; if(id==='footerMailLink') el.textContent='Email'; }
+        });
+    })();
+</script>
+</body>
+</html>
