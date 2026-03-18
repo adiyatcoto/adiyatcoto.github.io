@@ -290,6 +290,10 @@
             border-radius: 10px;
             padding: 14px 18px;
             margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
         }
         .role-target-label {
             font-family:'DM Mono',monospace;
@@ -297,12 +301,12 @@
             letter-spacing: 2px; color: var(--gold);
             margin-bottom: 4px;
         }
-        .role-target-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-        .role-target-company { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        .role-target-title { font-size: 15px; font-weight: 600; color: var(--text); }
+        .role-target-company { font-size: 13px; color: var(--text-muted); }
         .role-target-meta {
             font-family:'DM Mono',monospace;
             font-size: 11px; color: var(--text-muted);
-            line-height: 1.8;
+            text-align: right; flex-shrink: 0; line-height: 1.8;
         }
 
         .letter-body {
@@ -371,30 +375,30 @@
 
         <div class="field-group">
             <label class="field-label">Role Title</label>
-            <input class="field-input" id="f-role" value="Field Operative &amp; Threat Response Specialist" oninput="update()">
+            <input class="field-input" id="f-role" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Company Name</label>
-            <input class="field-input" id="f-company" value="The Avengers Initiative" oninput="update()">
+            <input class="field-input" id="f-company" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Contract Type</label>
-            <input class="field-input" id="f-contract" value="Full-time · Indefinite (World Not Ending)" oninput="update()">
+            <input class="field-input" id="f-contract" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Work Setup</label>
-            <input class="field-input" id="f-setup" value="On-site (Avengers Tower, NYC)" oninput="update()">
+            <input class="field-input" id="f-setup" value="" oninput="update()">
         </div>
         <div class="field-group">
             <label class="field-label">Location / Region (meta right)</label>
-            <input class="field-input" id="f-region" value="Earth / Multiverse-Eligible" oninput="update()">
+            <input class="field-input" id="f-region" value="" oninput="update()">
         </div>
 
         <div class="section-divider">Letter</div>
 
         <div class="field-group">
             <label class="field-label">Salutation</label>
-            <input class="field-input" id="f-salutation" value="Dear Director Fury and the Avengers Recruitment Committee," oninput="update()">
+            <input class="field-input" id="f-salutation" value="" oninput="update()">
         </div>
 
         <div class="field-group">
@@ -402,19 +406,19 @@
             <div id="para-list">
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">I've been working in B2B threat response and large-scale incident management for about seven years now, mostly in implementation and technical support. My last role was at S.H.I.E.L.D., a full-service global peacekeeping organisation covering extraterrestrial incursions, rogue AI containment, and the occasional reality-warping event. I was part of the Level 1/2 field support team handling enterprise-grade crises across all seven continents remotely, including clients like Wakanda, the Sanctum Sanctorum, and Stark Industries. I covered the full incident lifecycle across physical, digital and metaphysical threat vectors, and for the New York Incursion of 2012 specifically I was the dedicated POC and Incident Commander. That meant coordinating directly with demigods, billionaires, and a man who turns into a large green problem, whenever things escalated beyond normal parameters.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">Before that I spent six years at the Sokovia Accords Compliance Office, a regulatory body under the United Nations covering enhanced individual oversight across B2H (Business-to-Hero) and B2V (Business-to-Villain) environments. The ecosystem included a mobile suit tracking app, back-office analytics, anger management CRM, and multi-dimensional portal integrations. I started doing hero onboarding across Eastern Europe and eventually led a five-person team managing around 200 enhanced individual schedules a month, not counting the ones who refused to sign anything.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea tall" oninput="update()">On the Infinity Stone side I want to be honest about where I am. I've explored the Space Stone and briefly handled the Time Stone on a controlled basis, so I'm not starting from zero, but I haven't gone deep on the full six-stone infrastructure yet. That's a real gap and I know it, but I do have a conceptual understanding of how reality manipulation works and how the pieces fit together. What I also have is a track record of picking up complex multiverse-scale problems and owning them at a technical level without much hand-holding. New gauntlet, same methodology.</textarea>
+                    <textarea class="field-textarea tall" oninput="update()"></textarea>
                 </div>
                 <div class="para-block">
                     <button class="para-remove" onclick="removePara(this)" title="Remove">×</button>
-                    <textarea class="field-textarea" oninput="update()">The on-site setup, the Earth timezone and the kind of cross-dimensional coordination this role involves is genuinely how I've been working. I'm happy to go into more detail if it seems like a fit. I also own a shield, which I feel is relevant.</textarea>
+                    <textarea class="field-textarea" oninput="update()"></textarea>
                 </div>
             </div>
             <button class="add-para-btn" onclick="addPara()">+ Add Paragraph</button>
@@ -422,7 +426,7 @@
 
         <div class="field-group" style="margin-top:8px;">
             <label class="field-label">PDF Filename</label>
-            <input class="field-input" id="f-filename" value="Adiyat_Coto_CoverLetter_Avengers">
+            <input class="field-input" id="f-filename" value="Adiyat_Coto_CoverLetter">
         </div>
     </div>
 
@@ -452,14 +456,14 @@
             <div class="role-target">
                 <div>
                     <div class="role-target-label">Applying For</div>
-                    <div class="role-target-title" id="p-role">Product Support Specialist, APAC</div>
-                    <div class="role-target-company" id="p-company-line">DoiT International &nbsp;·&nbsp; 6-month Contract &nbsp;·&nbsp; Remote</div>
+                    <div class="role-target-title" id="p-role"></div>
+                    <div class="role-target-company" id="p-company-line"> &nbsp;·&nbsp;  &nbsp;·&nbsp; </div>
                 </div>
-                <div class="role-target-meta" id="p-meta">Earth / Multiverse-Eligible</div>
+                <div class="role-target-meta" id="p-meta">Indonesia / APAC<br>Remote · Contract</div>
             </div>
 
             <div class="letter-body">
-                <div class="salutation" id="p-salutation">Dear DoiT Hiring Team,</div>
+                <div class="salutation" id="p-salutation"></div>
                 <div id="p-body"></div>
                 <div class="sign-off">
                     <div class="sign-off-name">Adiyat <em>Coto</em></div>
@@ -538,7 +542,8 @@
         document.getElementById('p-role').textContent = role;
         document.getElementById('p-company-line').innerHTML =
             escHtml(company) + ' &nbsp;·&nbsp; ' + escHtml(contract) + ' &nbsp;·&nbsp; ' + escHtml(setup);
-        document.getElementById('p-meta').innerHTML = escHtml(region);
+        document.getElementById('p-meta').innerHTML =
+            escHtml(region) + '<br>' + escHtml(setup) + ' · ' + escHtml(contract);
         document.getElementById('p-salutation').textContent = sal;
 
         // Render paragraphs
