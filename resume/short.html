@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adiyat Coto — Resume</title>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --ink:#0d1520;--ink2:#243348;--ink3:#4a6070;--ink4:#8aa0b4;
+  --line:#e0e8f0;--bg:#f4f7fa;--white:#fff;
+  --navy:#08203a;--teal:#0a7060;--gold:#a86c10;--blue:#163c88;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);
+  background:#d4dde8;padding:32px 16px 60px;line-height:1.6}
+.page{max-width:760px;margin:0 auto;background:var(--white);
+  border-radius:4px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.07),0 20px 60px rgba(0,0,0,.13)}
+
+/* ── HEADER ── */
+.hd{background:var(--navy);padding:32px 40px 26px}
+.hd h1{font-family:'Spectral',serif;font-size:36px;font-weight:600;
+  color:#fff;letter-spacing:-.3px;line-height:1;margin-bottom:6px}
+.hd h1 em{font-style:italic;color:#68c4b8}
+.hd-role{font-size:11px;font-weight:500;color:#6890b0;
+  letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px}
+.hd-contact{display:flex;flex-wrap:wrap;gap:3px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:#4a7090}
+.hd-contact a{color:#68c4b8;text-decoration:none}
+
+/* ── BODY ── */
+.body{padding:28px 40px 36px}
+.sec{margin-bottom:22px}
+.sec-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;
+  letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+  border-bottom:1.5px solid var(--line);padding-bottom:5px;margin-bottom:13px}
+
+/* ── PROFILE ── */
+.profile-text{font-size:13px;color:var(--ink2);line-height:1.75;
+  border-left:3px solid var(--teal);padding-left:14px}
+.profile-text strong{color:var(--ink);font-weight:600}
+.hl{color:var(--teal);font-weight:600}
+.status-bar{margin-top:9px;padding:7px 12px;
+  background:#fdf6e8;border-left:3px solid var(--gold);
+  border-radius:0 3px 3px 0;font-size:12px;color:var(--ink2);line-height:1.6}
+.status-bar strong{color:var(--gold)}
+.status-bar a{color:var(--blue);text-decoration:none}
+
+/* ── DOMAIN GRID ── */
+.domain-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.dc{border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--bg)}
+.dc-label{font-size:10.5px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.dc ul{list-style:none}
+.dc ul li{font-size:10px;color:var(--ink3);line-height:1.5;
+  padding-left:8px;position:relative;margin-bottom:1px}
+.dc ul li::before{content:'·';position:absolute;left:0;color:var(--ink4)}
+.dc.c-teal{border-top:2px solid var(--teal)}.dc.c-teal .dc-label{color:var(--teal)}
+.dc.c-blue{border-top:2px solid var(--blue)}.dc.c-blue .dc-label{color:var(--blue)}
+.dc.c-gold{border-top:2px solid var(--gold)}.dc.c-gold .dc-label{color:var(--gold)}
+.dc.c-red{border-top:2px solid #962828}.dc.c-red .dc-label{color:#962828}
+.dc.c-purple{border-top:2px solid #522890}.dc.c-purple .dc-label{color:#522890}
+.dc.c-green{border-top:2px solid #1a6838}.dc.c-green .dc-label{color:#1a6838}
+.dc.c-slate{border-top:2px solid #304058}.dc.c-slate .dc-label{color:#304058}
+
+/* ── SKILL TAGS ── */
+.skill-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.skill-box{border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--bg)}
+.skill-box-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:var(--navy);margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.tags{display:flex;flex-wrap:wrap;gap:3px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:2px 6px;
+  border-radius:2px;border:1px solid}
+.t-teal{color:#0a5848;border-color:rgba(10,112,96,.25);background:rgba(10,112,96,.06)}
+.t-blue{color:#163c88;border-color:rgba(22,60,136,.22);background:rgba(22,60,136,.05)}
+.t-gray{color:var(--ink3);border-color:var(--line);background:var(--white)}
+
+/* ── EXPERIENCE ── */
+.exp{border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.exp:last-child{margin-bottom:0}
+.exp.c-t{border-left:3px solid var(--teal)}
+.exp.c-b{border-left:3px solid var(--blue)}
+.exp.c-p{border-left:3px solid #522890}
+.exp-hd{background:var(--bg);padding:8px 13px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:10px}
+.exp-co{font-family:'Spectral',serif;font-size:15px;font-weight:600;color:var(--navy)}
+.exp-co span{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;color:var(--ink4)}
+.exp-period{font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--ink4);text-align:right;flex-shrink:0;white-space:nowrap}
+.exp-body{padding:8px 13px 10px}
+.exp-body+.exp-body{border-top:1px dashed var(--line)}
+.role-hd{display:flex;justify-content:space-between;
+  align-items:baseline;margin-bottom:5px;gap:8px}
+.role-title{font-size:12.5px;font-weight:600;color:var(--ink)}
+.role-date{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--ink4);flex-shrink:0;white-space:nowrap}
+.bul{list-style:none}
+.bul li{font-size:12px;color:var(--ink2);padding-left:13px;
+  position:relative;margin-bottom:3px;line-height:1.65}
+.bul li:last-child{margin-bottom:0}
+.bul li::before{content:'–';position:absolute;left:0;
+  color:var(--gold);font-weight:700}
+.bul strong{color:var(--ink);font-weight:600}
+.n{display:inline-block;background:rgba(168,108,16,.1);color:#7a4800;
+  font-weight:600;padding:0 3px;border-radius:2px;
+  border-bottom:1.5px solid rgba(168,108,16,.3)}
+
+/* ── BEYOND WORK ── */
+.beyond-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.beyond-item{border:1px solid var(--line);border-radius:3px;
+  padding:8px 11px;background:var(--bg)}
+.beyond-item strong{font-size:11.5px;font-weight:600;color:var(--navy);display:block;margin-bottom:2px}
+.beyond-item span{font-size:11px;color:var(--ink3);line-height:1.5}
+
+/* ── PROJECTS ── */
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.proj{border:1px solid var(--line);border-radius:3px;padding:8px 10px;
+  background:var(--white);position:relative;overflow:hidden}
+.proj::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.p-r::before{background:#962828}.p-t::before{background:var(--teal)}
+.p-g::before{background:var(--gold)}.p-b::before{background:var(--blue)}
+.p-v::before{background:#522890}
+.proj-name{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:1px}
+.proj-stack{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--ink4);margin-bottom:3px}
+.proj-desc{font-size:11px;color:var(--ink3);line-height:1.5}
+.proj-link{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--blue);text-decoration:none;display:block;margin-top:4px}
+
+/* ── EDUCATION ── */
+.edu-item{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:14px;padding:7px 11px;border:1px solid var(--line);
+  border-left:2px solid var(--teal);border-radius:3px;
+  background:var(--white);margin-bottom:5px}
+.edu-item:last-child{margin-bottom:0}
+.edu-sch{font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:1px}
+.edu-deg{font-size:11.5px;color:var(--ink2)}
+.edu-det{font-size:10.5px;color:var(--ink4);margin-top:1px}
+.edu-date{font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--ink4);white-space:nowrap;flex-shrink:0;margin-top:2px}
+
+/* ── FOOTER ── */
+.ft{margin-top:20px;padding-top:13px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center}
+.ft-links{display:flex;gap:14px}
+.ft-links a{font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--ink4);text-decoration:none}
+.ft-links a:hover{color:var(--teal)}
+.ft-copy{font-family:'JetBrains Mono',monospace;font-size:10px;color:#b0c4d4}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:22px;right:22px;z-index:999}
+.fab-btn{background:var(--navy);color:#fff;border:none;
+  padding:10px 18px;border-radius:50px;cursor:pointer;
+  font-family:'Inter',sans-serif;font-weight:600;font-size:12px;
+  box-shadow:0 4px 16px rgba(8,32,58,.35);transition:all .2s;
+  display:flex;align-items:center;gap:7px}
+.fab-btn:hover{background:#163a60;transform:translateY(-2px)}
+.fab-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.fab-btn svg{width:13px;height:13px;fill:currentColor}
+
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{size:760px auto;margin:0}
+  html,body{margin:0;padding:0;background:#fff;width:760px}
+  .fab{display:none!important}
+  .page{box-shadow:none!important;border-radius:0!important;
+    max-width:760px!important;width:760px!important;margin:0!important;overflow:visible!important}
+  .body{padding:24px 40px 32px}
+  .hd{padding:26px 40px 22px}
+}
+</style>
+</head>
+<body>
+
+<div class="fab">
+  <button class="fab-btn" id="dlBtn" onclick="dl()">
+    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    <span id="btnTxt">Save as PDF</span>
+  </button>
+</div>
+
+<div class="page" id="resume">
+
+  <!-- ── HEADER ── -->
+  <div class="hd">
+    <h1>Adiyat <em>Coto</em></h1>
+    <div class="hd-role">Sr. Technical Support &nbsp;·&nbsp; SaaS Implementation &nbsp;·&nbsp; Product Support &nbsp;·&nbsp; Customer Solution</div>
+    <div class="hd-contact">
+      <span>Semarang, Indonesia</span>
+      <span>+62 823 3172 2481</span>
+      <a href="mailto:coto.adiyat@gmail.com">coto.adiyat@gmail.com</a>
+      <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a>
+      <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- ── 1. PROFILE ── -->
+    <div class="sec">
+      <div class="sec-title">Profile</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:0;margin-bottom:10px">
+        <div style="width:3px;background:var(--teal);border-radius:2px;margin-right:14px;flex-shrink:0"></div>
+        <div>
+          <div style="font-size:12px;color:var(--ink3);font-style:italic;margin-bottom:6px;line-height:1.6">
+            <span style="color:var(--teal);font-weight:600;font-style:normal">Implementation specialist</span> turned <strong style="font-style:normal;color:var(--ink)">support engineer</strong> — makes complex SaaS products work for real clients, then keeps them working. Field implementor → senior → regional lead → enterprise incident manager. Outside work: self-taught developer, active market participant, and published tools author.
+          </div>
+          <div class="profile-text">
+            <strong>7+ years</strong> in SaaS implementation and technical support — across <span class="hl">cloud POS &amp; fintech</span> (Moka POS · GoTo Group) and <span class="hl">EdTech ERP/LMS</span> (MaivenPoint · AvePoint, Singapore). Operated on both sides of the product lifecycle: building implementation frameworks from the ground up, then owning L1/L2 enterprise support and incident resolution for institutional clients. Proven single point of contact between clients and engineering — remote, cross-timezone, and accountable.
+          </div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <strong>Dec 2024 – Present:</strong> Independent — building and publishing live development projects (Python, JavaScript, AI tooling). Portfolio: <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a> &nbsp;·&nbsp; Available immediately.
+      </div>
+    </div>
+
+    <!-- ── 2. DOMAIN EXPERTISE ── -->
+    <div class="sec">
+      <div class="sec-title">Domain Expertise</div>
+      <div class="domain-grid">
+        <div class="dc c-teal">
+          <div class="dc-label">SaaS Implementation</div>
+          <ul>
+            <li>Cloud POS &amp; EdTech ERP/LMS</li>
+            <li>System setup, go-live, cutover</li>
+            <li>B2B &amp; B2B2C · onsite &amp; remote</li>
+          </ul>
+        </div>
+        <div class="dc c-blue">
+          <div class="dc-label">L1/L2 Functional Support</div>
+          <ul>
+            <li>Ticket lifecycle &amp; incident mgmt</li>
+            <li>PSR, bug analysis, escalation</li>
+            <li>25+ enterprise accounts (SG)</li>
+          </ul>
+        </div>
+        <div class="dc c-gold">
+          <div class="dc-label">Change &amp; Release Mgmt</div>
+          <ul>
+            <li>FSDs, CRs, effort estimation</li>
+            <li>UAT &amp; production validation</li>
+            <li>Regression testing · full SDLC</li>
+          </ul>
+        </div>
+        <div class="dc c-red">
+          <div class="dc-label">POS &amp; Merchant Services</div>
+          <ul>
+            <li>Payment gateway integration</li>
+            <li>Omnichannel &amp; multi-outlet ops</li>
+            <li>F&amp;B · retail · service SMEs</li>
+          </ul>
+        </div>
+        <div class="dc c-purple">
+          <div class="dc-label">EdTech ERP Domain</div>
+          <ul>
+            <li>LMS, assessments, student ERP</li>
+            <li>GST, subsidy, billing modules</li>
+            <li>Higher ed &amp; public sector (SG)</li>
+          </ul>
+        </div>
+        <div class="dc c-green">
+          <div class="dc-label">Team Lead &amp; Operations</div>
+          <ul>
+            <li>Regional team (5-member, 2 offices)</li>
+            <li>SOP authoring &amp; training</li>
+            <li>OKR/KPI dashboard design</li>
+          </ul>
+        </div>
+        <div class="dc c-teal" style="border-top-color:#1a6838">
+          <div class="dc-label" style="color:#1a6838">Data &amp; Reporting</div>
+          <ul>
+            <li>Google Sheets · Looker Studio</li>
+            <li>Python/Pandas · D3.js · Plotly</li>
+            <li>Ticket &amp; KPI analytics</li>
+          </ul>
+        </div>
+        <div class="dc c-slate">
+          <div class="dc-label">Network &amp; Infrastructure</div>
+          <ul>
+            <li>LAN/WAN · Router · AP config</li>
+            <li>Multi-device POS topology</li>
+            <li>CCNA · field troubleshooting</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="skill-row">
+        <div class="skill-box">
+          <div class="skill-box-title">Tech Stack</div>
+          <div class="tags">
+            <span class="tag t-teal">Python · Streamlit · Pandas</span>
+            <span class="tag t-teal">JavaScript · D3.js · Chart.js</span>
+            <span class="tag t-teal">REST API · WebSocket · JSON</span>
+            <span class="tag t-teal">Gemini API · BeautifulSoup</span>
+            <span class="tag t-gray">Pine Script v5 · HTML/CSS</span>
+          </div>
+        </div>
+        <div class="skill-box">
+          <div class="skill-box-title">Tools &amp; Platforms</div>
+          <div class="tags">
+            <span class="tag t-blue">Jira · Kissflow · Trello · Slack</span>
+            <span class="tag t-blue">Google Workspace · Looker Studio</span>
+            <span class="tag t-blue">Microsoft 365 · SharePoint</span>
+          </div>
+        </div>
+        <div class="skill-box">
+          <div class="skill-box-title">Soft Skills &amp; Languages</div>
+          <div class="tags">
+            <span class="tag t-gray">Stakeholder Communication</span>
+            <span class="tag t-gray">Cross-functional Collaboration</span>
+            <span class="tag t-gray">Remote &amp; Async-first</span>
+            <span class="tag t-gray">Bahasa Indonesia — Native</span>
+            <span class="tag t-gray">English — Fluent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. EXPERIENCE ── -->
+    <div class="sec">
+      <div class="sec-title">Professional Experience</div>
+
+      <div class="exp c-t">
+        <div class="exp-hd">
+          <div>
+            <div class="exp-co">MaivenPoint <span>— AvePoint · EdTech SaaS · Singapore · Fully Remote</span></div>
+          </div>
+          <div class="exp-period">Feb 2024 – Dec 2024</div>
+        </div>
+        <div class="exp-body">
+          <div class="role-hd">
+            <span class="role-title">L1/L2 Application Support Engineer — Singapore Enterprise</span>
+          </div>
+          <ul class="bul">
+            <li>Handled <strong>inbound client email triage</strong> for the general account pool — received, categorised, and responded to support requests across multiple enterprise clients; owned written communication from initial acknowledgement through troubleshooting, escalation updates, and formal resolution confirmation.</li>
+            <li>Assigned as <strong>dedicated POC &amp; Incident Manager for BCA Academy</strong> (key Singapore public sector account) — coordinated directly between client and R&amp;D / QA / L3 Dev; managed account stability, escalation response, and release communication end-to-end.</li>
+            <li>Supported <strong><span class="n">25+</span> enterprise accounts</strong> (SMU, BCA Academy, NIEC, WMI) fully remote and cross-timezone — owned full ticket lifecycle across academic/operational, <strong>financial/compliance</strong> (GST, subsidy, billing, accounting ledger), and client-facing modules; avg. <span class="n">5–8 tickets/week</span>.</li>
+            <li>Served as <strong>client-facing POC for Change Requests</strong> — conducted feasibility discussions with client and L3 Dev (data flow, mockups, business logic), prepared <strong>Functional Specification Documents (FSDs) with effort/mandays estimation</strong>, obtained sign-off across Support Manager, VP of Product, Senior Dev, and Business Analyst, then managed <strong>UAT with client &amp; QA through to production deployment</strong>.</li>
+            <li>Partnered with engineering on <strong>PSR, regression testing, and production patch</strong> deployments end-to-end.</li>
+            <li>Built <strong>weekly ticket analytics dashboards</strong> (Google Sheets) for stakeholder visibility; facilitated bi-weekly syncs with institutional clients.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp c-b">
+        <div class="exp-hd">
+          <div>
+            <div class="exp-co">Moka POS <span>— GoTo Group · Cloud POS · Surabaya, East Java · Hybrid</span></div>
+          </div>
+          <div class="exp-period">Sep 2016 – Nov 2022 · 6 yrs</div>
+        </div>
+        <div class="exp-body">
+          <div class="role-hd">
+            <span class="role-title">Regional Implementation Lead — East Java</span>
+            <span class="role-date">Dec 2021 – Nov 2022</span>
+          </div>
+          <ul class="bul">
+            <li>Led <span class="n">5-member</span> team across Surabaya &amp; Malang — managed <span class="n">200 merchant schedules/month</span>; drove team <strong>utilization, quality, and product knowledge</strong> through proactive post-sales service coaching and daily tactical tracking via <strong>Google Sheets</strong> (Looker Studio for grand reporting).</li>
+            <li>Achieved <strong><span class="n">5th Top Performer</span> nationally in Q1 2022</strong> (regional utilization score: 84) and <strong><span class="n">1st Top Performer</span> nationally in Q3 2022</strong> (score: 93.5) — improvement driven by proactive customer service culture and structured utilization monitoring across the team.</li>
+            <li>Authored <strong>nationwide SOPs, training modules &amp; technical documentation</strong> — formally adopted as national implementation standard.</li>
+          </ul>
+        </div>
+        <div class="exp-body">
+          <div class="role-hd">
+            <span class="role-title">Senior Implementation &amp; Technical Support Specialist</span>
+            <span class="role-date">Sep 2016 – Dec 2021</span>
+          </div>
+          <ul class="bul">
+            <li>Managed full merchant lifecycle — pre-sales consultation, system setup, network topology design, staff training, and data migration through to <strong>go-live day support</strong> (on-site standby during D-Day operations); onsite across East Java and nationwide remotely.</li>
+            <li><strong>Post-sales ongoing support</strong>: handled troubleshooting, system maintenance, and retraining sessions for existing merchants — including ownership transitions (new owners) and staff turnover (new staff onboarding to existing systems) across <strong>F&amp;B, retail, and service SMEs</strong>.</li>
+            <li>Drove adoption of third-party integrations: <strong>GoPay, GoFood, GoStore, Jurnal.id</strong>.</li>
+            <li>Selected as Training Facilitator — <strong>Bank Indonesia MSME Digital Training Program</strong>, Jawa Timur (Dec 2020).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp c-p">
+        <div class="exp-hd" style="border-bottom:none">
+          <div>
+            <div class="exp-co" style="font-size:13.5px">VIVERE Group <span>— PT Gema Graha Sarana Tbk · Jakarta · Internship</span></div>
+            <div style="font-size:11px;color:var(--ink4);margin-top:2px">IT support across the org; internal feasibility study on Citrix XenApp 6.5 virtualisation deployment.</div>
+          </div>
+          <div class="exp-period">Jul – Dec 2014</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. PERSONAL PROJECTS ── -->
+    <div class="sec">
+      <div class="sec-title">Personal Projects — Self-Taught Development</div>
+      <div class="proj-grid">
+        <div class="proj p-r">
+          <div class="proj-name">TV Intelligence System v4.0</div>
+          <div class="proj-stack">Python · Streamlit · Gemini 2.5 Flash · BeautifulSoup</div>
+          <div class="proj-desc">TradingView chatroom scraper — weighted NLP sentiment, Fear &amp; Greed Index, Z-score anomaly detection, AI-generated behavioral profiles &amp; market summaries.</div>
+          <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ adiyatcoto.github.io/tv/</a>
+        </div>
+        <div class="proj p-t">
+          <div class="proj-name">Top 100 Crypto Market Dashboard</div>
+          <div class="proj-stack">JavaScript · Binance WebSocket · Chart.js</div>
+          <div class="proj-desc">Live real-time dashboard — candlestick charts, BTC correlation matrix, volume dominance &amp; alpha scanner across top 100 USDT pairs.</div>
+          <a class="proj-link" href="https://adiyatcoto.github.io/cryptodash/">↗ adiyatcoto.github.io/cryptodash/</a>
+        </div>
+        <div class="proj p-g">
+          <div class="proj-name">Power Law Generator</div>
+          <div class="proj-stack">D3.js · CryptoCompare API</div>
+          <div class="proj-desc">Log-log chart tool — auto slope + R², deviation bands ±2σ, 100+ asset market scanner for long-term cycle positioning.</div>
+          <a class="proj-link" href="https://adiyatcoto.github.io/powerlaw/">↗ adiyatcoto.github.io/powerlaw/</a>
+        </div>
+        <div class="proj p-b">
+          <div class="proj-name">RSA Confluence System</div>
+          <div class="proj-stack">JavaScript · Live WebSocket · Multi-TF Analysis</div>
+          <div class="proj-desc">Multi-timeframe structural analysis — RSA level mapping Daily–Yearly, order flow overlay, market maker detection &amp; scenario mapping.</div>
+          <a class="proj-link" href="https://adiyatcoto.github.io/svn/">↗ adiyatcoto.github.io/svn/</a>
+        </div>
+      </div>
+      <div class="proj p-v">
+        <div class="proj-name">Pine Script Indicator Suite — TradingView &nbsp;<span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink4)">Pine Script v5 · Publicly published</span></div>
+        <div class="proj-desc">Custom indicators for market structure &amp; confluence logic — all publicly published on TradingView. Active crypto chatroom participant for real-time crowd sentiment research.</div>
+        <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ adiyatcoto.github.io/pinescript/</a>
+      </div>
+    </div>
+
+    <!-- ── 5. BEYOND WORK ── -->
+    <div class="sec">
+      <div class="sec-title">Beyond Work</div>
+      <div class="beyond-grid">
+        <div class="beyond-item">
+          <strong>Quantitative Market Analysis</strong>
+          <span>Applies structured analytical frameworks (Power Law, S2F, multi-timeframe confluence) to real capital decisions across Stocks (IDX) &amp; Crypto — translates data patterns into actionable judgment under uncertainty.</span>
+        </div>
+        <div class="beyond-item">
+          <strong>Fintech &amp; Blockchain Literacy</strong>
+          <span>Hands-on with on-chain mechanics — self-custody staking, DEX/CEX operations, UTXO model, L1/L2 bridging. Practical understanding of how decentralised financial infrastructure works end-to-end.</span>
+        </div>
+        <div class="beyond-item">
+          <strong>Independent Research &amp; Writing</strong>
+          <span>Publishes market analysis and macro commentary on Medium. Monitors real-time crowd sentiment via TradingView community — applied as input to NLP sentiment tooling (TV Intelligence System project).</span>
+        </div>
+        <div class="beyond-item">
+          <strong>Self-Directed Learning</strong>
+          <span>Everything in the Projects section was built independently — no courses, no bootcamps. Python, JavaScript, WebSocket, AI APIs, and D3.js learned through building and shipping live tools.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6. EDUCATION ── -->
+    <div class="sec">
+      <div class="sec-title">Education &amp; Certification</div>
+      <div class="edu-item">
+        <div>
+          <div class="edu-sch">Universitas 17 Agustus 1945 Surabaya</div>
+          <div class="edu-deg">Financial Management — Macro &amp; Capital Markets</div>
+        </div>
+        <div class="edu-date">2015 – 2019</div>
+      </div>
+      <div class="edu-item">
+        <div>
+          <div class="edu-sch">SMK Negeri 7 Semarang</div>
+          <div class="edu-deg">Vocational Diploma — Network Engineering</div>
+          <div class="edu-det">LAN/WAN · PC Troubleshooting · Network Architecture · 4-year program</div>
+        </div>
+        <div class="edu-date">2011 – 2015</div>
+      </div>
+      <div class="edu-item">
+        <div>
+          <div class="edu-sch">Cisco Networking Academy</div>
+          <div class="edu-deg">CCNA Discovery: Networking for Home and Small Businesses</div>
+        </div>
+        <div class="edu-date">Feb 2014</div>
+      </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="ft">
+      <div class="ft-links">
+        <a href="https://linkedin.com/in/adiyatcoto">LinkedIn</a>
+        <a href="https://adiyatcoto.github.io">Portfolio</a>
+        <a href="https://medium.com/@coto.adiyat">Medium</a>
+        <a href="https://www.tradingview.com/u/adiyatcoto/">TradingView</a>
+        <a href="mailto:coto.adiyat@gmail.com">coto.adiyat@gmail.com</a>
+      </div>
+      <div class="ft-copy">© 2026 Adiyat Coto</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Inject dynamic @page size before print so browser prints as single continuous page
+(function(){
+  var styleEl = null;
+  window.addEventListener('beforeprint', function(){
+    var el = document.getElementById('resume');
+    var h = el.scrollHeight + 40;
+    var w = 760;
+    styleEl = document.createElement('style');
+    styleEl.id = '__print_style__';
+    styleEl.innerHTML = '@page { size: ' + w + 'px ' + h + 'px; margin: 0; }' +
+      'html,body{width:' + w + 'px;height:' + h + 'px;}';
+    document.head.appendChild(styleEl);
+  });
+  window.addEventListener('afterprint', function(){
+    if(styleEl){ styleEl.remove(); styleEl=null; }
+  });
+})();
+
+function dl(){
+  var el=document.getElementById('resume'),
+      btn=document.getElementById('dlBtn'),
+      txt=document.getElementById('btnTxt');
+  txt.textContent='Generating…'; btn.disabled=true;
+  var h=el.scrollHeight+10, w=760;
+  html2pdf().set({
+    margin:0, filename:'Adiyat_Coto_Resume.pdf',
+    image:{type:'png',quality:1},
+    html2canvas:{scale:2,useCORS:true,width:w,windowWidth:w,
+      scrollY:0,scrollX:0,height:h,windowHeight:h,backgroundColor:'#fff'},
+    jsPDF:{unit:'px',format:[w,h],orientation:'portrait',hotfixes:['px_scaling']}
+  }).from(el).save()
+  .then(function(){txt.textContent='Save as PDF';btn.disabled=false;})
+  .catch(function(){txt.textContent='Try Again';btn.disabled=false;});
+}
+</script>
+</body>
+</html>
