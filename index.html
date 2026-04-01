@@ -9,366 +9,200 @@
 <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
 <link rel="manifest" href="favicon_io/site.webmanifest">
 <link rel="shortcut icon" href="favicon_io/favicon.ico">
-<script src="https://unpkg.com/lucide@latest"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
     /* Reset & Personal Variables */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     :root {
-        --ink: #0f172a; /* Richer dark slate for text */
-        --paper: #fcfcfc;
-        --dim: #64748b;
+        --ink: #0f172a; 
+        --paper: #fcfcfc; 
+        --dim: #475569;
         --vital: #3B82F6; 
         --border: rgba(0,0,0,0.06);
-        --nav-bg: rgba(252, 252, 252, 0.7);
-        
-        /* Light Mode Container Depth (Pearl & Platinum) */
-        --canvas-bg: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+        --nav-bg: rgba(252,252,252,0.85);
+        --card-bg: rgba(0,0,0,0.02);
+        --video-text: #000000; /* PURE BLACK for Light Mode */
+        --base-font: 18px;
     }
-
+    
     [data-theme="dark"] {
-        --ink: #f8fafc; /* Crisp pearl white for text */
-        --paper: #050505;
+        --ink: #f8fafc; 
+        --paper: #050505; 
         --dim: #94a3b8;
-        --border: rgba(255,255,255,0.08);
-        --nav-bg: rgba(5, 5, 5, 0.8);
-        
-        /* Dark Mode Container Depth (Obsidian & Abyssal) */
-        --canvas-bg: radial-gradient(circle at top right, #0a0f1a 0%, #020408 100%);
+        --border: rgba(255,255,255,0.08); 
+        --nav-bg: rgba(5,5,5,0.85);
+        --card-bg: rgba(255,255,255,0.02);
+        --video-text: #ffffff; /* PURE WHITE for Dark Mode */
     }
 
-    body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: var(--paper);
-        color: var(--ink);
-        line-height: 1.6;
-        transition: background 0.6s ease, color 0.6s ease;
-        -webkit-font-smoothing: antialiased;
+    html { font-size: var(--base-font); }
+    
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background-color: var(--paper); 
+        color: var(--ink); 
+        line-height: 1.8; 
+        letter-spacing: -0.01em;
+        transition: background 0.6s ease, color 0.6s ease; 
+        -webkit-font-smoothing: antialiased; 
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    h1, h2, h3, .logo { 
+        font-family: 'Space Grotesk', sans-serif; 
+        text-transform: uppercase; 
+        letter-spacing: -0.04em; 
     }
 
-    h1, h2, h3, .logo {
-        font-family: 'Space Grotesk', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: -0.04em;
-    }
+    .hero-content-wrapper, .footer-content-wrapper { position: relative; z-index: 2; max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 2rem; }
 
-    /* --- DUAL LAYER CANVAS LOGIC (LAKE + SILK) --- */
-    .canvas-container {
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; width: 100%; padding: 1.2rem 3rem; display: flex; justify-content: space-between; align-items: center; z-index: 2000; background: var(--nav-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: background 0.4s ease, border-color 0.4s ease; }
+    .logo { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: var(--ink); transition: color 0.4s ease; z-index: 2100; letter-spacing: 0.12em; }
+    .nav-right { display: flex; align-items: center; gap: 2rem; z-index: 2100; }
+    .theme-trigger, .menu-trigger { cursor: pointer; background: none; border: none; color: var(--ink); padding: 8px; transition: color 0.4s ease, transform 0.3s ease; display: flex; align-items: center; }
+    .theme-trigger:hover, .menu-trigger:hover { color: var(--vital); transform: rotate(15deg); }
+    .menu-trigger { display: none; }
+    .nav-links { display: flex; list-style: none; gap: 2.5rem; }
+    .nav-links a { color: var(--dim); text-decoration: none; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; transition: color 0.3s ease; }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* MOBILE MENU */
+    .mobile-menu { position: fixed; top: 0; right: -100%; width: 100%; height: 100vh; background: var(--paper); z-index: 1500; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2.5rem; transition: right 0.5s cubic-bezier(0.77,0,0.175,1); }
+    .mobile-menu.active { right: 0; }
+    .mobile-menu a { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; color: var(--ink); text-decoration: none; transition: color 0.3s, transform 0.3s; }
+    .mobile-menu a:hover { color: var(--vital); transform: translateX(10px); }
+
+    /* HERO */
+    .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 6rem 3rem 3rem; position: relative; }
+    
+    /* SECTIONS */
+    .section { padding: 8rem 3rem; max-width: 1200px; margin: 0 auto; position: relative; }
+    .section-border { border-top: 1px solid var(--border); }
+
+    /* VIDEO BACKGROUND LOGIC */
+    .has-video-bg {
         position: relative;
+        width: 100%;
         overflow: hidden;
-        background: var(--canvas-bg);
-        transition: background 0.6s ease;
+        color: var(--video-text); 
     }
-
-    /* Base Water Layer: Heavily blurred for deep liquid feel */
-    .generative-canvas-base {
+    .has-video-bg h1, 
+    .has-video-bg h2 {
+        color: var(--video-text);
+    }
+    .has-video-bg .section {
+        border-top: none; 
+    }
+    .video-bg-container {
         position: absolute;
-        top: -100px; left: -100px;
-        width: calc(100% + 200px); 
-        height: calc(100% + 200px);
+        top: 0; left: 0; width: 100%; height: 100%;
         z-index: 0;
-        pointer-events: none; 
-        filter: blur(60px) saturate(1.1); 
-        transform: translate3d(0,0,0);
-        opacity: 0.8;
-    }
-
-    /* Silk Threads Layer: Blurred & Saturated for Glowing Vibrant Ribbon Effect */
-    .generative-canvas-silk {
-        position: absolute;
-        /* Oversized to hide hard clipped edges from the heavy blur */
-        top: -40px; left: -40px;
-        width: calc(100% + 80px); 
-        height: calc(100% + 80px);
-        z-index: 1;
         pointer-events: none;
-        transform: translate3d(0,0,0);
-        filter: blur(8px) saturate(2); /* Beautiful vibrant glow */
-        opacity: 0.95;
+    }
+    .video-bg-container video {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 1; 
+    }
+    
+    /* ADAPTIVE OVERLAY LOGIC */
+    .video-bg-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--paper);
+        opacity: 0.75; 
+        z-index: 1;
+        transition: background 0.6s ease, opacity 0.6s ease;
+    }
+    [data-theme="dark"] .video-bg-overlay {
+        opacity: 0.4; 
     }
 
-    /* Wrap content to stay above both canvas layers */
-    .hero-content-wrapper, .footer-content-wrapper {
+    .content-above-video {
         position: relative;
         z-index: 2;
-        max-width: 1400px;
-        width: 100%;
-        margin: 0 auto;
-    }
-    /* ------------------------------------------- */
-
-    /* Minimalist Navigation with Blur */
-    .nav {
-        position: fixed;
-        top: 0; left: 0; width: 100%;
-        padding: 1.2rem 2.5rem;
-        display: flex; justify-content: space-between; align-items: center;
-        z-index: 2000; 
-        background: var(--nav-bg);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border-bottom: 1px solid var(--border);
-        transition: background 0.4s ease;
     }
 
-    .logo {
-        font-weight: 700;
-        font-size: 1.2rem;
-        text-decoration: none;
-        color: var(--ink); 
-        transition: color 0.4s ease;
-        z-index: 2100;
+    /* GLOBAL TEXT FOR VIDEO SECTIONS */
+    .hero-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: var(--video-text); margin-bottom: 2rem; }
+    .hero h1 { font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.05; margin-bottom: 2rem; font-weight: 700; max-width: 1000px; }
+    .hero p { font-size: clamp(1.05rem, 1.5vw, 1.25rem); max-width: 650px; font-weight: 400; color: var(--video-text); line-height: 1.8; }
+    
+    .synthesis-inner p { font-size: 1.1rem; line-height: 1.95; color: var(--video-text); margin-bottom: 1.6rem; text-align: left; }
+    .footer-copyright { margin-top: 5rem; color: var(--video-text); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }
+
+    /* THE HUMAN — 2-col with sidebar */
+    .grid-personal { display: grid; grid-template-columns: 280px 1fr; gap: 5rem; }
+    .sticky-header { position: sticky; top: 8rem; height: fit-content; }
+    .sticky-header h2 { font-size: 1.6rem; margin-bottom: 1rem; }
+    .sticky-header p { font-size: 0.9rem; color: var(--dim); font-style: italic; line-height: 1.6; }
+    .biography { font-size: 1.1rem; line-height: 1.9; color: var(--dim); }
+    .biography p { margin-bottom: 1.6rem; }
+    .biography p:last-child { margin-bottom: 0; }
+
+    /* DUAL CONTEXT — tighter, with card treatment */
+    .dual-context { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    .context-block { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 2.5rem; transition: border-color 0.4s ease; backdrop-filter: blur(10px); }
+    .context-block:hover { border-color: rgba(59, 130, 246, 0.2); }
+    .context-block h2 { font-size: 1.7rem; margin-bottom: 1.8rem; color: var(--ink); line-height: 1.2; }
+    .context-block p { font-size: 1.05rem; margin-bottom: 1.4rem; color: var(--dim); font-weight: 400; line-height: 1.85; }
+    .context-block p:last-child { margin-bottom: 0; }
+
+    /* SYNTHESIS */
+    .synthesis-inner { max-width: 820px; margin: 0 auto; text-align: center; }
+    .synthesis-inner h2 { font-size: 2rem; margin-bottom: 2.5rem; }
+    .synthesis-inner p:last-child { margin-bottom: 0; }
+
+    /* PROJECTS — 2-col grid instead of single col */
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+    .card { text-decoration: none; color: inherit; display: block; padding: 2.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; backdrop-filter: blur(10px); }
+    
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 60%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
 
-    .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        z-index: 2100;
-    }
+    .card:hover { transform: translateY(-6px); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1), 0 10px 20px -10px rgba(59, 130, 246, 0.1); background: var(--paper); }
+    .card:hover::before { opacity: 1; }
+    
+    .card-meta { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--vital); margin-bottom: 0.75rem; display: block; position: relative; z-index: 2; }
+    .card-title { font-size: 1.4rem; margin-bottom: 0.75rem; line-height: 1.2; position: relative; z-index: 2; }
+    .card-summary { font-size: 0.95rem; color: var(--dim); line-height: 1.7; position: relative; z-index: 2; }
 
-    .theme-trigger, .menu-trigger {
-        cursor: pointer;
-        background: none;
-        border: none;
-        color: var(--ink);
-        padding: 8px;
-        transition: color 0.4s ease;
-        display: flex;
-        align-items: center;
-    }
+    .highlight-blue { color: var(--vital); font-weight: 600; }
 
-    .menu-trigger {
-        display: none; /* Hidden on desktop */
-    }
+    /* FOOTER */
+    .footer { padding: 8rem 3rem 5rem; text-align: center; }
+    .contact-link { font-size: clamp(1.8rem, 5vw, 3.5rem); font-family: 'Space Grotesk', sans-serif; font-weight: 700; text-decoration: none; color: var(--video-text); display: inline-block; margin-bottom: 3.5rem; transition: color 0.4s, transform 0.4s; }
+    .contact-link:hover { color: var(--vital); transform: scale(1.02); }
 
-    /* Desktop Navigation List */
-    .nav-links {
-        display: flex;
-        list-style: none;
-        gap: 2rem;
-    }
-
-    .nav-links a {
-        color: var(--ink);
-        text-decoration: none;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        transition: color 0.4s ease;
-    }
-
-    .nav-links a:hover {
-        color: var(--vital);
-    }
-
-    /* Mobile Menu Overlay */
-    .mobile-menu {
-        position: fixed;
-        top: 0; right: -100%;
-        width: 100%; height: 100vh;
-        background: var(--paper);
-        z-index: 1500; 
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-    }
-
-    .mobile-menu.active {
-        right: 0;
-    }
-
-    .mobile-menu a {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--ink);
-        text-decoration: none;
-        transition: color 0.3s;
-    }
-
-    .mobile-menu a:hover {
-        color: var(--vital);
-    }
-
-    /* Hero Section - The Persona */
-    .hero {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 2.5rem;
-        margin: 0 auto;
-    }
-
-    .hero-label {
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--dim);
-        margin-bottom: 2rem;
-    }
-
-    .hero h1 {
-        font-size: clamp(3rem, 12vw, 8rem);
-        line-height: 0.9;
-        margin-bottom: 3rem;
-        font-weight: 700;
-    }
-
-    .hero p {
-        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-        max-width: 850px;
-        font-weight: 300;
-        color: var(--dim);
-    }
-
-    /* Content Layout - Split Logic */
-    .section {
-        padding: 8rem 2.5rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .dual-context {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6rem;
-    }
-
-    .context-block h2 {
-        font-size: 2.2rem;
-        margin-bottom: 2.5rem;
-        color: var(--ink);
-    }
-
-    .context-block p {
-        font-size: 1.1rem;
-        margin-bottom: 1.8rem;
-        color: var(--dim);
-        font-weight: 400;
-        line-height: 1.8;
-    }
-
-    .highlight-blue {
-        color: var(--vital);
-        font-weight: 600;
-    }
-
-    /* Project Stack */
-    .project-stack {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        margin-top: 4rem;
-    }
-
-    .card {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        padding-bottom: 3rem;
-        border-bottom: 1px solid var(--border);
-        transition: 0.4s;
-    }
-
-    .card:hover {
-        opacity: 0.7;
-        transform: translateX(10px);
-    }
-
-    .card-meta {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: var(--vital);
-        margin-bottom: 1rem;
-        display: block;
-    }
-
-    .card-title {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    }
-
-    .card-summary {
-        font-size: 1rem;
-        color: var(--dim);
-        max-width: 700px;
-    }
-
-    /* Footer */
-    .footer {
-        padding: 8rem 2.5rem 5rem;
-        text-align: center;
-    }
-
-    .contact-link {
-        font-size: clamp(2rem, 6vw, 4rem);
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        text-decoration: none;
-        color: var(--ink);
-        display: inline-block;
-        margin-bottom: 4rem;
-        transition: 0.4s;
-    }
-
-    .contact-link:hover {
-        color: var(--vital);
-    }
-
-    .social-links {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap; 
-        gap: 2rem 3rem; 
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .social-links a {
-        color: var(--dim);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem; 
-        transition: color 0.4s ease;
-    }
-
-    .social-links a:hover {
-        color: var(--vital);
-    }
-
-    .social-links a i {
-        width: 18px;
-        height: 18px;
-    }
+    /* SOCIAL LINKS */
+    .social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.2rem 2.5rem; max-width: 860px; margin: 0 auto; }
+    .social-links a { color: var(--video-text); text-decoration: none; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 0.5rem; transition: color 0.3s ease, transform 0.3s ease; letter-spacing: 0.02em; }
+    .social-links a:hover { color: var(--vital); transform: translateY(-2px); }
+    .social-links svg { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
     @media (max-width: 968px) {
+        html { font-size: 16px; }
         .nav { padding: 1rem 1.5rem; }
         .nav-links { display: none; }
         .menu-trigger { display: flex; }
-        .dual-context { grid-template-columns: 1fr; gap: 4rem; }
-        .hero h1 { font-size: 3.5rem; }
-        .hero p { font-size: 1.1rem; }
-        .section { padding: 5rem 1.5rem; }
-        .grid-personal { grid-template-columns: 1fr !important; gap: 3rem !important; }
-        .sticky-header { position: relative !important; top: 0 !important; }
+        .hero { padding: 7rem 1.5rem 3rem; min-height: 100svh; }
+        .hero h1 { font-size: clamp(2.5rem, 10vw, 3.5rem); line-height: 1.1; margin-bottom: 1.5rem; }
+        .hero p { font-size: 1.05rem; }
+        .section { padding: 4rem 1.5rem; }
+        .grid-personal { grid-template-columns: 1fr; gap: 2.5rem; }
+        .sticky-header { position: relative; top: 0; }
+        .dual-context { grid-template-columns: 1fr; gap: 1.5rem; }
+        .project-grid { grid-template-columns: 1fr; }
+        .footer { padding: 4rem 1.5rem 3rem; }
     }
 </style>
 </head>
@@ -391,397 +225,218 @@
     </div>
 </nav>
 
-<!-- Mobile Overlay Menu -->
 <div class="mobile-menu" id="mobileMenu">
     <a href="#person" onclick="toggleMenu()">About</a>
     <a href="#projects" onclick="toggleMenu()">The Works</a>
     <a href="#contact" onclick="toggleMenu()">Contact</a>
 </div>
 
-<!-- TOP GENERATIVE CANVAS SECTION -->
-<section id="home" class="hero canvas-container">
-    <!-- Layer 1: Base Water -->
-    <canvas id="canvas-hero-base" class="generative-canvas-base"></canvas>
-    <!-- Layer 2: Silk Glowing Strings -->
-    <canvas id="canvas-hero-silk" class="generative-canvas-silk"></canvas>
+<section id="home" class="hero has-video-bg">
+    <div class="video-bg-container">
+        <video autoplay loop muted playsinline>
+            <source src="doc/banner.webm" type="video/webm">
+        </video>
+        <div class="video-bg-overlay"></div>
+    </div>
     
-    <div class="hero-content-wrapper">
+    <div class="hero-content-wrapper content-above-video">
         <div class="hero-label">Welcome.</div>
-        <h1>Order in chaos.<br>Rhythm in noise.</h1>
-        <p>I’ve spent the last seven years making sure things work when they shouldn't, and the last decade wondering why the world moves in waves. I spend my days bridging gaps for others and my nights mapping the hidden lines of the market.</p>
+        <h1>Seven years keeping systems alive.<br>A decade learning how they breathe.</h1>
+        <p>By day I fix what others have given up on. By night I map what most people can't see yet. Somewhere between those two things, I seem to have become a person.</p>
     </div>
 </section>
 
-<section id="person" class="section" style="border-top: 1px solid var(--border);">
-    <div class="grid-personal" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem;">
-        <div class="sticky-header" style="position: sticky; top: 8rem; height: fit-content;">
-            <h2 class="section-title">The Human</h2>
+<section id="person" class="section section-border">
+    <div class="grid-personal">
+        <div class="sticky-header">
+            <h2>The Human</h2>
             <p style="color:var(--dim); font-style: italic;">"Observation is my primary mode of existence."</p>
         </div>
-        <div class="biography" style="font-size: 1.1rem; line-height: 1.8; color: var(--dim);">
-            <p>If you were to see me in a room, I’m likely the one listening rather than speaking. I’ve always been fascinated by how things connect—how a small friction in a piece of code can lead to a frustrated person halfway across the world, or how a single headline can ripple through a global market chart.</p>
-            
-            <p>I am a person who values <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">quiet responsibility</span>. My background isn't just in software; it's rooted in the physical reality of Network Engineering and PC troubleshooting. I started by figuring out how to make machines talk to each other through LAN/WAN configurations, and that grew into a lifelong obsession with the "invisible pipes" of our world.</p>
-
-            <p>I find a strange sort of peace in high-pressure situations, not because I enjoy the stress, but because I enjoy the process of deconstructing a crisis into a solvable puzzle. There is a deep satisfaction in being the steady hand when systems start to shake.</p>
-
-            <p>I see myself as a student of <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">Balance</span>. My life is an ongoing experiment in finding the equilibrium between rigid technical logic and the fluid, often messy nature of human emotion. I believe that the best systems aren't the ones with the most features, but the ones that respect the human time and peace of mind they are meant to serve.</p>
+        <div class="biography">
+            <p>If you put me in a room, I'm probably the one listening. Not because I have nothing to say — more because I've found that most things reveal themselves if you give them enough space.</p>
+            <p>I started working at 20, before I finished my degree. The field moved faster than the classroom, so I made a choice. It cost something. It also taught me things no curriculum would have.</p>
+            <p>By training, I come from the world of networks — understanding how <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">invisible connections</span> hold everything together, and what happens when they don't. That sensibility never left. It just migrated: into operations, into client relationships, into the way I read a broken system at 11pm.</p>
+            <p>What I've learned to do well is stay calm when things fall apart. Not because pressure doesn't land — it does — but because I've learned to find the problem inside the panic. The noise clears, and suddenly there's just a puzzle. There's something I genuinely love about that moment. I don't think I'll ever stop looking for it.</p>
+            <p>The other half of me lives in questions that don't resolve cleanly. Why do things move in cycles? What's actually underneath the surface of a market, a philosophy, a civilization? I don't expect final answers. But I take the questions seriously — with rigor, with patience, and without pretending certainty I don't have.</p>
+            <p>I call myself a generalist. What I mean is: <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">I absorb everything</span>, and I can't seem to stop.</p>
         </div>
     </div>
 </section>
 
-<section id="contexts" class="section" style="border-top: 1px solid var(--border);">
+<section id="contexts" class="section section-border">
     <div class="dual-context">
-        <!-- Professional Background -->
         <div class="context-block">
             <h2>The Weight of<br><span class="highlight-blue">Execution</span></h2>
-            <p>In my professional life, I’ve spent my time in the deep end of technical operations. I’ve lived through the complexities of point-of-sale ecosystems, payment integrations, and large-scale learning platforms. These weren't just jobs for me—they were environments where I learned that <span class="highlight-blue">taking ownership</span> is the only thing that matters when a system hits a wall.</p>
-            <p>I’ve spent my days resolving the friction between a person needing to move forward and a machine that has simply stopped. Whether I was leading regional implementations for hundreds of businesses or coordinating incident responses for national-scale sectors, I was the one holding the line. My focus has never been on a single product, but on the responsibility of <span class="highlight-blue">protecting someone's continuity</span>, no matter how chaotic the break might be.</p>
+            <p>My professional life has mostly been about one thing: being the person who makes sure things actually work.</p>
+            <p>For years that meant being on the ground — in merchant kitchens and retail floors, wiring systems into the real operational life of businesses. Not handing over a manual and leaving. Staying. Coming back when staff changed. Standing by on go-live day because when it's D-Day, you don't get a second chance.</p>
+            <p>What I didn't expect was how much that work would teach me about people. Every friction point in a system is, underneath it, a <span class="highlight-blue">human friction point</span>. Someone who doesn't understand, or doesn't trust, or is simply exhausted. The technical fix is usually the easy part.</p>
+            <p>Later, the context shifted to institutional clients — national-scale systems, managed fully remote across timezones. I owned the communication threads, sat in feasibility calls between engineering and clients, wrote the specs, walked stakeholders through sign-off, then ran testing all the way to production. <span class="highlight-blue">The bridge between what someone needs and what a system can actually do — that was always the job.</span></p>
+            <p>In my best year, my team placed 1st nationally by productivity. More than the number, I'm proud of what caused it: a culture where people genuinely looked out for the clients. That doesn't happen by accident.</p>
         </div>
-
-        <!-- Personal Exploration -->
         <div class="context-block">
             <h2>The Search for<br><span class="highlight-blue">Exploration</span></h2>
-            <p>When the day ends, my quiet investigation begins. My personal hours are spent on a different kind of map. I look at markets as the largest shared diary of human hope and fear—a living expression of <span class="highlight-blue">collective psychology</span>. To me, everything moves in waves, and I’ve become obsessed with finding the geometry behind those moves.</p>
-            <p>I build tools to understand the present moment. Moving toward "Reflexive Symmetrical Architecture" is my way of exploring how a trend tires out or how a cycle eventually repeats. I'm not looking for a signal to "win"; I'm looking for the structural logic that governs the noise. I share these explorations with a small community of people who are searching for the same <span class="highlight-blue">visual clarity</span> in a world that often feels random.</p>
+            <p>The personal work started as a question I couldn't shake: <em>why does everything move in waves?</em></p>
+            <p>Not just markets. Everything. Empires. Technologies. Conversations. There seems to be a <span class="highlight-blue">geometry underneath it all</span> — patterns that repeat at different scales, cycles that were already old when anyone thought to name them.</p>
+            <p>Markets became the laboratory because they're the most honest mirror of collective human psychology available. Every candlestick is a crowd decision made visible. I'm not interested in predicting what happens next — I'm interested in understanding the architecture of how things unfold.</p>
+            <p>That obsession eventually became a formal working paper — <em>Reflexive Symmetrical Architecture: A Unified Theory of Price-Time</em> — published on Zenodo with a registered DOI. I didn't write it for credentials. I wrote it because the idea had been living in my head long enough that <span class="highlight-blue">it needed a proper home</span>.</p>
+            <p>The tools on this site are the practical side of the same thinking. Built not for a portfolio — built because they didn't exist, and I needed them.</p>
         </div>
     </div>
 </section>
 
-<section id="synthesis" class="section" style="border-top: 1px solid var(--border); background: rgba(59, 130, 246, 0.02);">
-    <div style="max-width: 900px; margin: 0 auto; text-align: center;">
-        <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 3rem;">Where the Worlds <span class="highlight-blue">Meet</span></h2>
-        <div style="font-size: 1.2rem; line-height: 2; color: var(--dim); text-align: left;">
-            <p>People often ask how I balance the intensity of technical operations with the abstraction of market theory. To me, they are the same pursuit. </p>
-            <p style="margin-top: 2rem;">Whether I am staring at a critical error log in a SaaS ecosystem or a liquidity gap on a 5-minute chart, I am looking for the same thing: <span class="highlight-blue" style="color: var(--ink);">The transition point where a system loses its center.</span></p>
-            <p style="margin-top: 2rem;">My professional background has taught me the discipline of keeping a system alive when the stakes are high—managing everything from network engineering to complex deployments. My personal explorations have taught me the humility of respecting cycles that are far larger than I am. These two halves meet in the study of <span class="highlight-blue" style="color: var(--ink);">Patterns</span>—the quiet belief that even in the most chaotic moments, there is an underlying structure waiting to be mapped and balanced.</p>
+<section id="synthesis" class="has-video-bg">
+    <div class="video-bg-container">
+        <video autoplay loop muted playsinline>
+            <source src="doc/banner2.webm" type="video/webm">
+        </video>
+        <div class="video-bg-overlay"></div>
+    </div>
+    
+    <div class="section content-above-video" style="border-top: none;">
+        <div class="synthesis-inner">
+            <h2>Where the Worlds <span class="highlight-blue">Meet</span></h2>
+            <p>People sometimes ask how the two sides of my life connect. I'm never sure it's as complicated as the question implies.</p>
+            <p>Whether I'm staring at a critical incident log at 11pm or a price structure on a weekly chart, I'm doing the same thing: looking for <span class="highlight-blue" style="color:var(--video-text)">the moment where the system lost its center</span>. Understanding why it happened there. Then figuring out what comes next.</p>
+            <p>Technical work gave me discipline — the kind you only develop when something breaking has real consequences for real people, and you're the one accountable. Market research gave me humility — the kind you only learn when you realize the cycle you're watching was already ancient long before you noticed it.</p>
+            <p>What they share is a belief that even in the most chaotic moments, there is an underlying structure. <span class="highlight-blue" style="color:var(--video-text)">The work — all of it — is just the ongoing attempt to map it clearly enough to act on it.</span></p>
         </div>
     </div>
 </section>
 
-<section id="journal" class="section" style="border-top: 1px solid var(--border);">
-    <div class="grid-personal" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem;">
-        <div class="sticky-header" style="position: sticky; top: 8rem; height: fit-content;">
-            <h2 class="section-title">The Journal</h2>
+<section id="journal" class="section section-border">
+    <div class="grid-personal">
+        <div class="sticky-header">
+            <h2>The Journal</h2>
             <p style="color:var(--dim); font-style: italic;">"Auditing the intersection of logic and belief."</p>
         </div>
-        <div class="biography" style="font-size: 1.1rem; line-height: 1.8; color: var(--dim);">
-            <p>I write because the world often feels too complex to process in silence. It is my way of auditing my own existence. My journal is where the rigid discipline of my professional life—fixing systems that others have given up on—meets a much heavier, quieter inquiry: <span class="highlight-blue" style="color: var(--ink); border-bottom: 2px solid var(--vital);">How does the world actually breathe?</span></p>
-            
-            <p>Lately, I've been tracing the <i>Archaeology of Narrative Perspective</i>, trying to uncover the hidden layers of how we see ourselves through the dialectic of Eastern subjectivity. This led me deep into Hegel’s <i>Phenomenology of Spirit</i>—not as an academic exercise, but as a survival manual for understanding the journey of consciousness from simple sense-certainty to absolute knowledge. I see this same path in the markets: they are <i>Binary Information Processing Systems</i> where the noise of a thousand trades eventually collapses into the clarity of a structural move.</p>
-
-            <p>I find myself caught in <i>Implosive Cosmology</i>—a paradigm where science, consciousness, and existential meaning part of the same sacred dance. Whether I'm analyzing the <i>Mathematical Inevitability of Zero</i> in global systems or architecting a <i>Post-Fiat World</i> through tokenized real-world assets like gold or energy, I am always searching for the coordinates of being.</p>
-
-            <p style="margin-top: 2rem;">
-                <a href="https://medium.com/@coto.adiyat" target="_blank" style="color: var(--vital); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--vital);">Explore the archive on Medium ↗</a>
-            </p>
+        <div class="biography">
+            <p>Writing is how the thinking gets tested against itself.</p>
+            <p>Most of it orbits one question: <em>what is actually underneath this?</em> Underneath the market move, underneath the historical cycle, underneath the way a mind constructs meaning, underneath what we call civilization. The subjects change — price theory, German idealism, monetary collapse, consciousness, mortality — but the posture stays the same. Something is happening on the surface. Something else is governing it. <span class="highlight-blue" style="color:var(--ink);border-bottom:2px solid var(--vital);">The work is finding the second thing.</span></p>
+            <p>Some of it reaches conclusions. Some of it is still open. A few pieces I wrote because the question was too heavy to carry without putting it somewhere. That counts too.</p>
+            <p><a href="https://medium.com/@coto.adiyat" target="_blank" style="color:var(--vital);text-decoration:none;font-weight:700;border-bottom:1px solid var(--vital);">Explore the archive on Medium ↗</a></p>
         </div>
     </div>
 </section>
 
-<section id="projects" class="section" style="border-top: 1px solid var(--border);">
-    <div style="margin-bottom: 4rem;">
-        <h2 class="section-title">The Works</h2>
-        <p style="color:var(--dim)">Things I’ve built to help me see better.</p>
+<section id="projects" class="section section-border">
+    <div style="margin-bottom:3rem">
+        <h2 style="font-size:2rem;margin-bottom:0.4rem">The Works</h2>
+        <p style="color:var(--dim);font-size:1rem">Things built to help me see better.</p>
     </div>
-
-    <div class="project-stack">
-        <!-- SVN -->
+    <div class="project-grid">
         <a href="/svn" class="card" target="_blank">
             <span class="card-meta">Deciphering Liquidity</span>
             <h3 class="card-title">RSA Confluence</h3>
             <p class="card-summary">My attempt at visualizing what the charts don't show you. A live stream system built to watch market liquidity move in real-time.</p>
         </a>
-
-        <!-- CRE -->
         <a href="/cre" class="card" target="_blank">
             <span class="card-meta">Fractal Mapping</span>
             <h3 class="card-title">Recursive Engine</h3>
             <p class="card-summary">A system built on the belief that the market is a series of nested cycles. I use this to find the equilibrium point where time and price meet.</p>
         </a>
-
-        <!-- Crypto Dash -->
         <a href="/cryptodash/" class="card" target="_blank">
             <span class="card-meta">Market Forensics</span>
             <h3 class="card-title">Asset Dashboard</h3>
-            <p class="card-summary">A simple, high-fidelity window into the core rhythm of the crypto market. Just a clean way to track what’s actually happening.</p>
+            <p class="card-summary">A simple, high-fidelity window into the core rhythm of the crypto market. Just a clean way to track what's actually happening.</p>
         </a>
-
-        <!-- Power Law -->
         <a href="/powerlaw/" class="card" target="_blank">
             <span class="card-meta">Structural Mapping</span>
             <h3 class="card-title">Power Law Generator</h3>
-            <p class="card-summary">An engine built to map exponential network growth into a readable linear trend. I use this to automatically calculate fair value baselines and statistical deviations across assets, separating the market's noise from its actual trajectory.</p>
+            <p class="card-summary">An engine built to map exponential network growth into a readable linear trend. Automatically calculates fair value baselines and statistical deviations across assets — separating the market's noise from its actual trajectory.</p>
         </a>
-
-        <!-- RSA Theory -->
         <a href="/rsa/" class="card" target="_blank">
             <span class="card-meta">Theoretical Architecture</span>
             <h3 class="card-title">Reflexive Symmetrical Architecture (RSA) Whitepaper</h3>
-            <p class="card-summary">A whitepaper and interactive demo where I explore the geometry of trading. It’s my foundational thinking on spatial mapping.</p>
+            <p class="card-summary">A whitepaper and interactive demo exploring the geometry of trading. Foundational thinking on spatial mapping, formally published on Zenodo (DOI: 10.5281/zenodo.16749290).</p>
         </a>
-
-        <!-- COP TAH Pivot -->
         <a href="/coptah/" class="card" target="_blank">
             <span class="card-meta">Predictive Levels</span>
             <h3 class="card-title">COP TAH Pivot</h3>
             <p class="card-summary">A novel pivot-based calculation system that incorporates opening dynamics to create responsive support and resistance.</p>
         </a>
-
-        <!-- Bias Analyzer -->
         <a href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" class="card" target="_blank">
             <span class="card-meta">Technical Insight</span>
             <h3 class="card-title">Bias Analyzer</h3>
-            <p class="card-summary">A tool I developed in Pine Script to help identify when the market is shifting its structure across different timeframes.</p>
+            <p class="card-summary">A Pine Script tool to identify when the market is shifting its structure across different timeframes.</p>
         </a>
-
-        <!-- PULZR -->
         <a href="/pulzr/" class="card" target="_blank">
             <span class="card-meta">Generative Visuals</span>
             <h3 class="card-title">PULZR Audioverse</h3>
             <p class="card-summary">An exploration into dynamic 3D environments synchronized with audio streams. Mapping sound into a visual landscape.</p>
         </a>
-
-        <!-- Clock -->
         <a href="/clock/" class="card" target="_blank">
             <span class="card-meta">Temporal Cycles</span>
             <h3 class="card-title">Nested Time</h3>
-            <p class="card-summary">An interactive artwork visualizing time as a series of concentric, nested rings—from millenniums down to the pulse of a second.</p>
+            <p class="card-summary">An interactive artwork visualizing time as a series of concentric, nested rings — from millenniums down to the pulse of a second.</p>
         </a>
-
-        <!-- Digital Shelf -->
         <a href="/books/" class="card" target="_blank">
             <span class="card-meta">References</span>
             <h3 class="card-title">The Digital Shelf</h3>
             <p class="card-summary">A collection of the books I love.</p>
         </a>
-
-        <!-- Pine Script -->
         <a href="/pinescript/" class="card" target="_blank">
             <span class="card-meta">Shared Logic</span>
             <h3 class="card-title">Pine Script Collections</h3>
-            <p class="card-summary">A gathering of the scripts and indicators I’ve built over the years. It’s where I share the logic I use to see the market more clearly.</p>
+            <p class="card-summary">Scripts and indicators built over the years. The logic I use to see the market more clearly, shared publicly.</p>
         </a>
-
-        <!-- Voice from Zero Point -->
         <a href="https://www.youtube.com/@VoicefromZeroPoint" class="card" target="_blank">
             <span class="card-meta">Personal Reflections</span>
             <h3 class="card-title">Zero Point Voice</h3>
-            <p class="card-summary">Where I talk through the things I'm learning—about finance, history, and the cycles that seem to govern everything.</p>
+            <p class="card-summary">Where I talk through the things I'm learning — about finance, history, and the cycles that seem to govern everything.</p>
         </a>
     </div>
 </section>
 
-<!-- BOTTOM GENERATIVE CANVAS SECTION -->
-<section id="contact" class="footer canvas-container" style="border-top: 1px solid var(--border);">
-    <canvas id="canvas-footer-base" class="generative-canvas-base"></canvas>
-    <canvas id="canvas-footer-silk" class="generative-canvas-silk"></canvas>
-
-    <div class="footer-content-wrapper">
+<section id="contact" class="footer section-border has-video-bg">
+    <div class="video-bg-container">
+        <video autoplay loop muted playsinline>
+            <source src="doc/banner3.webm" type="video/webm">
+        </video>
+        <div class="video-bg-overlay"></div>
+    </div>
+    
+    <div class="footer-content-wrapper content-above-video">
         <div class="hero-label">Want to connect?</div>
         <a href="mailto:coto.adiyat@gmail.com" class="contact-link">Click to drop me an email.</a>
-        
         <div class="social-links">
             <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank">
-                <i data-lucide="linkedin"></i> LinkedIn
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                LinkedIn
             </a>
             <a href="https://medium.com/@coto.adiyat" target="_blank">
-                <i data-lucide="feather"></i> Medium
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Medium
             </a>
             <a href="https://www.instagram.com/luxinextinguibilitatis/" target="_blank">
-                <i data-lucide="instagram"></i> Instagram
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                Instagram
             </a>
-            <a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm?si=f5e027dc5242417d" target="_blank">
-                <i data-lucide="podcast"></i> Spotify Podcast
+            <a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm" target="_blank">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-1 5.5-.8 7.5.5M7.5 14.5c2-1 4.5-.8 6.5.4M9 8.5c3-1.2 6.5-.9 9 .8"/></svg>
+                Podcast
             </a>
             <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank">
-                <i data-lucide="candlestick-chart"></i> TradingView
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                TradingView
             </a>
             <a href="https://orcid.org/0009-0006-1914-0849" target="_blank">
-                <i data-lucide="graduation-cap"></i> ORCID
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                ORCID
             </a>
             <a href="https://about.me/adiyatcoto" target="_blank">
-                <i data-lucide="user-square"></i> About.me
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                About.me
             </a>
             <a href="https://cotoadiyat.gumroad.com/" target="_blank">
-                <i data-lucide="store"></i> Gumroad
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Gumroad
             </a>
         </div>
-
-        <p style="margin-top: 6rem; color: var(--dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;">
-            © 2026 Adiyat Coto
-        </p>
+        <p class="footer-copyright">© 2026 Adiyat Coto</p>
     </div>
 </section>
 
 <script>
-    /* ======================================================================
-       Vibrant Glow Liquid & Silk Simulation (Perfect Smooth Magnetic Pull)
-       ====================================================================== */
-    class ElegantLiquidSilk {
-        constructor(sectionId, baseCanvasId, silkCanvasId) {
-            this.section = document.getElementById(sectionId);
-            this.baseCanvas = document.getElementById(baseCanvasId);
-            this.silkCanvas = document.getElementById(silkCanvasId);
-            
-            if (!this.baseCanvas || !this.silkCanvas) return;
-            
-            this.ctxBase = this.baseCanvas.getContext('2d');
-            this.ctxSilk = this.silkCanvas.getContext('2d');
-            this.time = 0;
-            
-            // Interaction State
-            this.mouse = { x: 0, y: 0, influence: 0 };
-            this.targetMouse = { x: 0, y: 0, influence: 0 };
-            
-            this.section.addEventListener('mousemove', (e) => {
-                const rect = this.silkCanvas.getBoundingClientRect();
-                this.targetMouse.x = e.clientX - rect.left;
-                this.targetMouse.y = e.clientY - rect.top;
-                this.targetMouse.influence = 1; 
-            });
-            
-            this.section.addEventListener('mouseleave', () => {
-                // Smoothly fade out the influence when mouse leaves
-                this.targetMouse.influence = 0; 
-            });
-
-            window.addEventListener('resize', () => this.resize());
-            this.resize();
-            
-            this.mouse.x = this.width / 2;
-            this.mouse.y = this.height / 2;
-            this.targetMouse.x = this.width / 2;
-            this.targetMouse.y = this.height / 2;
-            
-            this.animate();
-        }
-
-        resize() {
-            // Base layer is larger to hide CSS blur edges
-            this.baseWidth = this.baseCanvas.width = this.section.offsetWidth + 200;
-            this.baseHeight = this.baseCanvas.height = this.section.offsetHeight + 200;
-            
-            // Silk layer maps to its expanded CSS bounds
-            this.width = this.silkCanvas.width = this.section.offsetWidth + 80;
-            this.height = this.silkCanvas.height = this.section.offsetHeight + 80;
-        }
-
-        drawLakeWater(isDark) {
-            this.ctxBase.clearRect(0, 0, this.baseWidth, this.baseHeight);
-            
-            const baseLayers = [
-                { yOff: -0.1, amp: 200, freq: 0.0015, speed: 0.003, colorD: 'rgba(5, 10, 20, 0.95)', colorL: 'rgba(203, 213, 225, 0.6)' },
-                { yOff: 0.3, amp: 250, freq: 0.001, speed: -0.002, colorD: 'rgba(15, 23, 42, 0.8)', colorL: 'rgba(226, 232, 240, 0.7)' },
-                { yOff: 0.6, amp: 180, freq: 0.002, speed: 0.004, colorD: 'rgba(30, 27, 75, 0.6)', colorL: 'rgba(241, 245, 249, 0.8)' }
-            ];
-
-            this.ctxBase.globalCompositeOperation = 'source-over';
-
-            baseLayers.forEach((layer) => {
-                this.ctxBase.beginPath();
-                this.ctxBase.moveTo(0, this.baseHeight);
-                this.ctxBase.lineTo(0, this.baseHeight * layer.yOff);
-
-                for (let x = 0; x <= this.baseWidth; x += 40) {
-                    let y = this.baseHeight * layer.yOff 
-                          + Math.sin(x * layer.freq + this.time * layer.speed) * layer.amp;
-
-                    let dx = x - (this.mouse.x + 60);
-                    let dy = y - (this.mouse.y + 60);
-                    let distSq = dx*dx + dy*dy;
-                    
-                    let force = Math.exp(-distSq / 80000) * this.mouse.influence;
-                    y += Math.sin(Math.sqrt(distSq) * 0.015 - this.time * 0.03) * force * 60; 
-
-                    this.ctxBase.lineTo(x, y);
-                }
-
-                this.ctxBase.lineTo(this.baseWidth, this.baseHeight);
-                this.ctxBase.closePath();
-                this.ctxBase.fillStyle = isDark ? layer.colorD : layer.colorL;
-                this.ctxBase.fill();
-            });
-        }
-
-        drawSilkStrings(isDark) {
-            this.ctxSilk.clearRect(0, 0, this.width, this.height);
-            
-            const silkStrings = [
-                { yOff: 0.4, amp: 120, freq: 0.002, speed: 0.005, phase: 0, colorD: 'rgba(0, 255, 234, 0.7)', colorL: 'rgba(0, 110, 255, 0.7)' },
-                { yOff: 0.4, amp: 110, freq: 0.0021, speed: 0.0055, phase: 1, colorD: 'rgba(0, 212, 255, 0.6)', colorL: 'rgba(0, 153, 255, 0.6)' },
-                { yOff: 0.55, amp: 150, freq: 0.0015, speed: -0.004, phase: 2, colorD: 'rgba(255, 0, 191, 0.7)', colorL: 'rgba(255, 20, 147, 0.7)' },
-                { yOff: 0.55, amp: 140, freq: 0.0016, speed: -0.0042, phase: 2.5, colorD: 'rgba(217, 0, 255, 0.6)', colorL: 'rgba(255, 0, 102, 0.6)' },
-                { yOff: 0.7, amp: 90, freq: 0.0025, speed: 0.006, phase: 4, colorD: 'rgba(138, 43, 226, 0.7)', colorL: 'rgba(255, 102, 0, 0.7)' }
-            ];
-
-            this.ctxSilk.globalCompositeOperation = isDark ? 'screen' : 'source-over';
-            this.ctxSilk.lineJoin = 'round';
-            this.ctxSilk.lineCap = 'round';
-            this.ctxSilk.lineWidth = isDark ? 6 : 5; 
-
-            silkStrings.forEach((silk) => {
-                this.ctxSilk.beginPath();
-                let started = false;
-
-                // Density of drawing points increased (x += 10) for maximum smoothness on the bend
-                for (let x = -50; x <= this.width + 50; x += 10) {
-                    let y = this.height * silk.yOff 
-                          + Math.sin(x * silk.freq + this.time * silk.speed + silk.phase) * silk.amp
-                          + Math.cos(x * silk.freq * 1.3 - this.time * silk.speed * 0.8) * (silk.amp * 0.3);
-
-                    // PERFECT MAGNETIC PULL (Gaussian Interpolation)
-                    let dx = x - this.mouse.x;
-                    let dy = y - this.mouse.y;
-
-                    // 1. Horizontal Bell Curve: Creates a smooth, wide "U" shape instead of a sharp "V"
-                    let horizontalWeight = Math.exp(-(dx * dx) / 45000);
-
-                    // 2. Vertical Falloff: Ensures strings far away aren't pulled too aggressively
-                    let verticalWeight = Math.exp(-(dy * dy) / 80000);
-
-                    // Combine weights and apply mouse influence smoothly
-                    let pullForce = horizontalWeight * verticalWeight * this.mouse.influence;
-
-                    // Interpolate the line's Y position directly towards the Mouse's Y position.
-                    // A multiplier of ~0.85 gives a soft, fluid elasticity so it doesn't look totally rigid.
-                    y += (this.mouse.y - y) * pullForce * 0.85;
-
-                    if (!started) {
-                        this.ctxSilk.moveTo(x, y);
-                        started = true;
-                    } else {
-                        this.ctxSilk.lineTo(x, y);
-                    }
-                }
-
-                this.ctxSilk.strokeStyle = isDark ? silk.colorD : silk.colorL;
-                this.ctxSilk.stroke();
-            });
-        }
-
-        animate() {
-            this.time += 1;
-
-            // Interpolation for very smooth mouse position tracking
-            this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.08;
-            this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.08;
-            
-            // Interpolate the magnetic force so it fades in and out organically without snapping
-            this.mouse.influence += (this.targetMouse.influence - this.mouse.influence) * 0.03;
-
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-
-            this.drawLakeWater(isDark);
-            this.drawSilkStrings(isDark);
-
-            requestAnimationFrame(() => this.animate());
-        }
-    }
-
-    // Initialize Canvas instances
-    let topEngine, bottomEngine;
-
     /* ======================================================================
        UI and Theme Logic
        ====================================================================== */
@@ -802,9 +457,7 @@
         const isActive = menu.classList.toggle('active');
         icon.setAttribute('data-lucide', isActive ? 'x' : 'menu');
         
-        // Prevent background scrolling when menu is open
         document.body.style.overflow = isActive ? 'hidden' : 'auto';
-        
         lucide.createIcons();
     }
 
@@ -821,7 +474,6 @@
                     });
                 }
             }
-            // Close mobile menu if open
             if(document.getElementById('mobileMenu').classList.contains('active')) {
                 toggleMenu();
             }
@@ -829,15 +481,11 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        const saved = localStorage.getItem('theme-personal') || 'dark';
-        document.body.setAttribute('data-theme', saved);
-        const icon = saved === 'dark' ? 'sun' : 'moon';
-        document.getElementById('theme-icon').setAttribute('data-lucide', icon);
+        // ALWAYS FORCE DARK MODE ON LOAD (Ignore LocalStorage)
+        document.body.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
-
-        // Boot up the dual-layer fluid and silk engines
-        topEngine = new ElegantLiquidSilk('home', 'canvas-hero-base', 'canvas-hero-silk');
-        bottomEngine = new ElegantLiquidSilk('contact', 'canvas-footer-base', 'canvas-footer-silk');
+        localStorage.setItem('theme-personal', 'dark');
     });
 </script>
 </body>
