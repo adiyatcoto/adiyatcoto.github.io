@@ -1,530 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adiyat Coto — Resume</title>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-:root{
-  --ink:#0d1520;--ink2:#243348;--ink3:#4a6070;--ink4:#8aa0b4;
-  --line:#e0e8f0;--bg:#f4f7fa;--white:#fff;
-  --navy:#08203a;--teal:#0a7060;--gold:#a86c10;--blue:#163c88;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);
-  background:#d4dde8;padding:32px 16px 60px;line-height:1.6}
-.page{max-width:760px;margin:0 auto;background:var(--white);
-  border-radius:4px;overflow:hidden;
-  box-shadow:0 2px 8px rgba(0,0,0,.07),0 20px 60px rgba(0,0,0,.13)}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiyat Coto - Professional Resume</title>
+    
+    <!-- Tailwind CSS for utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            background-color: #52525b; 
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        
+        .resume-container {
+            font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+            background-color: white;
+            width: 210mm; /* Standard readable width, but height is completely dynamic */
+            margin: 0 auto;
+            padding: 12mm 15mm; /* Comfortable screen padding */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            color: #000;
+        }
 
-/* ── HEADER ── */
-.hd{background:var(--navy);padding:32px 40px 26px}
-.hd h1{font-family:'Spectral',serif;font-size:36px;font-weight:600;
-  color:#fff;letter-spacing:-.3px;line-height:1;margin-bottom:6px}
-.hd h1 em{font-style:italic;color:#68c4b8}
-.hd-role{font-size:11px;font-weight:500;color:#6890b0;
-  letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px}
-.hd-contact{display:flex;flex-wrap:wrap;gap:3px 20px;
-  font-family:'JetBrains Mono',monospace;font-size:11px;color:#4a7090}
-.hd-contact a{color:#68c4b8;text-decoration:none}
+        h1, h2, .font-serif {
+            font-family: 'Times New Roman', Times, serif;
+        }
 
-/* ── BODY ── */
-.body{padding:28px 40px 36px}
-.sec{margin-bottom:22px}
-.sec-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;
-  letter-spacing:3px;text-transform:uppercase;color:var(--gold);
-  border-bottom:1.5px solid var(--line);padding-bottom:5px;margin-bottom:13px}
-
-/* ── PROFILE ── */
-.profile-text{font-size:13px;color:var(--ink2);line-height:1.75;
-  border-left:3px solid var(--teal);padding-left:14px}
-.profile-text strong{color:var(--ink);font-weight:600}
-.hl{color:var(--teal);font-weight:600}
-.status-bar{margin-top:9px;padding:7px 12px;
-  background:#fdf6e8;border-left:3px solid var(--gold);
-  border-radius:0 3px 3px 0;font-size:12px;color:var(--ink2);line-height:1.6}
-.status-bar strong{color:var(--gold)}
-.status-bar a{color:var(--blue);text-decoration:none}
-
-/* ── DOMAIN GRID ── */
-.domain-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
-.dc{border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--bg)}
-.dc-label{font-size:10.5px;font-weight:600;color:var(--navy);margin-bottom:3px}
-.dc ul{list-style:none}
-.dc ul li{font-size:10px;color:var(--ink3);line-height:1.5;
-  padding-left:8px;position:relative;margin-bottom:1px}
-.dc ul li::before{content:'·';position:absolute;left:0;color:var(--ink4)}
-.dc.c-teal{border-top:2px solid var(--teal)}.dc.c-teal .dc-label{color:var(--teal)}
-.dc.c-blue{border-top:2px solid var(--blue)}.dc.c-blue .dc-label{color:var(--blue)}
-.dc.c-gold{border-top:2px solid var(--gold)}.dc.c-gold .dc-label{color:var(--gold)}
-.dc.c-red{border-top:2px solid #962828}.dc.c-red .dc-label{color:#962828}
-.dc.c-purple{border-top:2px solid #522890}.dc.c-purple .dc-label{color:#522890}
-.dc.c-green{border-top:2px solid #1a6838}.dc.c-green .dc-label{color:#1a6838}
-.dc.c-slate{border-top:2px solid #304058}.dc.c-slate .dc-label{color:#304058}
-
-/* ── SKILL TAGS ── */
-.skill-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.skill-box{border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--bg)}
-.skill-box-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
-  color:var(--navy);margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--line)}
-.tags{display:flex;flex-wrap:wrap;gap:3px}
-.tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:2px 6px;
-  border-radius:2px;border:1px solid}
-.t-teal{color:#0a5848;border-color:rgba(10,112,96,.25);background:rgba(10,112,96,.06)}
-.t-blue{color:#163c88;border-color:rgba(22,60,136,.22);background:rgba(22,60,136,.05)}
-.t-gray{color:var(--ink3);border-color:var(--line);background:var(--white)}
-
-/* ── EXPERIENCE ── */
-.exp{border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-bottom:8px}
-.exp:last-child{margin-bottom:0}
-.exp.c-t{border-left:3px solid var(--teal)}
-.exp.c-b{border-left:3px solid var(--blue)}
-.exp.c-p{border-left:3px solid #522890}
-.exp-hd{background:var(--bg);padding:8px 13px;border-bottom:1px solid var(--line);
-  display:flex;justify-content:space-between;align-items:center;gap:10px}
-.exp-co{font-family:'Spectral',serif;font-size:15px;font-weight:600;color:var(--navy)}
-.exp-co span{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;color:var(--ink4)}
-.exp-period{font-family:'JetBrains Mono',monospace;font-size:9.5px;
-  color:var(--ink4);text-align:right;flex-shrink:0;white-space:nowrap}
-.exp-body{padding:8px 13px 10px}
-.exp-body+.exp-body{border-top:1px dashed var(--line)}
-.role-hd{display:flex;justify-content:space-between;
-  align-items:baseline;margin-bottom:5px;gap:8px}
-.role-title{font-size:12.5px;font-weight:600;color:var(--ink)}
-.role-date{font-family:'JetBrains Mono',monospace;font-size:9px;
-  color:var(--ink4);flex-shrink:0;white-space:nowrap}
-.bul{list-style:none}
-.bul li{font-size:12px;color:var(--ink2);padding-left:13px;
-  position:relative;margin-bottom:3px;line-height:1.65}
-.bul li:last-child{margin-bottom:0}
-.bul li::before{content:'–';position:absolute;left:0;
-  color:var(--gold);font-weight:700}
-.bul strong{color:var(--ink);font-weight:600}
-.n{display:inline-block;background:rgba(168,108,16,.1);color:#7a4800;
-  font-weight:600;padding:0 3px;border-radius:2px;
-  border-bottom:1.5px solid rgba(168,108,16,.3)}
-
-/* ── BEYOND WORK ── */
-.beyond-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.beyond-item{border:1px solid var(--line);border-radius:3px;
-  padding:8px 11px;background:var(--bg)}
-.beyond-item strong{font-size:11.5px;font-weight:600;color:var(--navy);display:block;margin-bottom:2px}
-.beyond-item span{font-size:11px;color:var(--ink3);line-height:1.5}
-
-/* ── PROJECTS ── */
-.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
-.proj{border:1px solid var(--line);border-radius:3px;padding:8px 10px;
-  background:var(--white);position:relative;overflow:hidden}
-.proj::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.p-r::before{background:#962828}.p-t::before{background:var(--teal)}
-.p-g::before{background:var(--gold)}.p-b::before{background:var(--blue)}
-.p-v::before{background:#522890}
-.proj-name{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:1px}
-.proj-stack{font-family:'JetBrains Mono',monospace;font-size:9px;
-  color:var(--ink4);margin-bottom:3px}
-.proj-desc{font-size:11px;color:var(--ink3);line-height:1.5}
-.proj-link{font-family:'JetBrains Mono',monospace;font-size:9px;
-  color:var(--blue);text-decoration:none;display:block;margin-top:4px}
-
-/* ── EDUCATION ── */
-.edu-item{display:flex;justify-content:space-between;align-items:flex-start;
-  gap:14px;padding:7px 11px;border:1px solid var(--line);
-  border-left:2px solid var(--teal);border-radius:3px;
-  background:var(--white);margin-bottom:5px}
-.edu-item:last-child{margin-bottom:0}
-.edu-sch{font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:1px}
-.edu-deg{font-size:11.5px;color:var(--ink2)}
-.edu-det{font-size:10.5px;color:var(--ink4);margin-top:1px}
-.edu-date{font-family:'JetBrains Mono',monospace;font-size:9.5px;
-  color:var(--ink4);white-space:nowrap;flex-shrink:0;margin-top:2px}
-
-/* ── FOOTER ── */
-.ft{margin-top:20px;padding-top:13px;border-top:1px solid var(--line);
-  display:flex;justify-content:space-between;align-items:center}
-.ft-links{display:flex;gap:14px}
-.ft-links a{font-family:'JetBrains Mono',monospace;font-size:10px;
-  color:var(--ink4);text-decoration:none}
-.ft-links a:hover{color:var(--teal)}
-.ft-copy{font-family:'JetBrains Mono',monospace;font-size:10px;color:#b0c4d4}
-
-/* ── FAB ── */
-.fab{position:fixed;bottom:22px;right:22px;z-index:999}
-.fab-btn{background:var(--navy);color:#fff;border:none;
-  padding:10px 18px;border-radius:50px;cursor:pointer;
-  font-family:'Inter',sans-serif;font-weight:600;font-size:12px;
-  box-shadow:0 4px 16px rgba(8,32,58,.35);transition:all .2s;
-  display:flex;align-items:center;gap:7px}
-.fab-btn:hover{background:#163a60;transform:translateY(-2px)}
-.fab-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.fab-btn svg{width:13px;height:13px;fill:currentColor}
-
-@media print{
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  @page{size:760px auto;margin:0}
-  html,body{margin:0;padding:0;background:#fff;width:760px}
-  .fab{display:none!important}
-  .page{box-shadow:none!important;border-radius:0!important;
-    max-width:760px!important;width:760px!important;margin:0!important;overflow:visible!important}
-  .body{padding:24px 40px 32px}
-  .hd{padding:26px 40px 22px}
-}
-</style>
+        /* Optimize for actual printing/PDF export */
+        @media print {
+            @page {
+                margin: 0; 
+                /* The size property is now dynamically injected by JavaScript */
+            }
+            body {
+                background-color: white;
+                padding: 0;
+                margin: 0;
+            }
+            .resume-container {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+                padding: 12mm 15mm; 
+                margin: 0;
+                min-height: auto;
+            }
+            /* Hide the print button when actually printing */
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-<div class="fab">
-  <button class="fab-btn" id="dlBtn" onclick="dl()">
-    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-    <span id="btnTxt">Save as PDF</span>
-  </button>
-</div>
-
-<div class="page" id="resume">
-
-  <!-- ── HEADER ── -->
-  <div class="hd">
-    <h1>Adiyat <em>Coto</em></h1>
-    <div class="hd-role">Sr. Technical Support &nbsp;·&nbsp; SaaS Implementation &nbsp;·&nbsp; Product Support &nbsp;·&nbsp; Customer Solution</div>
-    <div class="hd-contact">
-      <span>Semarang, Indonesia</span>
-      <span>+62 823 3172 2481</span>
-      <a href="mailto:coto.adiyat@gmail.com">coto.adiyat@gmail.com</a>
-      <a href="https://linkedin.com/in/adiyatcoto">linkedin.com/in/adiyatcoto</a>
-      <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a>
-    </div>
-  </div>
-
-  <div class="body">
-
-    <!-- ── 1. PROFILE ── -->
-    <div class="sec">
-      <div class="sec-title">Profile</div>
-      <div style="display:grid;grid-template-columns:auto 1fr;gap:0;margin-bottom:10px">
-        <div style="width:3px;background:var(--teal);border-radius:2px;margin-right:14px;flex-shrink:0"></div>
-        <div>
-          <div style="font-size:12px;color:var(--ink3);font-style:italic;margin-bottom:6px;line-height:1.6">
-            <span style="color:var(--teal);font-weight:600;font-style:normal">Implementation specialist</span> turned <strong style="font-style:normal;color:var(--ink)">support engineer</strong> — makes complex SaaS products work for real clients, then keeps them working. Field implementor → senior → regional lead → enterprise incident manager. Outside work: self-taught developer, active market participant, and published tools author.
-          </div>
-          <div class="profile-text">
-            <strong>7+ years</strong> in SaaS implementation and technical support — across <span class="hl">cloud POS &amp; fintech</span> (Moka POS · GoTo Group) and <span class="hl">EdTech ERP/LMS</span> (MaivenPoint · AvePoint, Singapore). Operated on both sides of the product lifecycle: building implementation frameworks from the ground up, then owning L1/L2 enterprise support and incident resolution for institutional clients. Proven single point of contact between clients and engineering — remote, cross-timezone, and accountable.
-          </div>
-        </div>
-      </div>
-      <div class="status-bar">
-        <strong>Dec 2024 – Present:</strong> Independent — building and publishing live development projects (Python, JavaScript, AI tooling). Portfolio: <a href="https://adiyatcoto.github.io">adiyatcoto.github.io</a> &nbsp;·&nbsp; Available immediately.
-      </div>
+    <!-- Dynamic Print Button -->
+    <div class="no-print flex justify-center mb-6">
+        <button onclick="calculateAndPrint()" class="bg-gray-900 text-white px-6 py-2.5 rounded shadow-lg hover:bg-gray-700 font-bold tracking-wide transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Calculate & Print Resume
+        </button>
     </div>
 
-    <!-- ── 2. DOMAIN EXPERTISE ── -->
-    <div class="sec">
-      <div class="sec-title">Domain Expertise</div>
-      <div class="domain-grid">
-        <div class="dc c-teal">
-          <div class="dc-label">SaaS Implementation</div>
-          <ul>
-            <li>Cloud POS &amp; EdTech ERP/LMS</li>
-            <li>System setup, go-live, cutover</li>
-            <li>B2B &amp; B2B2C · onsite &amp; remote</li>
-          </ul>
-        </div>
-        <div class="dc c-blue">
-          <div class="dc-label">L1/L2 Functional Support</div>
-          <ul>
-            <li>Ticket lifecycle &amp; incident mgmt</li>
-            <li>PSR, bug analysis, escalation</li>
-            <li>25+ enterprise accounts (SG)</li>
-          </ul>
-        </div>
-        <div class="dc c-gold">
-          <div class="dc-label">Change &amp; Release Mgmt</div>
-          <ul>
-            <li>FSDs, CRs, effort estimation</li>
-            <li>UAT &amp; production validation</li>
-            <li>Regression testing · full SDLC</li>
-          </ul>
-        </div>
-        <div class="dc c-red">
-          <div class="dc-label">POS &amp; Merchant Services</div>
-          <ul>
-            <li>Payment gateway integration</li>
-            <li>Omnichannel &amp; multi-outlet ops</li>
-            <li>F&amp;B · retail · service SMEs</li>
-          </ul>
-        </div>
-        <div class="dc c-purple">
-          <div class="dc-label">EdTech ERP Domain</div>
-          <ul>
-            <li>LMS, assessments, student ERP</li>
-            <li>GST, subsidy, billing modules</li>
-            <li>Higher ed &amp; public sector (SG)</li>
-          </ul>
-        </div>
-        <div class="dc c-green">
-          <div class="dc-label">Team Lead &amp; Operations</div>
-          <ul>
-            <li>Regional team (5-member, 2 offices)</li>
-            <li>SOP authoring &amp; training</li>
-            <li>OKR/KPI dashboard design</li>
-          </ul>
-        </div>
-        <div class="dc c-teal" style="border-top-color:#1a6838">
-          <div class="dc-label" style="color:#1a6838">Data &amp; Reporting</div>
-          <ul>
-            <li>Google Sheets · Looker Studio</li>
-            <li>Python/Pandas · D3.js · Plotly</li>
-            <li>Ticket &amp; KPI analytics</li>
-          </ul>
-        </div>
-        <div class="dc c-slate">
-          <div class="dc-label">Network &amp; Infrastructure</div>
-          <ul>
-            <li>LAN/WAN · Router · AP config</li>
-            <li>Multi-device POS topology</li>
-            <li>CCNA · field troubleshooting</li>
-          </ul>
-        </div>
-      </div>
+    <div class="resume-container" id="resume-document">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-5">
+            <h1 class="text-[32px] font-bold uppercase tracking-wide mb-1 text-black leading-none">Adiyat Coto</h1>
+            <div class="text-[13px] text-gray-800 flex justify-center items-center flex-wrap gap-2 mt-2 font-medium">
+                <span>Semarang, Indonesia</span>
+                <span class="text-gray-400">|</span>
+                <span>+62 823 3172 2481</span>
+                <span class="text-gray-400">|</span>
+                <a href="mailto:coto.adiyat@gmail.com" class="hover:underline">coto.adiyat@gmail.com</a>
+                <span class="text-gray-400">|</span>
+                <a href="https://linkedin.com/in/adiyatcoto" target="_blank" class="hover:underline">linkedin.com/in/adiyatcoto</a>
+                <span class="text-gray-400">|</span>
+                <a href="https://adiyatcoto.github.io" target="_blank" class="hover:underline">adiyatcoto.github.io</a>
+            </div>
+        </header>
 
-      <!-- SKILLS -->
-      <div class="skill-row">
-        <div class="skill-box">
-          <div class="skill-box-title">Tech Stack</div>
-          <div class="tags">
-            <span class="tag t-teal">Python · Streamlit · Pandas</span>
-            <span class="tag t-teal">JavaScript · D3.js · Chart.js</span>
-            <span class="tag t-teal">REST API · WebSocket · JSON</span>
-            <span class="tag t-teal">Gemini API · BeautifulSoup</span>
-            <span class="tag t-gray">Pine Script v5 · HTML/CSS</span>
-          </div>
-        </div>
-        <div class="skill-box">
-          <div class="skill-box-title">Tools &amp; Platforms</div>
-          <div class="tags">
-            <span class="tag t-blue">Jira · Kissflow · Trello · Slack</span>
-            <span class="tag t-blue">Google Workspace · Looker Studio</span>
-            <span class="tag t-blue">Microsoft 365 · SharePoint</span>
-          </div>
-        </div>
-        <div class="skill-box">
-          <div class="skill-box-title">Soft Skills &amp; Languages</div>
-          <div class="tags">
-            <span class="tag t-gray">Stakeholder Communication</span>
-            <span class="tag t-gray">Cross-functional Collaboration</span>
-            <span class="tag t-gray">Remote &amp; Async-first</span>
-            <span class="tag t-gray">Bahasa Indonesia — Native</span>
-            <span class="tag t-gray">English — Fluent</span>
-          </div>
-        </div>
-      </div>
+        <!-- PROFESSIONAL SUMMARY -->
+        <section class="mb-5">
+            <p class="font-serif italic text-center mb-3 font-semibold text-[14px] text-black">
+                "Senior Technical Problem Solver, Product Expert, and Customer Helper | I Work with Cloud Software, Cashier Apps, and School Systems"
+            </p>
+            <p class="text-[13px] leading-snug text-justify text-gray-900">
+                I have been working with technology solutions for more than 7 years. I do two big things. 1st, I set up systems, move data, and teach people how to use software. 2nd, I take complaints when things break, find the problem, and fix it. I always talk to product, engineering, QA, and sales teams to get it done.
+            </p>
+        </section>
+
+        <!-- SKILLS & EXPERTISE -->
+        <section class="mb-5">
+            <h2 class="text-[14px] font-bold uppercase tracking-widest border-b-[1.5px] border-black pb-1 mb-2 text-black">Core Skills & Expertise</h2>
+            <div class="text-[13px] leading-snug space-y-1 text-gray-900">
+                <p><span class="font-bold text-black">Domain Knowledge:</span> SaaS Implementation, L1/L2 Technical Support, Point of Sale (POS) Systems, EdTech Platforms, Financial Ledgers & Billing, Inventory Control, Omnichannel Sales, Order Flow Management.</p>
+                <p><span class="font-bold text-black">Technical & Operations:</span> System Troubleshooting, Incident Management, Functional Specification Documents (FSD), Enterprise Technical Communication, Data Migration, API Log Inspection (JSON payloads, HTTP status codes), 3rd Party Software Integrations (Payment Gateways, Cloud Accounting), LAN/WAN Network Setup, Hardware Deployment.</p>
+                <p><span class="font-bold text-black">Tools & Software:</span> Jira, Google Workspace (Sheets, Query, Data Validation, Forms, Slides), Looker Studio, Microsoft 365, Kissflow, Trello, Slack, Figma.</p>
+                <p><span class="font-bold text-black">Languages:</span> Bahasa Indonesia (Native), English (Fluent).</p>
+            </div>
+        </section>
+
+        <!-- EXPERIENCE -->
+        <section class="mb-5">
+            <h2 class="text-[14px] font-bold uppercase tracking-widest border-b-[1.5px] border-black pb-1 mb-2 text-black">Professional Experience</h2>
+            
+            <!-- Job 1 -->
+            <div class="mb-4">
+                <div class="flex justify-between items-baseline mb-0.5">
+                    <h3 class="font-bold text-black text-[14px]">MaivenPoint <span class="font-normal italic text-[13px] text-gray-700">| L2 Support Engineer - Singapore Enterprise</span></h3>
+                    <span class="text-black font-semibold text-[13px]">Feb 2024 – Dec 2024 | Singapore (Remote)</span>
+                </div>
+                <p class="text-gray-700 mb-1.5 text-[12px] leading-snug italic">MaivenPoint is an EdTech company. They make software for universities and government offices to manage learning, digital exams, and student data.</p>
+                <ul class="list-disc list-outside ml-5 space-y-1 text-[12.5px] leading-snug text-justify text-gray-900">
+                    <li>Every week, I managed 5 to 8 problem tickets requiring deep investigation. I handled academic parts (course setups, grading, passing grades, certificates). I handled financial parts (costs, GST, subsidy schemes, ledgers, billing, invoicing). I handled client parts (web store, onboarding).</li>
+                    <li>Because we did not have an L1 helpdesk, I handled both L1 and L2 responsibilities. I was responsible for the first response to incoming emails based on the email IC sequence, logged the tickets directly into Jira, sorted the requests, and did the direct back-and-forth troubleshooting to find bugs.</li>
+                    <li>When a crash happened, I acted as Incident Manager. I coordinated the response across the R&D, QA, and L3 Dev teams to resolve issues and keep accounts stable.</li>
+                    <li>I performed L2 troubleshooting. I sorted problems into 3 categories: real system defects, non-defect functional support, and change requests.</li>
+                    <li>I partnered with the R&D, QA, and L3 Dev teams. We did PSR to copy bugs. We did regression testing so new fixes did not break old features. We did UAT and deployed patches to the live production system.</li>
+                    <li>I oversaw bug tracking, documentation, and change requests using Jira. For change requests, I wrote the Functional Specification Document (FSD) after doing UAT and confirming feasibility with the Dev team. I made sure to include the expected behavior mockups, mandays effort, and cost. I also designed weekly dashboards using Google Sheets so stakeholders could see ticket status by assignee, issue type, and resolution stage.</li>
+                    <li>Every two weeks, I conducted a sync meeting with key clients. I delivered technical insights, progress updates, and transparent timelines for new releases.</li>
+                </ul>
+            </div>
+
+            <!-- Job 2 -->
+            <div class="mb-4">
+                <div class="flex justify-between items-baseline mb-0.5">
+                    <h3 class="font-bold text-black text-[14px]">Moka POS <span class="font-normal italic text-[13px] text-gray-700">| Regional Implementation Lead — East Java</span></h3>
+                    <span class="text-black font-semibold text-[13px]">Dec 2021 – Nov 2022 | Surabaya (Hybrid)</span>
+                </div>
+                <p class="text-gray-700 mb-1.5 text-[12px] leading-snug italic">Moka is a cloud POS platform for SMEs in F&B, retail, and service. Their system has a mobile cashier app, back-office analytics, CRM, inventory management, multi-payment integrations like GoPay, OVO, and ShopeePay, and the GoStore omnichannel platform.</p>
+                <ul class="list-disc list-outside ml-5 space-y-1 text-[12.5px] leading-snug text-justify text-gray-900 mt-1.5">
+                    <li>I supervised and coached a technical support team of five members across the Surabaya and Malang offices to cover all of East Java. I dispatched the engineers to whichever client site was closest. To improve our performance metrics and KPI achievement, I mentored the team, and planned their schedules so every working slot was fully used.</li>
+                    <li>I designed and built monitoring dashboards and internal tools. I used Google Forms, Google Sheets, and Looker Studio. These tools tracked team activity, optimized resource allocation, and measured our OKR progress.</li>
+                    <li>I coordinated with the Sales teams and Account Managers. We worked on merchant onboarding and after-sales activities. I managed an average of 10 schedules a day and 200 schedules a month across the team.</li>
+                    <li>I developed nationwide SOPs, training modules, and technical documentation. The documents covered all core features, devices, add-ons, and third-party integrations.</li>
+                    <li>I was the Knowledge Transfer speaker for internal team sessions. I was responsible for making sure the product knowledge of the team was always up to date. I also worked as a technical speaker at client events organized by Sales and Account Management.</li>
+                    <li>I focused on keeping the team motivated and in a good mood. I encouraged the team to build strong personal and professional relationships with the customers.</li>
+                    <li>I was the fifth Top Performer in Quarter 1 of 2022 with 84/100 points. I became the first Top Performer in Quarter 3 of 2022 with 93.5/100 points.</li>
+                </ul>
+            </div>
+
+            <!-- Job 3 -->
+            <div class="mb-2">
+                <div class="flex justify-between items-baseline mb-0.5">
+                    <h3 class="font-bold text-black text-[14px]">Moka POS <span class="font-normal italic text-[13px] text-gray-700">| Senior Implementation & Tech Support Specialist</span></h3>
+                    <span class="text-black font-semibold text-[13px]">Sep 2016 – Dec 2021 | Surabaya (Hybrid)</span>
+                </div>
+                <ul class="list-disc list-outside ml-5 space-y-1 text-[12.5px] leading-snug text-justify text-gray-900 mt-1.5">
+                    <li><span class="font-bold">Onboarding & Tech Support:</span> I managed the complete implementation process for food, retail, and service businesses. I helped them from the first meeting before they bought the system until they needed technical support after they started using it. I led big operations across East Java and set up systems remotely for clients all over the country.</li>
+                    <li><span class="font-bold">System Setup & Infrastructure:</span> I set up hardware, designed local device networks, and deployed POS systems at the client site and remotely. I moved old data and installed the software completely. I entered their initial items, categories, recipe ingredient measurements, COGS, and inventory. I acted as a trainer and taught the clients how to manage and update all of those modules on their own, use the CRM, and trained the staff on the complete order flow.</li>
+                    <li><span class="font-bold">Teamwork & Fixing Problems:</span> I acted as a Technical Consultant to help the Sales and Account teams give the correct solutions to new clients. I partnered with the Product and Customer Support teams to fix big problems like cloud data synchronization errors or feature defects.</li>
+                    <li><span class="font-bold">Product Features & Integrations:</span> I encouraged the use of advanced features and third-party integrations. I connected their systems to digital payment gateways, food delivery services, and 3rd party cloud accounting software to improve their daily work and keep them as our clients.</li>
+                    <li><span class="font-bold">Technical Training:</span> Bank Indonesia chose me as one of the Training Facilitators for their MSME Digital Transformation Program in December 2020. I visited each business directly at their site to teach retraining programs. I did this so the owners and the staff knew how to use the system well for a long time.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- EDUCATION & CERTIFICATION -->
+        <section>
+            <h2 class="text-[14px] font-bold uppercase tracking-widest border-b-[1.5px] border-black pb-1 mb-2 text-black">Education & Certification</h2>
+            <div class="text-[13px] leading-snug text-gray-900 space-y-1.5">
+                <div class="flex justify-between items-baseline">
+                    <div>
+                        <span class="font-bold text-black font-serif">Universitas 17 Agustus 1945 Surabaya</span> — Financial Management (Macro & Capital Markets)
+                    </div>
+                    <span class="font-medium whitespace-nowrap ml-4">2015 – 2019</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <div>
+                        <span class="font-bold text-black font-serif">SMK Negeri 7 Semarang</span> — Vocational Diploma (Network Engineering)
+                        <div class="text-[12px] text-gray-600 italic">LAN/WAN · PC Troubleshooting · Network Architecture</div>
+                    </div>
+                    <span class="font-medium whitespace-nowrap ml-4">2011 – 2015</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <div>
+                        <span class="font-bold text-black font-serif">Cisco Networking Academy</span> — CCNA Discovery: Networking for Home and Small Businesses
+                    </div>
+                    <span class="font-medium whitespace-nowrap ml-4">Feb 2014</span>
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    <!-- ── 3. EXPERIENCE ── -->
-    <div class="sec">
-      <div class="sec-title">Professional Experience</div>
-
-      <div class="exp c-t">
-        <div class="exp-hd">
-          <div>
-            <div class="exp-co">MaivenPoint <span>— AvePoint · EdTech SaaS · Singapore · Fully Remote</span></div>
-          </div>
-          <div class="exp-period">Feb 2024 – Dec 2024</div>
-        </div>
-        <div class="exp-body">
-          <div class="role-hd">
-            <span class="role-title">L1/L2 Application Support Engineer — Singapore Enterprise</span>
-          </div>
-          <ul class="bul">
-            <li>Handled <strong>inbound client email triage</strong> for the general account pool — received, categorised, and responded to support requests across multiple enterprise clients; owned written communication from initial acknowledgement through troubleshooting, escalation updates, and formal resolution confirmation.</li>
-            <li>Assigned as <strong>dedicated POC &amp; Incident Manager for BCA Academy</strong> (key Singapore public sector account) — coordinated directly between client and R&amp;D / QA / L3 Dev; managed account stability, escalation response, and release communication end-to-end.</li>
-            <li>Supported <strong><span class="n">25+</span> enterprise accounts</strong> (SMU, BCA Academy, NIEC, WMI) fully remote and cross-timezone — owned full ticket lifecycle across academic/operational, <strong>financial/compliance</strong> (GST, subsidy, billing, accounting ledger), and client-facing modules; avg. <span class="n">5–8 tickets/week</span>.</li>
-            <li>Served as <strong>client-facing POC for Change Requests</strong> — conducted feasibility discussions with client and L3 Dev (data flow, mockups, business logic), prepared <strong>Functional Specification Documents (FSDs) with effort/mandays estimation</strong>, obtained sign-off across Support Manager, VP of Product, Senior Dev, and Business Analyst, then managed <strong>UAT with client &amp; QA through to production deployment</strong>.</li>
-            <li>Partnered with engineering on <strong>PSR, regression testing, and production patch</strong> deployments end-to-end.</li>
-            <li>Built <strong>weekly ticket analytics dashboards</strong> (Google Sheets) for stakeholder visibility; facilitated bi-weekly syncs with institutional clients.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="exp c-b">
-        <div class="exp-hd">
-          <div>
-            <div class="exp-co">Moka POS <span>— GoTo Group · Cloud POS · Surabaya, East Java · Hybrid</span></div>
-          </div>
-          <div class="exp-period">Sep 2016 – Nov 2022 · 6 yrs</div>
-        </div>
-        <div class="exp-body">
-          <div class="role-hd">
-            <span class="role-title">Regional Implementation Lead — East Java</span>
-            <span class="role-date">Dec 2021 – Nov 2022</span>
-          </div>
-          <ul class="bul">
-            <li>Led <span class="n">5-member</span> team across Surabaya &amp; Malang — managed <span class="n">200 merchant schedules/month</span>; drove team <strong>utilization, quality, and product knowledge</strong> through proactive post-sales service coaching and daily tactical tracking via <strong>Google Sheets</strong> (Looker Studio for grand reporting).</li>
-            <li>Achieved <strong><span class="n">5th Top Performer</span> nationally in Q1 2022</strong> (regional utilization score: 84) and <strong><span class="n">1st Top Performer</span> nationally in Q3 2022</strong> (score: 93.5) — improvement driven by proactive customer service culture and structured utilization monitoring across the team.</li>
-            <li>Authored <strong>nationwide SOPs, training modules &amp; technical documentation</strong> — formally adopted as national implementation standard.</li>
-          </ul>
-        </div>
-        <div class="exp-body">
-          <div class="role-hd">
-            <span class="role-title">Senior Implementation &amp; Technical Support Specialist</span>
-            <span class="role-date">Sep 2016 – Dec 2021</span>
-          </div>
-          <ul class="bul">
-            <li>Managed full merchant lifecycle — pre-sales consultation, system setup, network topology design, staff training, and data migration through to <strong>go-live day support</strong> (on-site standby during D-Day operations); onsite across East Java and nationwide remotely.</li>
-            <li><strong>Post-sales ongoing support</strong>: handled troubleshooting, system maintenance, and retraining sessions for existing merchants — including ownership transitions (new owners) and staff turnover (new staff onboarding to existing systems) across <strong>F&amp;B, retail, and service SMEs</strong>.</li>
-            <li>Drove adoption of third-party integrations: <strong>GoPay, GoFood, GoStore, Jurnal.id</strong>.</li>
-            <li>Selected as Training Facilitator — <strong>Bank Indonesia MSME Digital Training Program</strong>, Jawa Timur (Dec 2020).</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="exp c-p">
-        <div class="exp-hd" style="border-bottom:none">
-          <div>
-            <div class="exp-co" style="font-size:13.5px">VIVERE Group <span>— PT Gema Graha Sarana Tbk · Jakarta · Internship</span></div>
-            <div style="font-size:11px;color:var(--ink4);margin-top:2px">IT support across the org; internal feasibility study on Citrix XenApp 6.5 virtualisation deployment.</div>
-          </div>
-          <div class="exp-period">Jul – Dec 2014</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 4. PERSONAL PROJECTS ── -->
-    <div class="sec">
-      <div class="sec-title">Personal Projects — Self-Taught Development</div>
-      <div class="proj-grid">
-        <div class="proj p-r">
-          <div class="proj-name">TV Intelligence System v4.0</div>
-          <div class="proj-stack">Python · Streamlit · Gemini 2.5 Flash · BeautifulSoup</div>
-          <div class="proj-desc">TradingView chatroom scraper — weighted NLP sentiment, Fear &amp; Greed Index, Z-score anomaly detection, AI-generated behavioral profiles &amp; market summaries.</div>
-          <a class="proj-link" href="https://adiyatcoto.github.io/tv/">↗ adiyatcoto.github.io/tv/</a>
-        </div>
-        <div class="proj p-t">
-          <div class="proj-name">Top 100 Crypto Market Dashboard</div>
-          <div class="proj-stack">JavaScript · Binance WebSocket · Chart.js</div>
-          <div class="proj-desc">Live real-time dashboard — candlestick charts, BTC correlation matrix, volume dominance &amp; alpha scanner across top 100 USDT pairs.</div>
-          <a class="proj-link" href="https://adiyatcoto.github.io/cryptodash/">↗ adiyatcoto.github.io/cryptodash/</a>
-        </div>
-        <div class="proj p-g">
-          <div class="proj-name">Power Law Generator</div>
-          <div class="proj-stack">D3.js · CryptoCompare API</div>
-          <div class="proj-desc">Log-log chart tool — auto slope + R², deviation bands ±2σ, 100+ asset market scanner for long-term cycle positioning.</div>
-          <a class="proj-link" href="https://adiyatcoto.github.io/powerlaw/">↗ adiyatcoto.github.io/powerlaw/</a>
-        </div>
-        <div class="proj p-b">
-          <div class="proj-name">RSA Confluence System</div>
-          <div class="proj-stack">JavaScript · Live WebSocket · Multi-TF Analysis</div>
-          <div class="proj-desc">Multi-timeframe structural analysis — RSA level mapping Daily–Yearly, order flow overlay, market maker detection &amp; scenario mapping.</div>
-          <a class="proj-link" href="https://adiyatcoto.github.io/svn/">↗ adiyatcoto.github.io/svn/</a>
-        </div>
-      </div>
-      <div class="proj p-v">
-        <div class="proj-name">Pine Script Indicator Suite — TradingView &nbsp;<span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink4)">Pine Script v5 · Publicly published</span></div>
-        <div class="proj-desc">Custom indicators for market structure &amp; confluence logic — all publicly published on TradingView. Active crypto chatroom participant for real-time crowd sentiment research.</div>
-        <a class="proj-link" href="https://adiyatcoto.github.io/pinescript/">↗ adiyatcoto.github.io/pinescript/</a>
-      </div>
-    </div>
-
-    <!-- ── 5. BEYOND WORK ── -->
-    <div class="sec">
-      <div class="sec-title">Beyond Work</div>
-      <div class="beyond-grid">
-        <div class="beyond-item">
-          <strong>Quantitative Market Analysis</strong>
-          <span>Applies structured analytical frameworks (Power Law, S2F, multi-timeframe confluence) to real capital decisions across Stocks (IDX) &amp; Crypto — translates data patterns into actionable judgment under uncertainty.</span>
-        </div>
-        <div class="beyond-item">
-          <strong>Fintech &amp; Blockchain Literacy</strong>
-          <span>Hands-on with on-chain mechanics — self-custody staking, DEX/CEX operations, UTXO model, L1/L2 bridging. Practical understanding of how decentralised financial infrastructure works end-to-end.</span>
-        </div>
-        <div class="beyond-item">
-          <strong>Independent Research &amp; Writing</strong>
-          <span>Publishes market analysis and macro commentary on Medium. Monitors real-time crowd sentiment via TradingView community — applied as input to NLP sentiment tooling (TV Intelligence System project).</span>
-        </div>
-        <div class="beyond-item">
-          <strong>Self-Directed Learning</strong>
-          <span>Everything in the Projects section was built independently — no courses, no bootcamps. Python, JavaScript, WebSocket, AI APIs, and D3.js learned through building and shipping live tools.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 6. EDUCATION ── -->
-    <div class="sec">
-      <div class="sec-title">Education &amp; Certification</div>
-      <div class="edu-item">
-        <div>
-          <div class="edu-sch">Universitas 17 Agustus 1945 Surabaya</div>
-          <div class="edu-deg">Financial Management — Macro &amp; Capital Markets</div>
-        </div>
-        <div class="edu-date">2015 – 2019</div>
-      </div>
-      <div class="edu-item">
-        <div>
-          <div class="edu-sch">SMK Negeri 7 Semarang</div>
-          <div class="edu-deg">Vocational Diploma — Network Engineering</div>
-          <div class="edu-det">LAN/WAN · PC Troubleshooting · Network Architecture · 4-year program</div>
-        </div>
-        <div class="edu-date">2011 – 2015</div>
-      </div>
-      <div class="edu-item">
-        <div>
-          <div class="edu-sch">Cisco Networking Academy</div>
-          <div class="edu-deg">CCNA Discovery: Networking for Home and Small Businesses</div>
-        </div>
-        <div class="edu-date">Feb 2014</div>
-      </div>
-    </div>
-
-    <!-- ── FOOTER ── -->
-    <div class="ft">
-      <div class="ft-links">
-        <a href="https://linkedin.com/in/adiyatcoto">LinkedIn</a>
-        <a href="https://adiyatcoto.github.io">Portfolio</a>
-        <a href="https://medium.com/@coto.adiyat">Medium</a>
-        <a href="https://www.tradingview.com/u/adiyatcoto/">TradingView</a>
-        <a href="mailto:coto.adiyat@gmail.com">coto.adiyat@gmail.com</a>
-      </div>
-      <div class="ft-copy">© 2026 Adiyat Coto</div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-// Inject dynamic @page size before print so browser prints as single continuous page
-(function(){
-  var styleEl = null;
-  window.addEventListener('beforeprint', function(){
-    var el = document.getElementById('resume');
-    var h = el.scrollHeight + 40;
-    var w = 760;
-    styleEl = document.createElement('style');
-    styleEl.id = '__print_style__';
-    styleEl.innerHTML = '@page { size: ' + w + 'px ' + h + 'px; margin: 0; }' +
-      'html,body{width:' + w + 'px;height:' + h + 'px;}';
-    document.head.appendChild(styleEl);
-  });
-  window.addEventListener('afterprint', function(){
-    if(styleEl){ styleEl.remove(); styleEl=null; }
-  });
-})();
-
-function dl(){
-  var el=document.getElementById('resume'),
-      btn=document.getElementById('dlBtn'),
-      txt=document.getElementById('btnTxt');
-  txt.textContent='Generating…'; btn.disabled=true;
-  var h=el.scrollHeight+10, w=760;
-  html2pdf().set({
-    margin:0, filename:'Adiyat_Coto_Resume.pdf',
-    image:{type:'png',quality:1},
-    html2canvas:{scale:2,useCORS:true,width:w,windowWidth:w,
-      scrollY:0,scrollX:0,height:h,windowHeight:h,backgroundColor:'#fff'},
-    jsPDF:{unit:'px',format:[w,h],orientation:'portrait',hotfixes:['px_scaling']}
-  }).from(el).save()
-  .then(function(){txt.textContent='Save as PDF';btn.disabled=false;})
-  .catch(function(){txt.textContent='Try Again';btn.disabled=false;});
-}
-</script>
+    <!-- Dynamic Print Calculation Script -->
+    <script>
+        function calculateAndPrint() {
+            const container = document.getElementById('resume-document');
+            
+            // 1. Get the exact rendered pixel dimensions of the resume container
+            const exactWidth = container.offsetWidth;
+            const exactHeight = container.offsetHeight;
+            
+            // 2. Create a dynamic style tag to set the print page size to match exactly
+            const dynamicStyle = document.createElement('style');
+            dynamicStyle.id = 'dynamic-print-style';
+            dynamicStyle.innerHTML = `
+                @media print {
+                    @page {
+                        size: ${exactWidth}px ${exactHeight}px;
+                        margin: 0;
+                    }
+                }
+            `;
+            
+            // 3. Append the style to the document head
+            document.head.appendChild(dynamicStyle);
+            console.log(`Setting custom print page size to: ${exactWidth}px x ${exactHeight}px`);
+            
+            // 4. Trigger the browser's print dialog
+            window.print();
+            
+            // 5. Cleanup the dynamic style after the print dialog closes
+            setTimeout(() => {
+                const styleToRemove = document.getElementById('dynamic-print-style');
+                if (styleToRemove) {
+                    styleToRemove.remove();
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
