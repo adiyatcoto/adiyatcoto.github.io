@@ -481,7 +481,7 @@
                         
                         <!-- Price Target Box -->
                         <div id="fp-target" class="fp-target-box hidden">
-                            <div class="text-[8px] text-gray-400 mb-0.5 tracking-widest uppercase font-bold">Flow Target (1m)</div>
+                            <div class="text-[8px] text-gray-400 mb-0.5 tracking-widest uppercase font-bold">LIVE PRICE</div>
                             <div id="fp-target-pill" class="fp-target-pill">
                                 <!-- Injected JS -->
                             </div>
@@ -1518,7 +1518,7 @@
 
             targetPill.innerHTML = `
                 <span class="fp-arrow ${colorClass}">${arrow}</span>
-                <span class="fp-target-price ${colorClass}">${formatPrice(targetPrice)}</span>
+                <span class="fp-target-price ${colorClass}">${formatPrice(state.price)}</span>
                 <span class="fp-strength ${strengthBg}">${label} ${strength}%</span>
             `;
 
