@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Journal — Adiyat Coto</title>
+<meta name="description" content="Writing by Adiyat Coto. No fixed cadence. No audience to perform for. Just rigour applied to questions worth asking.">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="manifest" href="favicon_io/site.webmanifest">
+<link rel="shortcut icon" href="favicon_io/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ─────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+img,video{display:block;max-width:100%}
+
+/* ── TOKENS ──────────────────────────────*/
+:root{
+  --ink:     #111010;
+  --paper:   #f6f3ee;
+  --surface: #efebe3;
+  --dim:     #6b6459;
+  --faint:   #a09890;
+  --accent:  #bf3517;
+  --border:  rgba(17,16,16,.09);
+  --nav-bg:  rgba(246,243,238,.9);
+}
+[data-theme="dark"]{
+  --ink:     #f0ece4;
+  --paper:   #0e0d0c;
+  --surface: #161513;
+  --dim:     #8a8177;
+  --faint:   #5a5550;
+  --border:  rgba(240,236,228,.07);
+  --nav-bg:  rgba(14,13,12,.9);
+}
+
+/* ── BASE ────────────────────────────────*/
+html{font-size:17px;scroll-behavior:smooth}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--paper);color:var(--ink);
+  line-height:1.75;-webkit-font-smoothing:antialiased;
+  transition:background .5s,color .5s;
+}
+h1,h2,h3{
+  font-family:'Playfair Display',serif;
+  font-weight:400;line-height:1.1;letter-spacing:-.01em;
+}
+strong{font-weight:500;color:var(--ink)}
+em{font-style:italic}
+
+/* ── REVEAL ──────────────────────────────*/
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+
+/* ── NAV ─────────────────────────────────*/
+.nav{
+  position:fixed;top:0;left:0;width:100%;
+  padding:1.1rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  z-index:2000;
+  background:var(--nav-bg);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  transition:background .4s,border-color .4s;
+}
+.logo{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:400;
+  text-decoration:none;color:var(--ink);
+  letter-spacing:.01em;transition:color .3s;
+}
+.logo:hover{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:2.5rem}
+.nav-links{display:flex;list-style:none;gap:2.5rem}
+.nav-links a{
+  color:var(--dim);text-decoration:none;
+  font-size:.7rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.18em;
+  transition:color .3s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.active{color:var(--ink);border-bottom:1px solid var(--accent);padding-bottom:1px}
+.nav-btn{cursor:pointer;background:none;border:none;color:var(--ink);padding:6px;display:flex;align-items:center;transition:color .3s,transform .3s}
+.nav-btn:hover{color:var(--accent)}
+#theme-btn:hover{transform:rotate(22deg)}
+#menu-btn{display:none}
+
+/* ── MOBILE MENU ─────────────────────────*/
+.mob{
+  position:fixed;top:0;right:-100%;width:100%;height:100vh;
+  background:var(--paper);z-index:1500;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2.2rem;
+  transition:right .5s cubic-bezier(.77,0,.175,1);
+}
+.mob.open{right:0}
+.mob a{
+  font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:400;
+  color:var(--ink);text-decoration:none;transition:color .3s,transform .3s;
+}
+.mob a:hover{color:var(--accent);transform:translateX(8px)}
+
+/* ── PAGE HEADER ─────────────────────────*/
+.page-hd{
+  padding:9rem 3rem 4rem;
+  max-width:1200px;margin:0 auto;
+  border-bottom:1px solid var(--border);
+}
+.eyebrow{
+  font-size:.64rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.26em;
+  color:var(--accent);margin-bottom:1.8rem;
+  display:flex;align-items:center;gap:.7rem;
+}
+.eyebrow::before{content:'';display:block;width:18px;height:1px;background:var(--accent)}
+.page-hd h1{font-size:clamp(2.6rem,5vw,4.8rem);margin-bottom:1.4rem;max-width:700px}
+.page-hd h1 em{color:var(--dim)}
+.page-hd p{font-size:1rem;color:var(--dim);max-width:500px;line-height:1.85;font-weight:300}
+.page-hd p strong{color:var(--ink);font-weight:500}
+
+/* ── TOOLBAR ─────────────────────────────*/
+.toolbar{
+  max-width:1200px;margin:0 auto;
+  padding:1.6rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+  border-bottom:1px solid var(--border);
+}
+.filters{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.flabel{
+  font-size:.62rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.18em;
+  color:var(--faint);margin-right:.4rem;white-space:nowrap;
+}
+.fbtn{
+  font-family:'Instrument Sans',sans-serif;
+  font-size:.65rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:var(--dim);background:none;
+  border:1px solid var(--border);
+  padding:4px 12px;border-radius:2px;
+  cursor:pointer;transition:all .25s;white-space:nowrap;
+}
+.fbtn:hover{color:var(--ink);border-color:var(--faint)}
+.fbtn.on{color:#f0ece4;background:var(--accent);border-color:var(--accent)}
+.toolbar-right{display:flex;align-items:center;gap:1.2rem}
+.count-txt{font-size:.68rem;color:var(--faint);letter-spacing:.04em;white-space:nowrap}
+.count-txt b{color:var(--ink);font-weight:500}
+.refresh-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'Instrument Sans',sans-serif;
+  font-size:.65rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:var(--dim);background:none;
+  border:1px solid var(--border);
+  padding:4px 12px;border-radius:2px;
+  cursor:pointer;transition:all .25s;
+}
+.refresh-btn:hover{color:var(--ink);border-color:var(--faint)}
+.refresh-btn svg{transition:transform .5s}
+.refresh-btn.spinning svg{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SKELETON ────────────────────────────*/
+.skeleton{max-width:1200px;margin:0 auto;padding:0 3rem}
+.sk-feat{
+  display:grid;grid-template-columns:1fr 400px;
+  gap:4rem;padding:4rem 0;
+  border-bottom:1px solid var(--border);
+}
+.sk-img{aspect-ratio:4/3;width:100%}
+.sk-b{
+  background:var(--surface);border-radius:2px;
+  animation:skp 1.5s ease-in-out infinite;
+}
+.sk-tag{height:13px;width:70px;margin-bottom:1.4rem}
+.sk-h{height:26px;width:85%;margin-bottom:.6rem}
+.sk-h2{height:26px;width:55%;margin-bottom:1.8rem}
+.sk-line{height:12px;width:100%;margin-bottom:.5rem}
+.sk-line2{height:12px;width:70%;margin-bottom:2rem}
+.sk-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-top:none;
+}
+.sk-card{padding:2.2rem;background:var(--paper)}
+.sk-ci{aspect-ratio:16/9;width:100%;margin-bottom:1.2rem}
+.sk-ct{height:18px;width:80%;margin-bottom:.5rem}
+.sk-ct2{height:18px;width:50%;margin-bottom:1rem}
+.sk-cp{height:12px;width:100%;margin-bottom:.4rem}
+.sk-cp2{height:12px;width:65%}
+@keyframes skp{0%,100%{opacity:.3}50%{opacity:.65}}
+
+/* ── FEED WRAPPER ────────────────────────*/
+#feed{max-width:1200px;margin:0 auto;padding:0 3rem}
+
+/* ── FEATURED CARD ───────────────────────*/
+.feat{
+  display:grid;grid-template-columns:1fr 420px;
+  gap:4.5rem;align-items:center;
+  padding:5rem 0;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;color:inherit;
+  position:relative;
+}
+.feat::after{
+  content:'';position:absolute;bottom:-1px;left:0;
+  width:0;height:1px;background:var(--accent);
+  transition:width .55s ease;
+}
+.feat:hover::after{width:100%}
+.feat-eyebrow{
+  display:flex;align-items:center;gap:.7rem;
+  margin-bottom:1.2rem;flex-wrap:wrap;
+}
+.badge-latest{
+  font-size:.58rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.22em;color:var(--accent);
+}
+.badge-cat{
+  font-size:.57rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--faint);
+  padding:2px 8px;border:1px solid var(--border);border-radius:2px;
+}
+.feat-title{
+  font-size:clamp(1.7rem,2.8vw,2.6rem);
+  line-height:1.18;margin-bottom:1.1rem;
+  transition:color .3s;
+}
+.feat:hover .feat-title{color:var(--accent)}
+.feat-excerpt{
+  font-size:.98rem;color:var(--dim);
+  line-height:1.85;font-weight:300;margin-bottom:1.6rem;
+}
+.feat-byline{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.7rem;color:var(--faint);margin-bottom:1.8rem;
+}
+.byline-avatar{
+  width:26px;height:26px;border-radius:50%;
+  object-fit:cover;flex-shrink:0;
+  border:1px solid var(--border);
+  background:var(--surface);
+}
+.byline-name{color:var(--dim);font-weight:400}
+.byline-sep{opacity:.35}
+.byline-rt{white-space:nowrap}
+.feat-cta{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.7rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.16em;
+  color:var(--ink);padding:9px 18px;
+  border:1px solid var(--border);border-radius:2px;
+  transition:all .3s;
+}
+.feat-cta svg{transition:transform .3s}
+.feat:hover .feat-cta{background:var(--accent);border-color:var(--accent);color:#f0ece4}
+.feat:hover .feat-cta svg{transform:translateX(3px)}
+.feat-img{
+  aspect-ratio:4/3;overflow:hidden;
+  border-radius:2px;background:var(--surface);
+}
+.feat-img img{
+  width:100%;height:100%;object-fit:cover;
+  filter:grayscale(10%);
+  transition:transform .7s ease,filter .4s;
+}
+.feat:hover .feat-img img{transform:scale(1.04);filter:grayscale(0%)}
+.feat-img-placeholder{
+  width:100%;height:100%;display:flex;
+  align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:4rem;color:var(--border);
+}
+
+/* ── ARTICLE GRID ────────────────────────*/
+.grid-3{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-top:none;
+}
+.grid-2{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-top:none;
+}
+
+/* ── ARTICLE CARD ────────────────────────*/
+.acard{
+  display:flex;flex-direction:column;
+  background:var(--paper);
+  text-decoration:none;color:inherit;
+  position:relative;transition:background .3s;
+}
+.acard::before{
+  content:'';position:absolute;top:0;left:0;
+  width:2px;height:0;background:var(--accent);
+  transition:height .35s ease;
+}
+.acard:hover{background:var(--surface)}
+.acard:hover::before{height:100%}
+
+/* Image on every card */
+.acard-img{
+  aspect-ratio:16/9;overflow:hidden;
+  background:var(--surface);flex-shrink:0;
+}
+.acard-img img{
+  width:100%;height:100%;object-fit:cover;
+  filter:grayscale(12%);
+  transition:transform .6s ease,filter .4s;
+}
+.acard:hover .acard-img img{transform:scale(1.04);filter:grayscale(0%)}
+/* Placeholder when no image */
+.acard-img-ph{
+  width:100%;height:100%;display:flex;
+  align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:2.4rem;color:var(--border);
+}
+
+.acard-body{padding:1.8rem 2rem 2rem}
+.acard-eyebrow{
+  display:flex;align-items:center;gap:.6rem;
+  margin-bottom:.9rem;flex-wrap:wrap;
+}
+.acard-date{
+  font-size:.58rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.18em;color:var(--faint);
+}
+.acard-cat{
+  font-size:.56rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.11em;color:var(--accent);
+  padding:2px 7px;border:1px solid rgba(191,53,23,.22);border-radius:2px;
+}
+.acard-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.12rem;font-weight:400;
+  line-height:1.3;color:var(--ink);
+  margin-bottom:.7rem;transition:color .3s;
+}
+.acard:hover .acard-title{color:var(--accent)}
+.acard-excerpt{
+  font-size:.84rem;color:var(--dim);
+  line-height:1.72;font-weight:300;
+  flex-grow:1;margin-bottom:1.4rem;
+}
+.acard-foot{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-top:auto;padding-top:.8rem;
+  border-top:1px solid var(--border);
+}
+.acard-byline{
+  display:flex;align-items:center;gap:.45rem;
+  font-size:.62rem;color:var(--faint);
+}
+.acard-avatar{
+  width:20px;height:20px;border-radius:50%;
+  object-fit:cover;flex-shrink:0;
+  border:1px solid var(--border);
+  background:var(--surface);
+}
+.acard-author{color:var(--dim);font-weight:400}
+.acard-rt{
+  font-size:.6rem;color:var(--faint);
+  white-space:nowrap;
+  display:flex;align-items:center;gap:.35rem;
+}
+.acard-rt svg{flex-shrink:0}
+
+/* ── LOAD MORE ───────────────────────────*/
+.load-wrap{
+  padding:3.5rem 3rem;
+  max-width:1200px;margin:0 auto;
+  display:flex;justify-content:center;
+  border-top:1px solid var(--border);
+}
+.load-btn{
+  font-family:'Instrument Sans',sans-serif;
+  font-size:.72rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.18em;
+  color:var(--dim);background:none;
+  border:1px solid var(--border);
+  padding:11px 28px;border-radius:2px;
+  cursor:pointer;transition:all .3s;
+  display:flex;align-items:center;gap:.5rem;
+}
+.load-btn:hover{color:var(--ink);border-color:var(--faint)}
+.end-note{
+  font-size:.7rem;color:var(--faint);
+  font-style:italic;text-align:center;
+  padding:2rem 3rem;font-weight:300;
+}
+.end-note a{color:var(--accent);text-decoration:none}
+
+/* ── FEED MESSAGE ────────────────────────*/
+.feed-msg{
+  padding:5rem 3rem;text-align:center;
+  color:var(--faint);font-size:.9rem;font-style:italic;
+}
+.feed-msg a{color:var(--accent);text-decoration:none}
+
+/* ── PAGE FOOTER ─────────────────────────*/
+.page-ft{
+  border-top:1px solid var(--border);
+  padding:3rem;max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.back-link{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.72rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.16em;
+  color:var(--dim);text-decoration:none;transition:color .3s;
+}
+.back-link:hover{color:var(--ink)}
+.ft-copy{font-size:.6rem;color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+
+/* ── RESPONSIVE ──────────────────────────*/
+@media(max-width:1024px){.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){
+  html{font-size:16px}
+  .nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  #menu-btn{display:flex}
+  .page-hd{padding:7rem 1.5rem 3rem}
+  .toolbar{padding:1.2rem 1.5rem}
+  .skeleton,#feed,.page-ft,.load-wrap{padding-left:1.5rem;padding-right:1.5rem}
+  .feat{grid-template-columns:1fr;gap:2rem;padding:3.5rem 0}
+  .feat-img{order:-1;aspect-ratio:16/9}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .sk-feat{grid-template-columns:1fr;gap:2rem}
+  .sk-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="logo">Adiyat Coto</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html#person">About</a></li>
+      <li><a href="journal.html" class="active">Writing</a></li>
+      <li><a href="podcast.html">Podcast</a></li>
+      <li><a href="index.html#projects">Work</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="nav-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+      <i data-lucide="sun" id="theme-icon"></i>
+    </button>
+    <button class="nav-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">
+      <i data-lucide="menu" id="menu-icon"></i>
+    </button>
+  </div>
+</nav>
+
+<div class="mob" id="mob">
+  <a href="index.html#person" onclick="toggleMenu()">About</a>
+  <a href="journal.html"      onclick="toggleMenu()">Writing</a>
+  <a href="podcast.html"      onclick="toggleMenu()">Podcast</a>
+  <a href="index.html#projects" onclick="toggleMenu()">Work</a>
+  <a href="index.html#contact"  onclick="toggleMenu()">Contact</a>
+</div>
+
+<!-- PAGE HEADER -->
+<header class="page-hd">
+  <p class="eyebrow reveal">The Journal</p>
+  <h1 class="reveal d1">Writing is how the<br>thinking gets tested<br><em>against itself.</em></h1>
+  <p class="reveal d2">No fixed cadence. No audience to perform for. Most of it orbits one question: <strong>what is actually underneath this?</strong> The subjects change. The posture doesn't.</p>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar reveal">
+  <div class="filters" id="filters">
+    <span class="flabel">Filter</span>
+    <button class="fbtn on" data-cat="all">All</button>
+  </div>
+  <div class="toolbar-right">
+    <p class="count-txt" id="count-txt">Loading…</p>
+    <button class="refresh-btn" id="refresh-btn" onclick="refresh()" aria-label="Refresh">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Refresh
+    </button>
+  </div>
+</div>
+
+<!-- SKELETON -->
+<div class="skeleton" id="skeleton">
+  <div class="sk-feat">
+    <div>
+      <div class="sk-b sk-tag"></div>
+      <div class="sk-b sk-h"></div>
+      <div class="sk-b sk-h2"></div>
+      <div class="sk-b sk-line"></div>
+      <div class="sk-b sk-line"></div>
+      <div class="sk-b sk-line2"></div>
+    </div>
+    <div class="sk-b sk-img"></div>
+  </div>
+  <div class="sk-grid">
+    <div class="sk-card"><div class="sk-b sk-ci"></div><div class="sk-b sk-ct"></div><div class="sk-b sk-ct2"></div><div class="sk-b sk-cp"></div><div class="sk-b sk-cp2"></div></div>
+    <div class="sk-card"><div class="sk-b sk-ci"></div><div class="sk-b sk-ct"></div><div class="sk-b sk-ct2"></div><div class="sk-b sk-cp"></div><div class="sk-b sk-cp2"></div></div>
+    <div class="sk-card"><div class="sk-b sk-ci"></div><div class="sk-b sk-ct"></div><div class="sk-b sk-ct2"></div><div class="sk-b sk-cp"></div><div class="sk-b sk-cp2"></div></div>
+  </div>
+</div>
+
+<!-- LIVE FEED -->
+<div id="feed"></div>
+
+<div class="load-wrap" id="load-wrap" style="display:none">
+  <button class="load-btn" onclick="loadMore()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    Load more
+  </button>
+</div>
+<p class="end-note" id="end-note" style="display:none">
+  You've read the archive. <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Follow on Medium →</a>
+</p>
+
+<!-- PAGE FOOTER -->
+<footer class="page-ft">
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to main
+  </a>
+  <p class="ft-copy">© 2026 Adiyat Coto</p>
+</footer>
+
+<script>
+/* ─── THEME ──────────────────────────────────────────── */
+function toggleTheme(){
+  const next = document.body.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme',next);
+  document.getElementById('theme-icon').setAttribute('data-lucide',next==='dark'?'sun':'moon');
+  lucide.createIcons();
+  localStorage.setItem('theme-ac',next);
+}
+function toggleMenu(){
+  const mob=document.getElementById('mob');
+  const open=mob.classList.toggle('open');
+  document.getElementById('menu-icon').setAttribute('data-lucide',open?'x':'menu');
+  document.body.style.overflow=open?'hidden':'';
+  lucide.createIcons();
+}
+
+/* ─── REVEAL ─────────────────────────────────────────── */
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -24px 0px'});
+function watchReveals(root){
+  (root||document).querySelectorAll('.reveal:not(.visible)').forEach(el=>ro.observe(el));
+}
+
+/* ─── CONSTANTS ──────────────────────────────────────── */
+const API   = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fmedium.com%2Ffeed%2F%40coto.adiyat&api_key=gcujnglqeaho0omrp7ut6nl2f4wyzriazidpxxrw';
+const PAGE  = 999; // show all articles
+// Fallback palette: generate a gradient placeholder from article index
+const GRADS = [
+  'linear-gradient(135deg,#1a1208 0%,#3d2b10 100%)',
+  'linear-gradient(135deg,#0d1a1a 0%,#0f3030 100%)',
+  'linear-gradient(135deg,#1a0d0d 0%,#3d1010 100%)',
+  'linear-gradient(135deg,#0f0f1a 0%,#1e1e3d 100%)',
+  'linear-gradient(135deg,#101a10 0%,#1e3d1e 100%)',
+  'linear-gradient(135deg,#1a1a0d 0%,#2e2e10 100%)',
+];
+
+/* ─── STATE ──────────────────────────────────────────── */
+let allItems   = [];
+let authorAvatar= '';    // feed.image URL
+let filtered   = [];
+let shown      = 0;
+let activeCat  = 'all';
+
+/* ─── HELPERS ────────────────────────────────────────── */
+function fmtDate(s){
+  return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+function readMins(html){
+  const w=(html||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().split(' ').length;
+  return Math.max(1,Math.round(w/220));
+}
+function strip(html,max){
+  const d=document.createElement('div');
+  d.innerHTML=html;
+  d.querySelectorAll('figure,img,h1,h2,h3,h4,blockquote').forEach(el=>el.remove());
+  const t=(d.textContent||'').replace(/\s+/g,' ').trim();
+  return t.length>max?t.slice(0,max).replace(/\s+\S*$/,'')+'…':t;
+}
+// Pull first usable image from content HTML
+function firstImg(html){
+  const d=document.createElement('div');
+  d.innerHTML=html||'';
+  const img=d.querySelector('img');
+  return img?img.src:null;
+}
+function getThumb(item){
+  if(item.thumbnail&&item.thumbnail.startsWith('http')) return item.thumbnail;
+  return firstImg(item.content||item.description||'');
+}
+function gradBg(i){return GRADS[i%GRADS.length]}
+function avatarTag(cls){
+  return authorAvatar
+    ? `<img class="${cls}" src="${authorAvatar}" alt="Adiyat Coto" loading="lazy">`
+    : `<span class="${cls}" style="background:var(--surface);display:inline-block"></span>`;
+}
+function arrowR(sz){
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+}
+
+/* ─── RENDER FEATURED ────────────────────────────────── */
+function renderFeatured(item,idx){
+  const thumb = getThumb(item);
+  const rt    = readMins(item.content||item.description||'');
+  const cats  = (item.categories||[]).slice(0,2);
+  const tags  = cats.map(c=>`<span class="badge-cat">${c}</span>`).join('');
+  const exc   = strip(item.description||item.content||'',300);
+  const author= item.author||'Adiyat Coto';
+
+  const imgHtml = thumb
+    ? `<div class="feat-img"><img src="${thumb}" alt="${item.title}" loading="lazy"></div>`
+    : `<div class="feat-img" style="background:${gradBg(idx)}"><div class="feat-img-placeholder">¶</div></div>`;
+
+  return `
+  <a href="${item.link}" class="feat reveal" target="_blank" rel="noopener">
+    <div>
+      <div class="feat-eyebrow">
+        <span class="badge-latest">Latest</span>${tags}
+      </div>
+      <h2 class="feat-title">${item.title}</h2>
+      <p class="feat-excerpt">${exc}</p>
+      <div class="feat-byline">
+        ${avatarTag('byline-avatar')}
+        <span class="byline-name">${author}</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-rt">${fmtDate(item.pubDate)}</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-rt">${rt} min read</span>
+      </div>
+      <span class="feat-cta">Read on Medium ${arrowR(13)}</span>
+    </div>
+    ${imgHtml}
+  </a>`;
+}
+
+/* ─── RENDER ARTICLE CARD ────────────────────────────── */
+function renderCard(item,idx){
+  const thumb  = getThumb(item);
+  const rt     = readMins(item.content||item.description||'');
+  const cats   = (item.categories||[]).slice(0,1);
+  const catTag = cats.length?`<span class="acard-cat">${cats[0]}</span>`:'';
+  const exc    = strip(item.description||item.content||'',130);
+  const author = item.author||'Adiyat Coto';
+
+  const imgHtml = thumb
+    ? `<div class="acard-img"><img src="${thumb}" alt="${item.title}" loading="lazy"></div>`
+    : `<div class="acard-img" style="background:${gradBg(idx)}"><div class="acard-img-ph">¶</div></div>`;
+
+  return `
+  <a href="${item.link}" class="acard reveal" target="_blank" rel="noopener">
+    ${imgHtml}
+    <div class="acard-body">
+      <div class="acard-eyebrow">
+        <span class="acard-date">${fmtDate(item.pubDate)}</span>
+        ${catTag}
+      </div>
+      <h3 class="acard-title">${item.title}</h3>
+      <p class="acard-excerpt">${exc}</p>
+      <div class="acard-foot">
+        <div class="acard-byline">
+          ${avatarTag('acard-avatar')}
+          <span class="acard-author">${author}</span>
+        </div>
+        <div class="acard-rt">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${rt} min
+        </div>
+      </div>
+    </div>
+  </a>`;
+}
+
+/* ─── PAINT ──────────────────────────────────────────── */
+function paint(replace){
+  const feed = document.getElementById('feed');
+  if(replace){ feed.innerHTML=''; shown=0; }
+
+  const items = filtered;
+  if(!items.length){
+    feed.innerHTML=`<div class="feed-msg">No articles in this category yet.<br><a href="https://medium.com/@coto.adiyat" target="_blank">Read all on Medium →</a></div>`;
+    document.getElementById('count-txt').innerHTML='<b>0</b> articles';
+    document.getElementById('load-wrap').style.display='none';
+    document.getElementById('end-note').style.display='none';
+    return;
+  }
+
+  const chunk = items.slice(shown, shown+PAGE);
+  if(!chunk.length) return;
+
+  const globalIdx = shown; // offset so gradient colours are consistent
+
+  if(shown===0){
+    // Featured + grid
+    const [first,...rest]=chunk;
+    feed.insertAdjacentHTML('beforeend', renderFeatured(first, globalIdx));
+    if(rest.length){
+      // split: up to 6 in grid-3, overflow in grid-2
+      const six = rest.slice(0,6);
+      const two = rest.slice(6);
+      if(six.length)
+        feed.insertAdjacentHTML('beforeend',
+          `<div class="grid-3">${six.map((it,i)=>renderCard(it,globalIdx+1+i)).join('')}</div>`);
+      if(two.length)
+        feed.insertAdjacentHTML('beforeend',
+          `<div class="grid-2">${two.map((it,i)=>renderCard(it,globalIdx+7+i)).join('')}</div>`);
+    }
+  } else {
+    const six = chunk.slice(0,6);
+    const two = chunk.slice(6);
+    if(six.length)
+      feed.insertAdjacentHTML('beforeend',
+        `<div class="grid-3">${six.map((it,i)=>renderCard(it,globalIdx+i)).join('')}</div>`);
+    if(two.length)
+      feed.insertAdjacentHTML('beforeend',
+        `<div class="grid-2">${two.map((it,i)=>renderCard(it,globalIdx+6+i)).join('')}</div>`);
+  }
+
+  shown += chunk.length;
+
+  // Count
+  document.getElementById('count-txt').innerHTML=
+    `<b>${Math.min(shown,items.length)}</b> of <b>${items.length}</b> articles`;
+
+  // Load more / end
+  if(shown>=items.length){
+    document.getElementById('load-wrap').style.display='none';
+    document.getElementById('end-note').style.display=items.length>PAGE?'block':'none';
+  } else {
+    document.getElementById('load-wrap').style.display='flex';
+    document.getElementById('end-note').style.display='none';
+  }
+
+  watchReveals(feed);
+}
+
+/* ─── FILTER ─────────────────────────────────────────── */
+function setFilter(cat){
+  activeCat=cat;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.toggle('on',b.dataset.cat===cat));
+  filtered = cat==='all'
+    ? [...allItems]
+    : allItems.filter(it=>(it.categories||[]).some(c=>c.toLowerCase()===cat));
+  paint(true);
+}
+
+/* ─── LOAD MORE ──────────────────────────────────────── */
+function loadMore(){ paint(false); }
+
+/* ─── REFRESH (cache-bust) ───────────────────────────── */
+function refresh(){
+  const btn=document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  btn.disabled=true;
+  fetchFeed(()=>{ btn.classList.remove('spinning'); btn.disabled=false; });
+}
+
+/* ─── FETCH ──────────────────────────────────────────── */
+function fetchFeed(done){
+  // cache-bust with timestamp so browser always gets fresh data
+  const url = API + '&_=' + Date.now();
+
+  fetch(url)
+    .then(r=>r.json())
+    .then(data=>{
+      document.getElementById('skeleton').style.display='none';
+
+      if(data.status!=='ok'||!data.items?.length){
+        document.getElementById('feed').innerHTML=
+          `<div class="feed-msg">Could not load articles. <a href="https://medium.com/@coto.adiyat" target="_blank">Read on Medium →</a></div>`;
+        document.getElementById('count-txt').textContent='';
+        if(done) done();
+        return;
+      }
+
+      // Grab author avatar from feed metadata
+      if(data.feed?.image) authorAvatar=data.feed.image;
+
+      allItems=data.items;
+
+      // Build category filters
+      const cats=[...new Set(allItems.flatMap(i=>i.categories||[]))].filter(Boolean).sort();
+      const bar=document.getElementById('filters');
+      // Clear old dynamic buttons (keep "All")
+      bar.querySelectorAll('.fbtn:not([data-cat="all"])').forEach(b=>b.remove());
+      cats.forEach(c=>{
+        const b=document.createElement('button');
+        b.className='fbtn'+(activeCat===c.toLowerCase()?' on':'');
+        b.dataset.cat=c.toLowerCase();
+        b.textContent=c;
+        b.onclick=()=>setFilter(c.toLowerCase());
+        bar.appendChild(b);
+      });
+      bar.querySelector('[data-cat="all"]').onclick=()=>setFilter('all');
+
+      filtered = activeCat==='all'
+        ? [...allItems]
+        : allItems.filter(it=>(it.categories||[]).some(c=>c.toLowerCase()===activeCat));
+
+      paint(true);
+      if(done) done();
+    })
+    .catch(()=>{
+      document.getElementById('skeleton').style.display='none';
+      document.getElementById('feed').innerHTML=
+        `<div class="feed-msg">Could not load articles. <a href="https://medium.com/@coto.adiyat" target="_blank">Read on Medium →</a></div>`;
+      document.getElementById('count-txt').textContent='';
+      if(done) done();
+    });
+}
+
+/* ─── INIT ───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.body.setAttribute('data-theme','dark');
+  document.getElementById('theme-icon').setAttribute('data-lucide','sun');
+  lucide.createIcons();
+  watchReveals();
+  fetchFeed();
+});
+</script>
+</body>
+</html>
