@@ -757,6 +757,10 @@ body:not([data-theme="dark"]) .footer-copy { color: var(--faint); }
 .pod-right { display: flex; align-items: center; justify-content: flex-end; gap: 0.7rem; }
 .pod-close { background: none; border: none; color: var(--faint); cursor: pointer; padding: 5px; display: flex; align-items: center; transition: color 0.2s; border-radius: 50%; }
 .pod-close:hover { color: var(--ink); }
+.pod-vol { display: flex; align-items: center; gap: 0.4rem; }
+.pod-vol-slider { -webkit-appearance: none; appearance: none; width: 70px; height: 3px; background: var(--border); border-radius: 2px; cursor: pointer; outline: none; }
+.pod-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); cursor: pointer; transition: background 0.2s; }
+.pod-vol-slider::-webkit-slider-thumb:hover { background: var(--accent); }
 
 @media (max-width: 820px) {
     .p-ep { grid-template-columns: 60px 1fr; gap: 1rem; padding: 1.6rem 1.5rem; }
@@ -1165,6 +1169,12 @@ body:not([data-theme="dark"]) .footer-copy { color: var(--faint); }
       </div>
     </div>
     <div class="pod-right">
+      <div class="pod-vol">
+        <button class="pod-ctrl" onclick="podToggleMute()" id="pod-vol-icon-btn">
+          <svg id="pod-vol-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+        <input type="range" class="pod-vol-slider" id="pod-vol-slider" min="0" max="1" step="0.02" value="1" oninput="podSetVolume(this.value)">
+      </div>
       <button class="pod-close" onclick="podClose()" title="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -1452,6 +1462,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = document.getElementById('pod-prog-wrap').getBoundingClientRect();
         if (podAudio.duration) podAudio.currentTime = ((e.clientX - r.left) / r.width) * podAudio.duration;
     };
+    window.podSetVolume = (v) => { podAudio.volume = v; podUpdateVolIcon(v); };
+    window.podToggleMute = () => { podAudio.muted = !podAudio.muted; podUpdateVolIcon(podAudio.muted ? 0 : podAudio.volume); };
+    function podUpdateVolIcon(v) {
+        const paths = v <= 0
+            ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+            : v < 0.5
+            ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>'
+            : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+        const icon = document.getElementById('pod-vol-icon');
+        if (icon) icon.innerHTML = paths;
+    }
     window.podClose = () => {
         podAudio.pause(); podIdx = -1;
         document.getElementById('pod-player-bar').classList.remove('active');
