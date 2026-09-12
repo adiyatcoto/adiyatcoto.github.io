@@ -607,18 +607,21 @@
                 currentSecVol: 0, 
                 currentSecDelta: 0, 
                 history: [], 
-                seismoHistory: [], // Full history for canvas and logic
+                seismoHistory: [], 
                 stats: { hunting: 0, running: 0, stalking: 0, absorb: 0, total: 0, maxSpeed: 0 }
             },
             // MM Footprint Profile
             mmProfile: {},
-            // MEMORY (The Brain)
+            // MEMORY (The Brain) - UPGRADED LAYERED MEMORY
             memory: {
-                macroScore: 0, // Running average of trend (-1 to 1)
-                volatilityScore: 0, // Running average of vol
-                lastSignificantEvent: null, // "TRAP", "BREAKOUT", etc.
-                narrativeBuffer: [], // For smoothing text transitions
-                decayFactor: 0.95 // Memory decay
+                shortTermBias: 0, // Micro (1-5m)
+                mediumTermBias: 0, // Intraday (1h)
+                longTermBias: 0, // Structural (Daily+)
+                volatilityState: 'LOW',
+                lastEvents: [], // History of events for sequence detection
+                decayShort: 0.9,
+                decayMed: 0.99,
+                decayLong: 0.999
             }
         };
         
@@ -754,7 +757,7 @@
             }
         }
 
-        // --- SEISMOGRAPH VISUALIZATION (REDESIGNED) ---
+        // --- SEISMOGRAPH VISUALIZATION (REDESIGNED LAYERING) ---
         function initSeismograph() {
             seismoCanvas = document.getElementById('seismo-canvas');
             seismoCtx = seismoCanvas.getContext('2d');
@@ -787,7 +790,7 @@
 
             // Split Layout
             const graphH = h * 0.75;
-            const barH_Base = h * 0.75; // Baseline for bars
+            const barH_Base = h * 0.75; 
             const barcodeY = h * 0.8;
             const barcodeH = h * 0.15;
 
@@ -808,7 +811,6 @@
             // Draw Bars (Right to Left)
             const visibleData = history.slice(-maxBars);
             
-            // Find max volume for scaling
             let maxVol = 1; 
             visibleData.forEach(d => { if(d.vol > maxVol) maxVol = d.vol; });
 
@@ -817,8 +819,7 @@
                 const d = visibleData[i];
                 const x = w - ((visibleData.length - i) * totalBarWidth);
                 
-                // Color Logic
-                let color = '#4b5563'; // Stalking
+                let color = '#4b5563'; 
                 if (d.type === 'H') color = '#fbbf24';
                 if (d.type === 'Rb') color = '#4ade80';
                 if (d.type === 'Rs') color = '#f87171';
@@ -841,14 +842,13 @@
             }
 
             // --- LAYER 2: LABELS & PRICE BOXES (FOREGROUND / ON TOP) ---
-            let lastLabelX = -100; // Track label position to avoid overlap
+            let lastLabelX = -100; 
 
             for (let i = visibleData.length - 1; i >= 0; i--) {
                 const d = visibleData[i];
                 const x = w - ((visibleData.length - i) * totalBarWidth);
                 const barHeight = (Math.log(d.vol + 1) / Math.log(maxVol + 1)) * (graphH * 0.8);
                 
-                // Color Logic again for labels
                 let color = '#4b5563'; 
                 if (d.type === 'H') color = '#fbbf24';
                 if (d.type === 'Rb') color = '#4ade80';
@@ -891,8 +891,8 @@
 
                     const boxY = barH_Base - barHeight - 44;
 
-                    // Box Background (Flat, no glow)
-                    ctx.fillStyle = 'rgba(11, 15, 25, 0.95)'; // Increased opacity
+                    // Box Background (Float on top)
+                    ctx.fillStyle = 'rgba(11, 15, 25, 0.95)'; 
                     ctx.strokeStyle = color;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
@@ -925,8 +925,6 @@
         function startStream(symbol) {
             updateStatus('Connecting...');
             
-            // Primary and Fallback URLs
-            // Fallback: binance.vision (Public data stream, often more accessible)
             const wsUrl1 = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`;
             const wsUrl2 = `wss://data-stream.binance.vision/ws/${symbol.toLowerCase()}@trade`;
             
@@ -944,34 +942,28 @@
                     const data = JSON.parse(event.data);
                     const newPrice = parseFloat(data.p);
                     const qty = parseFloat(data.q);
-                    const time = data.T; // Trade time
-                    const isBuyerMaker = data.m; // true = Sell Aggression, false = Buy Aggression
+                    const time = data.T; 
+                    const isBuyerMaker = data.m; 
                     
-                    // 1. Update Price State
                     state.prevPrice = state.price;
                     state.price = newPrice;
 
-                    // 2. Add to Flow Buffer
                     state.flow.push({ p: newPrice, q: qty, t: time, m: isBuyerMaker });
                     
-                    // 3. Increment Micro Tick Counters
                     state.micro.ticks++;
-                    state.micro.currentSecVol += qty; // Accumulate volume
+                    state.micro.currentSecVol += qty; 
                     
-                    // 4. Update Current Delta (For Absorption)
                     if (isBuyerMaker) {
-                        state.micro.currentSecDelta -= qty; // Seller Aggression
+                        state.micro.currentSecDelta -= qty; 
                     } else {
-                        state.micro.currentSecDelta += qty; // Buyer Aggression
+                        state.micro.currentSecDelta += qty; 
                     }
 
-                    // 5. Prune old trades (> 60s)
                     const cutoff = Date.now() - 60000;
                     while(state.flow.length > 0 && state.flow[0].t < cutoff) {
                         state.flow.shift();
                     }
                     
-                    // 6. High Frequency Visual Updates (Lightweight)
                     triggerVisualUpdate();
                 };
                 
@@ -982,23 +974,16 @@
                 
                 priceSocket.onclose = (event) => {
                     if(!isFallback) {
-                        console.log("Primary WS failed, trying fallback...");
                         connect(wsUrl2, true);
                     } else {
                         updateStatus('Disconnected');
-                        // If fallback also fails, likely a network block (VPN needed)
-                        if(event.code !== 1000) {
-                            console.log("All WS attempts failed.");
-                        }
                     }
                 };
             }
 
-            // Start with primary
             connect(wsUrl1, false);
         }
 
-        // Throttled Visual Update to prevent stack overflow and high CPU usage
         function triggerVisualUpdate() {
             if (!visualUpdatePending) {
                 visualUpdatePending = true;
@@ -1009,9 +994,7 @@
             }
         }
 
-        // Lightweight function run on EVERY tick (Throttled)
         function updatePriceVisuals() {
-            // A. Update Text & Flash Color
             const priceEl = document.getElementById('price-text');
             if (priceEl) {
                 priceEl.textContent = formatPrice(state.price);
@@ -1027,10 +1010,7 @@
                 }
             }
 
-            // B. Update Line Position Immediately
             updatePriceLine();
-
-            // C. Render Footprint HUD (New)
             renderFootprint();
         }
 
@@ -1040,31 +1020,26 @@
             const speedEl = document.getElementById('fp-speed-val');
             const statusEl = document.getElementById('fp-status-val');
             const statusPill = document.getElementById('fp-status-pill');
-            // RESTORED: Timeline Element
             const timelineEl = document.getElementById('mm-timeline');
             
             if (!el) return;
 
-            // 1. Calculate Tick Velocity (Ticks Per Second)
             const tps = state.micro.ticks;
             speedEl.textContent = `${tps}/s`;
             
-            // 2. Calculate Efficiency (Price Move / Effort)
             const priceDiff = state.price - state.micro.startPrice; 
             const priceMove = Math.abs(priceDiff);
             const delta = state.micro.currentSecDelta;
             
-            // Lower threshold to catch more movement: 0.002% (2 basis points) instead of 0.01%
             const volatility = state.price * 0.00002; 
             
             let status = 'STALKING'; 
             let statusCode = 'S'; 
             let colorClass = 'text-gray-400 border-gray-600';
             let animation = '';
-            let detailedStatus = 'STALKING'; // For Live Panel
+            let detailedStatus = 'STALKING'; 
 
             // --- ABUSE LOGIC ---
-            // Lower TPS threshold to 5 to catch moderate aggression
             if (tps > 5 && priceMove < volatility) {
                 status = 'HUNTING'; 
                 statusCode = 'H';
@@ -1074,19 +1049,16 @@
                 detailedStatus = 'HUNTING';
             } 
             else if (tps > 5 && priceMove >= volatility) {
-                // --- NEW: ABSORPTION LOGIC (Divergence) ---
                 if (priceDiff > 0 && delta < 0) {
-                    // Price Up BUT Net Selling -> Hidden Buying (Absorption)
                     status = 'ABSORPTION';
-                    statusCode = 'Ab'; // Absorption Bullish
+                    statusCode = 'Ab'; 
                     colorClass = 'text-purple-200 border-purple-500 bg-purple-900/50';
                     animation = 'pulse-diverge';
                     state.micro.stats.absorb++;
                     detailedStatus = 'ABSORP (BULL)';
                 } else if (priceDiff < 0 && delta > 0) {
-                    // Price Down BUT Net Buying -> Hidden Selling (Absorption)
                     status = 'ABSORPTION';
-                    statusCode = 'As'; // Absorption Bearish
+                    statusCode = 'As'; 
                     colorClass = 'text-purple-200 border-purple-500 bg-purple-900/50';
                     animation = 'pulse-diverge';
                     state.micro.stats.absorb++;
@@ -1119,32 +1091,23 @@
             state.micro.stats.total++;
             if (tps > state.micro.stats.maxSpeed) state.micro.stats.maxSpeed = tps;
 
-            // Render Status
             el.classList.remove('hidden');
             statusEl.textContent = status;
             statusPill.className = `fp-pulse-pill ${colorClass} ${animation}`;
 
-            // --- UPDATE LIVE PANEL ---
             updateLiveIntel(detailedStatus, colorClass, state.price, state.micro.currentSecVol, delta);
-
-            // --- INTEL UPDATE (Every 1s) ---
             updateMMIntel();
 
-            // --- SAVE TO SEISMO HISTORY (NEW) ---
-            // Push current second's data to history for Seismograph rendering
             state.micro.seismoHistory.push({
                 type: statusCode,
-                vol: state.micro.currentSecVol, // Magnitude
-                price: state.price, // Price at this moment
+                vol: state.micro.currentSecVol, 
+                price: state.price, 
                 time: Date.now()
             });
-            // Keep history limited (e.g., last 300 seconds / 5 mins)
             if (state.micro.seismoHistory.length > 1000) {
                 state.micro.seismoHistory.shift();
             }
 
-            // --- RENDER HISTORY TIMELINE (RESTORED MAP VIEW BARCODE) ---
-            // Update the timeline HTML just like before
             state.micro.history.push(statusCode);
             if(state.micro.history.length > 60) state.micro.history.shift(); 
 
@@ -1159,8 +1122,7 @@
             });
             if(timelineEl) timelineEl.innerHTML = timelineHTML;
 
-            // --- PERSIST TO MM PROFILE (Ghost Bars on Map) ---
-            const bucketSize = state.price * 0.0002; // coarser bucket for profile (0.02%)
+            const bucketSize = state.price * 0.0002; 
             const pKey = (Math.floor(state.price / bucketSize) * bucketSize).toFixed(5);
             
             if (!state.mmProfile[pKey]) state.mmProfile[pKey] = { s: 0, h: 0, rb: 0, rs: 0, abs: 0, total: 0 };
@@ -1175,10 +1137,8 @@
             
             state.mmProfile[pKey].total += vol;
 
-            // Render the MM Profile on the map (Daily map usually)
             renderMMProfile('d');
 
-            // Reset Micro Counters for next second
             state.micro.ticks = 0;
             state.micro.currentSecVol = 0;
             state.micro.currentSecDelta = 0;
@@ -1194,9 +1154,6 @@
             if (priceEl) priceEl.textContent = formatPrice(price);
             if (statusEl) {
                 statusEl.textContent = status;
-                // Parse color from colorClass (which has text-x border-y bg-z)
-                // We want a solid badge style for this panel
-                // Map colorClass to a simple color style
                 let bgClass = 'text-gray-500';
                 if (status.includes('HUNT')) bgClass = 'text-yellow-400';
                 else if (status.includes('RUN') && status.includes('BULL')) bgClass = 'text-green-400';
@@ -1208,91 +1165,92 @@
             if (volEl) volEl.textContent = `${vol.toFixed(2)}`;
         }
 
-        // --- THE BRAIN: ADVANCED INTEL (GLOBAL SCREEN CONTEXT & PROBABILISTIC) ---
-        // This function now replaces "analyzeAdvancedIntent" with a smarter Synthesis Engine
+        // --- THE BRAIN: ADVANCED CAUSAL REASONING ENGINE ---
         function updateMMIntel() {
             // Use full available history (1000+ ticks)
             const fullHistory = state.micro.seismoHistory;
             if (fullHistory.length < 10) return;
 
-            // --- 1. MEMORY DECAY & CONTEXT BUILDING ---
-            // Calculate a rolling score for Trend and Volatility
-            // This prevents "flippant" (plin-plan) behavior.
+            // --- 1. MEMORY LAYERS UPDATE (DECAY & STATE) ---
+            // Calculate biases for Short (1m), Med (1h/approx), Long (Structure)
             
-            let currentTrendBias = 0; // -1 (Bear) to 1 (Bull)
-            let currentVolStress = 0; // 0 to 1
-            
-            // Calculate moving averages over the last 60 seconds
+            // Short-term (Last 60 ticks/seconds)
             const recentHistory = fullHistory.slice(-60);
-            
-            // Calculate VWAP-like structure for the last minute
             const startP = recentHistory[0].price;
             const endP = recentHistory[recentHistory.length - 1].price;
-            const priceChangePct = (endP - startP) / startP;
+            const shortChange = (endP - startP) / startP;
+            let currentShortBias = shortChange > 0.0002 ? 1 : (shortChange < -0.0002 ? -1 : 0);
             
-            // Bias Calculation
-            if (priceChangePct > 0.0005) currentTrendBias = 1; // Strong Bull
-            else if (priceChangePct > 0.0001) currentTrendBias = 0.5; // Weak Bull
-            else if (priceChangePct < -0.0005) currentTrendBias = -1; // Strong Bear
-            else if (priceChangePct < -0.0001) currentTrendBias = -0.5; // Weak Bear
+            // Update Biases with Decay
+            state.memory.shortTermBias = (state.memory.shortTermBias * state.memory.decayShort) + (currentShortBias * (1 - state.memory.decayShort));
+            // Note: Medium & Long term would ideally come from 1H/4H candles, here simplified to aggregated stats
             
-            // Update Memory with Decay (Inertia)
-            // New Score = (Old Score * Decay) + (New Score * (1-Decay))
-            state.memory.macroScore = (state.memory.macroScore * state.memory.decayFactor) + (currentTrendBias * (1 - state.memory.decayFactor));
+            // Normalize Scores (-1 to 1)
+            const microScore = state.memory.shortTermBias;
             
-            // Normalize memory score
-            const mScore = state.memory.macroScore;
+            // --- 2. GLOBAL ALIGNMENT INPUT (MACRO) ---
+            // Get data from global confluence calc
+            const alignmentEl = document.getElementById('global-score-text');
+            const alignmentRaw = alignmentEl ? parseFloat(alignmentEl.textContent.replace('SCORE: ', '')) : 0;
+            const macroScore = isNaN(alignmentRaw) ? 0 : alignmentRaw;
+
+            // --- 3. CAUSAL EVENT DETECTION (SEQUENCE LOGIC) ---
+            // Detect MM Patterns: Hunt -> Run, Trap, etc.
+            const last5 = recentHistory.slice(-5); // Last 5 seconds
+            let event = "NONE";
             
-            // --- 2. MACRO NARRATIVE CONSTRUCTION ---
-            let trendText = "NEUTRAL";
-            let trendClass = "text-gray-400";
-            let structureText = "Consolidation";
+            // Pattern: Hunt followed by Run in opposite direction (Stop Run & Reverse)
+            // Or Hunt followed by Run in same direction (Breakout)
+            const hasHunt = last5.some(h => h.type === 'H');
+            const hasRunBull = last5.some(h => h.type === 'Rb');
+            const hasRunBear = last5.some(h => h.type === 'Rs');
+            
+            if (hasHunt && hasRunBull && !hasRunBear) event = "BULLISH_IGNITION";
+            else if (hasHunt && hasRunBear && !hasRunBull) event = "BEARISH_DUMP";
+            else if (hasRunBull && hasRunBear) event = "CHOP_WAR";
+            
+            // --- 4. SYNTHESIS ENGINE (THE NARRATOR) ---
+            // Combine Macro (Strategic) + Micro (Tactical) + Event (Trigger)
+            
             let narrative = "";
-
-            if (mScore > 0.4) { trendText = "BULLISH TREND"; trendClass = "text-green-400"; }
-            else if (mScore > 0.1) { trendText = "WEAK UPTREND"; trendClass = "text-green-300"; }
-            else if (mScore < -0.4) { trendText = "BEARISH TREND"; trendClass = "text-red-400"; }
-            else if (mScore < -0.1) { trendText = "WEAK DOWNTREND"; trendClass = "text-red-300"; }
-            else { trendText = "RANGE / CHOP"; trendClass = "text-yellow-400"; }
-
-            // Determine Structure based on Volatility + Trend
-            // Calculate Volatility of recent ticks
-            let volSum = 0;
-            recentHistory.forEach(h => volSum += h.vol);
-            const avgVol = volSum / recentHistory.length;
+            let implication = "";
             
-            if (avgVol > 5 && Math.abs(mScore) < 0.2) structureText = "High Volatility Chop (Fight)";
-            else if (avgVol < 1 && Math.abs(mScore) < 0.2) structureText = "Low Volatility (Awaiting Liquidity)";
-            else if (mScore > 0.3) structureText = "Buyers in Control";
-            else if (mScore < -0.3) structureText = "Sellers in Control";
-
-            // --- 3. GENERATE SEMANTIC NARRATIVE (The "Sentence") ---
-            // Combines Macro (Memory) + Micro (Latest Tick)
-            const latest = recentHistory[recentHistory.length - 1];
-            
-            if (mScore > 0.3) {
-                // Macro Bullish
-                if (latest.type === 'Rs') narrative = "Pullback detected in Uptrend. Buyers likely defending lower support.";
-                else if (latest.type === 'Rb') narrative = "Trend Extension. Buyers pushing higher highs.";
-                else if (latest.type === 'H') narrative = "Hunting Liquidity during Uptrend. Potential Stop Hunt before continuation.";
-                else if (latest.type === 'Ab') narrative = "Hidden Buying (Absorption) supporting the trend.";
-                else narrative = "Uptrend Intact. Waiting for next impulse.";
-            } else if (mScore < -0.3) {
-                // Macro Bearish
-                if (latest.type === 'Rb') narrative = "Relief Rally in Downtrend. Sellers likely reloading at resistance.";
-                else if (latest.type === 'Rs') narrative = "Trend Extension. Sellers pushing lower lows.";
-                else if (latest.type === 'H') narrative = "Hunting Liquidity during Downtrend. Shakeout before drop.";
-                else if (latest.type === 'As') narrative = "Hidden Selling (Absorption) capping the price.";
-                else narrative = "Downtrend Intact. Selling pressure remains.";
-            } else {
-                // Range
-                if (latest.type.includes('R')) narrative = "Ping-pong action inside Range. No clear direction yet.";
-                else if (latest.type.includes('A')) narrative = "Accumulation/Distribution activity detected inside Range.";
-                else narrative = "Market is deciding. Monitoring for Breakout.";
+            // Logic Matrix
+            if (macroScore > 0.3) { // STRATEGIC BULL
+                if (microScore > 0.2) {
+                    narrative = "Full Spectrum Alignment (Bullish).";
+                    if (event === "BULLISH_IGNITION") implication = "Aggressive continuation detected. Chase phase active.";
+                    else implication = "Momentum is healthy. dips are for buying.";
+                } else if (microScore < -0.2) {
+                    narrative = "Macro Uptrend vs Micro Pullback.";
+                    if (event === "BEARISH_DUMP") implication = "Deep correction warning. Watch for support test.";
+                    else implication = "Healthy profit taking. Awaiting pivot low.";
+                } else {
+                    narrative = "Bullish Structure, Low Momentum.";
+                    implication = "Consolidation phase (Flagging).";
+                }
+            } else if (macroScore < -0.3) { // STRATEGIC BEAR
+                if (microScore < -0.2) {
+                    narrative = "Full Spectrum Alignment (Bearish).";
+                    if (event === "BEARISH_DUMP") implication = "Waterfall collapse. Panic phase active.";
+                    else implication = "Sellers controlling every bounce.";
+                } else if (microScore > 0.2) {
+                    narrative = "Macro Downtrend vs Micro Rally.";
+                    if (event === "BULLISH_IGNITION") implication = "Short Squeeze Risk! Bears covering positions.";
+                    else implication = "Dead cat bounce. Look for lower high rejection.";
+                } else {
+                    narrative = "Bearish Structure, Low Momentum.";
+                    implication = "Bleeding out (Slow grind down).";
+                }
+            } else { // STRATEGIC NEUTRAL/RANGE
+                narrative = "Structural Equilibrium (Range).";
+                if (microScore > 0.3) implication = "Testing Range Highs. Breakout or Fakeout imminent.";
+                else if (microScore < -0.3) implication = "Testing Range Lows. Breakdown check.";
+                else implication = "Noise / Chop. No clear edge.";
             }
 
-            // --- NEW: MM TACTICAL INTENT (POINTER TO MM ACTIONS) ---
-            // Count specific MM events in recent history
+            // --- 5. MM TACTICAL INTENT (INSTITUTIONAL POV) ---
+            // Count specific MM events
             const mmStats = {
                 absorption: recentHistory.filter(h => h.type === 'Ab' || h.type === 'As').length,
                 hunting: recentHistory.filter(h => h.type === 'H').length,
@@ -1301,18 +1259,17 @@
 
             let mmIntent = "Neutral / Providing Liquidity";
             if (mmStats.absorption > 2) {
-                mmIntent = "INSTITUTIONAL ABSORPTION. MMs are passively filling large limit orders against the crowd.";
+                mmIntent = "INSTITUTIONAL ABSORPTION. Passive limit orders absorbing flow. (Accumulation/Distribution)";
             } else if (mmStats.hunting > 2) {
-                // Determine direction of hunt based on price drift during the hunting phase
-                const startHuntP = recentHistory[0].price;
-                const endHuntP = recentHistory[recentHistory.length-1].price;
-                const huntDir = endHuntP < startHuntP ? "LONG STOPS (Shakeout Dip)" : "SHORT STOPS (Upside Probe)";
-                
-                mmIntent = `LIQUIDITY HUNTING. MMs are probing levels to trigger ${huntDir}.`;
+                // Determine direction of hunt
+                const huntStart = recentHistory[0].price;
+                const huntEnd = recentHistory[recentHistory.length-1].price;
+                const huntDir = huntEnd < huntStart ? "LONG STOPS (Shakeout)" : "SHORT STOPS (Probe)";
+                mmIntent = `LIQUIDITY HUNTING. MMs probing levels to trigger ${huntDir}.`;
             } else if (mmStats.running > 5) {
-                mmIntent = "MOMENTUM IGNITION. MMs are aggressively taking liquidity to push price (Gap Expansion).";
-            } else if (avgVol < 1) {
-                mmIntent = "ORDER BOOK THINNING. MMs have widened spreads, expecting volatility or lacking interest.";
+                mmIntent = "MOMENTUM IGNITION. Aggressive liquidity taking to force price expansion.";
+            } else if (state.micro.currentSecVol < 1) {
+                mmIntent = "ORDER BOOK THINNING. Spreads widening, expecting volatility or lacking interest.";
             }
 
             // Update DOM
@@ -1321,70 +1278,66 @@
             const narrativeBox = document.getElementById('macro-narrative');
             const mmIntentBox = document.getElementById('mm-intent-text');
 
-            if(narrativeBox) narrativeBox.textContent = `> ${narrative}`;
+            if(narrativeBox) narrativeBox.textContent = `> ${narrative} ${implication}`;
             if(mmIntentBox) mmIntentBox.textContent = mmIntent;
             
-            // Visual Bar for Buyers vs Sellers (derived from Memory Score to be smoother)
-            // Map -1..1 to 0..100
-            const domPct = Math.round(((mScore + 1) / 2) * 100);
+            // Visual Bar
+            const domPct = Math.round(((macroScore + 1) / 2) * 100);
+            let trendText = "NEUTRAL";
+            let trendClass = "text-gray-400";
+            if(macroScore > 0.3) { trendText = "BULLISH"; trendClass = "text-green-400"; }
+            if(macroScore < -0.3) { trendText = "BEARISH"; trendClass = "text-red-400"; }
+
             if(domValEl) {
                 domValEl.textContent = `${trendText} (${domPct}%)`;
                 domValEl.className = `font-bold ${trendClass}`;
             }
             if(domBar) {
                 domBar.style.width = `${domPct}%`;
-                domBar.className = `h-full transition-all duration-300 ${mScore > 0 ? 'bg-green-500' : (mScore < 0 ? 'bg-red-500' : 'bg-yellow-500')}`;
+                domBar.className = `h-full transition-all duration-300 ${macroScore > 0 ? 'bg-green-500' : (macroScore < 0 ? 'bg-red-500' : 'bg-yellow-500')}`;
             }
 
-            // --- 4. PROBABILISTIC SCENARIOS (MICRO) ---
-            // Generate contextual options based on "Who is trapped?" logic
+            // --- 6. PROBABILISTIC SCENARIOS ---
+            generateScenarios(macroScore, microScore, event);
+        }
+
+        function generateScenarios(macro, micro, event) {
             let scenarios = [];
+            const isBull = macro > 0.2;
+            const isBear = macro < -0.2;
             
-            // Helper booleans
-            const isBull = mScore > 0.2;
-            const isBear = mScore < -0.2;
-            const highVol = avgVol > 3;
-
-            // Scenario 1: Continuation
+            // Base Probabilities on Alignment
             if (isBull) {
-                scenarios.push({ 
-                    name: "BULLISH CONTINUATION (Buyers Strong)", 
-                    pct: 60 + (mScore * 20), 
-                    color: "bg-green-500" 
-                });
-                scenarios.push({ 
-                    name: "BEAR TRAP (Short Squeeze)", 
-                    pct: 30, 
-                    color: "bg-purple-500" 
-                });
+                scenarios.push({ name: "TREND CONTINUATION", pct: 65, color: "bg-green-500" });
+                scenarios.push({ name: "PULLBACK & BOUNCE", pct: 25, color: "bg-blue-500" });
+                scenarios.push({ name: "FAILED BREAKOUT", pct: 10, color: "bg-red-500" });
             } else if (isBear) {
-                scenarios.push({ 
-                    name: "BEARISH CONTINUATION (Sellers Strong)", 
-                    pct: 60 + (Math.abs(mScore) * 20), 
-                    color: "bg-red-500" 
-                });
-                 scenarios.push({ 
-                    name: "BULL TRAP (Longs Squeezed)", 
-                    pct: 30, 
-                    color: "bg-purple-500" 
-                });
+                scenarios.push({ name: "TREND CONTINUATION", pct: 65, color: "bg-red-500" });
+                scenarios.push({ name: "RELIEF RALLY (SELL)", pct: 25, color: "bg-blue-500" });
+                scenarios.push({ name: "BEAR TRAP / V-SHAPE", pct: 10, color: "bg-green-500" });
             } else {
-                scenarios.push({ name: "RANGE ROTATION (Mean Reversion)", pct: 55, color: "bg-yellow-500" });
-                scenarios.push({ name: "BREAKOUT PENDING (Volatility Ignition)", pct: 45, color: "bg-orange-500" });
+                scenarios.push({ name: "RANGE BOUND ROTATION", pct: 50, color: "bg-yellow-500" });
+                scenarios.push({ name: "VOLATILITY EXPANSION", pct: 50, color: "bg-orange-500" });
             }
 
-            // Normalize Percentages
-            const totalPct = scenarios.reduce((acc, curr) => acc + curr.pct, 0);
-            scenarios = scenarios.map(s => ({
-                ...s,
-                pct: Math.round((s.pct / totalPct) * 100)
-            })).sort((a,b) => b.pct - a.pct);
+            // Adjust based on Micro Event
+            if (event === "BULLISH_IGNITION") {
+                scenarios[0].pct += 15; // Boost Continuation/Breakout
+                scenarios[1].pct -= 10;
+            } else if (event === "BEARISH_DUMP") {
+                if (isBull) { scenarios[2].pct += 20; scenarios[0].pct -= 20; } // Higher chance of failure
+                else { scenarios[0].pct += 15; } // Boost Bearish Continuation
+            }
 
-            // Render Scenarios
+            // Normalize
+            const total = scenarios.reduce((a,b) => a+b.pct, 0);
+            scenarios.forEach(s => s.pct = Math.round(s.pct / total * 100));
+            scenarios.sort((a,b) => b.pct - a.pct);
+
             const listEl = document.getElementById('scenario-list');
-            if(listEl && scenarios.length > 0) {
+            if(listEl) {
                 let html = '';
-                scenarios.slice(0, 3).forEach(sc => { // Show top 3
+                scenarios.slice(0, 3).forEach(sc => {
                     html += `
                         <div class="mb-1">
                             <div class="scenario-row text-gray-300">
@@ -1399,6 +1352,137 @@
                 });
                 listEl.innerHTML = html;
             }
+        }
+
+        // --- GLOBAL CONFLUENCE LOGIC (INTELLIGENCE - UPGRADED) ---
+        function updateGlobalConfluence() {
+            if (!state.stats.d) return;
+
+            const tfs = ['d', 'w', 'm', 'q', 's', 'y'];
+            const statsArr = tfs.map(k => state.stats[k]).filter(Boolean);
+            
+            // 1. FRACTAL ALIGNMENT SCORE (THE COMPASS)
+            // Weights: Higher TF = Structural Dominance
+            const weights = { d: 1, w: 1.5, m: 2, q: 2.5, s: 3, y: 3.5 };
+            let totalWeight = 0;
+            let alignScore = 0; 
+            
+            // 2. Regime & Breakout Scoring
+            let weightedExp = 0;
+            let weightedCtr = 0;
+            let projectedSum = 0;
+            let projWeightSum = 0;
+            let avgVol = 0;
+            let avgRatio = 0;
+
+            tfs.forEach(tf => {
+                const s = state.stats[tf];
+                if(!s) return;
+                
+                const w = weights[tf] || 1;
+                totalWeight += w;
+                
+                // --- SCORE CALCULATION ---
+                let tfScore = 0;
+                
+                // A. Positional Score (Price vs Open)
+                if (state.price >= s.open) tfScore += 1;
+                else tfScore -= 1;
+                
+                // B. Structural Score (Breakout/Breakdown of Prev Candle)
+                // We need previous high/low from klines data
+                const klineData = state.klines[tf];
+                if (klineData && klineData.length > 2) {
+                    const prevK = klineData[klineData.length - 2];
+                    const prevH = parseFloat(prevK[2]);
+                    const prevL = parseFloat(prevK[3]);
+                    
+                    if (state.price > prevH) tfScore += 0.5; // Breakout Bonus
+                    if (state.price < prevL) tfScore -= 0.5; // Breakdown Penalty
+                }
+
+                // C. Regime Context
+                // Expansion aligned with trend is powerful. Contraction aligned is weak.
+                if (s.regime === 'EXP') {
+                    tfScore *= 1.2; // Amplify score in expansion
+                    weightedExp += w;
+                } else {
+                    weightedCtr += w;
+                }
+
+                alignScore += (tfScore * w);
+                
+                avgVol += s.vol;
+                avgRatio += s.ratio;
+
+                // Projection
+                const safeT = Math.max(0.01, s.timeProgress);
+                const projMove = s.currentMove / safeT;
+                const projTarget = (state.price >= s.open) ? (s.open + projMove) : (s.open - projMove);
+                const wProj = Math.pow(safeT, 2); 
+                projectedSum += projTarget * wProj;
+                projWeightSum += wProj;
+            });
+
+            // Final Normalization
+            // Max potential score per TF is roughly 1.5 (1 positional + 0.5 structural) * 1.2 (regime) = 1.8
+            // We normalize carefully to keep range mostly -1 to 1
+            const finalScore = totalWeight > 0 ? (alignScore / (totalWeight * 1.5)) : 0; 
+            const regimeBias = totalWeight > 0 ? (weightedExp - weightedCtr) / totalWeight : 0;
+            
+            const globalTarget = projWeightSum > 0 ? (projectedSum / projWeightSum) : 0;
+            avgVol /= statsArr.length;
+            avgRatio /= statsArr.length;
+
+            // --- UI UPDATE: PANEL 1 (ALIGNMENT) ---
+            const scoreText = finalScore.toFixed(2);
+            let alignLabel = "NEUTRAL";
+            let barColor = "bg-gray-500";
+            
+            if (finalScore > 0.5) { alignLabel = "STRONG BULL ALIGNMENT"; barColor = "bg-green-500"; }
+            else if (finalScore > 0.15) { alignLabel = "BULLISH BIAS"; barColor = "bg-green-400"; }
+            else if (finalScore < -0.5) { alignLabel = "STRONG BEAR ALIGNMENT"; barColor = "bg-red-500"; }
+            else if (finalScore < -0.15) { alignLabel = "BEARISH BIAS"; barColor = "bg-red-400"; }
+            else { alignLabel = "STRUCTURAL CONFLICT (CHOP)"; barColor = "bg-yellow-500"; }
+
+            const barWidth = Math.max(5, Math.min(95, ((finalScore + 1) / 2) * 100)); // Clamp 5-95%
+
+            document.getElementById('global-alignment-text').textContent = alignLabel;
+            document.getElementById('global-score-text').textContent = `SCORE: ${scoreText}`;
+            
+            const alignBar = document.getElementById('global-alignment-bar');
+            alignBar.style.width = `${barWidth}%`;
+            alignBar.className = `absolute left-0 top-0 bottom-0 transition-all duration-500 ${barColor}`;
+
+            // --- UI UPDATE: PANEL 2 (INSIGHT NARRATIVE) ---
+            let insight = "";
+            
+            if (finalScore > 0.4) {
+                if (regimeBias > 0.2) insight = "Expansion Phase. Breakout structures valid across multiple timeframes.";
+                else insight = "Trend Up, but Contraction phase suggests momentum is slowing (Grinding Up).";
+            } else if (finalScore < -0.4) {
+                if (regimeBias > 0.2) insight = "Expansion Phase. Breakdown accelerating across key support levels.";
+                else insight = "Trend Down, but Contraction suggests sellers are passive (Grinding Down).";
+            } else {
+                // Conflict Analysis
+                const monthlyBull = state.klines.m.length > 0 && state.price > state.klines.m[state.klines.m.length-1][1];
+                const dailyBull = state.klines.d.length > 0 && state.price > state.klines.d[state.klines.d.length-1][1];
+                
+                if (monthlyBull && !dailyBull) insight = "Macro Bullish / Daily Correction. Potential 'Buy the Dip' zone.";
+                else if (!monthlyBull && dailyBull) insight = "Macro Bearish / Daily Bounce. Potential 'Sell the Rip' trap.";
+                else insight = "High Timeframe Conflict. Volatility likely to expand.";
+            }
+            
+            document.getElementById('global-insight-text').textContent = insight;
+
+            // Target Text
+            const distPct = ((globalTarget - state.price) / state.price) * 100;
+            const distSign = distPct > 0 ? '+' : '';
+            const targetEl = document.getElementById('radius-text');
+            targetEl.textContent = `${formatPrice(globalTarget)} (${distSign}${distPct.toFixed(2)}%)`;
+            
+            if (globalTarget >= state.price) targetEl.className = 'font-mono text-[9px] font-bold text-green-400';
+            else targetEl.className = 'font-mono text-[9px] font-bold text-red-400';
         }
 
         // --- NEW: MM PROFILE RENDERER (DISABLED FOR MAP AS REQUESTED) ---
@@ -1583,125 +1667,6 @@
                 open: t0_Open,
                 currentMove: Math.abs(state.price - t0_Open)
             };
-        }
-
-        // --- GLOBAL CONFLUENCE LOGIC (INTELLIGENCE - UPGRADED) ---
-        function updateGlobalConfluence() {
-            if (!state.stats.d) return;
-
-            const tfs = ['d', 'w', 'm', 'q', 's', 'y'];
-            const statsArr = tfs.map(k => state.stats[k]).filter(Boolean);
-            
-            // 1. Weighted Alignment Score (The "Compass")
-            // Weights: Higher TF = More Significance
-            const weights = { d: 1, w: 1.5, m: 2, q: 2.5, s: 3, y: 3.5 };
-            let totalWeight = 0;
-            let alignScore = 0; // -1 (Full Bear) to 1 (Full Bull)
-            
-            // 2. Regime Complexity
-            let weightedExp = 0;
-            let weightedCtr = 0;
-            
-            // 3. Global Target Projection
-            let projectedSum = 0;
-            let projWeightSum = 0;
-            
-            let avgVol = 0;
-            let avgRatio = 0;
-
-            tfs.forEach(tf => {
-                const s = state.stats[tf];
-                if(!s) return;
-                
-                const w = weights[tf] || 1;
-                totalWeight += w;
-                
-                // Alignment Score Calculation
-                const isBull = state.price >= s.open;
-                const score = isBull ? 1 : -1;
-                alignScore += (score * w);
-                
-                // Regime Score
-                if (s.regime === 'EXP') weightedExp += w;
-                else weightedCtr += w;
-                
-                avgVol += s.vol;
-                avgRatio += s.ratio;
-
-                // Projection
-                const safeT = Math.max(0.01, s.timeProgress);
-                const projMove = s.currentMove / safeT;
-                const projTarget = isBull ? (s.open + projMove) : (s.open - projMove);
-                
-                const wProj = Math.pow(safeT, 2); 
-                projectedSum += projTarget * wProj;
-                projWeightSum += wProj;
-            });
-
-            // Final Normalization
-            const finalScore = totalWeight > 0 ? (alignScore / totalWeight) : 0; // Range -1 to 1
-            const regimeBias = totalWeight > 0 ? (weightedExp - weightedCtr) / totalWeight : 0; // >0 Exp, <0 Ctr
-            
-            const globalTarget = projWeightSum > 0 ? (projectedSum / projWeightSum) : 0;
-            avgVol /= statsArr.length;
-            avgRatio /= statsArr.length;
-
-            // --- UI UPDATE: PANEL 1 (ALIGNMENT) ---
-            const scoreText = finalScore.toFixed(2);
-            let alignLabel = "NEUTRAL";
-            let barColor = "bg-gray-500";
-            
-            if (finalScore > 0.6) { alignLabel = "FULL BULL ALIGNMENT"; barColor = "bg-green-500"; }
-            else if (finalScore > 0.2) { alignLabel = "BULLISH (CONFLICT)"; barColor = "bg-green-400"; }
-            else if (finalScore < -0.6) { alignLabel = "FULL BEAR ALIGNMENT"; barColor = "bg-red-500"; }
-            else if (finalScore < -0.2) { alignLabel = "BEARISH (CONFLICT)"; barColor = "bg-red-400"; }
-            else { alignLabel = "RANGE / CHOPPY"; barColor = "bg-yellow-500"; }
-
-            // Map score (-1 to 1) to Width (0% to 100%)
-            // 0 -> 50%, -1 -> 0%, 1 -> 100%
-            const barWidth = ((finalScore + 1) / 2) * 100;
-
-            document.getElementById('global-alignment-text').textContent = alignLabel;
-            document.getElementById('global-score-text').textContent = `SCORE: ${scoreText}`;
-            
-            const alignBar = document.getElementById('global-alignment-bar');
-            alignBar.style.width = `${barWidth}%`;
-            alignBar.className = `absolute left-0 top-0 bottom-0 transition-all duration-500 ${barColor}`;
-
-            // --- UI UPDATE: PANEL 2 (INSIGHT NARRATIVE) ---
-            // Construct sentence based on Score + Regime + Volatility
-            let insight = "";
-            const isHighVol = avgVol > 0.5; // Context dependent, simplistic check
-            
-            if (finalScore > 0.5) {
-                if (regimeBias > 0.2) insight = "Multi-Timeframe Breakout. Expansion phase supports strong uptrend.";
-                else insight = "Trend Consolidating. High probability of continuation after pullback.";
-            } else if (finalScore < -0.5) {
-                if (regimeBias > 0.2) insight = "Multi-Timeframe Breakdown. Expansion phase accelerating losses.";
-                else insight = "Bearish Grind. Sellers controlling resistance levels.";
-            } else {
-                // Conflict Zone
-                if (state.price > state.klines.m[state.klines.m.length-1][1]) { // Monthly Bullish?
-                     insight = "Macro Bullish but Daily Weakness. Buying Dip opportunity.";
-                } else {
-                     insight = "Macro Bearish with Daily Rally. Selling Rip opportunity.";
-                }
-            }
-            
-            // Add Volatility Context
-            if (avgRatio > 1.5) insight += " (Market Overextended)";
-            else if (avgRatio < 0.5) insight += " (Market Dormant)";
-
-            document.getElementById('global-insight-text').textContent = insight;
-
-            // Target Text
-            const distPct = ((globalTarget - state.price) / state.price) * 100;
-            const distSign = distPct > 0 ? '+' : '';
-            const targetEl = document.getElementById('radius-text');
-            targetEl.textContent = `${formatPrice(globalTarget)} (${distSign}${distPct.toFixed(2)}%)`;
-            
-            if (globalTarget >= state.price) targetEl.className = 'font-mono text-[9px] font-bold text-green-400';
-            else targetEl.className = 'font-mono text-[9px] font-bold text-red-400';
         }
 
         function updateColumnHeader(id, stats, label, smaLabel) {
