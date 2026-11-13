@@ -1,55 +1,379 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Journal — Adiyat Coto</title>
-<meta name="description" content="Writing by Adiyat Coto.">
-<link rel="icon" href="/favicon_io/favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Journal · Adiyat Coto</title>
+<meta name="description" content="Essays by Adiyat Coto on markets, money, philosophy, and trading tools. Written in Indonesian and English.">
+<meta name="keywords" content="Adiyat Coto, journal, essays, markets, monetary systems, philosophy, Pine Script, TradingView, Medium">
+<meta name="author" content="Adiyat Coto">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="The Journal · Adiyat Coto">
+<meta property="og:description" content="Essays on markets, money, philosophy, and trading tools. In Indonesian and English.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adiyatcoto.github.io/journal/">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+<link rel="manifest" href="../favicon_io/site.webmanifest">
+<link rel="shortcut icon" href="../favicon_io/favicon.ico">
+<link rel="stylesheet" href="../assets/main.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>:root{--bg:#101110;--ink:#f2f4ed;--muted:#989d94;--line:#2b2e2a;--acid:#cbff3d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,sans-serif}.wrap{max-width:1120px;margin:auto;padding:0 32px}.meta{font:11px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.nav{height:76px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.nav a{color:var(--ink);text-decoration:none}.brand b,.accent{color:var(--acid)}.links{display:flex;gap:22px}.links a{color:var(--muted);font:11px 'DM Mono',monospace;text-transform:uppercase}.links a:hover{color:var(--acid)}header{padding:115px 0 65px;border-bottom:1px solid var(--line)}h1{font-size:clamp(4rem,11vw,10rem);letter-spacing:-.09em;line-height:.8;margin:30px 0}header p{max-width:420px;color:var(--muted);font-size:17px}.bar{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line);color:var(--muted)}button{font:11px 'DM Mono',monospace;text-transform:uppercase;border:0;background:none;color:var(--muted);cursor:pointer;padding:0}button.on,button:hover{color:var(--acid)}#filters{display:flex;gap:17px;overflow:auto}.entry{display:grid;grid-template-columns:125px 1fr auto;gap:25px;padding:31px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}.entry:hover h2{color:var(--acid)}.entry h2{font-size:clamp(1.3rem,2.4vw,2rem);letter-spacing:-.055em;margin:0 0 8px}.entry p{color:var(--muted);margin:0;font-size:14px;max-width:690px}.date{color:var(--acid);padding-top:8px}.arrow{color:var(--muted);font-size:21px}footer{padding:24px 0;color:var(--muted);font:10px 'DM Mono',monospace;text-transform:uppercase}@media(max-width:650px){.wrap{padding:0 20px}.links a:not(:nth-child(2)){display:none}header{padding:80px 0 45px}.entry{grid-template-columns:70px 1fr;gap:14px}.entry .arrow{display:none}.date{font-size:9px}}</style>
-<style>header{padding:76px 0 42px}.entry{padding:22px 0;animation:rise .5s both}.entry:hover{background:#171916}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}footer{margin-top:18px}@media(max-width:650px){header{padding:58px 0 34px}}</style>
-<style>body{isolation:isolate}body::before{content:'';position:fixed;z-index:0;inset:-30%;pointer-events:none;background:radial-gradient(circle at 25% 30%,rgba(203,255,61,.05),transparent 18%),radial-gradient(circle at 75% 75%,rgba(70,130,180,.07),transparent 22%);animation:drift 18s ease-in-out infinite alternate}body>*{position:relative;z-index:1}.nav{position:sticky;top:0;z-index:20;background:rgba(16,17,16,.84);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}@keyframes drift{to{transform:translate3d(5%,3%,0) scale(1.08)}}footer{padding:42px 0 120px}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
-<body>
-<nav class="nav wrap">
-<a class="brand meta" href="/">ADIYAT <b>COTO</b>
-</a>
-<div class="links">
-<a href="/">Profile</a>
-<a class="accent" href="/journal/">Journal</a>
-<a href="/podcast/">Podcast</a>
-<a href="/#work">Projects</a>
-</div>
-</nav>
-<main class="wrap">
-<header>
-<span class="meta accent">Archive / 01</span>
-<h1>JOURNAL.</h1>
-<p>Notes on markets, history, philosophy, and the questions that connect them.</p>
-</header>
-<div class="bar">
-<div id="filters">
-<button class="on" data-cat="all">All</button>
-</div>
-<span class="meta" id="count">Loading</span>
-</div>
-<div id="feed">
-<p class="meta" style="padding:32px 0;color:var(--muted)">Fetching archive…</p>
-</div>
-</main>
-<footer class="wrap">© 2026 Adiyat Coto · <a style="color:var(--acid)" href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Medium ↗</a>
-</footer>
-<script>const API='https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fmedium.com%2Ffeed%2F%40coto.adiyat&api_key=gcujnglqeaho0omrp7ut6nl2f4wyzriazidpxxrw';let all=[],active='all';const clean=s=>{let d=document.createElement('div');d.innerHTML=s||'';return(d.textContent||'').replace(/\s+/g,' ').trim()};const render=()=>{let list=active==='all'?all:all.filter(x=>(x.categories||[]).includes(active)),f=document.getElementById('feed');document.getElementById('count').textContent=`${list.length} pieces`;f.innerHTML=list.length?list.map(x=>`<a class="entry" href="${x.link}" target="_blank" rel="noopener">
-<span class="date meta">${x.pubDate?new Date(x.pubDate).toLocaleDateString('en-GB',{year:'numeric',month:'short'}):'—'}</span>
-<div>
-<h2>${clean(x.title)}</h2>
-<p>${clean(x.description||x.content).slice(0,180)}</p>
-</div>
-<span class="arrow">↗</span>
-</a>`).join(''):'<p class="meta" style="padding:32px 0">No entries.</p>'};fetch(API).then(r=>r.json()).then(d=>{all=d.items||[];let cats=[...new Set(all.flatMap(x=>x.categories||[]))].filter(Boolean).slice(0,7),bar=document.getElementById('filters');cats.forEach(c=>{let b=document.createElement('button');b.textContent=c;b.dataset.cat=c;bar.append(b)});bar.addEventListener('click',e=>{if(!e.target.dataset.cat)return;active=e.target.dataset.cat;bar.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===e.target));render()});render()}).catch(()=>{document.getElementById('feed').innerHTML=`<p class="meta" style="padding:32px 0">Archive unavailable. <a class="accent" href="https://medium.com/@coto.adiyat">Open Medium ↗</a>
-</p>`});</script>
+<body data-theme="light">
+
+  <!-- Razor-Thin Sticky Navigation (Editorial Broadsheet Style) -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="status-dot"></span>
+        <span>Adiyat Coto</span>
+      </a>
+
+      <!-- Core Navigation Links -->
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#work">Work</a></li>
+        <li><a href="/journal/" class="active">Journal</a></li>
+        <li><a href="/podcast/">Podcast</a></li>
+        <li><a href="/lab/">Lab Hub</a></li>
+        <li><a href="/books/">Library</a></li>
+      </ul>
+
+      <div class="nav-tools">
+        <button class="btn-icon" onclick="toggleTheme()" aria-label="Toggle monochrome dark and light mode">
+          <i data-lucide="moon" id="theme-icon" style="width:15px;height:15px;"></i>
+        </button>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-nav-cta">
+          Contact
+        </a>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Toggle mobile menu">
+          <i data-lucide="menu" id="menu-icon" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Dropdown -->
+  <div class="mobile-dropdown" id="mobileNav">
+    <a href="/#about" onclick="toggleMobileNav()">About</a>
+    <a href="/#work" onclick="toggleMobileNav()">Work</a>
+    <a href="/journal/" onclick="toggleMobileNav()" style="color:var(--text-primary);font-weight:600;">Journal</a>
+    <a href="/podcast/" onclick="toggleMobileNav()">Podcast</a>
+    <a href="/lab/" onclick="toggleMobileNav()">Lab Hub</a>
+    <a href="/pinescript/" onclick="toggleMobileNav()">Pine Script</a>
+    <a href="/books/" onclick="toggleMobileNav()">Library</a>
+    <a href="mailto:hello@coto.is-a.dev" style="color:var(--text-primary);font-weight:600;">hello@coto.is-a.dev</a>
+  </div>
+
+  <!-- Editorial Main Canvas -->
+  <main class="page-container">
+
+    <!-- 1. HERO BLOCK -->
+    <section class="hero-block">
+      <div class="hero-meta-strip">
+        <span>ARCHIVE: ARTICLES &amp; NOTES</span>
+        <span>PUBLICATION: MEDIUM</span>
+        <span>TOPICS: MARKETS · MONEY · PHILOSOPHY</span>
+      </div>
+
+      <h1 class="hero-heading">
+        The Journal.
+      </h1>
+
+      <p class="hero-lead">
+        Essays on markets, money, philosophy, and the tools I build. Written in Indonesian and English, with no fixed schedule.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="https://medium.com/@coto.adiyat" class="btn-solid" target="_blank" rel="noopener">
+          <span>Read on Medium</span>
+          <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+        </a>
+        <a href="https://medium.com/feed/@coto.adiyat" class="btn-outline" target="_blank" rel="noopener">
+          <span>Medium RSS ↗</span>
+        </a>
+        <a href="#articles" class="btn-outline">
+          <span>Browse Index ↓</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 2. KEY TELEMETRY STRIP -->
+    <section class="telemetry-row">
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[01 / AUTHOR]</span>
+        <div class="telemetry-num">ADIYAT COTO</div>
+        <div class="telemetry-label">Application support, implementation, and market research.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[02 / OUTLET]</span>
+        <div class="telemetry-num">MEDIUM</div>
+        <div class="telemetry-label">Main channel for essays and notes.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[03 / THEMES]</span>
+        <div class="telemetry-num">ESSAYS</div>
+        <div class="telemetry-label">Markets, monetary systems, philosophy, and trading tools.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[04 / FORMAT]</span>
+        <div class="telemetry-num">LONG-FORM</div>
+        <div class="telemetry-label">Essays and technical notes.</div>
+      </div>
+    </section>
+
+    <!-- 3. ARTICLES ARCHIVE (ASYMMETRIC) -->
+    <section id="articles" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 01 / ARTICLES ]</span>
+        <h2>Articles</h2>
+        <p>Essays on markets, money, philosophy, and trading tools, pulled live from Medium. Many are in Indonesian.</p>
+        <div style="margin-top: 1.25rem;">
+          <button class="btn-outline" id="refresh-btn" onclick="refresh()" style="height:36px;padding:0 1rem;font-size:0.72rem;">
+            <i data-lucide="rotate-cw" id="refresh-icon" style="width:13px;height:13px;"></i>
+            <span>Refresh Archive</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="section-main">
+
+        <!-- FILTER TOOLBAR -->
+        <div class="toolbar-strip">
+          <div class="filter-group" id="filters">
+            <button class="filter-btn active" data-cat="all" onclick="setFilter('all')">All Articles</button>
+          </div>
+          <div class="toolbar-meta">
+            <span id="count-txt">SYNCING ARCHIVE...</span>
+          </div>
+        </div>
+
+        <!-- SKELETON LOADER -->
+        <div class="skeleton-strip" id="skeleton">
+          <div class="skeleton-row">
+            <div class="sk-bar" style="width: 24px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 140px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 90%; height: 14px;"></div>
+            <div class="sk-bar" style="width: 48px; height: 16px;"></div>
+          </div>
+          <div class="skeleton-row">
+            <div class="sk-bar" style="width: 24px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 160px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 80%; height: 14px;"></div>
+            <div class="sk-bar" style="width: 48px; height: 16px;"></div>
+          </div>
+          <div class="skeleton-row">
+            <div class="sk-bar" style="width: 24px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 120px; height: 16px;"></div>
+            <div class="sk-bar" style="width: 85%; height: 14px;"></div>
+            <div class="sk-bar" style="width: 48px; height: 16px;"></div>
+          </div>
+        </div>
+
+        <!-- LIVE FEED -->
+        <div class="horizontal-list" id="feed"></div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Unified Editorial Footer -->
+  <footer class="page-footer">
+    <div>
+      &copy; 2026 ADIYAT COTO · ALL RIGHTS RESERVED
+    </div>
+
+    <div class="footer-nav">
+      <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Medium</a>
+      <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank" rel="noopener">TradingView</a>
+      <a href="https://orcid.org/0009-0006-1914-0849" target="_blank" rel="noopener">ORCID</a>
+      <a href="https://cotoadiyat.gumroad.com/" target="_blank" rel="noopener">Gumroad</a>
+    </div>
+  </footer>
+
+<script>
+/* ── THEME CONTROLLER (LIGHT/DARK MONOCHROME) ────────────────────────────── */
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('ac-editorial-theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('theme-icon');
+  if (icon) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+/* ── MOBILE NAV DRAWER ───────────────────────────────────────────────────── */
+function toggleMobileNav() {
+  const panel = document.getElementById('mobileNav');
+  const icon = document.getElementById('menu-icon');
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (icon) icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ── CONSTANTS & STATE ───────────────────────────────────────────────────── */
+const API = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fmedium.com%2Ffeed%2F%40coto.adiyat&api_key=gcujnglqeaho0omrp7ut6nl2f4wyzriazidpxxrw';
+let allItems = [];
+let filtered = [];
+let activeCat = 'all';
+
+function fmtDate(s) {
+  return new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function readMins(html) {
+  const w = (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().split(' ').length;
+  return Math.max(1, Math.round(w / 220));
+}
+
+function stripHtml(html, max) {
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  d.querySelectorAll('figure,img,h1,h2,h3,h4,blockquote').forEach(el => el.remove());
+  const t = (d.textContent || '').replace(/\s+/g, ' ').trim();
+  return max && t.length > max ? t.slice(0, max).replace(/\s+\S*$/, '') + '…' : t;
+}
+
+const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+
+const safeURL = value => {
+  try {
+    const url = new URL(String(value ?? ''), location.href);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : '#';
+  } catch { return '#'; }
+};
+
+/* ── RENDER ARTICLES ─────────────────────────────────────────────────────── */
+function renderFeed() {
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+
+  const countTxt = document.getElementById('count-txt');
+  if (!filtered.length) {
+    feed.innerHTML = `
+      <div style="padding: 2.5rem 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+        No articles found in this category. <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener" style="color:var(--accent-blue);">Read archive on Medium →</a>
+      </div>`;
+    if (countTxt) countTxt.textContent = '0 ARTICLES';
+    return;
+  }
+
+  let html = '';
+  filtered.forEach((item, i) => {
+    const rt = readMins(item.content || item.description || '');
+    const exc = stripHtml(item.description || item.content || '', 200);
+    const cats = (item.categories || []).slice(0, 2).map(escapeHTML).join(', ');
+    const num = String(i + 1).padStart(2, '0');
+
+    html += `
+      <a href="${safeURL(item.link)}" class="list-row" target="_blank" rel="noopener">
+        <span class="row-index">${num}</span>
+        <div class="row-title-block">
+          <span class="row-title">${escapeHTML(item.title)}</span>
+          <span class="row-tag">${fmtDate(item.pubDate)} · ${rt} MIN READ${cats ? ` · ${cats}` : ''}</span>
+        </div>
+        <p class="row-desc">${exc}</p>
+        <span class="row-action">Read ↗</span>
+      </a>
+    `;
+  });
+
+  feed.innerHTML = html;
+  if (countTxt) countTxt.textContent = `${filtered.length} OF ${allItems.length} ARTICLES`;
+}
+
+/* ── FILTERING ───────────────────────────────────────────────────────────── */
+function setFilter(cat) {
+  activeCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === cat);
+  });
+  filtered = cat === 'all'
+    ? [...allItems]
+    : allItems.filter(it => (it.categories || []).some(c => c.toLowerCase() === cat));
+  renderFeed();
+}
+
+/* ── REFRESH ─────────────────────────────────────────────────────────────── */
+function refresh() {
+  const icon = document.getElementById('refresh-icon');
+  if (icon) icon.style.animation = 'spin 0.7s linear infinite';
+  fetchFeed(() => {
+    if (icon) icon.style.animation = 'none';
+  });
+}
+
+/* ── FETCH FEED ──────────────────────────────────────────────────────────── */
+function fetchFeed(done) {
+  const url = API + '&_=' + Date.now();
+
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('skeleton').style.display = 'none';
+
+      if (data.status !== 'ok' || !data.items?.length) {
+        document.getElementById('feed').innerHTML = `
+          <div style="padding: 2.5rem 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+            Could not retrieve Medium feed. <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener" style="color:var(--accent-blue);">Open Medium Profile →</a>
+          </div>`;
+        if (done) done();
+        return;
+      }
+
+      allItems = data.items;
+
+      // Extract unique categories
+      const cats = [...new Set(allItems.flatMap(i => i.categories || []))].filter(Boolean).sort();
+      const filterBar = document.getElementById('filters');
+      filterBar.querySelectorAll('.filter-btn:not([data-cat="all"])').forEach(b => b.remove());
+
+      cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (activeCat === c.toLowerCase() ? ' active' : '');
+        btn.dataset.cat = c.toLowerCase();
+        btn.textContent = c;
+        btn.onclick = () => setFilter(c.toLowerCase());
+        filterBar.appendChild(btn);
+      });
+
+      filtered = activeCat === 'all'
+        ? [...allItems]
+        : allItems.filter(it => (it.categories || []).some(c => c.toLowerCase() === activeCat));
+
+      renderFeed();
+      if (done) done();
+    })
+    .catch(() => {
+      document.getElementById('skeleton').style.display = 'none';
+      document.getElementById('feed').innerHTML = `
+        <div style="padding: 2.5rem 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+          Could not retrieve Medium feed. <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener" style="color:var(--accent-blue);">Open Medium Profile →</a>
+        </div>`;
+      if (done) done();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ac-editorial-theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+  if (window.lucide) lucide.createIcons();
+  fetchFeed();
+});
+</script>
 </body>
 </html>

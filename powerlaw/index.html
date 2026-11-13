@@ -265,8 +265,8 @@
             .stat-card span { text-align: left; }
         }
     </style>
-</head>
-<body>
+<link rel="stylesheet" href="../assets/site.css"></head>
+<body data-site-shell="tool">
 
     <!-- Header: Menghilangkan z-index root dan membiarkannya relative bebas agar tidak memotong panel saat digeser -->
     <header class="header-ui flex-shrink-0 flex flex-col xl:grid xl:grid-cols-[1fr_auto_1.3fr] items-center px-4 lg:px-10 py-4 relative gap-4 xl:gap-0">
@@ -1548,5 +1548,5 @@
             setTimeout(() => { if (!isSyncing && this.value.trim() !== currentMainSymbol) this.value = currentMainSymbol; }, 200);
         });
     </script>
-</body>
+<script src="../assets/site.js" defer></script></body>
 </html>

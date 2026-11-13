@@ -1,94 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Index of /books/</title>
-  <style>
-    body {
-      font-family: monospace;
-      background-color: #f9f9f9;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    a {
-      text-decoration: none;
-      color: #0056b3;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    table {
-      width: 100%;
-    }
-    td {
-      padding: 6px 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .filename {
-      width: 70%;
-    }
-    .size, .type {
-      width: 15%;
-      text-align: right;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Library · Adiyat Coto</title>
+<meta name="description" content="A small reading library by Adiyat Coto: philosophy, markets, and economic cycles.">
+<meta name="keywords" content="Adiyat Coto, reading library, philosophy, markets, Soros, Dalio, Camus, Hegel, Heidegger, Benner, books">
+<meta name="author" content="Adiyat Coto">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Reading Library · Adiyat Coto">
+<meta property="og:description" content="A small reading library: philosophy, markets, and economic cycles.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adiyatcoto.github.io/books/">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+<link rel="manifest" href="../favicon_io/site.webmanifest">
+<link rel="shortcut icon" href="../favicon_io/favicon.ico">
+<link rel="stylesheet" href="../assets/main.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
-<body>
-  <h1>Index of /books/</h1>
-  <hr>
-  <table>
-    <tr>
-      <td class="filename"><a href="adiyat_coto_playing_the_worlds_game_indonesia.pdf">adiyat_coto_playing_the_worlds_game_indonesia.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="albert_camus_the_fall_indonesia.pdf">albert_camus_the_fall_indonesia.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="albert_camus_the_myth_of_sisyphus_english.epub">albert_camus_the_myth_of_sisyphus_english.epub</a></td>
-      <td class="type">EPUB</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="albert_camus_the_stranger_indonesia.pdf">albert_camus_the_stranger_indonesia.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="benjamin_graham_the_intelligence_investor_english.pdf">benjamin_graham_the_intelligence_investor_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="george_soros_the_alchemy_of_finance_english.pdf">george_soros_the_alchemy_of_finance_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="hegel_phenomenology_of_spirit_english.pdf">hegel_phenomenology_of_spirit_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="ibn'_sina_(avicenna)_al-shifa'_(the_physics_of_the_healing)_in_two_volumes_english-arabic.pdf">ibn'_sina_(avicenna)_al-shifa'_(the_physics_of_the_healing)_in_two_volumes_english-arabic.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="itzhak_bentov_stalking_the_wild_pendulum_english.pdf">itzhak_bentov_stalking_the_wild_pendulum_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="martin_heidegger_being_and_time_english.pdf">martin_heidegger_being_and_time_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="ray_dalio_how_countries_go_broke_english.pdf">ray_dalio_how_countries_go_broke_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-    <tr>
-      <td class="filename"><a href="samuel_benner_benners_prophecies_english.pdf">samuel_benner_benners_prophecies_english.pdf</a></td>
-      <td class="type">PDF</td>
-    </tr>
-  </table>
-  <hr>
+<body data-theme="light">
+
+  <!-- Razor-Thin Sticky Navigation (Editorial Broadsheet Style) -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="status-dot"></span>
+        <span>Adiyat Coto</span>
+      </a>
+
+      <!-- Core Navigation Links -->
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#work">Work</a></li>
+        <li><a href="/journal/">Journal</a></li>
+        <li><a href="/podcast/">Podcast</a></li>
+        <li><a href="/lab/">Lab Hub</a></li>
+        <li><a href="/books/" class="active">Library</a></li>
+      </ul>
+
+      <div class="nav-tools">
+        <button class="btn-icon" onclick="toggleTheme()" aria-label="Toggle monochrome dark and light mode">
+          <i data-lucide="moon" id="theme-icon" style="width:15px;height:15px;"></i>
+        </button>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-nav-cta">
+          Contact
+        </a>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Toggle mobile menu">
+          <i data-lucide="menu" id="menu-icon" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Dropdown -->
+  <div class="mobile-dropdown" id="mobileNav">
+    <a href="/#about" onclick="toggleMobileNav()">About</a>
+    <a href="/#work" onclick="toggleMobileNav()">Work</a>
+    <a href="/journal/" onclick="toggleMobileNav()">Journal</a>
+    <a href="/podcast/" onclick="toggleMobileNav()">Podcast</a>
+    <a href="/lab/" onclick="toggleMobileNav()">Lab Hub</a>
+    <a href="/pinescript/" onclick="toggleMobileNav()">Pine Script</a>
+    <a href="/books/" onclick="toggleMobileNav()" style="color:var(--text-primary);font-weight:600;">Library</a>
+    <a href="mailto:hello@coto.is-a.dev" style="color:var(--text-primary);font-weight:600;">hello@coto.is-a.dev</a>
+  </div>
+
+  <!-- Editorial Main Canvas -->
+  <main class="page-container">
+
+    <!-- 1. HERO BLOCK -->
+    <section class="hero-block">
+      <div class="hero-meta-strip">
+        <span>LOC: SEMARANG, INDONESIA · UTC+7</span>
+        <span>FORMAT: PDF &amp; EPUB</span>
+        <span>SHELF: 12 BOOKS</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Reading Library.
+      </h1>
+
+      <p class="hero-lead">
+        A small shelf on philosophy, markets, and economic cycles.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#shelf" class="btn-solid">
+          <span>See the Books</span>
+          <i data-lucide="arrow-down" style="width:14px;height:14px;"></i>
+        </a>
+        <a href="/lab/" class="btn-outline">
+          <span>← Back to Lab Hub</span>
+        </a>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-outline">
+          <span>Suggest a Title</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 2. KEY TELEMETRY STRIP -->
+    <section class="telemetry-row">
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[01 / BOOKS]</span>
+        <div class="telemetry-num">12 TITLES</div>
+        <div class="telemetry-label">Digital copies kept here for easy reference.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[02 / TOPICS]</span>
+        <div class="telemetry-num">4 TOPICS</div>
+        <div class="telemetry-label">Philosophy, existentialism, reflexivity, and cycles.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[03 / FORMATS]</span>
+        <div class="telemetry-num">PDF &amp; EPUB</div>
+        <div class="telemetry-label">PDFs open in the browser. The EPUB downloads.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[04 / ACCESS]</span>
+        <div class="telemetry-num">OPEN SHELF</div>
+        <div class="telemetry-label">Free for anyone to read.</div>
+      </div>
+    </section>
+
+    <!-- 3. PHILOSOPHY & EXISTENTIAL INQUIRY (ASYMMETRIC) -->
+    <section id="shelf" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 01 / PHILOSOPHY ]</span>
+        <h2>Philosophy &amp; Existence</h2>
+        <p>Books on consciousness, being, nature, and the absurd.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <!-- 01 -->
+          <a href="hegel_phenomenology_of_spirit_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">Phenomenology of Spirit</span>
+              <span class="row-tag">G. W. F. Hegel · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              Hegel's account of how consciousness develops, from simple sense-certainty to absolute knowing.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 02 -->
+          <a href="martin_heidegger_being_and_time_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">Being and Time</span>
+              <span class="row-tag">Martin Heidegger · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              On the meaning of Being, how we exist in time, and what it takes to live authentically (Dasein).
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 03 -->
+          <a href="ibn'_sina_(avicenna)_al-shifa'_(the_physics_of_the_healing)_in_two_volumes_english-arabic.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">Al-Shifa': The Physics of the Healing</span>
+              <span class="row-tag">Ibn Sina (Avicenna) · English / Arabic · PDF</span>
+            </div>
+            <p class="row-desc">
+              A broad philosophical work on nature, motion, space, time, and causation.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 04 -->
+          <a href="itzhak_bentov_stalking_the_wild_pendulum_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">04</span>
+            <div class="row-title-block">
+              <span class="row-title">Stalking the Wild Pendulum</span>
+              <span class="row-tag">Itzhak Bentov · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              On how consciousness works, resonance, holographic ideas, and how we model reality.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 05 -->
+          <a href="albert_camus_the_myth_of_sisyphus_english.epub" class="list-row">
+            <span class="row-index">05</span>
+            <div class="row-title-block">
+              <span class="row-title">The Myth of Sisyphus</span>
+              <span class="row-tag">Albert Camus · English · EPUB</span>
+            </div>
+            <p class="row-desc">
+              An essay on the absurd, and on carrying on anyway.
+            </p>
+            <span class="row-action">Download EPUB →</span>
+          </a>
+
+          <!-- 06 -->
+          <a href="albert_camus_the_stranger_indonesia.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">06</span>
+            <div class="row-title-block">
+              <span class="row-title">The Stranger (Orang Asing)</span>
+              <span class="row-tag">Albert Camus · Indonesian Translation · PDF</span>
+            </div>
+            <p class="row-desc">
+              Meursault feels little, notices everything around him, and gets judged for not playing by society's rules.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 07 -->
+          <a href="albert_camus_the_fall_indonesia.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">07</span>
+            <div class="row-title-block">
+              <span class="row-title">The Fall (Jatuh)</span>
+              <span class="row-tag">Albert Camus · Indonesian Translation · PDF</span>
+            </div>
+            <p class="row-desc">
+              A monologue set in Amsterdam about vanity, guilt, and the belief that anyone is truly innocent.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. MARKETS & CYCLES (ASYMMETRIC) -->
+    <section class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 02 / MARKETS &amp; CYCLES ]</span>
+        <h2>Markets &amp; Cycles</h2>
+        <p>Market theory, reflexivity, debt crises, and long-term cycles.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <!-- 08 -->
+          <a href="adiyat_coto_playing_the_worlds_game_indonesia.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">08</span>
+            <div class="row-title-block">
+              <span class="row-title">Playing the World's Game</span>
+              <span class="row-tag">Adiyat Coto · Indonesian · PDF</span>
+            </div>
+            <p class="row-desc">
+              Adiyat's own essay on leverage between countries, incentives, and game theory.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 09 -->
+          <a href="george_soros_the_alchemy_of_finance_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">09</span>
+            <div class="row-title-block">
+              <span class="row-title">The Alchemy of Finance</span>
+              <span class="row-tag">George Soros · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              Soros lays out reflexivity: how biased beliefs feed back into prices and drive boom and bust.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 10 -->
+          <a href="ray_dalio_how_countries_go_broke_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">10</span>
+            <div class="row-title-block">
+              <span class="row-title">How Countries Go Broke</span>
+              <span class="row-tag">Ray Dalio · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              A study of long-term debt cycles, how reserve currencies rise and fall, and what happens when governments overspend.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 11 -->
+          <a href="benjamin_graham_the_intelligence_investor_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">11</span>
+            <div class="row-title-block">
+              <span class="row-title">The Intelligent Investor</span>
+              <span class="row-tag">Benjamin Graham · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              The classic on margin of safety, Mr. Market, and valuing assets defensively.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+          <!-- 12 -->
+          <a href="samuel_benner_benners_prophecies_english.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">12</span>
+            <div class="row-title-block">
+              <span class="row-title">Benner's Prophecies of Future Ups and Downs in Prices</span>
+              <span class="row-tag">Samuel Benner · English · PDF</span>
+            </div>
+            <p class="row-desc">
+              An 1875 book that claims to find repeating 9-, 11-, and 27-year cycles in panics and prices.
+            </p>
+            <span class="row-action">Read PDF ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Unified Editorial Footer -->
+  <footer class="page-footer">
+    <div>
+      &copy; 2026 ADIYAT COTO · ALL RIGHTS RESERVED
+    </div>
+
+    <div class="footer-nav">
+      <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Medium</a>
+      <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank" rel="noopener">TradingView</a>
+      <a href="https://orcid.org/0009-0006-1914-0849" target="_blank" rel="noopener">ORCID</a>
+      <a href="https://cotoadiyat.gumroad.com/" target="_blank" rel="noopener">Gumroad</a>
+    </div>
+  </footer>
+
+<script>
+/* ── THEME CONTROLLER (LIGHT/DARK MONOCHROME) ────────────────────────────── */
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('ac-editorial-theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('theme-icon');
+  if (icon) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+/* ── MOBILE NAV DRAWER ───────────────────────────────────────────────────── */
+function toggleMobileNav() {
+  const panel = document.getElementById('mobileNav');
+  const icon = document.getElementById('menu-icon');
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (icon) icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+  if (window.lucide) lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ac-editorial-theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+  if (window.lucide) lucide.createIcons();
+});
+</script>
 </body>
 </html>

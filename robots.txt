@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://adiyatcoto.github.io/sitemap.xml
+
+# Disallow sensitive directories if any
+Disallow: /.git/
+Disallow: /.monitor/
+Disallow: /_notes/
+Disallow: /.DS_Store

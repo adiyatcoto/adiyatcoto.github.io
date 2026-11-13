@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratory · Adiyat Coto</title>
+<meta name="description" content="Adiyat Coto's lab: market tools, papers, Pine Script indicators, and experiments.">
+<meta name="keywords" content="Adiyat Coto, laboratory, research, quantitative finance, orderflow, price-time geometry, indicators, pine script, trading systems">
+<meta name="author" content="Adiyat Coto">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Laboratory · Adiyat Coto">
+<meta property="og:description" content="Market tools, papers, Pine Script indicators, and experiments.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adiyatcoto.github.io/lab/">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+<link rel="manifest" href="../favicon_io/site.webmanifest">
+<link rel="shortcut icon" href="../favicon_io/favicon.ico">
+<link rel="stylesheet" href="../assets/main.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body data-theme="light">
+
+  <!-- Razor-Thin Sticky Navigation (Editorial Broadsheet Style) -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="status-dot"></span>
+        <span>Adiyat Coto</span>
+      </a>
+
+      <!-- Core Navigation Links -->
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#work">Work</a></li>
+        <li><a href="/journal/">Journal</a></li>
+        <li><a href="/podcast/">Podcast</a></li>
+        <li><a href="/lab/" class="active">Lab Hub</a></li>
+        <li><a href="/books/">Library</a></li>
+      </ul>
+
+      <div class="nav-tools">
+        <button class="btn-icon" onclick="toggleTheme()" aria-label="Toggle monochrome dark and light mode">
+          <i data-lucide="moon" id="theme-icon" style="width:15px;height:15px;"></i>
+        </button>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-nav-cta">
+          Contact
+        </a>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Toggle mobile menu">
+          <i data-lucide="menu" id="menu-icon" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Dropdown -->
+  <div class="mobile-dropdown" id="mobileNav">
+    <a href="/#about" onclick="toggleMobileNav()">About</a>
+    <a href="/#work" onclick="toggleMobileNav()">Work</a>
+    <a href="/journal/" onclick="toggleMobileNav()">Journal</a>
+    <a href="/podcast/" onclick="toggleMobileNav()">Podcast</a>
+    <a href="/lab/" onclick="toggleMobileNav()" style="color:var(--text-primary);font-weight:600;">Lab Hub</a>
+    <a href="/pinescript/" onclick="toggleMobileNav()">Pine Script</a>
+    <a href="/books/" onclick="toggleMobileNav()">Library</a>
+    <a href="mailto:hello@coto.is-a.dev" style="color:var(--text-primary);font-weight:600;">hello@coto.is-a.dev</a>
+  </div>
+
+  <!-- Editorial Main Canvas -->
+  <main class="page-container">
+
+    <!-- HERO BLOCK -->
+    <section class="hero-block">
+      <div class="hero-meta-strip">
+        <span>LOC: SEMARANG, INDONESIA · UTC+7</span>
+        <span>FORMAT: WEB TOOLS &amp; PAPERS</span>
+        <span>ITEMS: 18</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Laboratory.
+      </h1>
+
+      <p class="hero-lead">
+        Tools, papers, and experiments for reading markets. Each one works on its own.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#market-tools" class="btn-solid">
+          <span>See the Tools</span>
+          <i data-lucide="arrow-down" style="width:14px;height:14px;"></i>
+        </a>
+        <a href="/docs/RSA_Whitepaper.pdf" class="btn-outline" target="_blank" rel="noopener">
+          <span>RSA Whitepaper (PDF) ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- KEY TELEMETRY STRIP -->
+    <section class="telemetry-row">
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[01 / LIVE TOOLS]</span>
+        <div class="telemetry-num">6 LIVE</div>
+        <div class="telemetry-label">Orderflow, power law regression, and cycle clocks.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[02 / PAPERS]</span>
+        <div class="telemetry-num">2 PAPERS</div>
+        <div class="telemetry-label">The RSA and COP TAH whitepapers.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[03 / SCRIPTS]</span>
+        <div class="telemetry-num">6 SCRIPTS</div>
+        <div class="telemetry-label">Free Pine Script v5 indicators on TradingView.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[04 / ARCHIVE]</span>
+        <div class="telemetry-num">3 OLDER</div>
+        <div class="telemetry-label">An early engine, a TradingView prototype, and an audio experiment.</div>
+      </div>
+    </section>
+
+    <!-- 1. MARKET SYSTEMS -->
+    <section id="market-tools" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 01 / MARKET TOOLS ]</span>
+        <h2>Market Tools</h2>
+        <p>Tools for watching price across timeframes, where liquidity sits, and how cycles repeat.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <a href="/svn/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Confluence</span>
+              <span class="row-tag">Live</span>
+            </div>
+            <p class="row-desc">
+              Dashboard that lines up several timeframes and liquidity clusters, and tracks orderflow imbalance live.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/rsa/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Explorer</span>
+              <span class="row-tag">Theory</span>
+            </div>
+            <p class="row-desc">
+              Interactive intro to Reflexive Symmetrical Architecture, with the math behind it. Zenodo DOI: 10.5281/zenodo.16749290.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/coptah/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">COP TAH Pivot</span>
+              <span class="row-tag">Dynamic Levels</span>
+            </div>
+            <p class="row-desc">
+              Pivot levels that shift with the day's bias, marking where price tends to expand.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/cryptodash/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">04</span>
+            <div class="row-title-block">
+              <span class="row-title">Crypto Dashboard</span>
+              <span class="row-tag">Dashboard</span>
+            </div>
+            <p class="row-desc">
+              One screen with live numbers for the major cryptocurrencies.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/powerlaw/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">05</span>
+            <div class="row-title-block">
+              <span class="row-title">Power Law Generator</span>
+              <span class="row-tag">Log Regression</span>
+            </div>
+            <p class="row-desc">
+              Fits the regression slope automatically and draws long-term value channels with standard deviation bands.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/clock/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">06</span>
+            <div class="row-title-block">
+              <span class="row-title">Nested Time</span>
+              <span class="row-tag">Time Cycles</span>
+            </div>
+            <p class="row-desc">
+              A clock simulation for studying cycles inside cycles, and when they come back.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. FORMAL RESEARCH & MONOGRAPHS -->
+    <section id="research" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 02 / PAPERS ]</span>
+        <h2>Papers &amp; Essay</h2>
+        <p>Two whitepapers and an essay.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <a href="/docs/RSA_Whitepaper.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Whitepaper</span>
+              <span class="row-tag">Whitepaper · Zenodo</span>
+            </div>
+            <p class="row-desc">
+              Reflexive Symmetrical Architecture: A Unified Framework for Multi-Timeframe Market Symmetry (DOI: 10.5281/zenodo.16749290).
+            </p>
+            <span class="row-action">PDF ↗</span>
+          </a>
+
+          <a href="/docs/COPTAH_Whitepaper.pdf" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">COP TAH Whitepaper</span>
+              <span class="row-tag">Whitepaper · Technical</span>
+            </div>
+            <p class="row-desc">
+              Technical spec for opening-range pivots and the orderflow deviation bands around them.
+            </p>
+            <span class="row-action">PDF ↗</span>
+          </a>
+
+
+          <a href="/doc/determinism/" class="list-row">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">The Life Programmer Manual</span>
+              <span class="row-tag">Essay</span>
+            </div>
+            <p class="row-desc">
+              An essay on determinism and how our decisions get shaped.
+            </p>
+            <span class="row-action">Read →</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PINE SCRIPT INDICATORS -->
+    <section id="pine-script" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 03 / PINE SCRIPT ]</span>
+        <h2>TradingView Indicators</h2>
+        <p>Six free indicators written in Pine Script v5. Each link opens its page on TradingView.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <a href="https://www.tradingview.com/script/9VlhfNHG-New-Coto-s-RRA-Ultra-Granular-12-5-Steps-2026-Edition/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">Coto's RRA Ultra Granular 12.5 Steps (2026 Edition)</span>
+              <span class="row-tag">Range Analysis · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              Residual range levels divided into 12.5 steps, built for volatile sessions.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+          <a href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">Coto COP/TAH: Multi-Timeframe Bias Analyzer</span>
+              <span class="row-tag">Bias · Confluence · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              Reads orderflow bias across higher and lower timeframes and combines it into one view.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+          <a href="https://www.tradingview.com/script/xkGlOH8P-Cotos-Higher-Timeframe-HTF-Candles-Overlay-2026-Edition/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">Coto's Higher Timeframe (HTF) Candles Overlay (2026 Edition)</span>
+              <span class="row-tag">HTF Candles · Overlay · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              Draws higher-timeframe candles directly on a lower-timeframe chart.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+          <a href="https://www.tradingview.com/script/N0yQ3cvY-Coto-s-COP-TAH-Auto-Pivot-Auto-Tick-Size-Detection/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">04</span>
+            <div class="row-title-block">
+              <span class="row-title">Coto's COP/TAH: Auto Pivot + Auto Tick Size Detection</span>
+              <span class="row-tag">Pivots · Auto Tick Size · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              Opening-range pivot levels that detect tick size and precision on their own.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+          <a href="https://www.tradingview.com/script/VPQLgqBA-Macro-Liquidity-Monitor-v2-0/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">05</span>
+            <div class="row-title-block">
+              <span class="row-title">Macro Liquidity Monitor v2.0</span>
+              <span class="row-tag">Macro · Liquidity · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              Combines liquidity signals and volatility across markets to flag shifts in the market regime.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+          <a href="https://www.tradingview.com/script/aJXqPcUg-For-All-Asset-Class-Cotos-COP-TAH-Mutitimeframe-Candle-Overlay/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">06</span>
+            <div class="row-title-block">
+              <span class="row-title">Coto's COP/TAH Multi-Timeframe Candle Overlay (All Asset Classes)</span>
+              <span class="row-tag">Cross-Asset · Overlay · Pine v5</span>
+            </div>
+            <p class="row-desc">
+              One candle overlay for stocks, forex, indices, and crypto, without scaling distortion.
+            </p>
+            <span class="row-action">TradingView ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ARCHIVES & PROTOTYPES -->
+    <section id="archive" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 04 / ARCHIVE ]</span>
+        <h2>Archive</h2>
+        <p>Older experiments and prototypes.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <a href="/cre/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Engine</span>
+              <span class="row-tag">Early Version</span>
+            </div>
+            <p class="row-desc">
+              The first calculation engine. Finds equilibrium points across nested timeframes.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/tv/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">TV Intelligence</span>
+              <span class="row-tag">Prototype</span>
+            </div>
+            <p class="row-desc">
+              Prototype that connects TradingView charts to live volatility signals.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <a href="/pulzr/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">PULZR</span>
+              <span class="row-tag">Audio</span>
+            </div>
+            <p class="row-desc">
+              Ambient sound experiment with cycling frequencies and spatial audio.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Unified Editorial Footer -->
+  <footer class="page-footer">
+    <div>
+      &copy; 2026 ADIYAT COTO · ALL RIGHTS RESERVED
+    </div>
+
+    <div class="footer-nav">
+      <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Medium</a>
+      <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank" rel="noopener">TradingView</a>
+      <a href="https://orcid.org/0009-0006-1914-0849" target="_blank" rel="noopener">ORCID</a>
+      <a href="https://cotoadiyat.gumroad.com/" target="_blank" rel="noopener">Gumroad</a>
+    </div>
+  </footer>
+
+<script>
+/* ── THEME CONTROLLER (LIGHT/DARK MONOCHROME) ────────────────────────────── */
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('ac-editorial-theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('theme-icon');
+  if (icon) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+/* ── MOBILE NAV DRAWER ───────────────────────────────────────────────────── */
+function toggleMobileNav() {
+  const panel = document.getElementById('mobileNav');
+  const icon = document.getElementById('menu-icon');
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (icon) icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+  if (window.lucide) lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ac-editorial-theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>

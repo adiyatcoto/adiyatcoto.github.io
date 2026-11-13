@@ -1,183 +1,358 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Adiyat Coto — systems, markets, and research.">
-<title>Adiyat Coto — Systems & Markets</title>
-<link rel="icon" href="favicon_io/favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adiyat Coto · Application Support & Client Enablement</title>
+<meta name="description" content="Adiyat Coto. 7+ years in SaaS application support, implementation and client enablement. Also researches price-time geometry and market cycles.">
+<meta name="keywords" content="Adiyat Coto, application support, client enablement, implementation, SaaS, L1/L2 support, Jira, price-time geometry, trading tools">
+<meta name="author" content="Adiyat Coto">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Adiyat Coto · Application Support & Client Enablement">
+<meta property="og:description" content="7+ years in SaaS: onboarding, training, go-live and L1/L2 support. Also researches price-time geometry and market cycles.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adiyatcoto.github.io/">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="manifest" href="favicon_io/site.webmanifest">
+<link rel="shortcut icon" href="favicon_io/favicon.ico">
+<link rel="stylesheet" href="assets/main.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>:root{--bg:#101110;--ink:#f2f4ed;--muted:#989d94;--line:#2b2e2a;--acid:#cbff3d}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,sans-serif}.wrap{max-width:1240px;margin:auto;padding:0 32px}.nav{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.brand,.eyebrow,.meta{font:11px/1.2 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.brand{text-decoration:none;color:var(--ink);font-weight:500}.brand b,.accent{color:var(--acid);font-weight:500}.links{display:flex;gap:24px}.links a{color:var(--muted);font:11px 'DM Mono',monospace;text-decoration:none;text-transform:uppercase}.links a:hover,.more:hover{color:var(--acid)}.hero{min-height:calc(100svh - 76px);display:flex;flex-direction:column;justify-content:space-between;padding:72px 0 30px}.eyebrow{color:var(--acid)}h1{max-width:1060px;margin:32px 0;font-size:clamp(3.5rem,9.8vw,9.8rem);letter-spacing:-.085em;line-height:.86;font-weight:800}.hero p{max-width:485px;color:var(--muted);font-size:18px}.hero-bottom{border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;color:var(--muted)}.rule{border-top:1px solid var(--line)}section{padding:100px 0}.heading{display:grid;grid-template-columns:180px 1fr;gap:36px;margin-bottom:48px}.heading h2{margin:0;font-size:clamp(2rem,4vw,4.2rem);line-height:.96;letter-spacing:-.065em}.heading p{max-width:480px;color:var(--muted);align-self:end;margin:0}.facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}.fact{min-height:178px;padding:25px;border-right:1px solid var(--line)}.fact:last-child{border:0}.fact b{display:block;margin:46px 0 5px;font-size:28px;letter-spacing:-.05em}.fact span{color:var(--muted);font-size:13px}.work{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line)}.project{padding:30px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;display:grid;grid-template-columns:90px 1fr auto;gap:18px;align-items:start}.project:nth-child(odd){padding-right:30px}.project:nth-child(even){padding-left:30px;border-left:1px solid var(--line)}.project:hover h3{color:var(--acid)}.project .meta{color:var(--acid);padding-top:6px}.project h3{font-size:21px;letter-spacing:-.04em;margin:0 0 7px}.project p{color:var(--muted);font-size:14px;margin:0}.arrow{font-size:20px;color:var(--muted)}.streams{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}.stream{background:var(--bg);padding:28px;min-height:240px}.stream h3{font-size:28px;letter-spacing:-.05em;margin:20px 0 8px}.stream p{color:var(--muted);font-size:14px;max-width:460px}.items{margin-top:26px;border-top:1px solid var(--line)}.item{display:block;padding:13px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}.item:hover{color:var(--acid)}.item span{display:block;color:var(--muted);font:10px 'DM Mono',monospace;text-transform:uppercase;margin-bottom:3px}.more{display:inline-block;margin-top:27px;color:var(--ink);font:11px 'DM Mono',monospace;text-decoration:none;text-transform:uppercase}.contact{padding:130px 0}.contact h2{font-size:clamp(2.8rem,6vw,6rem);line-height:.94;letter-spacing:-.07em;margin:22px 0}.email{color:var(--acid);text-decoration:none;font-size:clamp(1.1rem,2vw,1.8rem)}footer{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);display:flex;justify-content:space-between;font:10px 'DM Mono',monospace;text-transform:uppercase}@media(max-width:700px){.wrap{padding:0 20px}.links{gap:13px}.links a:nth-child(1),.links a:nth-child(4){display:none}.hero{padding-top:52px}.heading{display:block}.heading .eyebrow{margin-bottom:22px}.heading p{margin-top:22px}.facts,.streams{grid-template-columns:1fr}.fact{min-height:130px;border-right:0;border-bottom:1px solid var(--line)}.fact:last-child{border-bottom:0}.fact b{margin-top:23px}.work{grid-template-columns:1fr}.project,.project:nth-child(odd),.project:nth-child(even){padding:23px 0;border-left:0}.project{grid-template-columns:64px 1fr auto}.contact{padding:85px 0}section{padding:70px 0}}</style>
-<style>
-/* Compact rhythm and quiet motion. */
-section{padding:64px 0}.hero{min-height:calc(82svh - 76px);padding:48px 0 24px}.heading{margin-bottom:32px}.contact{padding:76px 0}.project{padding:22px 0}.stream{min-height:0}.facts .fact{min-height:142px}.fact b{margin-top:28px}.hero>div:first-child,.heading,.facts,.project,.stream,.contact{animation:rise .65s both}.project:nth-child(2n){animation-delay:.05s}.project:nth-child(3n){animation-delay:.1s}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}.project{transition:background .2s,padding .2s}.project:hover{background:#171916}.socialbar{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px}.socialbar a{display:grid;place-items:center;width:31px;height:31px;border:1px solid var(--line);color:var(--ink);transition:.2s}.socialbar a:hover{color:var(--bg);background:var(--acid);border-color:var(--acid)}.socialbar svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:700px){section{padding:48px 0}.hero{min-height:72svh;padding-top:40px}.contact{padding:58px 0}footer{gap:14px;align-items:center}.socialbar{justify-content:flex-start}}
-</style>
-<style>
-/* Social links stay clear of the bottom edge and retain their names. */
-.socialbar a{display:flex;align-items:center;gap:7px;width:auto;padding:0 9px;font:9px 'DM Mono',monospace;text-decoration:none;text-transform:uppercase}.socialbar a::after{content:attr(aria-label)}footer{display:flex;flex-direction:column;align-items:flex-start;gap:30px;padding:42px 0 128px}.socialbar{order:-1;justify-content:flex-start}body{isolation:isolate}body::before{content:'';position:fixed;z-index:0;inset:-30%;pointer-events:none;background:radial-gradient(circle at 30% 30%,rgba(203,255,61,.055),transparent 18%),radial-gradient(circle at 72% 65%,rgba(70,130,180,.07),transparent 22%);animation:drift 18s ease-in-out infinite alternate}body>*{position:relative;z-index:1}.nav{position:sticky;top:0;z-index:20;background:rgba(16,17,16,.84);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}.hero{min-height:62svh;padding:42px 0}.hero h1{margin:22px 0}.hero-bottom{display:none}@keyframes drift{to{transform:translate3d(5%,3%,0) scale(1.08)}}@media(max-width:700px){footer{padding-bottom:92px;align-items:flex-start}.socialbar{justify-content:flex-start}.hero{min-height:56svh;padding:34px 0}}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
-<body>
-<nav class="wrap nav">
-<a class="brand" href="/">ADIYAT <b>COTO</b>
-</a>
-<div class="links">
-<a href="#person">Profile</a>
-<a href="/journal/">Journal</a>
-<a href="/podcast/">Podcast</a>
-<a href="#work">Projects</a>
-<a href="#contact">Contact</a>
-</div>
-</nav>
-<main class="wrap">
-<section class="hero" id="person">
-<div>
-<span class="eyebrow">Indonesia · Operations · Research</span>
-<h1>ADIYAT<br>COTO.</h1>
-<p>Operations and implementation professional with an independent practice in market research, writing, and product tools.</p>
-</div>
-</section>
-<section class="rule">
-<div class="heading">
-<span class="eyebrow">Profile</span>
-<div>
-<h2>Functional support.<br>Technical delivery.</h2>
-<p>I work between business operations and technical execution: turning workflows into usable system configurations, investigating issues, and keeping delivery moving across teams.</p>
-</div>
-</div>
-<div class="facts">
-<div class="fact">
-<span class="meta">Focus</span>
-<b>Application support</b>
-<span>Business logic · system configuration</span>
-</div>
-<div class="fact">
-<span class="meta">Method</span>
-<b>Root-cause analysis</b>
-<span>Triage · incidents · functional resolution</span>
-</div>
-<div class="fact">
-<span class="meta">Delivery</span>
-<b>SDLC liaison</b>
-<span>Requirements · UAT · release coordination</span>
-</div>
-</div>
-</section>
-<section class="rule" id="work">
-<div class="heading">
-<span class="eyebrow">Selected work</span>
-<div>
-<h2>Useful by design.</h2>
-<p>A complete index of research, utilities, experiments, and public work.</p>
-</div>
-</div>
-<div class="work">
-<a class="project" href="/rsa/">
-<span class="meta">01 / Paper</span>
-<div>
-<h3>RSA Whitepaper</h3>
-<p>Reflexive Symmetrical Architecture: a theory of price-time geometry.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="/svn/">
-<span class="meta">02 / Tool</span>
-<div>
-<h3>RSA Confluence</h3>
-<p>A live view of liquidity and market structure.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="/cre/">
-<span class="meta">03 / Tool</span>
-<div>
-<h3>Recursive Engine</h3>
-<p>Fractal mapping for price and time.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="/cryptodash/">
-<span class="meta">04 / Tool</span>
-<div>
-<h3>Asset Dashboard</h3>
-<p>Crypto-market signals, reduced to what matters.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="/powerlaw/">
-<span class="meta">05 / Tool</span><div><h3>Power Law Generator</h3><p>Fair-value baselines and long-term trend mapping.</p></div><span class="arrow">↗</span></a>
-<a class="project" href="/coptah/">
-<span class="meta">06 / Tool</span><div><h3>COP TAH Pivot</h3><p>Responsive support and resistance levels.</p></div><span class="arrow">↗</span></a>
-<a class="project" href="https://www.tradingview.com/script/Bp4ls8mK-Coto-COP-TAH-Multi-Timeframe-Bias-Analyzer/" target="_blank" rel="noopener">
-<span class="meta">07 / Script</span><div><h3>Bias Analyzer</h3><p>Multi-timeframe structural analysis.</p></div><span class="arrow">↗</span></a>
-<a class="project" href="/pulzr/">
-<span class="meta">08 / Experiment</span><div><h3>PULZR Audioverse</h3><p>Audio-reactive 3D environments.</p></div><span class="arrow">↗</span></a>
-<a class="project" href="/clock/">
-<span class="meta">09 / Experiment</span><div><h3>Nested Time</h3><p>A visual study of time across scales.</p></div><span class="arrow">↗</span></a>
-<a class="project" href="/pinescript/">
-<span class="meta">10 / Code</span>
-<div>
-<h3>Pine Script Collection</h3>
-<p>Indicators for reading structural shifts.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="/books/">
-<span class="meta">11 / Library</span>
-<div>
-<h3>The Shelf</h3>
-<p>Texts behind the work.</p>
-</div>
-<span class="arrow">↗</span>
-</a>
-<a class="project" href="https://www.youtube.com/@VoicefromZeroPoint" target="_blank" rel="noopener">
-<span class="meta">12 / Audio</span><div><h3>Zero Point Voice</h3><p>Finance, history, and cycles in conversation.</p></div><span class="arrow">↗</span></a>
-</div>
-</section>
-<section class="rule">
-<div class="streams">
-<article class="stream">
-<span class="eyebrow">Journal</span>
-<h3>Written record.</h3>
-<p>Essays on markets, history, philosophy, and the structure beneath the surface.</p>
-<div class="items" id="journal-feed">
-<span class="meta" style="color:var(--muted)">Loading latest writing…</span>
-</div>
-<a class="more" href="/journal/">Open journal →</a>
-</article>
-<article class="stream">
-<span class="eyebrow">Podcast</span>
-<h3>Suara dari Titik Nol.</h3>
-<p>Finance, history, and cycles. Spoken plainly.</p>
-<div class="items" id="podcast-feed">
-<span class="meta" style="color:var(--muted)">Loading latest episodes…</span>
-</div>
-<a class="more" href="/podcast/">Open podcast →</a>
-</article>
-</div>
-</section>
-<section class="rule contact" id="contact">
-<span class="eyebrow">Contact</span>
-<h2>Get in touch.</h2>
-<a class="email" href="mailto:hello@coto.is-a.dev">hello@coto.is-a.dev ↗</a>
-</section>
-</main>
-<footer class="wrap">
-<span>© 2026 Adiyat Coto</span>
-<span class="socialbar">
-<a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
-<a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener" aria-label="Medium"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></a>
-<a href="https://www.instagram.com/luxinextinguibilitatis/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
-<a href="https://open.spotify.com/show/56gR1FJ1pWTOdi2aJCxXdm" target="_blank" rel="noopener" aria-label="Spotify"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-1 5.5-.8 7.5.5M7.5 14.5c2-1 4.5-.8 6.5.4M9 8.5c3-1.2 6.5-.9 9 .8"/></svg></a>
-<a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank" rel="noopener" aria-label="TradingView"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></a>
-<a href="https://orcid.org/0009-0006-1914-0849" target="_blank" rel="noopener" aria-label="ORCID"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></a>
-<a href="https://about.me/adiyatcoto" target="_blank" rel="noopener" aria-label="About me"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
-<a href="https://cotoadiyat.gumroad.com/" target="_blank" rel="noopener" aria-label="Gumroad"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></a>
-</span>
-</footer>
-<script>const short=s=>{const d=document.createElement('div');d.innerHTML=s||'';return(d.textContent||'').trim().replace(/\s+/g,' ')},add=(id,items)=>{const h=document.getElementById(id);h.innerHTML=items.length?items.slice(0,3).map(x=>`<a class="item" target="_blank" rel="noopener" href="${x.link}">
-<span>${x.pubDate?new Date(x.pubDate).getFullYear():''}</span>${short(x.title)}</a>`).join(''):'<span class="meta">Nothing published yet.</span>'};fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fmedium.com%2Ffeed%2F%40coto.adiyat&api_key=gcujnglqeaho0omrp7ut6nl2f4wyzriazidpxxrw').then(r=>r.json()).then(d=>add('journal-feed',d.items||[])).catch(()=>add('journal-feed',[]));fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fanchor.fm%2Fs%2Ffd071e14%2Fpodcast%2Frss&api_key=gcujnglqeaho0omrp7ut6nl2f4wyzriazidpxxrw&count=100').then(r=>r.json()).then(d=>add('podcast-feed',d.items||[])).catch(()=>add('podcast-feed',[]));</script>
+<body data-theme="light">
+
+  <!-- Razor-Thin Sticky Navigation (Editorial Broadsheet Style) -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="status-dot"></span>
+        <span>Adiyat Coto</span>
+      </a>
+
+      <!-- Core Navigation Links -->
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="/journal/">Journal</a></li>
+        <li><a href="/podcast/">Podcast</a></li>
+        <li><a href="/lab/">Lab Hub</a></li>
+        <li><a href="/books/">Library</a></li>
+      </ul>
+
+      <div class="nav-tools">
+        <button class="btn-icon" onclick="toggleTheme()" aria-label="Toggle monochrome dark and light mode">
+          <i data-lucide="moon" id="theme-icon" style="width:15px;height:15px;"></i>
+        </button>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-nav-cta">
+          Contact
+        </a>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Toggle mobile menu">
+          <i data-lucide="menu" id="menu-icon" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Dropdown -->
+  <div class="mobile-dropdown" id="mobileNav">
+    <a href="#about" onclick="toggleMobileNav()">About</a>
+    <a href="#work" onclick="toggleMobileNav()">Work</a>
+    <a href="/journal/" onclick="toggleMobileNav()">Journal</a>
+    <a href="/podcast/" onclick="toggleMobileNav()">Podcast</a>
+    <a href="/lab/" onclick="toggleMobileNav()">Lab Hub</a>
+    <a href="/pinescript/" onclick="toggleMobileNav()">Pine Script</a>
+    <a href="/books/" onclick="toggleMobileNav()">Library</a>
+    <a href="mailto:hello@coto.is-a.dev" style="color:var(--text-primary);font-weight:600;">hello@coto.is-a.dev</a>
+  </div>
+
+  <!-- Editorial Main Canvas -->
+  <main class="page-container">
+
+    <!-- 1. HERO -->
+    <section class="hero-block">
+      <div class="hero-meta-strip">
+        <span>LOC: SEMARANG, INDONESIA · UTC+7</span>
+        <span>SPEC: APPLICATION SUPPORT · IMPLEMENTATION · SAAS</span>
+        <span>STATUS: OPEN TO NEW ROLES</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Adiyat Coto.
+      </h1>
+
+      <p class="hero-lead">
+        Application support and client enablement professional with 7+ years in SaaS, from onboarding and training to go-live and L1/L2 support. On the side, I research price-time geometry and market cycles, and build tools for it.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="mailto:hello@coto.is-a.dev" class="btn-solid">
+          <span>Email me: hello@coto.is-a.dev</span>
+          <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </a>
+        <a href="#work" class="btn-outline">
+          <span>See my tools</span>
+          <i data-lucide="arrow-down" style="width:14px;height:14px;"></i>
+        </a>
+        <a href="/rsa/" class="btn-outline" target="_blank" rel="noopener">
+          <span>Whitepaper (DOI) ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 2. KEY TELEMETRY STRIP: 4 FLAT COMPARTMENTS -->
+    <section class="telemetry-row">
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[01 / EXPERIENCE]</span>
+        <div class="telemetry-num">7+ YRS</div>
+        <div class="telemetry-label">SaaS implementation, client enablement and L1/L2 support.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[02 / MONOGRAPH]</span>
+        <div class="telemetry-num">DOI: 10.5281</div>
+        <div class="telemetry-label">Published formal whitepaper on price-time geometry (Zenodo).</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[03 / TOOLING]</span>
+        <div class="telemetry-num">12 TOOLS</div>
+        <div class="telemetry-label">Open-source instruments, calculators, telemetry dashboards.</div>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-idx">[04 / RECOGNITION]</span>
+        <div class="telemetry-num">#1 RANK</div>
+        <div class="telemetry-label">Top Performer Q3 2022 at Moka POS (GoTo Group), 93.5/100.</div>
+      </div>
+    </section>
+
+    <!-- 3. ABOUT (ASYMMETRICAL 2-COLUMN GRID) -->
+    <section id="about" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 01 / ABOUT ]</span>
+        <h2>Support, Implementation, Research</h2>
+        <p>Helping clients get live and stay running, and testing ideas on markets in my spare time.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="editorial-prose">
+          <p>
+            I started in 2016 at Moka POS (GoTo Group), deploying cloud POS for merchants across East Java and remotely nationwide. By 2021 I was leading two offices and five engineers, covering about 200 merchant sessions a month. In 2024 I joined MaivenPoint (AvePoint) as an Application Support Engineer, handling L1/L2 support for 25+ enterprise accounts on an education management system.
+          </p>
+          <p>
+            Outside work, I research price-time geometry and market cycles. I wrote <em>Reflexive Symmetrical Architecture (RSA)</em>, a paper registered on Zenodo (DOI: 10.5281/zenodo.16749290), and I build tools to test where multi-timeframe orderflow liquidity and cyclic geometry meet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SELECTED WORK -->
+    <section id="work" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 02 / SELECTED WORK ]</span>
+        <h2>Curated Instruments & Systems</h2>
+        <p>Five selected works demonstrating real-time orderflow tracking, fractal cycle math, and regression models.</p>
+        <div style="margin-top: 1rem;">
+          <a href="/lab/" class="btn-outline" style="font-size:0.75rem;height:36px;padding:0 1rem;">
+            <span>Open All 12 in Lab Hub →</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <!-- Row 1: RSA Confluence -->
+          <a href="/svn/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Confluence</span>
+              <span class="row-tag">Orderflow Telemetry</span>
+            </div>
+            <p class="row-desc">
+              Live multi-timeframe telemetry system tracking institutional liquidity clusters and market imbalance in real time.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <!-- Row 2: Recursive Engine -->
+          <a href="/cre/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">Recursive Engine</span>
+              <span class="row-tag">Fractal Equilibrium</span>
+            </div>
+            <p class="row-desc">
+              Mathematical solver calculating the equilibrium intersection of nested time cycles and structural price geometry.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <!-- Row 3: Power Law Generator -->
+          <a href="/powerlaw/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">Power Law Generator</span>
+              <span class="row-tag">Logarithmic Regression</span>
+            </div>
+            <p class="row-desc">
+              Statistical model calculating fair-value bounds and volatility bands, separating secular network growth from noise.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+          <!-- Row 4: RSA Whitepaper -->
+          <a href="/rsa/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">04</span>
+            <div class="row-title-block">
+              <span class="row-title">RSA Whitepaper</span>
+              <span class="row-tag">Theoretical Monograph</span>
+            </div>
+            <p class="row-desc">
+              Peer-registered theoretical framework and interactive demonstration of price-time geometry. Registered on Zenodo (DOI: 10.5281/zenodo.16749290).
+            </p>
+            <span class="row-action">Read ↗</span>
+          </a>
+
+          <!-- Row 5: COP TAH Pivot -->
+          <a href="/coptah/" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">05</span>
+            <div class="row-title-block">
+              <span class="row-title">COP TAH Pivot</span>
+              <span class="row-tag">Dynamic Levels</span>
+            </div>
+            <p class="row-desc">
+              Opening-range algorithmic pivot system mapping responsive intraday support, resistance, and liquidity expansion zones.
+            </p>
+            <span class="row-action">Launch ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. WRITING / NOTES -->
+    <section id="writing" class="section-asymmetric">
+      <aside class="section-aside">
+        <span class="section-tag">[ 03 / WRITING ]</span>
+        <h2>Writing & Audio</h2>
+        <p>Articles on Medium, a journal, and a podcast.</p>
+      </aside>
+
+      <div class="section-main">
+        <div class="horizontal-list">
+
+          <a href="https://medium.com/@coto.adiyat" class="list-row" target="_blank" rel="noopener">
+            <span class="row-index">01</span>
+            <div class="row-title-block">
+              <span class="row-title">Reflexive Dynamics in Financial Market Structures</span>
+              <span class="row-tag">Medium Article</span>
+            </div>
+            <p class="row-desc">
+              Investigating liquidity feedback loops and how structural market symmetry manifests across discrete time intervals.
+            </p>
+            <span class="row-action">Read ↗</span>
+          </a>
+
+          <a href="/journal/" class="list-row">
+            <span class="row-index">02</span>
+            <div class="row-title-block">
+              <span class="row-title">Journal</span>
+              <span class="row-tag">Working Notes</span>
+            </div>
+            <p class="row-desc">
+              Short notes on support and implementation work, and on the research behind the tools.
+            </p>
+            <span class="row-action">Read →</span>
+          </a>
+
+          <a href="/podcast/" class="list-row">
+            <span class="row-index">03</span>
+            <div class="row-title-block">
+              <span class="row-title">Suara dari Titik Nol</span>
+              <span class="row-tag">Spotify / Anchor</span>
+            </div>
+            <p class="row-desc">
+              Unscripted discussions on market history, monetary cycles, and complex systemic structures streamed on Spotify.
+            </p>
+            <span class="row-action">Listen ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. CONTACT BLOCK -->
+    <section id="contact" class="contact-block">
+      <span class="section-tag">[ 04 / CONTACT ]</span>
+      <h2>Get in Touch</h2>
+      <p style="max-width: 600px;">
+        Open to application support, implementation and client enablement roles. Happy to talk about the research and tools above too.
+      </p>
+      <div>
+        <a href="mailto:hello@coto.is-a.dev" class="contact-email-link">
+          hello@coto.is-a.dev
+        </a>
+      </div>
+      <div>
+        <a href="mailto:hello@coto.is-a.dev" class="btn-solid">
+          <span>Send an Email</span>
+          <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Unified Editorial Footer -->
+  <footer class="page-footer">
+    <div>
+      &copy; 2026 ADIYAT COTO · ALL RIGHTS RESERVED
+    </div>
+
+    <div class="footer-nav">
+      <a href="https://www.linkedin.com/in/adiyatcoto/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://medium.com/@coto.adiyat" target="_blank" rel="noopener">Medium</a>
+      <a href="https://www.tradingview.com/u/adiyatcoto/" target="_blank" rel="noopener">TradingView</a>
+      <a href="https://orcid.org/0009-0006-1914-0849" target="_blank" rel="noopener">ORCID</a>
+      <a href="https://cotoadiyat.gumroad.com/" target="_blank" rel="noopener">Gumroad</a>
+    </div>
+  </footer>
+
+<script>
+/* ── THEME CONTROLLER (LIGHT/DARK MONOCHROME) ────────────────────────────── */
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('ac-editorial-theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('theme-icon');
+  if (icon) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+/* ── MOBILE NAV DRAWER ───────────────────────────────────────────────────── */
+function toggleMobileNav() {
+  const panel = document.getElementById('mobileNav');
+  const icon = document.getElementById('menu-icon');
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (icon) icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+  if (window.lucide) lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ac-editorial-theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+  if (window.lucide) lucide.createIcons();
+});
+</script>
 </body>
 </html>
